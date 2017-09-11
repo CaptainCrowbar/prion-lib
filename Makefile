@@ -114,12 +114,12 @@ CFLAGS := $(common_flags) $(cc_specific_flags) $(cc_defines) $(nontest_flags)
 CXXFLAGS := $(common_flags) $(cxx_specific_flags) $(cc_defines) $(nontest_flags)
 OBJCFLAGS := $(common_flags) $(objc_specific_flags) $(cc_defines) $(nontest_flags)
 OBJCXXFLAGS := $(common_flags) $(objc_specific_flags) $(cxx_specific_flags) $(cc_defines) $(nontest_flags)
-LDFLAGS := $(common_flags) $(cc_defines) $(nontest_flags) $(ld_specific_flags) $^ $(LDLIBS) -o $@
+LDFLAGS := $(common_flags) $(cc_defines) $(nontest_flags) $(ld_specific_flags)
 test_cflags := $(common_flags) $(cc_specific_flags) $(cc_defines) $(test_flags)
 test_cxxflags := $(common_flags) $(cxx_specific_flags) $(cc_defines) $(test_flags)
 test_objcflags := $(common_flags) $(objc_specific_flags) $(cc_defines) $(test_flags)
 test_objcxxflags := $(common_flags) $(objc_specific_flags) $(cxx_specific_flags) $(cc_defines) $(test_flags)
-test_ldflags := $(common_flags) $(cc_defines) $(test_flags) $(ld_specific_flags) $^ $(LDLIBS) -o $@
+test_ldflags := $(common_flags) $(cc_defines) $(test_flags) $(ld_specific_flags)
 
 # Work out which kind of installable target we want
 

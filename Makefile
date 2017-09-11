@@ -97,15 +97,22 @@ LD := $(CXX)
 MAINAPP := $(BUILD)/$(NAME)$(EXE)
 TESTAPP := $(BUILD)/test-$(NAME)$(EXE)
 
-INSTALLABLE :=
-ifneq ($(APPSOURCES),)
-	INSTALLABLE := app
-endif
 ifeq ($(TAG),lib)
-	INSTALLABLE := lib
-endif
-ifeq ($(TAG),engine)
-	INSTALLABLE := lib
+	ifeq ($(LIBSOURCES),)
+		INSTALLABLE := header-lib
+	else
+		INSTALLABLE := object-lib
+	endif
+else
+	ifeq ($(TAG),engine)
+		INSTALLABLE := object-lib
+	else
+		ifneq ($(APPSOURCES),)
+			INSTALLABLE := application
+		else
+			INSTALLABLE := nothing
+		endif
+	endif
 endif
 
 .DELETE_ON_ERROR:
@@ -193,45 +200,17 @@ else
 doc: $(DOCS)
 endif
 
-ifeq ($(INSTALLABLE),lib)
-static: $(STATICPART) $(NAME)/library.hpp
-ifeq ($(LIBSOURCES),)
-install: uninstall static
-	mkdir -p $(PREFIX)/lib $(PREFIX)/include/$(NAME)
-	cp $(LIBHEADERS) $(NAME)/library.hpp $(PREFIX)/include/$(NAME)
-else
-install: uninstall static
-	mkdir -p $(PREFIX)/lib $(PREFIX)/include/$(NAME)
-	cp $(LIBHEADERS) $(NAME)/library.hpp $(PREFIX)/include/$(NAME)
-	cp $(STATICLIB) $(PREFIX)/lib
-endif
-ifeq ($(XHOST),mingw)
-symlinks:
-	$(error make symlinks is not supported on $(XHOST), use make install)
-else
-ifeq ($(LIBSOURCES),)
-symlinks: uninstall static
-	mkdir -p $(PREFIX)/lib $(PREFIX)/include
-	ln -fs $(abspath $(NAME)) $(PREFIX)/include
-else
-symlinks: uninstall static
-	mkdir -p $(PREFIX)/lib $(PREFIX)/include
-	ln -fs $(abspath $(NAME)) $(PREFIX)/include
-	ln -fs $(abspath $(STATICLIB)) $(PREFIX)/lib
-endif
-endif
-uninstall:
-	if [ "$(PREFIX)" ]; then rm -f $(PREFIX)/lib/$(notdir $(STATICLIB)); rm -rf $(PREFIX)/include/$(NAME); fi
-help-install: help-test
-	@echo "    install    = Install the application"
-	@echo "    symlinks   = Install the application using symlinks"
-	@echo "    uninstall  = Uninstall the application"
-else
+ifeq ($(INSTALLABLE),application)
 static: $(STATICPART)
-ifeq ($(INSTALLABLE),app)
 install: uninstall app
 	mkdir -p $(PREFIX)/bin
 	cp $(MAINAPP) $(PREFIX)/bin
+uninstall:
+	rm -f $(PREFIX)/bin/$(notdir $(MAINAPP))
+help-install: help-test
+	@echo "    install    = Install the library"
+	@echo "    symlinks   = Install the library using symlinks"
+	@echo "    uninstall  = Uninstall the library"
 ifeq ($(XHOST),mingw)
 symlinks:
 	$(error make symlinks is not supported on $(XHOST), use make install)
@@ -240,19 +219,58 @@ symlinks: uninstall app
 	mkdir -p $(PREFIX)/bin
 	ln -fs $(abspath $(MAINAPP)) $(PREFIX)/bin
 endif
+endif
+
+ifeq ($(INSTALLABLE),header-lib)
+static: $(STATICPART) $(NAME)/library.hpp
+install: uninstall static
+	mkdir -p $(PREFIX)/lib $(PREFIX)/include/$(NAME)
+	cp $(LIBHEADERS) $(NAME)/library.hpp $(PREFIX)/include/$(NAME)
 uninstall:
-	rm -f $(PREFIX)/bin/$(notdir $(MAINAPP))
+	if [ "$(PREFIX)" ]; then rm -f $(PREFIX)/lib/$(notdir $(STATICLIB)); rm -rf $(PREFIX)/include/$(NAME); fi
 help-install: help-test
-	@echo "    install    = Install the library"
-	@echo "    symlinks   = Install the library using symlinks"
-	@echo "    uninstall  = Uninstall the library"
+	@echo "    install    = Install the application"
+	@echo "    symlinks   = Install the application using symlinks"
+	@echo "    uninstall  = Uninstall the application"
+ifeq ($(XHOST),mingw)
+symlinks:
+	$(error make symlinks is not supported on $(XHOST), use make install)
 else
-# No installable target
+symlinks: uninstall static
+	mkdir -p $(PREFIX)/lib $(PREFIX)/include
+	ln -fs $(abspath $(NAME)) $(PREFIX)/include
+endif
+endif
+
+ifeq ($(INSTALLABLE),object-lib)
+static: $(STATICPART) $(NAME)/library.hpp
+install: uninstall static
+	mkdir -p $(PREFIX)/lib $(PREFIX)/include/$(NAME)
+	cp $(LIBHEADERS) $(NAME)/library.hpp $(PREFIX)/include/$(NAME)
+	cp $(STATICLIB) $(PREFIX)/lib
+uninstall:
+	if [ "$(PREFIX)" ]; then rm -f $(PREFIX)/lib/$(notdir $(STATICLIB)); rm -rf $(PREFIX)/include/$(NAME); fi
+help-install: help-test
+	@echo "    install    = Install the application"
+	@echo "    symlinks   = Install the application using symlinks"
+	@echo "    uninstall  = Uninstall the application"
+ifeq ($(XHOST),mingw)
+symlinks:
+	$(error make symlinks is not supported on $(XHOST), use make install)
+else
+symlinks: uninstall static
+	mkdir -p $(PREFIX)/lib $(PREFIX)/include
+	ln -fs $(abspath $(NAME)) $(PREFIX)/include
+	ln -fs $(abspath $(STATICLIB)) $(PREFIX)/lib
+endif
+endif
+
+ifeq ($(INSTALLABLE),nothing)
+static: $(STATICPART)
 install:
 symlinks:
 uninstall:
 help-install: help-test
-endif
 endif
 
 -include $(DEPENDS)

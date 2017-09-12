@@ -17,8 +17,7 @@ install_prefix := /usr/local
 build_host := $(shell uname | tr A-Z a-z | sed -E 's/[^a-z].*//')
 build_target := $(shell gcc -v 2>&1 | grep '^Target:' | sed -E -e 's/^Target: //' -e 's/[0-9.]*$$//' | tr A-Z a-z)
 cross_host := $(shell echo $(build_target) | tr A-Z a-z | sed -E -e 's/-gnu$$//' -e 's/.*-//' -e 's/[^a-z].*//')
-build_dir := build/$(build_target)
-scripts_dir := $(LIBROOT)/core-lib/scripts
+BUILD := build/$(build_target)
 CXX := g++
 AR := ar
 ARFLAGS := -rsu
@@ -48,6 +47,7 @@ library_objects := $(shell sed -E 's!$(project_name)/([^ ]+)\.[a-z]+!$(build_dir
 doc_index := $(wildcard $(project_name)/index.md)
 doc_sources := $(shell find $(project_name) -name '*.md' | sort)
 doc_pages := doc/style.css doc/index.html $(patsubst $(project_name)/%.md,doc/%.html,$(doc_sources))
+scripts_dir := $(LIBROOT)/core-lib/scripts
 
 # System or tool specific variables
 

@@ -31,19 +31,19 @@ objc_specific_flags :=
 cc_defines := -DNDEBUG=1
 nontest_flags := -O2
 test_flags := -O1
-ld_specific_flags := -L$(build_dir)
+ld_specific_flags := -L$(BUILD)
 exe_suffix :=
 dependency_file := dependencies.make
-static_library := $(build_dir)/lib$(project_name).a
+static_library := $(BUILD)/lib$(project_name).a
 all_headers := $(shell find $(project_name) -name *.h -or -name *.hpp)
 library_headers := $(filter-out $(project_name)/library.hpp Makefile,$(shell grep -EL '// NOT INSTALLED' $(all_headers) Makefile)) # Dummy entry to avoid empty list
 all_sources := $(shell find $(project_name) -name *.c -or -name *.cpp -or -name *.m -or -name *.mm)
 app_sources := $(shell echo "$(all_sources)" | tr ' ' '\n' | grep app-)
 test_sources := $(shell echo "$(all_sources)" | tr ' ' '\n' | grep '[-]test')
 library_sources := $(filter-out $(app_sources) $(test_sources),$(all_sources))
-app_objects := $(shell sed -E 's!$(project_name)/([^ ]+)\.[a-z]+!$(build_dir)/\1.o!g' <<< '$(app_sources)')
-test_objects := $(shell sed -E 's!$(project_name)/([^ ]+)\.[a-z]+!$(build_dir)/\1.o!g' <<< '$(test_sources)')
-library_objects := $(shell sed -E 's!$(project_name)/([^ ]+)\.[a-z]+!$(build_dir)/\1.o!g' <<< '$(library_sources)')
+app_objects := $(shell sed -E 's!$(project_name)/([^ ]+)\.[a-z]+!$(BUILD)/\1.o!g' <<< '$(app_sources)')
+test_objects := $(shell sed -E 's!$(project_name)/([^ ]+)\.[a-z]+!$(BUILD)/\1.o!g' <<< '$(test_sources)')
+library_objects := $(shell sed -E 's!$(project_name)/([^ ]+)\.[a-z]+!$(BUILD)/\1.o!g' <<< '$(library_sources)')
 doc_index := $(wildcard $(project_name)/index.md)
 doc_sources := $(shell find $(project_name) -name '*.md' | sort)
 doc_pages := doc/style.css doc/index.html $(patsubst $(project_name)/%.md,doc/%.html,$(doc_sources))
@@ -85,7 +85,7 @@ ifeq ($(cross_host),mingw)
 	RC := windres
 	RCFLAGS := -O coff
 	resource_files := $(wildcard resources/*.rc) $(wildcard resources/*.ico)
-	resource_object := $(patsubst resources/%.rc,$(build_dir)/%.o,$(firstword $(resource_files)))
+	resource_object := $(patsubst resources/%.rc,$(BUILD)/%.o,$(firstword $(resource_files)))
 	app_objects += $(resource_object)
 else
 	cc_defines += -D_REENTRANT=1 -D_XOPEN_SOURCE=700
@@ -101,8 +101,8 @@ else
 	static_target := $(static_library)
 endif
 
-app_target := $(build_dir)/$(project_name)$(exe_suffix)
-unit_test_target := $(build_dir)/test-$(project_name)$(exe_suffix)
+app_target := $(BUILD)/$(project_name)$(exe_suffix)
+unit_test_target := $(BUILD)/test-$(project_name)$(exe_suffix)
 
 # Collect the build tools and their options
 
@@ -157,7 +157,7 @@ undoc:
 	rm -f doc/*.html
 
 clean:
-	rm -rf $(build_dir) *.stackdump __test_*
+	rm -rf $(BUILD) *.stackdump __test_*
 
 clean-all:
 	rm -rf build doc *.stackdump __test_*
@@ -380,35 +380,35 @@ endif
 
 # Rules for building objects from source
 
-$(build_dir)/%-test.o: $(project_name)/%-test.c
+$(BUILD)/%-test.o: $(project_name)/%-test.c
 	@mkdir -p $(dir $@)
 	$(CC) $(test_cflags) -c $< -o $@
 
-$(build_dir)/%-test.o: $(project_name)/%-test.cpp
+$(BUILD)/%-test.o: $(project_name)/%-test.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(test_cxxflags) -c $< -o $@
 
-$(build_dir)/%-test.o: $(project_name)/%-test.m
+$(BUILD)/%-test.o: $(project_name)/%-test.m
 	@mkdir -p $(dir $@)
 	$(OBJC) $(test_objcflags) -c $< -o $@
 
-$(build_dir)/%-test.o: $(project_name)/%-test.mm
+$(BUILD)/%-test.o: $(project_name)/%-test.mm
 	@mkdir -p $(dir $@)
 	$(OBJCXX) $(test_objcxxflags) -c $< -o $@
 
-$(build_dir)/%.o: $(project_name)/%.c
+$(BUILD)/%.o: $(project_name)/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(build_dir)/%.o: $(project_name)/%.cpp
+$(BUILD)/%.o: $(project_name)/%.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(build_dir)/%.o: $(project_name)/%.m
+$(BUILD)/%.o: $(project_name)/%.m
 	@mkdir -p $(dir $@)
 	$(OBJC) $(OBJCFLAGS) -c $< -o $@
 
-$(build_dir)/%.o: $(project_name)/%.mm
+$(BUILD)/%.o: $(project_name)/%.mm
 	@mkdir -p $(dir $@)
 	$(OBJCXX) $(OBJCXXFLAGS) -c $< -o $@
 

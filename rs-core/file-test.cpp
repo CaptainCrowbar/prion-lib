@@ -273,15 +273,16 @@ namespace {
 
     void check_file_standard_locations() {
 
-        File f;
+        File cd, f;
 
-        TRY(f = File::cwd());
-        TEST_MATCH(f.name(), "/Code/core-lib$");
+        TRY(cd = File::cwd());
+        TEST_MATCH(cd.name(), "/Code/core-lib$");
 
         TRY(f = "..");
         TRY(f.set_cwd());
         TRY(f = File::cwd());
         TEST_MATCH(f.name(), "/Code$");
+        TRY(cd.set_cwd());
 
         TRY(f = File::user_home());
         #ifdef __APPLE__

@@ -84,7 +84,7 @@ namespace RS {
         void normalize() noexcept;
         #ifndef _XOPEN_SOURCE
             char get_file_type() const noexcept;
-            static std::wstring get_known_folder(CSIDL id);
+            static std::wstring get_known_folder(int id);
         #endif
     };
 
@@ -532,7 +532,7 @@ namespace RS {
             }
         }
 
-        inline std::wstring File::get_known_folder(CSIDL id) {
+        inline std::wstring File::get_known_folder(int id) {
             std::wstring wpath(MAX_PATH, L'\0');
             auto rc = SHGetFolderPath(nullptr, id, nullptr, 0, &wpath[0]);
             if (rc != S_OK)

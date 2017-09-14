@@ -23,6 +23,7 @@
 <li><a href="#file-system-query-operations">File system query operations</a></li>
 <li><a href="#file-system-update-operations">File system update operations</a></li>
 <li><a href="#io-operations">I/O operations</a></li>
+<li><a href="#standard-locations">Standard locations</a></li>
 </ul>
 </li>
 </ul>
@@ -195,20 +196,6 @@ it returns an empty list. The files may be listed in any order.</p>
 <p>Returns the size of the file, if it exists and its size can be determined. The
 return value is unspecified if the file is a directory.</p>
 </div>
-<div class="defns">
-<ul>
-<li><code>static File File::</code><strong><code>cwd</code></strong><code>()</code></li>
-</ul>
-<p>Returns the current working directory.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>static File File::</code><strong><code>home</code></strong><code>()</code></li>
-</ul>
-<p>Returns the current user's home directory. On Unix, this will check the value
-of the <code>HOME</code> environment variable first, and only consult the system API if
-that fails.</p>
-</div>
 <h3 id="file-system-update-operations">File system update operations</h3>
 <p>All of these functions will throw <code>std::system_error</code> if the underlying system
 API reports an error.</p>
@@ -259,5 +246,54 @@ flag is set, it will throw <code>std::system_error</code> if anything goes wrong
 this will overwrite any existing file with the same name, if possible; if the
 <code>File::append</code> flag is set, the new data will be appended to any existing file
 instead (the <code>append</code> flag has no effect if the file does not already exist).
-This will throw <code>std::system_error</code> if anything goes wrong.</p></body>
+This will throw <code>std::system_error</code> if anything goes wrong.</p>
+</div>
+<h3 id="standard-locations">Standard locations</h3>
+<div class="defns">
+<ul>
+<li><code>void File::</code><strong><code>set_cwd</code></strong><code>() const</code></li>
+<li><code>static File File::</code><strong><code>cwd</code></strong><code>()</code></li>
+</ul>
+<p>Query or set the current working directory.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>static File File::</code><strong><code>user_home</code></strong><code>()</code></li>
+<li><code>static File File::</code><strong><code>user_documents</code></strong><code>()</code></li>
+<li><code>static File File::</code><strong><code>user_settings</code></strong><code>()</code></li>
+</ul>
+<p>Query some standard directory locations. On Unix, these will check the value
+of the <code>HOME</code> environment variable first, and only consult the system API if
+that fails.</p>
+<p>Typical values on common operating systems:</p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Linux</th>
+<th>Mac</th>
+<th>Windows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>user_home()</code></td>
+<td><code>/home/&lt;username&gt;</code></td>
+<td><code>/Users/&lt;username&gt;</code></td>
+<td><code>C:/Users/&lt;username&gt;</code></td>
+</tr>
+<tr>
+<td><code>user_documents()</code></td>
+<td><code>&lt;home&gt;/Documents</code></td>
+<td><code>&lt;home&gt;/Documents</code></td>
+<td><code>&lt;home&gt;/Documents</code></td>
+</tr>
+<tr>
+<td><code>user_settings()</code></td>
+<td><code>&lt;home&gt;/.config</code></td>
+<td><code>&lt;home&gt;/Library/Application Support</code></td>
+<td><code>&lt;home&gt;/AppData/Roaming</code></td>
+</tr>
+</tbody>
+</table></body>
 </html>

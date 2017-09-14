@@ -64,8 +64,6 @@ namespace RS {
         bool is_symlink() const noexcept;
         std::vector<File> list() const;
         uint64_t size() const;
-        static File cwd();
-        static File home();
         // File system update operations
         void mkdir(uint32_t flags = 0) const;
         void move_to(const File& dst) const;
@@ -74,12 +72,19 @@ namespace RS {
         std::string load(size_t limit = npos, uint32_t flags = 0) const;
         void save(const void* ptr, size_t len, uint32_t flags = 0) const;
         void save(const std::string& content, uint32_t flags = 0) const { save(content.data(), content.size(), flags); }
+        // Standard locations
+        void set_cwd() const;
+        static File cwd();
+        static File user_home();
+        static File user_documents();
+        static File user_settings();
     private:
         std::string path;
         void do_remove() const;
         void normalize() noexcept;
         #ifndef _XOPEN_SOURCE
             char get_file_type() const noexcept;
+            static std::wstring get_known_folder(CSIDL id);
         #endif
     };
 
@@ -291,40 +296,6 @@ namespace RS {
             return rc == 0 ? st.st_size : 0;
         }
 
-        inline File File::cwd() {
-            std::string buf(256, '\0');
-            for (;;) {
-                errno = 0;
-                if (::getcwd(&buf[0], buf.size()))
-                    break;
-                int err = errno;
-                if (err == ENOMEM)
-                    throw std::bad_alloc();
-                else if (err != ERANGE)
-                    throw std::system_error(err, std::generic_category());
-                buf.resize(2 * buf.size());
-            }
-            null_term(buf);
-            return buf;
-        }
-
-        inline File File::home() {
-            auto home = getenv("HOME");
-            if (home && *home)
-                return home;
-            std::string buf(256, '\0');
-            passwd pwdbuf;
-            passwd* pwdptr = nullptr;
-            for (;;) {
-                int rc = getpwuid_r(getuid(), &pwdbuf, &buf[0], buf.size(), &pwdptr);
-                if (rc == 0)
-                    return pwdptr->pw_dir;
-                if (rc != ERANGE)
-                    throw std::system_error(rc, std::generic_category());
-                buf.resize(2 * buf.size());
-            }
-        }
-
         // File system update operations
 
         inline void File::mkdir(uint32_t flags) const {
@@ -347,6 +318,61 @@ namespace RS {
             err = errno;
             if (rc)
                 throw std::system_error(err, std::generic_category(), path);
+        }
+
+        // Standard locations
+
+        inline void File::set_cwd() const {
+            if (chdir(path.data()) == -1) {
+                int err = errno;
+                throw std::system_error(err, std::generic_category(), path);
+            }
+        }
+
+        inline File File::cwd() {
+            std::string buf(256, '\0');
+            for (;;) {
+                errno = 0;
+                if (::getcwd(&buf[0], buf.size()))
+                    break;
+                int err = errno;
+                if (err == ENOMEM)
+                    throw std::bad_alloc();
+                else if (err != ERANGE)
+                    throw std::system_error(err, std::generic_category());
+                buf.resize(2 * buf.size());
+            }
+            null_term(buf);
+            return buf;
+        }
+
+        inline File File::user_home() {
+            auto home = getenv("HOME");
+            if (home && *home)
+                return home;
+            std::string buf(256, '\0');
+            passwd pwdbuf;
+            passwd* pwdptr = nullptr;
+            for (;;) {
+                int rc = getpwuid_r(getuid(), &pwdbuf, &buf[0], buf.size(), &pwdptr);
+                if (rc == 0)
+                    return pwdptr->pw_dir;
+                if (rc != ERANGE)
+                    throw std::system_error(rc, std::generic_category());
+                buf.resize(2 * buf.size());
+            }
+        }
+
+        inline File File::user_documents() {
+            return user_home() / "Documents";
+        }
+
+        inline File File::user_settings() {
+            #ifdef __APPLE__
+                return user_home() / "Library/Application Support";
+            #else
+                return user_home() / ".config";
+            #endif
         }
 
         // Implementation details
@@ -426,13 +452,24 @@ namespace RS {
                 return 0;
         }
 
+        // Standard locations
+
+        inline void File::set_cwd() const {
+            auto wpath = native();
+            if (! SetCurrentDirectoryW(wpath.data())) {
+                auto err = GetLastError();
+                throw std::system_error(err, windows_category(), path);
+            }
+        }
+
         inline File File::cwd() {
             std::wstring wpath(256, L'\0');
             uint32_t rc = 0;
             for (;;) {
                 rc = GetCurrentDirectoryW(wpath.size(), &wpath[0]);
+                auto err = GetLastError();
                 if (rc == 0)
-                    throw std::system_error(GetLastError(), windows_category());
+                    throw std::system_error(err, windows_category());
                 else if (rc < wpath.size())
                     break;
                 wpath.resize(2 * wpath.size());
@@ -441,22 +478,16 @@ namespace RS {
             return wpath;
         }
 
-        inline File File::home() {
-            #ifdef __GNUC__
-                std::wstring wpath(MAX_PATH, L'\0');
-                auto rc = SHGetFolderPath(nullptr, CSIDL_PROFILE, nullptr, 0, &wpath[0]);
-                if (rc != S_OK)
-                    throw std::system_error(rc, windows_category());
-                null_term(wpath);
-                return wpath;
-            #else
-                PWSTR wptr = nullptr;
-                ScopeExit guard([&] { if (wptr) CoTaskMemFree(wptr); });
-                auto rc = SHGetKnownFolderPath(FOLDERID_Profile, 0, nullptr, &wptr);
-                if (rc != S_OK)
-                    throw std::system_error(rc, windows_category());
-                return wptr;
-            #endif
+        inline File File::user_home() {
+            return get_known_folder(CSIDL_PROFILE);
+        }
+
+        inline File File::user_documents() {
+            return get_known_folder(CSIDL_MYDOCUMENTS);
+        }
+
+        inline File File::user_settings() {
+            return get_known_folder(CSIDL_APPDATA);
         }
 
         // Implementation details
@@ -499,6 +530,15 @@ namespace RS {
                 else
                     return 'f';
             }
+        }
+
+        inline std::wstring File::get_known_folder(CSIDL id) {
+            std::wstring wpath(MAX_PATH, L'\0');
+            auto rc = SHGetFolderPath(nullptr, id, nullptr, 0, &wpath[0]);
+            if (rc != S_OK)
+                throw std::system_error(rc, windows_category());
+            null_term(wpath);
+            return wpath;
         }
 
         // File system update operations

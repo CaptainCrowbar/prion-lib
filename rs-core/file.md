@@ -141,16 +141,6 @@ it returns an empty list. The files may be listed in any order.
 Returns the size of the file, if it exists and its size can be determined. The
 return value is unspecified if the file is a directory.
 
-* `static File File::`**`cwd`**`()`
-
-Returns the current working directory.
-
-* `static File File::`**`home`**`()`
-
-Returns the current user's home directory. On Unix, this will check the value
-of the `HOME` environment variable first, and only consult the system API if
-that fails.
-
 ### File system update operations ###
 
 All of these functions will throw `std::system_error` if the underlying system
@@ -195,3 +185,26 @@ this will overwrite any existing file with the same name, if possible; if the
 `File::append` flag is set, the new data will be appended to any existing file
 instead (the `append` flag has no effect if the file does not already exist).
 This will throw `std::system_error` if anything goes wrong.
+
+### Standard locations ###
+
+* `void File::`**`set_cwd`**`() const`
+* `static File File::`**`cwd`**`()`
+
+Query or set the current working directory.
+
+* `static File File::`**`user_home`**`()`
+* `static File File::`**`user_documents`**`()`
+* `static File File::`**`user_settings`**`()`
+
+Query some standard directory locations. On Unix, these will check the value
+of the `HOME` environment variable first, and only consult the system API if
+that fails.
+
+Typical values on common operating systems:
+
+Function            | Linux               | Mac                                   | Windows
+--------            | -----               | ---                                   | -------
+`user_home()`       | `/home/<username>`  | `/Users/<username>`                   | `C:/Users/<username>`
+`user_documents()`  | `<home>/Documents`  | `<home>/Documents`                    | `<home>/Documents`
+`user_settings()`   | `<home>/.config`    | `<home>/Library/Application Support`  | `<home>/AppData/Roaming`

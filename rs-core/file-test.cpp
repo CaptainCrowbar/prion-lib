@@ -163,18 +163,6 @@ namespace {
         TRY(f = "");          TRY(n = f.size());  TEST_EQUAL(n, 0);
         TRY(f = "Makefile");  TRY(n = f.size());  TEST_COMPARE(n, >, 9000);
 
-        TRY(f = File::cwd());
-        TEST_MATCH(f.name(), "/Code/core-lib$");
-
-        TRY(f = File::home());
-        #ifdef __APPLE__
-            TEST_MATCH(f.name(), "^/Users/[\\w.]+$");
-        #elif defined(_XOPEN_SOURCE)
-            TEST_MATCH(f.name(), "^/home/[\\w.]+$");
-        #else
-            TEST_MATCH(f.name(), "^C:/Users/[\\w.]+$");
-        #endif
-
         TRY(v = File("").list());   std::sort(v.begin(), v.end());  TRY(s = to_str(v));  TEST_EQUAL(s, "[]");
         TRY(v = File(".").list());  std::sort(v.begin(), v.end());  TRY(s = to_str(v));  TEST_MATCH(s, "^\\[(.+,)?Makefile,README\\.md,build,.+\\]$");
 
@@ -283,6 +271,41 @@ namespace {
 
     }
 
+    void check_file_standard_locations() {
+
+        File f;
+
+        TRY(f = File::cwd());
+        TEST_MATCH(f.name(), "/Code/core-lib$");
+
+        TRY(f = "..");
+        TRY(f.set_cwd());
+        TRY(f = File::cwd());
+        TEST_MATCH(f.name(), "/Code$");
+
+        TRY(f = File::user_home());
+        #ifdef __APPLE__
+            TEST_MATCH(f.name(), "^/Users/[\\w.]+$");
+        #elif defined(_XOPEN_SOURCE)
+            TEST_MATCH(f.name(), "^/home/[\\w.]+$");
+        #else
+            TEST_MATCH(f.name(), "^C:/Users/[\\w.]+$");
+        #endif
+
+        TRY(f = File::user_documents());
+        TEST_MATCH(f.name(), "/Documents$");
+
+        TRY(f = File::user_settings());
+        #ifdef __APPLE__
+            TEST_MATCH(f.name(), "/Library/Application Support$");
+        #elif defined(_XOPEN_SOURCE)
+            TEST_MATCH(f.name(), "/.config$");
+        #else
+            TEST_MATCH(f.name(), "/AppData/Roaming$");
+        #endif
+
+    }
+
 }
 
 TEST_MODULE(core, file) {
@@ -291,5 +314,6 @@ TEST_MODULE(core, file) {
     check_file_system_queries();
     check_file_system_update();
     check_file_io();
+    check_file_standard_locations();
 
 }

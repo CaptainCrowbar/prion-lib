@@ -450,8 +450,8 @@ namespace {
         TRY(v3 = 42);  TEST_EQUAL(v3.index(), 0);  TEST(v3);  TEST_EQUAL(v3.as<int>(), 42);
         TRY(w3 = 42);  TEST_EQUAL(w3.index(), 1);  TEST(w3);  TEST_EQUAL(w3.as<int>(), 42);
 
-        TRY(v3 = 1234.5f);  TEST_EQUAL(v3.index(), 1);  TEST(v3);  TEST_EQUAL(v3.as<float>(), 1234.5);
-        TRY(w3 = 1234.5f);  TEST_EQUAL(w3.index(), 2);  TEST(w3);  TEST_EQUAL(w3.as<float>(), 1234.5);
+        TRY(v3 = 1234.5f);  TEST_EQUAL(v3.index(), 1);  TEST(v3);  TEST_EQUAL(v3.as<float>(), 1234.5f);
+        TRY(w3 = 1234.5f);  TEST_EQUAL(w3.index(), 2);  TEST(w3);  TEST_EQUAL(w3.as<float>(), 1234.5f);
 
         TRY(v3 = "Hello"s);  TEST_EQUAL(v3.index(), 2);  TEST(v3);  TEST_EQUAL(v3.as<std::string>(), "Hello");
         TRY(w3 = "Hello"s);  TEST_EQUAL(w3.index(), 3);  TEST(w3);  TEST_EQUAL(w3.as<std::string>(), "Hello");

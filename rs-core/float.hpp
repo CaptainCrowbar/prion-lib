@@ -135,12 +135,12 @@ namespace RS {
 
     namespace Literals {
 
-        constexpr float operator""_degf(long double x) noexcept { return (float)radians(x); }
-        constexpr float operator""_degf(unsigned long long x) noexcept { return (float)radians((long double)x); }
-        constexpr double operator""_deg(long double x) noexcept { return (double)radians(x); }
-        constexpr double operator""_deg(unsigned long long x) noexcept { return (double)radians((long double)x); }
+        constexpr float operator""_degf(long double x) noexcept { return float(radians(x)); }
+        constexpr float operator""_degf(unsigned long long x) noexcept { return float(radians(static_cast<long double>(x))); }
+        constexpr double operator""_deg(long double x) noexcept { return double(radians(x)); }
+        constexpr double operator""_deg(unsigned long long x) noexcept { return double(radians(static_cast<long double>(x))); }
         constexpr long double operator""_degl(long double x) noexcept { return radians(x); }
-        constexpr long double operator""_degl(unsigned long long x) noexcept { return radians((long double)x); }
+        constexpr long double operator""_degl(unsigned long long x) noexcept { return radians(static_cast<long double>(x)); }
 
     }
 

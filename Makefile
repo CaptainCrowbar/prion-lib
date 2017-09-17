@@ -24,7 +24,8 @@ ARFLAGS := -rsu
 LDLIBS :=
 STRIP := @echo >/dev/null
 LIBTAG :=
-common_flags := -I. -march=ivybridge -mfpmath=sse -Wall -Wextra -Werror
+common_flags := -I. -march=ivybridge -mfpmath=sse
+diagnostic_flags := -Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wnull-dereference -Wold-style-cast
 cc_specific_flags :=
 cxx_specific_flags :=
 objc_specific_flags :=
@@ -110,16 +111,16 @@ CC := $(CXX)
 OBJC := $(CXX)
 OBJCXX := $(CXX)
 LD := $(CXX)
-CFLAGS := $(common_flags) $(cc_specific_flags) $(cc_defines) $(nontest_flags)
-CXXFLAGS := $(common_flags) $(cxx_specific_flags) $(cc_defines) $(nontest_flags)
-OBJCFLAGS := $(common_flags) $(objc_specific_flags) $(cc_defines) $(nontest_flags)
-OBJCXXFLAGS := $(common_flags) $(objc_specific_flags) $(cxx_specific_flags) $(cc_defines) $(nontest_flags)
-LDFLAGS := $(common_flags) $(cc_defines) $(nontest_flags) $(ld_specific_flags)
-test_cflags := $(common_flags) $(cc_specific_flags) $(cc_defines) $(test_flags)
-test_cxxflags := $(common_flags) $(cxx_specific_flags) $(cc_defines) $(test_flags)
-test_objcflags := $(common_flags) $(objc_specific_flags) $(cc_defines) $(test_flags)
-test_objcxxflags := $(common_flags) $(objc_specific_flags) $(cxx_specific_flags) $(cc_defines) $(test_flags)
-test_ldflags := $(common_flags) $(cc_defines) $(test_flags) $(ld_specific_flags)
+CFLAGS := $(common_flags) $(diagnostic_flags) $(cc_specific_flags) $(cc_defines) $(nontest_flags)
+CXXFLAGS := $(common_flags) $(diagnostic_flags) $(cxx_specific_flags) $(cc_defines) $(nontest_flags)
+OBJCFLAGS := $(common_flags) $(diagnostic_flags) $(objc_specific_flags) $(cc_defines) $(nontest_flags)
+OBJCXXFLAGS := $(common_flags) $(diagnostic_flags) $(objc_specific_flags) $(cxx_specific_flags) $(cc_defines) $(nontest_flags)
+LDFLAGS := $(common_flags) $(diagnostic_flags) $(cc_defines) $(nontest_flags) $(ld_specific_flags)
+test_cflags := $(common_flags) $(diagnostic_flags) $(cc_specific_flags) $(cc_defines) $(test_flags)
+test_cxxflags := $(common_flags) $(diagnostic_flags) $(cxx_specific_flags) $(cc_defines) $(test_flags)
+test_objcflags := $(common_flags) $(diagnostic_flags) $(objc_specific_flags) $(cc_defines) $(test_flags)
+test_objcxxflags := $(common_flags) $(diagnostic_flags) $(objc_specific_flags) $(cxx_specific_flags) $(cc_defines) $(test_flags)
+test_ldflags := $(common_flags) $(diagnostic_flags) $(cc_defines) $(test_flags) $(ld_specific_flags)
 
 # Work out which kind of installable target we want
 

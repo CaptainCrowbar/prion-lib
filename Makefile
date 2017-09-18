@@ -25,7 +25,7 @@ LDLIBS :=
 STRIP := @echo >/dev/null
 LIBTAG :=
 common_flags := -I. -march=ivybridge -mfpmath=sse
-diagnostic_flags := -Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wnull-dereference -Wold-style-cast
+diagnostic_flags := -Wall -Wextra -Werror
 cc_specific_flags :=
 cxx_specific_flags :=
 objc_specific_flags :=

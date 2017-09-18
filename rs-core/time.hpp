@@ -77,14 +77,11 @@ namespace RS {
         auto t = system_clock::to_time_t(tp);
         tm stm = z == Zone::local ? *localtime(&t) : *gmtime(&t);
         U8string result(std::max(2 * format.size(), size_t(100)), '\0');
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wformat-nonliteral"
         auto rc = strftime(&result[0], result.size(), format.data(), &stm);
         if (rc == 0) {
             result.resize(10 * result.size(), '\0');
             rc = strftime(&result[0], result.size(), format.data(), &stm);
         }
-        #pragma GCC diagnostic pop
         result.resize(rc);
         result.shrink_to_fit();
         return result;

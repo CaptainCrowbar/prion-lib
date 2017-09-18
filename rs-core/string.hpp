@@ -625,10 +625,7 @@ namespace RS {
         auto x = double(t);
         int rc = 0;
         for (;;) {
-            #pragma GCC diagnostic push
-            #pragma GCC diagnostic ignored "-Wformat-nonliteral"
             rc = snprintf(&buf[0], buf.size(), fmt.data(), prec, x);
-            #pragma GCC diagnostic pop
             if (rc < 0)
                 throw std::system_error(errno, std::generic_category(), "snprintf()");
             if (size_t(rc) < buf.size())

@@ -81,10 +81,7 @@ namespace RS {
             auto cs = state::closed;
             #ifdef _XOPEN_SOURCE
                 fd_set fds;
-                #pragma GCC diagnostic push
-                #pragma GCC diagnostic ignored "-Wold-style-cast"
                 FD_ZERO(&fds);
-                #pragma GCC diagnostic pop
                 FD_SET(fd, &fds);
                 auto tv = duration_to_timeval(t);
                 errno = 0;

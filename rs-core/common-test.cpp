@@ -641,9 +641,6 @@ namespace {
 
     void check_arithmetic_literals() {
 
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Woverflow"
-
         auto a = 123_s8;
         auto b = 123_u8;
         auto c = 123_s16;
@@ -753,8 +750,6 @@ namespace {
             TEST_EQUAL(decfmt(sz), "4294967295");
 
         }
-
-        #pragma GCC diagnostic pop
 
     }
 

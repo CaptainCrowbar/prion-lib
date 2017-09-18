@@ -799,10 +799,7 @@ namespace RS {
             if (index)
                 *index = npos;
             fd_set rfds;
-            #pragma GCC diagnostic push
-            #pragma GCC diagnostic ignored "-Wold-style-cast"
             FD_ZERO(&rfds);
-            #pragma GCC diagnostic pop
             int last = -1;
             for (size_t i = 0; i < n; ++i) {
                 if (sockets[i] != no_socket) {

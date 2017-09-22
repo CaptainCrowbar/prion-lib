@@ -22,7 +22,8 @@ could be.</p>
 <li><a href="#contents">Contents</a></li>
 <li><a href="#unsigned-integers">Unsigned integers</a></li>
 <li><a href="#signed-integers">Signed integers</a></li>
-<li><a href="#random-number-generators">Random number generators</a></li>
+<li><a href="#integer-literals">Integer literals</a></li>
+<li><a href="#random-distributions">Random distributions</a></li>
 </ul>
 </li>
 </ul>
@@ -106,8 +107,12 @@ could be.</p>
 <li><code>U8string</code> <strong><code>dec</code></strong><code>(const Nat&amp; x, size_t digits = 1)</code></li>
 <li><code>U8string</code> <strong><code>hex</code></strong><code>(const Nat&amp; x, size_t digits = 1)</code></li>
 </ul>
-<p>An arbitrary precision unsigned integer (natural number). Most of its
-operations should be self explanatory.</p>
+<p>An arbitrary precision unsigned integer (natural number). Most of its methods
+are conventional arithmetic operations with their natural behaviour.</p>
+<p>The constructor from a string accepts base 0, 2, 10, or 16; it will throw
+<code>std::invalid_argument</code> if the base is not one of these. Base 0 will check for
+a <code>"0b"</code> or <code>"0x"</code> prefix, assuming decimal otherwise. Apostrophe delimiters
+are allowed.</p>
 <p>The explicit cast template returns the value converted to <code>T</code>, if possible.
 <code>T</code> must be a primitive integer or floating point arithmetic type. Results are
 unspecified if the value is outside the return type's representable range.</p>
@@ -191,9 +196,8 @@ is undefined if <code>n&lt;1</code>.</p>
 <li><code>U8string</code> <strong><code>dec</code></strong><code>(const Int&amp; x, size_t digits = 1)</code></li>
 <li><code>U8string</code> <strong><code>hex</code></strong><code>(const Int&amp; x, size_t digits = 1)</code></li>
 </ul>
-<p>An arbitrary precision unsigned integer (natural number). Most of its
-operations do the same thing as the corresponding functions on <code>Nat</code> or plain
-<code>int</code>.</p>
+<p>An arbitrary precision signed integer. Most of its operations do the same
+thing as the corresponding functions on <code>Nat</code> or plain <code>int</code>.</p>
 <p>The explicit conversion to <code>Nat</code> returns the absolute value of the number. The
 <code>pow()</code> function will throw <code>std::domain_error</code> if the exponent is negative.</p>
 <p>The signed division operators perform Euclidean division: if the division is
@@ -203,13 +207,25 @@ arguments), and the quotient is the integer that satisfies <code>lhs=q*rhs+r</co
 are included for consistency with the functions defined in the common module
 for standard arithmetic types.</p>
 </div>
-<h2 id="random-number-generators">Random number generators</h2>
+<h2 id="integer-literals">Integer literals</h2>
+<div class="defns">
+<ul>
+<li><code>namespace RS::Literals</code><ul>
+<li><code>Nat operator""</code><strong><code>_nat</code></strong><code>(const char* raw)</code></li>
+<li><code>Int operator""</code><strong><code>_int</code></strong><code>(const char* raw)</code></li>
+</ul>
+</li>
+</ul>
+<p>These allow MP integer literals such as <code>12345_int</code> or <code>0xabcdef_nat</code>. They
+perform the same conversions as the constructors with base 0.</p>
+</div>
+<h2 id="random-distributions">Random distributions</h2>
 <div class="defns">
 <ul>
 <li><code>class</code> <strong><code>RandomNat</code></strong><ul>
 <li><code>using RandomNat::</code><strong><code>result_type</code></strong> <code>= Nat</code></li>
 <li><code>RandomNat::</code><strong><code>RandomNat</code></strong><code>()</code></li>
-<li><code>explicit RandomNat::</code><strong><code>RandomNat</code></strong><code>(Nat a, Nat b = 0)</code></li>
+<li><code>RandomNat::</code><strong><code>RandomNat</code></strong><code>(Nat a, Nat b)</code></li>
 <li><code>RandomNat::</code><strong><code>~RandomNat</code></strong><code>() noexcept</code></li>
 <li><code>RandomNat::</code><strong><code>RandomNat</code></strong><code>(const RandomNat&amp; n)</code></li>
 <li><code>RandomNat::</code><strong><code>RandomNat</code></strong><code>(RandomNat&amp;&amp; n) noexcept</code></li>
@@ -223,7 +239,7 @@ for standard arithmetic types.</p>
 <li><code>class</code> <strong><code>RandomInt</code></strong><ul>
 <li><code>using RandomInt::</code><strong><code>result_type</code></strong> <code>= Int</code></li>
 <li><code>RandomInt::</code><strong><code>RandomInt</code></strong><code>()</code></li>
-<li><code>explicit RandomInt::</code><strong><code>RandomInt</code></strong><code>(Int a, Int b = 0)</code></li>
+<li><code>RandomInt::</code><strong><code>RandomInt</code></strong><code>(Int a, Int b)</code></li>
 <li><code>RandomInt::</code><strong><code>~RandomInt</code></strong><code>() noexcept</code></li>
 <li><code>RandomInt::</code><strong><code>RandomInt</code></strong><code>(const RandomInt&amp; n)</code></li>
 <li><code>RandomInt::</code><strong><code>RandomInt</code></strong><code>(RandomInt&amp;&amp; n) noexcept</code></li>

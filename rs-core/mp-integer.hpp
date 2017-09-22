@@ -13,6 +13,8 @@
 
 namespace RS {
 
+    // Unsigned integers
+
     class Nat:
     public LessThanComparable<Nat> {
     public:
@@ -69,6 +71,10 @@ namespace RS {
         void trim() noexcept;
         static constexpr int clz32(uint32_t x) noexcept { return x == 0 ? 32 : sizeof(int) >= 4 ? __builtin_clz(x) : __builtin_clzl(x); }
         static constexpr int popcount32(uint32_t x) noexcept { return sizeof(int) >= 4 ? __builtin_popcount(x) : __builtin_popcountl(x); }
+        static constexpr int digit_2(char c) noexcept { return c == '0' ? 0 : c == '1' ? 1 : -1; }
+        static constexpr int digit_10(char c) noexcept { return c >= '0' && c <= '9' ? int(c - '0') : -1; }
+        static constexpr int digit_16(char c) noexcept
+            { return c >= '0' && c <= '9' ? int(c - '0') : c >= 'A' && c <= 'F' ? int(c - 'A') + 10 : c >= 'a' && c <= 'f' ? int(c - 'a') + 10 : -1; }
         static void do_divide(const Nat& x, const Nat& y, Nat& q, Nat& r);
         static void do_multiply(const Nat& x, const Nat& y, Nat& z);
     };
@@ -438,28 +444,31 @@ namespace RS {
     inline void Nat::init(const char* s, int base) {
         if (base != 0 && base != 2 && base != 10 && base != 16)
             throw std::invalid_argument("Invalid base: " + RS::dec(base));
-        if (s == nullptr || *s == '\0')
+        if (! (s && *s))
             return;
         if (base == 0) {
-            if (s[0] == '0' && (s[1] == 'x' || s[1] == 'X')) {
-                base = 16;
-                s += 2;
-            } else {
+            if (s[0] != '0')
                 base = 10;
-            }
-        }
-        Nat b = uint64_t(base);
-        uint32_t d;
-        char max = base == 2 ? '1' : base == 10 ? '9' : 'f';
-        for (; *s >= '0' && *s <= max; ++s) {
-            if (ascii_isdigit(*s))
-                d = *s - '0';
-            else if (*s >= 'a')
-                d = *s - 'a' + 10;
+            else if (s[1] == 'B' || s[1] == 'b')
+                base = 2;
+            else if (s[1] == 'X' || s[1] == 'x')
+                base = 16;
             else
-                d = *s - 'A' + 10;
-            *this *= b;
-            *this += d;
+                base = 10;
+            if (base != 10)
+                s += 2;
+        }
+        Nat nbase = base;
+        int digit = 0;
+        auto digit_f = base == 2 ? digit_2 : base == 16 ? digit_16 : digit_10;
+        for (; *s; ++s) {
+            if (*s == '\'')
+                continue;
+            digit = digit_f(*s);
+            if (digit == -1)
+                break;
+            *this *= nbase;
+            *this += digit;
         }
     }
 
@@ -478,6 +487,8 @@ namespace RS {
     inline U8string bin(const Nat& x, size_t digits = 1) { return x.str(2, digits); }
     inline U8string dec(const Nat& x, size_t digits = 1) { return x.str(10, digits); }
     inline U8string hex(const Nat& x, size_t digits = 1) { return x.str(16, digits); }
+
+    // Signed integers
 
     class Int:
     public LessThanComparable<Int> {
@@ -633,11 +644,22 @@ namespace RS {
     inline U8string dec(const Int& x, size_t digits = 1) { return x.str(10, digits); }
     inline U8string hex(const Int& x, size_t digits = 1) { return x.str(16, digits); }
 
+    // Integer literals
+
+    namespace Literals {
+
+        inline Nat operator""_nat(const char* raw) { return Nat(raw); }
+        inline Int operator""_int(const char* raw) { return Int(raw); }
+
+    }
+
+    // Random distributions
+
     class RandomNat {
     public:
         using result_type = Nat;
         RandomNat(): base(0), range(1) {}
-        explicit RandomNat(Nat a, Nat b = 0) { if (a > b) std::swap(a, b); base = a; range = b - a + 1; }
+        RandomNat(Nat a, Nat b) { if (a > b) std::swap(a, b); base = a; range = b - a + 1; }
         template <typename RNG> Nat operator()(RNG& rng) { return base + Nat::random(rng, range); }
         Nat min() const { return base; }
         Nat max() const { return base + range - 1; }
@@ -649,7 +671,7 @@ namespace RS {
     public:
         using result_type = Int;
         RandomInt(): base(0), range(1) {}
-        explicit RandomInt(Int a, Int b = 0) { if (a > b) std::swap(a, b); base = a; range = (b - a + 1).abs(); }
+        RandomInt(Int a, Int b) { if (a > b) std::swap(a, b); base = a; range = (b - a + 1).abs(); }
         template <typename RNG> Int operator()(RNG& rng) { return base + Int(Nat::random(rng, range)); }
         Int min() const { return base; }
         Int max() const { return base + range - 1; }

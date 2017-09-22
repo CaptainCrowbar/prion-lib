@@ -87,8 +87,13 @@ could be.
 * `U8string` **`dec`**`(const Nat& x, size_t digits = 1)`
 * `U8string` **`hex`**`(const Nat& x, size_t digits = 1)`
 
-An arbitrary precision unsigned integer (natural number). Most of its
-operations should be self explanatory.
+An arbitrary precision unsigned integer (natural number). Most of its methods
+are conventional arithmetic operations with their natural behaviour.
+
+The constructor from a string accepts base 0, 2, 10, or 16; it will throw
+`std::invalid_argument` if the base is not one of these. Base 0 will check for
+a `"0b"` or `"0x"` prefix, assuming decimal otherwise. Apostrophe delimiters
+are allowed.
 
 The explicit cast template returns the value converted to `T`, if possible.
 `T` must be a primitive integer or floating point arithmetic type. Results are
@@ -178,9 +183,8 @@ is undefined if `n<1`.
 * `U8string` **`dec`**`(const Int& x, size_t digits = 1)`
 * `U8string` **`hex`**`(const Int& x, size_t digits = 1)`
 
-An arbitrary precision unsigned integer (natural number). Most of its
-operations do the same thing as the corresponding functions on `Nat` or plain
-`int`.
+An arbitrary precision signed integer. Most of its operations do the same
+thing as the corresponding functions on `Nat` or plain `int`.
 
 The explicit conversion to `Nat` returns the absolute value of the number. The
 `pow()` function will throw `std::domain_error` if the exponent is negative.
@@ -192,12 +196,21 @@ arguments), and the quotient is the integer that satisfies `lhs=q*rhs+r`. The
 are included for consistency with the functions defined in the common module
 for standard arithmetic types.
 
-## Random number generators ##
+## Integer literals ##
+
+* `namespace RS::Literals`
+    * `Nat operator""`**`_nat`**`(const char* raw)`
+    * `Int operator""`**`_int`**`(const char* raw)`
+
+These allow MP integer literals such as `12345_int` or `0xabcdef_nat`. They
+perform the same conversions as the constructors with base 0.
+
+## Random distributions ##
 
 * `class` **`RandomNat`**
     * `using RandomNat::`**`result_type`** `= Nat`
     * `RandomNat::`**`RandomNat`**`()`
-    * `explicit RandomNat::`**`RandomNat`**`(Nat a, Nat b = 0)`
+    * `RandomNat::`**`RandomNat`**`(Nat a, Nat b)`
     * `RandomNat::`**`~RandomNat`**`() noexcept`
     * `RandomNat::`**`RandomNat`**`(const RandomNat& n)`
     * `RandomNat::`**`RandomNat`**`(RandomNat&& n) noexcept`
@@ -209,7 +222,7 @@ for standard arithmetic types.
 * `class` **`RandomInt`**
     * `using RandomInt::`**`result_type`** `= Int`
     * `RandomInt::`**`RandomInt`**`()`
-    * `explicit RandomInt::`**`RandomInt`**`(Int a, Int b = 0)`
+    * `RandomInt::`**`RandomInt`**`(Int a, Int b)`
     * `RandomInt::`**`~RandomInt`**`() noexcept`
     * `RandomInt::`**`RandomInt`**`(const RandomInt& n)`
     * `RandomInt::`**`RandomInt`**`(RandomInt&& n) noexcept`

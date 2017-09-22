@@ -185,6 +185,13 @@ operations do the same thing as the corresponding functions on `Nat` or plain
 The explicit conversion to `Nat` returns the absolute value of the number. The
 `pow()` function will throw `std::domain_error` if the exponent is negative.
 
+The signed division operators perform Euclidean division: if the division is
+not exact, the remainder is always positive (regardless of the signs of the
+arguments), and the quotient is the integer that satisfies `lhs=q*rhs+r`. The
+`quo()` and `rem()` functions are redundant with the division operators, but
+are included for consistency with the functions defined in the common module
+for standard arithmetic types.
+
 ## Random number generators ##
 
 * `class` **`RandomNat`**

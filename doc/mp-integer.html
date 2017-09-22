@@ -22,6 +22,7 @@ could be.</p>
 <li><a href="#contents">Contents</a></li>
 <li><a href="#unsigned-integers">Unsigned integers</a></li>
 <li><a href="#signed-integers">Signed integers</a></li>
+<li><a href="#related-types">Related types</a></li>
 <li><a href="#integer-literals">Integer literals</a></li>
 <li><a href="#random-distributions">Random distributions</a></li>
 </ul>
@@ -206,6 +207,14 @@ arguments), and the quotient is the integer that satisfies <code>lhs=q*rhs+r</co
 <code>quo()</code> and <code>rem()</code> functions are redundant with the division operators, but
 are included for consistency with the functions defined in the common module
 for standard arithmetic types.</p>
+</div>
+<h2 id="related-types">Related types</h2>
+<div class="defns">
+<ul>
+<li><code>using</code> <strong><code>Uratmp</code></strong> <code>= Rational&lt;Nat&gt;</code></li>
+<li><code>using</code> <strong><code>Ratmp</code></strong> <code>= Rational&lt;Int&gt;</code></li>
+</ul>
+<p>Multiple precision rational numbers.</p>
 </div>
 <h2 id="integer-literals">Integer literals</h2>
 <div class="defns">

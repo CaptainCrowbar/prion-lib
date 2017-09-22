@@ -27,8 +27,6 @@ overflow the integer type's range.
 * `using` **`Urat16`** `= Rational<uint16_t>`
 * `using` **`Urat32`** `= Rational<uint32_t>`
 * `using` **`Urat64`** `= Rational<uint64_t>`
-* `using` **`Ratmp`** `= Rational<Int>`
-* `using` **`Uratmp`** `= Rational<Nat>`
 
 Named instantiations.
 

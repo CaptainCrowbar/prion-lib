@@ -196,6 +196,13 @@ arguments), and the quotient is the integer that satisfies `lhs=q*rhs+r`. The
 are included for consistency with the functions defined in the common module
 for standard arithmetic types.
 
+## Related types ##
+
+* `using` **`Uratmp`** `= Rational<Nat>`
+* `using` **`Ratmp`** `= Rational<Int>`
+
+Multiple precision rational numbers.
+
 ## Integer literals ##
 
 * `namespace RS::Literals`

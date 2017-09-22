@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rs-core/common.hpp"
+#include "rs-core/rational.hpp"
 #include "rs-core/string.hpp"
 #include <algorithm>
 #include <cmath>
@@ -643,6 +644,18 @@ namespace RS {
     inline U8string bin(const Int& x, size_t digits = 1) { return x.str(2, digits); }
     inline U8string dec(const Int& x, size_t digits = 1) { return x.str(10, digits); }
     inline U8string hex(const Int& x, size_t digits = 1) { return x.str(16, digits); }
+
+    // Related types
+
+    namespace RS_Detail {
+
+        template <> struct IntegerParser<Nat> { Nat operator()(const U8string& s) const noexcept { return Nat(s); } };
+        template <> struct IntegerParser<Int> { Int operator()(const U8string& s) const noexcept { return Int(s); } };
+
+    }
+
+    using Uratmp = Rational<Nat>;
+    using Ratmp = Rational<Int>;
 
     // Integer literals
 

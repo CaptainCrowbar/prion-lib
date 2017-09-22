@@ -1072,8 +1072,6 @@ namespace {
 
     void check_mp_rational_parsing() {
 
-        // TODO - parsing uses strto[u]ll(), need to adapt for large integers
-
         Ratmp r;
 
         TRY(r = Ratmp("0"));       TEST_EQUAL(r.num(), 0);   TEST_EQUAL(r.den(), 1);

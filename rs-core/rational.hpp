@@ -3,6 +3,7 @@
 #include "rs-core/common.hpp"
 #include "rs-core/string.hpp"
 #include <algorithm>
+#include <cstdlib>
 #include <ostream>
 #include <regex>
 #include <stdexcept>
@@ -12,31 +13,9 @@ namespace RS {
 
     namespace RS_Detail {
 
-        struct RationalParserBase {
-            static void fields(const U8string& s, U8string& ipart, U8string& npart, U8string& dpart, bool& neg) {
-                static const std::regex int_pattern("([+-]?)\\s*(\\d+)\\s*");
-                static const std::regex rat_pattern("([+-]?)\\s*(?:(\\d+)\\s+)?(\\d+)\\s*/\\s*(\\d+)\\s*");
-                std::smatch match;
-                if (std::regex_match(s, match, int_pattern)) {
-                    ipart = match[2];
-                    npart.clear();
-                    dpart.clear();
-                    neg = match[1] == "-";
-                } else if (std::regex_match(s, match, rat_pattern)) {
-                    ipart = match[2];
-                    npart = match[3];
-                    dpart = match[4];
-                    neg = match[1] == "-";
-                } else {
-                    throw std::invalid_argument("Invalid rational number: " + quote(s));
-                }
-            }
-        };
-
         template <typename T>
-        struct RationalParser:
-        public RationalParserBase {
-            static T integer(const U8string& s) noexcept {
+        struct IntegerParser {
+            T operator()(const U8string& s) const noexcept {
                 if (std::is_signed<T>::value)
                     return T(strtoll(s.data(), nullptr, 10));
                 else
@@ -85,8 +64,6 @@ namespace RS {
         void reduce();
     };
 
-    class Nat;
-    class Int;
     using Rat = Rational<int>;
     using Urat = Rational<unsigned>;
     using Rat16 = Rational<int16_t>;
@@ -95,21 +72,34 @@ namespace RS {
     using Urat16 = Rational<uint16_t>;
     using Urat32 = Rational<uint32_t>;
     using Urat64 = Rational<uint64_t>;
-    using Ratmp = Rational<Int>;
-    using Uratmp = Rational<Nat>;
 
     template <typename T>
     Rational<T>::Rational(const U8string& s) {
-        using parse = RS_Detail::RationalParser<T>;
+        static constexpr RS_Detail::IntegerParser<T> make_integer;
+        static const std::regex int_pattern("([+-]?)\\s*(\\d+)\\s*");
+        static const std::regex rat_pattern("([+-]?)\\s*(?:(\\d+)\\s+)?(\\d+)\\s*/\\s*(\\d+)\\s*");
         U8string ipart, npart, dpart;
         bool neg = false;
-        parse::fields(s, ipart, npart, dpart, neg);
+        std::smatch match;
+        if (std::regex_match(s, match, int_pattern)) {
+            ipart = match[2];
+            npart.clear();
+            dpart.clear();
+            neg = match[1] == "-";
+        } else if (std::regex_match(s, match, rat_pattern)) {
+            ipart = match[2];
+            npart = match[3];
+            dpart = match[4];
+            neg = match[1] == "-";
+        } else {
+            throw std::invalid_argument("Invalid rational number: " + quote(s));
+        }
         if (! npart.empty())
-            nm = parse::integer(npart);
+            nm = make_integer(npart);
         if (! dpart.empty())
-            dn = parse::integer(dpart);
+            dn = make_integer(dpart);
         if (! ipart.empty())
-            nm += dn * parse::integer(ipart);
+            nm += dn * make_integer(ipart);
         reduce();
         if (neg)
             nm = - nm;

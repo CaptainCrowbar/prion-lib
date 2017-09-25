@@ -11,6 +11,18 @@
 <ul>
 <li><code>#include "rs-core/unit-test.hpp"</code></li>
 </ul>
+<h2 id="contents">Contents</h2>
+<div class="toc">
+<ul>
+<li><a href="#test-utilities">Test Utilities</a><ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#test-macros">Test macros</a></li>
+<li><a href="#utility-classes">Utility classes</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="test-macros">Test macros</h2>
 <p>A typical test module will look something like this:</p>
 <pre><code>#include "project/module.hpp"
 #include "rs-core/unit-test.hpp"
@@ -131,5 +143,30 @@ transformation is applied before comparing them.</p>
 <li><code>#define</code> <strong><code>TRY</code></strong><code>(expression)</code></li>
 </ul>
 <p>This simply evaluates the expression, ignoring any result. The test fails if
-an exception is thrown.</p></body>
+an exception is thrown.</p>
+</div>
+<h2 id="utility-classes">Utility classes</h2>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>Accountable</code></strong><ul>
+<li><code>Accountable::</code><strong><code>Accountable</code></strong><code>()</code></li>
+<li><code>Accountable::</code><strong><code>Accountable</code></strong><code>(const T&amp; t)</code> <em>[not defined if T is void]</em></li>
+<li><code>Accountable::</code><strong><code>Accountable</code></strong><code>(const Accountable&amp; a)</code></li>
+<li><code>Accountable::</code><strong><code>Accountable</code></strong><code>(Accountable&amp;&amp; a) noexcept</code></li>
+<li><code>Accountable::</code><strong><code>~Accountable</code></strong><code>() noexcept</code></li>
+<li><code>Accountable&amp; Accountable::</code><strong><code>operator=</code></strong><code>(const Accountable&amp; a)</code></li>
+<li><code>Accountable&amp; Accountable::</code><strong><code>operator=</code></strong><code>(Accountable&amp;&amp; a) noexcept</code></li>
+<li><code>const T&amp; Accountable::</code><strong><code>get</code></strong><code>() const noexcept</code> <em>[not defined if T is void]</em></li>
+<li><code>static int Accountable::</code><strong><code>count</code></strong><code>() noexcept</code></li>
+<li><code>static void Accountable::</code><strong><code>reset</code></strong><code>() noexcept</code></li>
+</ul>
+</li>
+</ul>
+<p>A class that keeps track of how many instances exist. This is useful for
+testing for object leaks, double destruction, and similar object accounting
+errors. A separate count is kept for each value type <code>T</code>; <code>count()</code> returns
+the current count, <code>reset()</code> sets it to zero (to simplify continued testing
+even if a leak is detected). <code>T</code> must be default constructible, copyable, and
+movable; the value of a moved-from object is reset to the default value. <code>T</code>
+can be <code>void</code> if no embedded value is required.</p></body>
 </html>

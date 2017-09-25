@@ -4,6 +4,12 @@ By Ross Smith
 
 * `#include "rs-core/unit-test.hpp"`
 
+## Contents ##
+
+[TOC]
+
+## Test macros ##
+
 A typical test module will look something like this:
 
     #include "project/module.hpp"
@@ -105,3 +111,25 @@ transformation is applied before comparing them.
 
 This simply evaluates the expression, ignoring any result. The test fails if
 an exception is thrown.
+
+## Utility classes ##
+
+* `template <typename T> class` **`Accountable`**
+    * `Accountable::`**`Accountable`**`()`
+    * `Accountable::`**`Accountable`**`(const T& t)` _[not defined if T is void]_
+    * `Accountable::`**`Accountable`**`(const Accountable& a)`
+    * `Accountable::`**`Accountable`**`(Accountable&& a) noexcept`
+    * `Accountable::`**`~Accountable`**`() noexcept`
+    * `Accountable& Accountable::`**`operator=`**`(const Accountable& a)`
+    * `Accountable& Accountable::`**`operator=`**`(Accountable&& a) noexcept`
+    * `const T& Accountable::`**`get`**`() const noexcept` _[not defined if T is void]_
+    * `static int Accountable::`**`count`**`() noexcept`
+    * `static void Accountable::`**`reset`**`() noexcept`
+
+A class that keeps track of how many instances exist. This is useful for
+testing for object leaks, double destruction, and similar object accounting
+errors. A separate count is kept for each value type `T`; `count()` returns
+the current count, `reset()` sets it to zero (to simplify continued testing
+even if a leak is detected). `T` must be default constructible, copyable, and
+movable; the value of a moved-from object is reset to the default value. `T`
+can be `void` if no embedded value is required.

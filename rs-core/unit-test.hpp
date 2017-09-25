@@ -276,6 +276,39 @@
 
 namespace RS {
 
+    template <typename T>
+    class Accountable {
+    public:
+        Accountable(): value() { ++number(); }
+        Accountable(const T& t): value(t) { ++number(); }
+        Accountable(const Accountable& a): value(a.value) { ++number(); }
+        Accountable(Accountable&& a) noexcept: value(std::exchange(a.value, T())) { ++number(); }
+        ~Accountable() noexcept { --number(); }
+        Accountable& operator=(const Accountable& a) { value = a.value; return *this; }
+        Accountable& operator=(Accountable&& a) noexcept { if (&a != this) value = std::exchange(a.value, T()); return *this; }
+        const T& get() const noexcept { return value; }
+        static int count() noexcept { return number(); }
+        static void reset() noexcept { number() = 0; }
+    private:
+        T value;
+        static int& number() noexcept { static int n = 0; return n; }
+    };
+
+    template <>
+    class Accountable<void> {
+    public:
+        Accountable() noexcept { ++number(); }
+        Accountable(const Accountable&) noexcept { ++number(); }
+        Accountable(Accountable&&) noexcept { ++number(); }
+        ~Accountable() noexcept { --number(); }
+        Accountable& operator=(const Accountable&) noexcept { return *this; }
+        Accountable& operator=(Accountable&&) noexcept { return *this; }
+        static int count() noexcept { return number(); }
+        static void reset() noexcept { number() = 0; }
+    private:
+        static int& number() noexcept { static int n = 0; return n; }
+    };
+
     struct UnitTest {
 
         struct compare_modules {

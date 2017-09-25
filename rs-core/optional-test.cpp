@@ -63,105 +63,125 @@ namespace {
 
     }
 
+    template <typename T>
     class Accountable {
     public:
-        Accountable(): text("*") { ++number; }
-        Accountable(const U8string& s): text(s) { ++number; }
-        Accountable(const Accountable& a): text(a.text) { ++number; }
-        Accountable(Accountable&& a): text(std::move(a.text)) { ++number; }
-        ~Accountable() { --number; }
-        Accountable& operator=(const U8string& s) { text = s; return *this; }
-        Accountable& operator=(const Accountable&) = default;
-        Accountable& operator=(Accountable&&) = default;
-        U8string str() const { return text; }
-        static int count() noexcept { return number; }
+        Accountable(): value() { ++number(); }
+        Accountable(const T& t): value(t) { ++number(); }
+        Accountable(const Accountable& a): value(a.value) { ++number(); }
+        Accountable(Accountable&& a): value(std::exchange(a.value, T())) { ++number(); }
+        ~Accountable() { --number(); }
+        Accountable& operator=(const Accountable& a) { value = a.value; return *this; }
+        Accountable& operator=(Accountable&& a) { if (&a != this) value = std::exchange(a.value, T()); return *this; }
+        T get() const { return value; }
+        static int count() noexcept { return number(); }
+        static void reset() noexcept { number() = 0; }
     private:
-        U8string text;
-        static int number;
+        T value;
+        static int& number() { static int n = 0; return n; }
     };
 
-    int Accountable::number = 0;
+    template <>
+    class Accountable<void> {
+    public:
+        Accountable() { ++number(); }
+        Accountable(const Accountable&) { ++number(); }
+        Accountable(Accountable&&) { ++number(); }
+        ~Accountable() { --number(); }
+        Accountable& operator=(const Accountable&) { return *this; }
+        Accountable& operator=(Accountable&&) { return *this; }
+        static int count() noexcept { return number(); }
+        static void reset() noexcept { number() = 0; }
+    private:
+        static int& number() { static int n = 0; return n; }
+    };
 
     void check_optional_object_accounting() {
 
-        Optional<Accountable> a, b;
+        using account = Accountable<U8string>;
+
+        Optional<account> a, b;
         U8string s;
 
-        TEST_EQUAL(Accountable::count(), 0);
+        account::reset();
+
+        TEST_EQUAL(account::count(), 0);
         TRY(a = "Hello"s);
-        TEST_EQUAL(Accountable::count(), 1);
+        TEST_EQUAL(account::count(), 1);
         TRY(a.reset());
-        TEST_EQUAL(Accountable::count(), 0);
+        TEST_EQUAL(account::count(), 0);
 
         TRY(a = "Hello"s);
         TRY(b = "Goodbye"s);
-        TEST_EQUAL(Accountable::count(), 2);
+        TEST_EQUAL(account::count(), 2);
         TRY(a = b);
-        TEST_EQUAL(Accountable::count(), 2);
+        TEST_EQUAL(account::count(), 2);
         TRY(a.reset());
         TRY(b.reset());
-        TEST_EQUAL(Accountable::count(), 0);
+        TEST_EQUAL(account::count(), 0);
 
         TRY(a = "Hello"s);
         TRY(b = "Goodbye"s);
-        TEST_EQUAL(Accountable::count(), 2);
+        TEST_EQUAL(account::count(), 2);
         TRY(a = std::move(b));
-        TEST_EQUAL(Accountable::count(), 1);
+        TEST_EQUAL(account::count(), 1);
         TRY(a.reset());
         TRY(b.reset());
-        TEST_EQUAL(Accountable::count(), 0);
+        TEST_EQUAL(account::count(), 0);
 
         TRY(a = "Hello"s);
         TRY(s = "Goodbye"s);
-        TEST_EQUAL(Accountable::count(), 1);
+        TEST_EQUAL(account::count(), 1);
         TRY(a = std::move(s));
-        TEST_EQUAL(Accountable::count(), 1);
+        TEST_EQUAL(account::count(), 1);
         TRY(a.reset());
         TRY(b.reset());
-        TEST_EQUAL(Accountable::count(), 0);
+        TEST_EQUAL(account::count(), 0);
 
         TRY(a = "Hello"s);
-        TEST_EQUAL(Accountable::count(), 1);
+        TEST_EQUAL(account::count(), 1);
         TRY(a = b);
-        TEST_EQUAL(Accountable::count(), 0);
+        TEST_EQUAL(account::count(), 0);
 
         TRY(a = "Hello"s);
-        TEST_EQUAL(Accountable::count(), 1);
+        TEST_EQUAL(account::count(), 1);
         TRY(a = std::move(b));
-        TEST_EQUAL(Accountable::count(), 0);
+        TEST_EQUAL(account::count(), 0);
 
         TRY(b = "Hello"s);
-        TEST_EQUAL(Accountable::count(), 1);
+        TEST_EQUAL(account::count(), 1);
         TRY(a = b);
-        TEST_EQUAL(Accountable::count(), 2);
+        TEST_EQUAL(account::count(), 2);
         TRY(a.reset());
         TRY(b.reset());
-        TEST_EQUAL(Accountable::count(), 0);
+        TEST_EQUAL(account::count(), 0);
 
         TRY(b = "Hello"s);
-        TEST_EQUAL(Accountable::count(), 1);
+        TEST_EQUAL(account::count(), 1);
         TRY(a = std::move(b));
-        TEST_EQUAL(Accountable::count(), 1);
+        TEST_EQUAL(account::count(), 1);
         TRY(a.reset());
         TRY(b.reset());
-        TEST_EQUAL(Accountable::count(), 0);
+        TEST_EQUAL(account::count(), 0);
 
         TRY(a = "Hello"s);
         TRY(b = "Goodbye"s);
-        TEST_EQUAL(Accountable::count(), 2);
+        TEST_EQUAL(account::count(), 2);
         TRY(swap(a, b));
-        TEST_EQUAL(Accountable::count(), 2);
+        TEST_EQUAL(account::count(), 2);
         TRY(a.reset());
         TRY(b.reset());
-        TEST_EQUAL(Accountable::count(), 0);
+        TEST_EQUAL(account::count(), 0);
 
         TRY(a = "Hello"s);
-        TEST_EQUAL(Accountable::count(), 1);
+        TEST_EQUAL(account::count(), 1);
         TRY(swap(a, b));
-        TEST_EQUAL(Accountable::count(), 1);
+        TEST_EQUAL(account::count(), 1);
         TRY(a.reset());
         TRY(b.reset());
-        TEST_EQUAL(Accountable::count(), 0);
+        TEST_EQUAL(account::count(), 0);
+
+        account::reset();
 
     }
 

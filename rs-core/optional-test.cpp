@@ -63,39 +63,6 @@ namespace {
 
     }
 
-    template <typename T>
-    class Accountable {
-    public:
-        Accountable(): value() { ++number(); }
-        Accountable(const T& t): value(t) { ++number(); }
-        Accountable(const Accountable& a): value(a.value) { ++number(); }
-        Accountable(Accountable&& a): value(std::exchange(a.value, T())) { ++number(); }
-        ~Accountable() { --number(); }
-        Accountable& operator=(const Accountable& a) { value = a.value; return *this; }
-        Accountable& operator=(Accountable&& a) { if (&a != this) value = std::exchange(a.value, T()); return *this; }
-        T get() const { return value; }
-        static int count() noexcept { return number(); }
-        static void reset() noexcept { number() = 0; }
-    private:
-        T value;
-        static int& number() { static int n = 0; return n; }
-    };
-
-    template <>
-    class Accountable<void> {
-    public:
-        Accountable() { ++number(); }
-        Accountable(const Accountable&) { ++number(); }
-        Accountable(Accountable&&) { ++number(); }
-        ~Accountable() { --number(); }
-        Accountable& operator=(const Accountable&) { return *this; }
-        Accountable& operator=(Accountable&&) { return *this; }
-        static int count() noexcept { return number(); }
-        static void reset() noexcept { number() = 0; }
-    private:
-        static int& number() { static int n = 0; return n; }
-    };
-
     void check_optional_object_accounting() {
 
         using account = Accountable<U8string>;

@@ -586,8 +586,8 @@ Returns `irange(ptr,ptr+len)`.
 
 * `template <typename T, typename T2, typename T3> constexpr T` **`clamp`**`(const T& x, const T2& min, const T3& max) noexcept`
 
-Clamps a value to a fixed range. This returns `static_cast<T>(min)` if
-`t<min`, `static_cast<T>(max)` if `t>max`, otherwise `t`.
+Clamps a value to a fixed range. This returns `min` if `t<min`, `max` if
+`t>max`, otherwise `t`. `T2` and `T3` must be implicitly convertible t `T`.
 
 * `template <typename T> pair<T, T>` **`divide`**`(T x, T y) noexcept`
 * `template <typename T> T` **`quo`**`(T x, T y) noexcept`

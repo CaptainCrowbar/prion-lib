@@ -500,7 +500,7 @@ namespace RS {
         for (; reps <= half; reps *= 2)
             r += delim + r;
         if (reps < n)
-            r += delim + repeat(s, n - reps);
+            r += delim + repeat(s, n - reps, delim);
         return r;
     }
 

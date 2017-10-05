@@ -209,9 +209,10 @@ the string is not valid UTF-8.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>std::string</code> <strong><code>repeat</code></strong><code>(const std::string&amp; s, size_t n)</code></li>
+<li><code>std::string</code> <strong><code>repeat</code></strong><code>(const std::string&amp; s, size_t n, const std::string&amp; delim = "")</code></li>
 </ul>
-<p>Returns a string containing <code>n</code> copies of <code>s</code>.</p>
+<p>Returns a string containing <code>n</code> copies of <code>s</code>. If a delimiter is given, it
+will be placed between each pair of elements.</p>
 </div>
 <div class="defns">
 <ul>

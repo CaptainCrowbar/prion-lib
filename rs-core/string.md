@@ -160,9 +160,10 @@ are escaped. The `bquote()` function always escapes all non-ASCII bytes;
 `quote()` passes valid UTF-8 unchanged, but will switch to `bquote()` mode if
 the string is not valid UTF-8.
 
-* `std::string` **`repeat`**`(const std::string& s, size_t n)`
+* `std::string` **`repeat`**`(const std::string& s, size_t n, const std::string& delim = "")`
 
-Returns a string containing `n` copies of `s`.
+Returns a string containing `n` copies of `s`. If a delimiter is given, it
+will be placed between each pair of elements.
 
 * `std::string` **`replace`**`(const std::string& s, const std::string& target, const std::string& subst, size_t n = npos)`
 

@@ -577,15 +577,24 @@ namespace {
         TRY(s = bquote(u8"åß∂ƒ"s));                TEST_EQUAL(s, "\"\\xc3\\xa5\\xc3\\x9f\\xe2\\x88\\x82\\xc6\\x92\""s);
         TRY(s = bquote("\x00\x01\x7f\x80\xff"s));  TEST_EQUAL(s, "\"\\0\\x01\\x7f\\x80\\xff\""s);
 
-        TRY(s = repeat("", 0));       TEST_EQUAL(s, "");
-        TRY(s = repeat("", 1));       TEST_EQUAL(s, "");
-        TRY(s = repeat("", 2));       TEST_EQUAL(s, "");
-        TRY(s = repeat("Hello", 0));  TEST_EQUAL(s, "");
-        TRY(s = repeat("Hello", 1));  TEST_EQUAL(s, "Hello");
-        TRY(s = repeat("Hello", 2));  TEST_EQUAL(s, "HelloHello");
-        TRY(s = repeat("Hello", 3));  TEST_EQUAL(s, "HelloHelloHello");
-        TRY(s = repeat("Hello", 4));  TEST_EQUAL(s, "HelloHelloHelloHello");
-        TRY(s = repeat("Hello", 5));  TEST_EQUAL(s, "HelloHelloHelloHelloHello");
+        TRY(s = repeat("", 0));             TEST_EQUAL(s, "");
+        TRY(s = repeat("", 1));             TEST_EQUAL(s, "");
+        TRY(s = repeat("", 2));             TEST_EQUAL(s, "");
+        TRY(s = repeat("Hello", 0));        TEST_EQUAL(s, "");
+        TRY(s = repeat("Hello", 1));        TEST_EQUAL(s, "Hello");
+        TRY(s = repeat("Hello", 2));        TEST_EQUAL(s, "HelloHello");
+        TRY(s = repeat("Hello", 3));        TEST_EQUAL(s, "HelloHelloHello");
+        TRY(s = repeat("Hello", 4));        TEST_EQUAL(s, "HelloHelloHelloHello");
+        TRY(s = repeat("Hello", 5));        TEST_EQUAL(s, "HelloHelloHelloHelloHello");
+        TRY(s = repeat("", 0, "<>"));       TEST_EQUAL(s, "");
+        TRY(s = repeat("", 1, "<>"));       TEST_EQUAL(s, "");
+        TRY(s = repeat("", 2, "<>"));       TEST_EQUAL(s, "<>");
+        TRY(s = repeat("Hello", 0, "<>"));  TEST_EQUAL(s, "");
+        TRY(s = repeat("Hello", 1, "<>"));  TEST_EQUAL(s, "Hello");
+        TRY(s = repeat("Hello", 2, "<>"));  TEST_EQUAL(s, "Hello<>Hello");
+        TRY(s = repeat("Hello", 3, "<>"));  TEST_EQUAL(s, "Hello<>Hello<>Hello");
+        TRY(s = repeat("Hello", 4, "<>"));  TEST_EQUAL(s, "Hello<>Hello<>Hello<>Hello");
+        TRY(s = repeat("Hello", 5, "<>"));  TEST_EQUAL(s, "Hello<>Hello<>Hello<>Hello<>Hello");
 
         TRY(s = replace(""s, "", ""));                             TEST_EQUAL(s, "");
         TRY(s = replace(""s, "a", "b"));                           TEST_EQUAL(s, "");

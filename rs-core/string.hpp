@@ -489,7 +489,7 @@ namespace RS {
     inline U8string quote(const std::string& str) { return RS_Detail::quote_string(str, true); }
     inline U8string bquote(const std::string& str) { return RS_Detail::quote_string(str, false); }
 
-    inline std::string repeat(const std::string& s, size_t n) {
+    inline std::string repeat(const std::string& s, size_t n, const std::string& delim = {}) {
         if (n == 0)
             return {};
         else if (n == 1)
@@ -498,8 +498,9 @@ namespace RS {
         r.reserve(n * s.size());
         size_t reps = 1, half = n / 2;
         for (; reps <= half; reps *= 2)
-            r += r;
-        r += repeat(s, n - reps);
+            r += delim + r;
+        if (reps < n)
+            r += delim + repeat(s, n - reps);
         return r;
     }
 

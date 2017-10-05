@@ -166,12 +166,6 @@ namespace {
         TRY(v = File("").list());   std::sort(v.begin(), v.end());  TRY(s = to_str(v));  TEST_EQUAL(s, "[]");
         TRY(v = File(".").list());  std::sort(v.begin(), v.end());  TRY(s = to_str(v));  TEST_MATCH(s, "^\\[(.+,)?Makefile,README\\.md,build,.+\\]$");
 
-        #ifdef _XOPEN_SOURCE
-            TRY(v = File("/").list());  std::sort(v.begin(), v.end());  TRY(s = to_str(v));  TEST_MATCH(s, "^\\[.+,/bin,.+,/etc,.+,/usr,.+\\]$");
-        #else
-            TRY(v = File("C:/").list());  std::sort(v.begin(), v.end());  TRY(s = to_str(v));  TEST_MATCH(s, "^\\[.+,C:/Program Files,C:/Program Files \\(x86\\),.+,C:/Windows,.+\\]$");
-        #endif
-
     }
 
     void check_file_system_update() {

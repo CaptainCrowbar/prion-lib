@@ -258,31 +258,42 @@ supply the standard member types:
 
 ### Type adapters ###
 
-* `template <typename T, int Def = 0> class` **`Movable`**
-    * `using Movable::`**`value_type`** `= T`
-    * `Movable::`**`Movable`**`()`
-    * `Movable::`**`~Movable`**`()`
-    * `Movable::`**`Movable`**`(const Movable& m)`
-    * `Movable::`**`Movable`**`(Movable&& m) noexcept`
-    * `Movable::`**`Movable`**`(const T& t)`
-    * `Movable::`**`Movable`**`(T&& t)`
-    * `Movable& Movable::`**`operator=`**`(const Movable& m)`
-    * `Movable& Movable::`**`operator=`**`(Movable&& m) noexcept`
-    * `Movable& Movable::`**`operator=`**`(const T& t)`
-    * `Movable& Movable::`**`operator=`**`(T&& t) noexcept`
-    * `T& Movable::`**`operator*`**`() noexcept`
-    * `const T& Movable::`**`operator*`**`() const noexcept`
-    * `T* Movable::`**`operator->`**`() noexcept`
-    * `const T* Movable::`**`operator->`**`() const noexcept`
-    * `Movable::`**`operator T`**`() const`
-    * `static T Movable::`**`default_value`**`()`
+* `template <typename T, int Def = 0> struct` **`AutoMove`**
+    * `using AutoMove::`**`value_type`** `= T`
+    * `T AutoMove::`**`value`**
+    * `AutoMove::`**`AutoMove`**`()`
+    * `AutoMove::`**`AutoMove`**`(const T& t)`
+    * `AutoMove::`**`AutoMove`**`(T&& t)`
+    * `AutoMove::`**`~AutoMove`**`()`
+    * `AutoMove::`**`AutoMove`**`(const AutoMove& x)`
+    * `AutoMove::`**`AutoMove`**`(AutoMove&& x)`
+    * `AutoMove& AutoMove::`**`operator=`**`(const AutoMove& x)`
+    * `AutoMove& AutoMove::`**`operator=`**`(AutoMove&& x)`
 
-This wraps a `T` object and provides reset-on-move behaviour: `Movable<T>`'s
+This wraps a `T` object and provides reset-on-move behaviour: `AutoMove<T>`'s
 move constructor and move assignment operator set the value in the moved-from
 object to `T`'s default value. If `T` is explicitly convertible from an `int`,
-a default value other than zero can be provided. The move functions call the
-corresponding functions on `T`, which are assumed to not throw. If `T` is also
-copyable, `Movable<T>` will be copyable.
+a default value other than zero can be provided. `AutoMove<T>` will be
+copyable if `T` is copyable. (This is basically a simplified version of the
+`Resource` scope guard template.)
+
+* `template <typename T, int Def = 0> struct` **`NoTransfer`**
+    * `using NoTransfer::`**`value_type`** `= T`
+    * `T NoTransfer::`**`value`**
+    * `NoTransfer::`**`NoTransfer`**`()`
+    * `NoTransfer::`**`NoTransfer`**`(const T& t)`
+    * `NoTransfer::`**`NoTransfer`**`(T&& t)`
+    * `NoTransfer::`**`~NoTransfer`**`()`
+    * `NoTransfer::`**`NoTransfer`**`(const NoTransfer& x)`
+    * `NoTransfer::`**`NoTransfer`**`(NoTransfer&& x)`
+    * `NoTransfer& NoTransfer::`**`operator=`**`(const NoTransfer& x)`
+    * `NoTransfer& NoTransfer::`**`operator=`**`(NoTransfer&& x)`
+
+This is more or less the reverse of `AutoMove`: the embedded value always
+stays with its original `NoTransfer` object and is not moved or copied;
+instead, moving or copying a `NoTransfer` sets the value of the destination
+object to its default value. This is intended for data members that need to
+remain associated with object identity rather than object value.
 
 ### Type related functions ###
 

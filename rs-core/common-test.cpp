@@ -423,39 +423,61 @@ namespace {
     }
 
     struct Adapt {
-        Movable<U8string> s;
-        Movable<int> i;
-        Movable<int, 10> j;
-        int k = 20;
+        int a = 10;
+        AutoMove<int> b;
+        AutoMove<int, 20> c;
+        AutoMove<U8string> d;
+        NoTransfer<int> e;
+        NoTransfer<int, 30> f;
+        NoTransfer<U8string> g;
     };
 
     void check_type_adapters() {
 
-        Adapt a, b;
+        Adapt x, y;
 
-        TEST_EQUAL(*a.s, "");
-        TEST_EQUAL(*a.i, 0);
-        TEST_EQUAL(*a.j, 10);
-        TEST_EQUAL(a.k, 20);
+        TEST_EQUAL(x.a, 10);
+        TEST_EQUAL(x.b.value, 0);
+        TEST_EQUAL(x.c.value, 20);
+        TEST_EQUAL(x.d.value, "");
+        TEST_EQUAL(x.e.value, 0);
+        TEST_EQUAL(x.f.value, 30);
+        TEST_EQUAL(x.g.value, "");
 
-        TRY((b = {"Hello"s, 100, 200, 300}));
+        TRY((y = {100, 200, 300, "Hello"s, 400, 500, "Goodbye"s}));
 
-        TEST_EQUAL(*b.s, "Hello");
-        TEST_EQUAL(*b.i, 100);
-        TEST_EQUAL(*b.j, 200);
-        TEST_EQUAL(b.k, 300);
+        TEST_EQUAL(y.a, 100);
+        TEST_EQUAL(y.b.value, 200);
+        TEST_EQUAL(y.c.value, 300);
+        TEST_EQUAL(y.d.value, "Hello");
+        TEST_EQUAL(y.e.value, 0);
+        TEST_EQUAL(y.f.value, 30);
+        TEST_EQUAL(y.g.value, "");
 
-        TRY(a = std::move(b));
+        TRY(y.e.value = 400);
+        TRY(y.f.value = 500);
+        TRY(y.g.value = "Goodbye");
+        TEST_EQUAL(y.e.value, 400);
+        TEST_EQUAL(y.f.value, 500);
+        TEST_EQUAL(y.g.value, "Goodbye");
 
-        TEST_EQUAL(*a.s, "Hello");
-        TEST_EQUAL(*a.i, 100);
-        TEST_EQUAL(*a.j, 200);
-        TEST_EQUAL(a.k, 300);
+        TRY(x = std::move(y));
 
-        TEST_EQUAL(*b.s, "");
-        TEST_EQUAL(*b.i, 0);
-        TEST_EQUAL(*b.j, 10);
-        TEST_EQUAL(b.k, 300);
+        TEST_EQUAL(x.a, 100);
+        TEST_EQUAL(x.b.value, 200);
+        TEST_EQUAL(x.c.value, 300);
+        TEST_EQUAL(x.d.value, "Hello");
+        TEST_EQUAL(x.e.value, 0);
+        TEST_EQUAL(x.f.value, 30);
+        TEST_EQUAL(x.g.value, "");
+
+        TEST_EQUAL(y.a, 100);
+        TEST_EQUAL(y.b.value, 0);
+        TEST_EQUAL(y.c.value, 20);
+        TEST_EQUAL(y.d.value, "");
+        TEST_EQUAL(y.e.value, 400);
+        TEST_EQUAL(y.f.value, 500);
+        TEST_EQUAL(y.g.value, "Goodbye");
 
     }
 

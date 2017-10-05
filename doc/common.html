@@ -392,33 +392,48 @@ supply the standard member types:</p>
 <h3 id="type-adapters">Type adapters</h3>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T, int Def = 0&gt; class</code> <strong><code>Movable</code></strong><ul>
-<li><code>using Movable::</code><strong><code>value_type</code></strong> <code>= T</code></li>
-<li><code>Movable::</code><strong><code>Movable</code></strong><code>()</code></li>
-<li><code>Movable::</code><strong><code>~Movable</code></strong><code>()</code></li>
-<li><code>Movable::</code><strong><code>Movable</code></strong><code>(const Movable&amp; m)</code></li>
-<li><code>Movable::</code><strong><code>Movable</code></strong><code>(Movable&amp;&amp; m) noexcept</code></li>
-<li><code>Movable::</code><strong><code>Movable</code></strong><code>(const T&amp; t)</code></li>
-<li><code>Movable::</code><strong><code>Movable</code></strong><code>(T&amp;&amp; t)</code></li>
-<li><code>Movable&amp; Movable::</code><strong><code>operator=</code></strong><code>(const Movable&amp; m)</code></li>
-<li><code>Movable&amp; Movable::</code><strong><code>operator=</code></strong><code>(Movable&amp;&amp; m) noexcept</code></li>
-<li><code>Movable&amp; Movable::</code><strong><code>operator=</code></strong><code>(const T&amp; t)</code></li>
-<li><code>Movable&amp; Movable::</code><strong><code>operator=</code></strong><code>(T&amp;&amp; t) noexcept</code></li>
-<li><code>T&amp; Movable::</code><strong><code>operator*</code></strong><code>() noexcept</code></li>
-<li><code>const T&amp; Movable::</code><strong><code>operator*</code></strong><code>() const noexcept</code></li>
-<li><code>T* Movable::</code><strong><code>operator-&gt;</code></strong><code>() noexcept</code></li>
-<li><code>const T* Movable::</code><strong><code>operator-&gt;</code></strong><code>() const noexcept</code></li>
-<li><code>Movable::</code><strong><code>operator T</code></strong><code>() const</code></li>
-<li><code>static T Movable::</code><strong><code>default_value</code></strong><code>()</code></li>
+<li><code>template &lt;typename T, int Def = 0&gt; struct</code> <strong><code>AutoMove</code></strong><ul>
+<li><code>using AutoMove::</code><strong><code>value_type</code></strong> <code>= T</code></li>
+<li><code>T AutoMove::</code><strong><code>value</code></strong></li>
+<li><code>AutoMove::</code><strong><code>AutoMove</code></strong><code>()</code></li>
+<li><code>AutoMove::</code><strong><code>AutoMove</code></strong><code>(const T&amp; t)</code></li>
+<li><code>AutoMove::</code><strong><code>AutoMove</code></strong><code>(T&amp;&amp; t)</code></li>
+<li><code>AutoMove::</code><strong><code>~AutoMove</code></strong><code>()</code></li>
+<li><code>AutoMove::</code><strong><code>AutoMove</code></strong><code>(const AutoMove&amp; x)</code></li>
+<li><code>AutoMove::</code><strong><code>AutoMove</code></strong><code>(AutoMove&amp;&amp; x)</code></li>
+<li><code>AutoMove&amp; AutoMove::</code><strong><code>operator=</code></strong><code>(const AutoMove&amp; x)</code></li>
+<li><code>AutoMove&amp; AutoMove::</code><strong><code>operator=</code></strong><code>(AutoMove&amp;&amp; x)</code></li>
 </ul>
 </li>
 </ul>
-<p>This wraps a <code>T</code> object and provides reset-on-move behaviour: <code>Movable&lt;T&gt;</code>'s
+<p>This wraps a <code>T</code> object and provides reset-on-move behaviour: <code>AutoMove&lt;T&gt;</code>'s
 move constructor and move assignment operator set the value in the moved-from
 object to <code>T</code>'s default value. If <code>T</code> is explicitly convertible from an <code>int</code>,
-a default value other than zero can be provided. The move functions call the
-corresponding functions on <code>T</code>, which are assumed to not throw. If <code>T</code> is also
-copyable, <code>Movable&lt;T&gt;</code> will be copyable.</p>
+a default value other than zero can be provided. <code>AutoMove&lt;T&gt;</code> will be
+copyable if <code>T</code> is copyable. (This is basically a simplified version of the
+<code>Resource</code> scope guard template.)</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T, int Def = 0&gt; struct</code> <strong><code>NoTransfer</code></strong><ul>
+<li><code>using NoTransfer::</code><strong><code>value_type</code></strong> <code>= T</code></li>
+<li><code>T NoTransfer::</code><strong><code>value</code></strong></li>
+<li><code>NoTransfer::</code><strong><code>NoTransfer</code></strong><code>()</code></li>
+<li><code>NoTransfer::</code><strong><code>NoTransfer</code></strong><code>(const T&amp; t)</code></li>
+<li><code>NoTransfer::</code><strong><code>NoTransfer</code></strong><code>(T&amp;&amp; t)</code></li>
+<li><code>NoTransfer::</code><strong><code>~NoTransfer</code></strong><code>()</code></li>
+<li><code>NoTransfer::</code><strong><code>NoTransfer</code></strong><code>(const NoTransfer&amp; x)</code></li>
+<li><code>NoTransfer::</code><strong><code>NoTransfer</code></strong><code>(NoTransfer&amp;&amp; x)</code></li>
+<li><code>NoTransfer&amp; NoTransfer::</code><strong><code>operator=</code></strong><code>(const NoTransfer&amp; x)</code></li>
+<li><code>NoTransfer&amp; NoTransfer::</code><strong><code>operator=</code></strong><code>(NoTransfer&amp;&amp; x)</code></li>
+</ul>
+</li>
+</ul>
+<p>This is more or less the reverse of <code>AutoMove</code>: the embedded value always
+stays with its original <code>NoTransfer</code> object and is not moved or copied;
+instead, moving or copying a <code>NoTransfer</code> sets the value of the destination
+object to its default value. This is intended for data members that need to
+remain associated with object identity rather than object value.</p>
 </div>
 <h3 id="type-related-functions">Type related functions</h3>
 <div class="defns">

@@ -536,44 +536,48 @@ namespace RS {
     namespace RS_Detail {
 
         template <typename T, int Def, bool Conv = std::is_constructible<T, int>::value>
-        class DefaultTo;
+        struct DefaultTo;
 
         template <typename T, int Def>
-        class DefaultTo<T, Def, true> {
-        public:
+        struct DefaultTo<T, Def, true> {
             static T default_value() { return static_cast<T>(Def); }
         };
 
         template <typename T>
-        class DefaultTo<T, 0, false> {
-        public:
+        struct DefaultTo<T, 0, false> {
             static T default_value() { return T(); }
         };
 
     }
 
     template <typename T, int Def = 0>
-    class Movable:
-    public RS_Detail::DefaultTo<T, Def> {
-    public:
+    struct AutoMove:
+    private RS_Detail::DefaultTo<T, Def> {
         using value_type = T;
-        Movable(): value(this->default_value()) {}
-        ~Movable() = default;
-        Movable(const Movable& m) = default;
-        Movable(Movable&& m) noexcept: value(std::exchange(m.value, this->default_value())) {}
-        Movable(const T& t): value(t) {}
-        Movable(T&& t): value(std::exchange(t, this->default_value())) {}
-        Movable& operator=(const Movable& m) = default;
-        Movable& operator=(Movable&& m) noexcept { if (&m != this) { value = std::exchange(m.value, this->default_value()); } return *this; }
-        Movable& operator=(const T& t) { value = t; return *this; }
-        Movable& operator=(T&& t) noexcept { value = std::exchange(t, this->default_value()); return *this; }
-        T& operator*() noexcept { return value; }
-        const T& operator*() const noexcept { return value; }
-        T* operator->() noexcept { return &value; }
-        const T* operator->() const noexcept { return &value; }
-        operator T() const { return value; }
-    private:
         T value;
+        AutoMove(): value(this->default_value()) {}
+        AutoMove(const T& t): value(t) {}
+        AutoMove(T&& t): value(std::move(t)) {}
+        ~AutoMove() = default;
+        AutoMove(const AutoMove& x) = default;
+        AutoMove(AutoMove&& x): value(std::exchange(x.value, this->default_value())) {}
+        AutoMove& operator=(const AutoMove& x) = default;
+        AutoMove& operator=(AutoMove&& x) { if (&x != this) { value = std::exchange(x.value, this->default_value()); } return *this; }
+    };
+
+    template <typename T, int Def = 0>
+    struct NoTransfer:
+    private RS_Detail::DefaultTo<T, Def> {
+        using value_type = T;
+        T value;
+        NoTransfer(): value(this->default_value()) {}
+        NoTransfer(const T& t): value(t) {}
+        NoTransfer(T&& t): value(std::move(t)) {}
+        ~NoTransfer() = default;
+        NoTransfer(const NoTransfer&) {}
+        NoTransfer(NoTransfer&&) {}
+        NoTransfer& operator=(const NoTransfer&) { return *this; }
+        NoTransfer& operator=(NoTransfer&&) { return *this; }
     };
 
     // Type related functions

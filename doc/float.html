@@ -197,15 +197,25 @@ This has complexity <code>O(k<sup>N</sup>)</code> Behaviour is undefined if
 <h3 id="precision-sum">Precision sum</h3>
 <div class="defns">
 <ul>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>PrecisionSum</code></strong><ul>
+<li><code>using PrecisionSum::</code><strong><code>value_type</code></strong> <code>= T</code></li>
+<li><code>PrecisionSum::</code><strong><code>PrecisionSum</code></strong><code>()</code></li>
+<li><code>void PrecisionSum::</code><strong><code>operator()</code></strong><code>(T t)</code></li>
+<li><code>PrecisionSum::</code><strong><code>operator T</code></strong><code>() const</code></li>
+<li><code>void PrecisionSum::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
+</ul>
+</li>
 <li><code>template &lt;typename SinglePassRange&gt; [value type]</code> <strong><code>precision_sum</code></strong><code>(const SinglePassRange&amp; range)</code></li>
 </ul>
-<p>Calculates the sum of a sequence of numbers using the high precision algorithm from
+<p>Calculate the sum of a sequence of numbers using the high precision algorithm from
 <a href="http://www-2.cs.cmu.edu/afs/cs/project/quake/public/papers/robust-arithmetic.ps">Shewchuk</a>
 and <a href="http://code.activestate.com/recipes/393090/">Hettinger</a>.
-The range's value type must be a floating point arithmetic type. This is
-always much more accurate than simple addition, and is guaranteed to give the
-correct answer (the exact sum correctly rounded) if the value type implements
-IEEE arithmetic (on GCC this requires the <code>-ffloat-store</code> option).</p>
+This can be called as either an accumulator to which values can be added one
+at a time, or a range based function that calculates the sum in one call. The
+range's value type must be a floating point arithmetic type. This is always
+much more accurate than simple addition, and is guaranteed to give the correct
+answer (the exact sum correctly rounded) if the value type implements IEEE
+arithmetic (on GCC this requires the <code>-ffloat-store</code> option).</p>
 </div>
 <h3 id="root-finding">Root finding</h3>
 <p>For all of these algorithms, <code>T</code> must be a floating point arithmetic type, <code>F</code>

@@ -151,15 +151,23 @@ This has complexity <code>O(k<sup>N</sup>)</code> Behaviour is undefined if
 
 ### Precision sum ###
 
+* `template <typename T> class` **`PrecisionSum`**
+    * `using PrecisionSum::`**`value_type`** `= T`
+    * `PrecisionSum::`**`PrecisionSum`**`()`
+    * `void PrecisionSum::`**`operator()`**`(T t)`
+    * `PrecisionSum::`**`operator T`**`() const`
+    * `void PrecisionSum::`**`clear`**`() noexcept`
 * `template <typename SinglePassRange> [value type]` **`precision_sum`**`(const SinglePassRange& range)`
 
-Calculates the sum of a sequence of numbers using the high precision algorithm from
+Calculate the sum of a sequence of numbers using the high precision algorithm from
 [Shewchuk](http://www-2.cs.cmu.edu/afs/cs/project/quake/public/papers/robust-arithmetic.ps)
 and [Hettinger](http://code.activestate.com/recipes/393090/).
-The range's value type must be a floating point arithmetic type. This is
-always much more accurate than simple addition, and is guaranteed to give the
-correct answer (the exact sum correctly rounded) if the value type implements
-IEEE arithmetic (on GCC this requires the `-ffloat-store` option).
+This can be called as either an accumulator to which values can be added one
+at a time, or a range based function that calculates the sum in one call. The
+range's value type must be a floating point arithmetic type. This is always
+much more accurate than simple addition, and is guaranteed to give the correct
+answer (the exact sum correctly rounded) if the value type implements IEEE
+arithmetic (on GCC this requires the `-ffloat-store` option).
 
 ### Root finding ###
 

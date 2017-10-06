@@ -146,27 +146,40 @@ namespace RS {
 
     // Precision sum
 
-    template <typename SinglePassRange>
-    RangeValue<SinglePassRange> precision_sum(const SinglePassRange& range) {
-        using std::abs;
-        using value_type = RangeValue<SinglePassRange>;
-        static_assert(std::is_floating_point<value_type>::value);
-        std::vector<value_type> partials;
-        for (auto x: range) {
+    template <typename T>
+    class PrecisionSum {
+    public:
+        using value_type = T;
+        void operator()(T t) {
+            using std::abs;
             size_t i = 0;
-            for (auto y: partials) {
-                if (abs(x) < abs(y))
-                    std::swap(x, y);
-                auto sum = x + y;
-                y -= sum - x;
-                x = sum;
-                if (y != value_type(0))
-                    partials[i++] = y;
+            for (T p: partials) {
+                if (abs(t) < abs(p))
+                    std::swap(t, p);
+                T sum = t + p;
+                p -= sum - t;
+                t = sum;
+                if (p != T())
+                    partials[i++] = p;
             }
             partials.erase(partials.begin() + i, partials.end());
-            partials.push_back(x);
+            partials.push_back(t);
         }
-        return std::accumulate(partials.begin(), partials.end(), value_type(0));
+        operator T() const {
+            return std::accumulate(partials.begin(), partials.end(), T());
+        }
+        void clear() noexcept { partials.clear(); }
+    private:
+        static_assert(std::is_floating_point<T>::value);
+        std::vector<T> partials;
+    };
+
+    template <typename SinglePassRange>
+    RangeValue<SinglePassRange> precision_sum(const SinglePassRange& range) {
+        PrecisionSum<RangeValue<SinglePassRange>> sum;
+        for (auto x: range)
+            sum(x);
+        return sum;
     }
 
     // Numerical integration

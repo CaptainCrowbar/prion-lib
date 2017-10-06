@@ -143,17 +143,28 @@ namespace {
             values.push_back(1);
             values.push_back(- highval);
         }
+        PrecisionSum<T> ps;
         for (size_t i = 0; i < cycles; ++i) {
-            T sum = 0;
             std::shuffle(values.begin(), values.end(), rng);
+            TRY(ps.clear());
+            for (T t: values)
+                TRY(ps(t));
+            T sum = 0;
+            TRY(sum = ps);
+            TEST_EQUAL(sum, T(2 * copies));
+        }
+        for (size_t i = 0; i < cycles; ++i) {
+            std::shuffle(values.begin(), values.end(), rng);
+            T sum = 0;
             TRY(sum = precision_sum(values));
-            TEST_EQUAL(sum, static_cast<T>(2 * copies));
+            TEST_EQUAL(sum, T(2 * copies));
         }
     }
 
     void check_precision_sum() {
 
         std::mt19937 rng(42);
+
         precision_sum_test<float>(1000, 100, 1e20f, rng);
         precision_sum_test<double>(1000, 100, 1e100, rng);
         precision_sum_test<long double>(1000, 100, 1e100l, rng);

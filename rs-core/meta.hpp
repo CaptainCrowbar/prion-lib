@@ -713,6 +713,16 @@ namespace RS {
 
     namespace RS_Detail {
 
+        template <typename T> using IteratorCategory = typename std::iterator_traits<T>::iterator_category;
+        template <typename T, bool Iter = IsDetected<IteratorCategory, T>::value> struct ExtendedIteratorCategory: ReturnT<void> {};
+        template <typename T> struct ExtendedIteratorCategory<T, true>: ReturnT<IteratorCategory<T>> {};
+
+        template <typename T, typename Cat = typename ExtendedIteratorCategory<T>::type> struct IteratorLevelType: IntT<0> {};
+        template <typename T> struct IteratorLevelType<T, std::input_iterator_tag>: IntT<1> {};
+        template <typename T> struct IteratorLevelType<T, std::forward_iterator_tag>: IntT<2> {};
+        template <typename T> struct IteratorLevelType<T, std::bidirectional_iterator_tag>: IntT<3> {};
+        template <typename T> struct IteratorLevelType<T, std::random_access_iterator_tag>: IntT<4> {};
+
         template <typename T> using HasStdBeginArchetype = decltype(std::begin(std::declval<T>()));
         template <typename T> using HasAdlBeginArchetype = decltype(begin(std::declval<T>()));
         template <typename T> using HasStdEndArchetype = decltype(std::end(std::declval<T>()));
@@ -732,7 +742,11 @@ namespace RS {
 
     }
 
-    template <typename T> using IsIterator = MetaAnd<HasDereferenceOperator<T>, HasPreIncrementOperator<T>>;
+    template <typename T> using IsIterator = IsDetected<RS_Detail::IteratorCategory, T>;
+
+    template <typename T> struct IsForwardIterator: BoolT<(RS_Detail::IteratorLevelType<T>::value >= 2)> {};
+    template <typename T> struct IsBidirectionalIterator: BoolT<(RS_Detail::IteratorLevelType<T>::value >= 3)> {};
+    template <typename T> struct IsRandomAccessIterator: BoolT<(RS_Detail::IteratorLevelType<T>::value >= 4)> {};
 
     template <typename T, bool = IsIterator<T>::value> struct IsMutableIterator: std::false_type {};
     template <typename T> struct IsMutableIterator<T, true>: MetaNot<std::is_const<typename std::remove_pointer_t<decltype(&*std::declval<T>())>>> {};
@@ -750,6 +764,9 @@ namespace RS {
     template <typename T> using IsSwappable = MetaOr<IsDetected<RS_Detail::HasStdSwapArchetype, T>, IsDetected<RS_Detail::HasAdlSwapArchetype, T>>;
 
     template <typename T> constexpr bool is_iterator = IsIterator<T>::value;
+    template <typename T> constexpr bool is_forward_iterator = IsForwardIterator<T>::value;
+    template <typename T> constexpr bool is_bidirectional_iterator = IsBidirectionalIterator<T>::value;
+    template <typename T> constexpr bool is_random_access_iterator = IsRandomAccessIterator<T>::value;
     template <typename T> constexpr bool is_mutable_iterator = IsMutableIterator<T>::value;
     template <typename T> constexpr bool is_range = IsRange<T>::value;
     template <typename T> constexpr bool is_mutable_range = IsMutableRange<T>::value;

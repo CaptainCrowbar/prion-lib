@@ -1,6 +1,8 @@
 #include "rs-core/meta.hpp"
 #include "rs-core/string.hpp"
 #include "rs-core/unit-test.hpp"
+#include <forward_list>
+#include <list>
 #include <map>
 #include <memory>
 #include <string>
@@ -1244,41 +1246,74 @@ namespace {
 
     void check_type_categories() {
 
-        TEST((! is_iterator<int>));
-        TEST((is_iterator<int*>));
-        TEST((is_iterator<const int*>));
-        TEST((! is_iterator<std::string>));
-        TEST((is_iterator<std::string::iterator>));
-        TEST((is_iterator<std::string::const_iterator>));
+        TEST(! is_iterator<int>);
+        TEST(is_iterator<int*>);
+        TEST(is_iterator<const int*>);
+        TEST(! is_iterator<std::string>);
+        TEST(is_iterator<std::string::iterator>);
+        TEST(is_iterator<std::string::const_iterator>);
 
-        TEST((! is_mutable_iterator<int>));
-        TEST((is_mutable_iterator<int*>));
-        TEST((! is_mutable_iterator<const int*>));
-        TEST((! is_mutable_iterator<std::string>));
-        TEST((is_mutable_iterator<std::string::iterator>));
-        TEST((! is_mutable_iterator<std::string::const_iterator>));
+        TEST(! is_forward_iterator<int>);
+        TEST(is_forward_iterator<int*>);
+        TEST(is_forward_iterator<const int*>);
+        TEST(! is_forward_iterator<std::string>);
+        TEST(is_forward_iterator<std::string::iterator>);
+        TEST(is_forward_iterator<std::string::const_iterator>);
+        TEST(is_forward_iterator<std::list<int>::iterator>);
+        TEST(is_forward_iterator<std::list<int>::const_iterator>);
+        TEST(is_forward_iterator<std::forward_list<int>::iterator>);
+        TEST(is_forward_iterator<std::forward_list<int>::const_iterator>);
 
-        TEST((! is_range<int>));
-        TEST((! is_range<int*>));
-        TEST((is_range<std::string>));
-        TEST((is_range<std::vector<int>>));
+        TEST(! is_bidirectional_iterator<int>);
+        TEST(is_bidirectional_iterator<int*>);
+        TEST(is_bidirectional_iterator<const int*>);
+        TEST(! is_bidirectional_iterator<std::string>);
+        TEST(is_bidirectional_iterator<std::string::iterator>);
+        TEST(is_bidirectional_iterator<std::string::const_iterator>);
+        TEST(is_bidirectional_iterator<std::list<int>::iterator>);
+        TEST(is_bidirectional_iterator<std::list<int>::const_iterator>);
+        TEST(! is_bidirectional_iterator<std::forward_list<int>::iterator>);
+        TEST(! is_bidirectional_iterator<std::forward_list<int>::const_iterator>);
 
-        TEST((! is_mutable_range<int>));
-        TEST((! is_mutable_range<int*>));
-        TEST((is_mutable_range<std::string>));
-        TEST((is_mutable_range<std::vector<int>>));
-        TEST((! is_mutable_range<const std::string>));
-        TEST((! is_mutable_range<const std::vector<int>>));
+        TEST(! is_random_access_iterator<int>);
+        TEST(is_random_access_iterator<int*>);
+        TEST(is_random_access_iterator<const int*>);
+        TEST(! is_random_access_iterator<std::string>);
+        TEST(is_random_access_iterator<std::string::iterator>);
+        TEST(is_random_access_iterator<std::string::const_iterator>);
+        TEST(! is_random_access_iterator<std::list<int>::iterator>);
+        TEST(! is_random_access_iterator<std::list<int>::const_iterator>);
+        TEST(! is_random_access_iterator<std::forward_list<int>::iterator>);
+        TEST(! is_random_access_iterator<std::forward_list<int>::const_iterator>);
 
-        TEST((! is_container<int>));
-        TEST((! is_container<int*>));
-        TEST((is_container<std::string>));
-        TEST((is_container<std::vector<int>>));
+        TEST(! is_mutable_iterator<int>);
+        TEST(is_mutable_iterator<int*>);
+        TEST(! is_mutable_iterator<const int*>);
+        TEST(! is_mutable_iterator<std::string>);
+        TEST(is_mutable_iterator<std::string::iterator>);
+        TEST(! is_mutable_iterator<std::string::const_iterator>);
 
-        TEST((! is_insertable_container<int>));
-        TEST((! is_insertable_container<int*>));
-        TEST((is_insertable_container<std::string>));
-        TEST((is_insertable_container<std::vector<int>>));
+        TEST(! is_range<int>);
+        TEST(! is_range<int*>);
+        TEST(is_range<std::string>);
+        TEST(is_range<std::vector<int>>);
+
+        TEST(! is_mutable_range<int>);
+        TEST(! is_mutable_range<int*>);
+        TEST(is_mutable_range<std::string>);
+        TEST(is_mutable_range<std::vector<int>>);
+        TEST(! is_mutable_range<const std::string>);
+        TEST(! is_mutable_range<const std::vector<int>>);
+
+        TEST(! is_container<int>);
+        TEST(! is_container<int*>);
+        TEST(is_container<std::string>);
+        TEST(is_container<std::vector<int>>);
+
+        TEST(! is_insertable_container<int>);
+        TEST(! is_insertable_container<int*>);
+        TEST(is_insertable_container<std::string>);
+        TEST(is_insertable_container<std::vector<int>>);
 
         TEST(is_swappable<int>);
         TEST(is_swappable<char*>);

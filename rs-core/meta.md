@@ -285,22 +285,26 @@ Example:
 
 <!-- DEFN -->
 
-| Metafunction type                 | Metafunction constant               |
-| -----------------                 | ---------------------               |
-| **`IsIterator`**`<T>`             | **`is_iterator`**`<T>`              |
-| **`IsMutableIterator`**`<T>`      | **`is_mutable_iterator`**`<T>`      |
-| **`IsRange`**`<T>`                | **`is_range`**`<T>`                 |
-| **`IsMutableRange`**`<T>`         | **`is_mutable_range`**`<T>`         |
-| **`IsContainer`**`<T>`            | **`is_container`**`<T>`             |
-| **`IsInsertableContainer`**`<T>`  | **`is_insertable_container`**`<T>`  |
-| **`IsSwappable`**`<T>`            | **`is_swappable`**`<T>`             |
+| Metafunction type                   | Metafunction constant                 |
+| -----------------                   | ---------------------                 |
+| **`IsIterator`**`<T>`               | **`is_iterator`**`<T>`                |
+| **`IsForwardIterator`**`<T>`        | **`is_forward_iterator`**`<T>`        |
+| **`IsBidirectionalIterator`**`<T>`  | **`is_bidirectional_iterator`**`<T>`  |
+| **`IsRandomAccessIterator`**`<T>`   | **`is_random_access_iterator`**`<T>`  |
+| **`IsMutableIterator`**`<T>`        | **`is_mutable_iterator`**`<T>`        |
+| **`IsRange`**`<T>`                  | **`is_range`**`<T>`                   |
+| **`IsMutableRange`**`<T>`           | **`is_mutable_range`**`<T>`           |
+| **`IsContainer`**`<T>`              | **`is_container`**`<T>`               |
+| **`IsInsertableContainer`**`<T>`    | **`is_insertable_container`**`<T>`    |
+| **`IsSwappable`**`<T>`              | **`is_swappable`**`<T>`               |
 
 Metafunction predicates that attempt to detect certain kinds of type. In most
 cases we can only look for an expected set of valid operations on the type; we
-have no way to check their semantics. The `is_[mutable_]range` predicates will
-succeed if the `begin()` and `end()` functions can be found either in
-`namespace std` or by argument dependent lookup; similarly for `is_swappable`
-and the `swap()` function.
+have no way to check their semantics. The tests for specific iterator
+categories will pass if the iterator is at least that caegory. The
+`is_[mutable_]range` predicates will succeed if the `begin()` and `end()`
+functions can be found either in `namespace std` or by argument dependent
+lookup; similarly for `is_swappable` and the `swap()` function.
 
 ### Related types ###
 

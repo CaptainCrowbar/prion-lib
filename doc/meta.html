@@ -797,6 +797,18 @@ assert(! has_function_foo&lt;string, int&gt;);
 <td><strong><code>is_iterator</code></strong><code>&lt;T&gt;</code></td>
 </tr>
 <tr>
+<td><strong><code>IsForwardIterator</code></strong><code>&lt;T&gt;</code></td>
+<td><strong><code>is_forward_iterator</code></strong><code>&lt;T&gt;</code></td>
+</tr>
+<tr>
+<td><strong><code>IsBidirectionalIterator</code></strong><code>&lt;T&gt;</code></td>
+<td><strong><code>is_bidirectional_iterator</code></strong><code>&lt;T&gt;</code></td>
+</tr>
+<tr>
+<td><strong><code>IsRandomAccessIterator</code></strong><code>&lt;T&gt;</code></td>
+<td><strong><code>is_random_access_iterator</code></strong><code>&lt;T&gt;</code></td>
+</tr>
+<tr>
 <td><strong><code>IsMutableIterator</code></strong><code>&lt;T&gt;</code></td>
 <td><strong><code>is_mutable_iterator</code></strong><code>&lt;T&gt;</code></td>
 </tr>
@@ -824,10 +836,11 @@ assert(! has_function_foo&lt;string, int&gt;);
 </table>
 <p>Metafunction predicates that attempt to detect certain kinds of type. In most
 cases we can only look for an expected set of valid operations on the type; we
-have no way to check their semantics. The <code>is_[mutable_]range</code> predicates will
-succeed if the <code>begin()</code> and <code>end()</code> functions can be found either in
-<code>namespace std</code> or by argument dependent lookup; similarly for <code>is_swappable</code>
-and the <code>swap()</code> function.</p>
+have no way to check their semantics. The tests for specific iterator
+categories will pass if the iterator is at least that caegory. The
+<code>is_[mutable_]range</code> predicates will succeed if the <code>begin()</code> and <code>end()</code>
+functions can be found either in <code>namespace std</code> or by argument dependent
+lookup; similarly for <code>is_swappable</code> and the <code>swap()</code> function.</p>
 </div>
 <h3 id="related-types">Related types</h3>
 <div class="defns">

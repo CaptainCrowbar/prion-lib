@@ -24,35 +24,22 @@
 </div>
 <h2 id="test-macros">Test macros</h2>
 <p>A typical test module will look something like this:</p>
-<pre><code>#include "project/module.hpp"
+<pre><code>#include "project1/module1.hpp"
 #include "rs-core/unit-test.hpp"
-TEST_MAIN;
-TEST_MODULE(project, module) {
-    int answer;
-    TRY(answer = 6 * 9);
+void test_project1_module1_stuff() {
+    int answer = 0;
+    TRY(answer = multiply(6, 9));
     TEST_EQUAL(answer, 42);
 }
 </code></pre>
+<p>Test functions follow the naming convention
+<code>test_</code><em>project</em><code>_</code><em>module</em><code>_</code><em>description</em><code>()</code>; the module name is expected
+to match the test file name (<em>module</em><code>-test.cpp</code>). The test compilation script
+(<code>scripts/make-tests</code>) finds all of these functions and assembles them into a
+<code>unit-test.cpp</code> file; the <code>Makefile</code> regenerates this if any test file
+changes.</p>
 <p>Please note that all of the macros here may evaluate their arguments more than
 once.</p>
-<div class="defns">
-<ul>
-<li><code>#define</code> <strong><code>TEST_MAIN</code></strong></li>
-</ul>
-<p>Supplies the main function for a test program. This must appear at global
-scope in one module if there is no user-supplied <code>main()</code> function. The main
-function will check for a <code>UNIT</code> environment variable, parsing it as a regular
-expression, and only the tests whose name (in <em>"project/module"</em> form)
-contains the pattern will be run. The return value from <code>TEST_MAIN</code> is zero on
-success, 1 if any tests failed.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>#define</code> <strong><code>TEST_MODULE</code></strong><code>(project, module)</code></li>
-</ul>
-<p>This supplies the function signature for a module test function (see above for
-typical usage).</p>
-</div>
 <div class="defns">
 <ul>
 <li><code>#define</code> <strong><code>FAIL</code></strong><code>(message)</code></li>

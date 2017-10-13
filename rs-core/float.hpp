@@ -191,9 +191,9 @@ namespace RS {
         public ForwardIterator<IntegralIterator<T>, const T> {
         public:
             IntegralIterator() = default;
-            template <typename F> IntegralIterator(T x1, T x2, int k, F f):
+            template <typename F> IntegralIterator(T x1, T x2, size_t k, F f):
                 function(f), start_x(x1), delta_x((x2 - x1) / k), prev_y(f(x1)) { ++*this; }
-            explicit IntegralIterator(int k): index(k + 1) {}
+            explicit IntegralIterator(size_t k): index(k + 1) {}
             const T& operator*() const noexcept { return area_element; }
             IntegralIterator& operator++() {
                 ++index;
@@ -210,7 +210,7 @@ namespace RS {
             T delta_x = 0;
             T prev_y = 0;
             T area_element = 0;
-            int index = 0;
+            size_t index = 0;
         };
 
         template <typename T, size_t N>
@@ -219,7 +219,7 @@ namespace RS {
         public:
             using vector_type = Vector<T, N>;
             VolumeIterator(): done(true) {}
-            template <typename F> VolumeIterator(vector_type x1, vector_type x2, int k, F f):
+            template <typename F> VolumeIterator(vector_type x1, vector_type x2, size_t k, F f):
                 function(f), start_x(x1), delta_x((x2 - x1) / k), n_edge(k),
                 volume_factor(std::ldexp(product_of(delta_x), - int(N))), volume_element(get_volume()) {}
             const T& operator*() const noexcept { return volume_element; }

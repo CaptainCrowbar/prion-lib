@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rs-core/channel.hpp"
+#include "rs-core/io.hpp"
 #include <algorithm>
 #include <atomic>
 #include <chrono>
@@ -65,7 +66,7 @@ namespace RS {
         inline void StreamProcess::do_close() noexcept {
             if (! fp)
                 return;
-            int rc = ::pclose(fp);
+            int rc = RS_US_NAME(pclose)(fp);
             if (st == -1)
                 st = rc;
             fp = nullptr;
@@ -77,7 +78,7 @@ namespace RS {
                 return state::closed;
             if (t < Interval::time())
                 t = {};
-            int fd = fileno(fp);
+            int fd = RS_US_NAME(fileno)(fp);
             auto cs = state::closed;
             #ifdef _XOPEN_SOURCE
                 fd_set fds;
@@ -99,7 +100,7 @@ namespace RS {
                 auto fh = reinterpret_cast<HANDLE>(_get_osfhandle(fd));
                 auto ms = duration_cast<milliseconds>(t).count();
                 SetLastError(0);
-                auto rc = WaitForSingleObject(fh, ms);
+                auto rc = WaitForSingleObject(fh, uint32_t(ms));
                 auto err = GetLastError();
                 if (rc == WAIT_OBJECT_0)
                     cs = state::ready;
@@ -155,7 +156,7 @@ namespace RS {
             using namespace std::chrono;
             t = std::max(t, Interval::time());
             auto deadline = ReliableClock::now() + t;
-            Interval::time delta;
+            Interval::time delta = {};
             for (;;) {
                 auto rc = ps.wait(delta);
                 if (rc == state::closed || ! ps.read_to(buf))

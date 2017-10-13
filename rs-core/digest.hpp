@@ -20,6 +20,7 @@
 
 RS_LDLIB(cygwin: crypto);
 RS_LDLIB(linux: crypto);
+RS_LDLIB(msvc: advapi32);
 
 namespace RS {
 
@@ -188,7 +189,7 @@ namespace RS {
                 static constexpr size_t result_size = bytes; \
                 DigestClass() noexcept { CryptAcquireContextW(&p, nullptr, w_pname, w_ptype, CRYPT_SILENT | CRYPT_VERIFYCONTEXT); CryptCreateHash(p, w_algo, 0, 0, &h); } \
                 ~DigestClass() noexcept { CryptDestroyHash(h); CryptReleaseContext(p, 0); } \
-                DigestClass& operator()(const void* ptr, size_t n) noexcept { CryptHashData(h, LPCBYTE(ptr), n, 0); return *this; } \
+                DigestClass& operator()(const void* ptr, size_t n) noexcept { CryptHashData(h, LPCBYTE(ptr), uint32_t(n), 0); return *this; } \
                 operator result_type() noexcept { result_type r; DWORD n = result_size; CryptGetHashParam(h, HP_HASHVAL, r.data(), &n, 0); return r; } \
             private: \
                 HCRYPTHASH h = 0; \

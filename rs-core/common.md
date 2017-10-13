@@ -10,15 +10,6 @@ By Ross Smith
 
 ## Preprocessor macros ##
 
-* `#define` **`RS_ASSUME`**`(expr)` _[compiler may assume `bool(expr)` is always true]_
-* `#define` **`RS_LIKELY`**`(expr)` _[returns `bool(expr)`; compiler should optimize for the true case]_
-* `#define` **`RS_UNLIKELY`**`(expr)` _[returns `bool(expr)`; compiler should optimize for the false case]_
-* `#define` **`RS_NOTREACHED`** _[compiler may assume this line will never be reached]_
-
-Optimization hints. These have no semantic effect on the program (if the
-absolute conditions in `RS_ASSUME` and `RS_NOTREACHED` are not violated), but
-give the compiler hints concerning its expected behaviour.
-
 * `#define` **`RS_BITMASK_OPERATORS`**`(EC)`
 
 Defines bit manipulation and related operators for an `enum class` (unary `!`,
@@ -672,9 +663,9 @@ truncated to an integer). Behaviour is undefined if the argument is negative.
 
 ### Bitwise operations ###
 
-For all functions in this section that are templated on the argument type,
-results are unspecified if the argument is negative, and the function will
-fail to compile if the argument is not an integer.
+For all functions in this section that are templated on the argument type, the
+function will fail to compile if `T` is not an integer, and behaviour is
+undefined if `T` is signed and the argument is negative.
 
 * `template <typename T> constexpr int` **`ibits`**`(T t) noexcept`
 
@@ -683,8 +674,9 @@ Returns the number of 1 bits in the argument.
 * `template <typename T> constexpr T` **`ifloor2`**`(T t) noexcept`
 * `template <typename T> constexpr T` **`iceil2`**`(T t) noexcept`
 
-Return the argument rounded down or up to a power of 2. The result of
-`iceil2()` is unspecified if the correct answer is not representable.
+Return the argument rounded down or up to a power of 2. For `iceil2()`,
+behaviour is undefined if the argument is large enough that the correct answer
+is not representable.
 
 * `template <typename T> constexpr int` **`ilog2p1`**`(T t) noexcept`
 

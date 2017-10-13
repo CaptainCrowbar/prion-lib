@@ -26,6 +26,8 @@
     #include <wincrypt.h>
 #endif
 
+RS_LDLIB(msvc: advapi32);
+
 namespace RS {
 
     // LCG functions
@@ -75,7 +77,7 @@ namespace RS {
         #else
             HCRYPTPROV handle = 0;
             CryptAcquireContext(&handle, nullptr, nullptr, PROV_RSA_FULL, CRYPT_SILENT | CRYPT_VERIFYCONTEXT);
-            CryptGenRandom(handle, n, static_cast<uint8_t*>(ptr));
+            CryptGenRandom(handle, uint32_t(n), static_cast<uint8_t*>(ptr));
             CryptReleaseContext(handle, 0);
         #endif
     }
@@ -790,12 +792,12 @@ namespace RS {
 
     template <typename RNG>
     void random_bytes(RNG& rng, void* ptr, size_t n) {
-        static constexpr auto max64 = ~ uint64_t(0);
+        static constexpr auto uint64_max = ~ uint64_t(0);
         if (! ptr || ! n)
             return;
-        auto range_m1 = uint64_t(std::min(uintmax_t(RNG::max()) - uintmax_t(RNG::min()), uintmax_t(max64)));
+        auto range_m1 = uint64_t(std::min(uintmax_t(RNG::max()) - uintmax_t(RNG::min()), uintmax_t(uint64_max)));
         size_t block;
-        if (range_m1 == max64)
+        if (range_m1 == uint64_max)
             block = 8;
         else
             block = (ilog2p1(range_m1) - 1) / 8;

@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-if [ "$(ls */*.md 2>/dev/null)" == '' ]; then exit; fi
+if ! [ "$(ls */*.md 2>/dev/null)" ]; then exit; fi
 
 title=$(cat */*.md | head -n 1 | sed -E 's/^# \[(.+)\].+$/\1/')
 

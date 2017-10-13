@@ -18,19 +18,11 @@
 #include <type_traits>
 #include <typeinfo>
 #include <utility>
+#include <vector>
 
 #ifdef __GNUC__
     #include <cxxabi.h>
 #endif
-
-#define TEST_MAIN int main() { return RS::UnitTest::test_main(); }
-
-#define TEST_MODULE(project, module) \
-    void test_##project##_##module(); \
-    void test_##project##_##module##_setup() __attribute__((__constructor__)); \
-    void test_##project##_##module##_setup() \
-        { RS::UnitTest::register_test(test_##project##_##module, #project, #module); } \
-    void test_##project##_##module()
 
 #define FAIL_POINT "[", __FILE__, ":", __LINE__, "] "
 
@@ -311,26 +303,8 @@ namespace RS {
 
     struct UnitTest {
 
-        struct compare_modules {
-            static bool ends_with(const std::string& str, const std::string& suffix) noexcept {
-                return str.size() >= suffix.size() && memcmp(str.data() + str.size() - suffix.size(), suffix.data(), suffix.size()) == 0;
-            }
-            static bool is_core(const std::string& s) noexcept {
-                return ends_with(s, "/core") || ends_with(s, "/common") || ends_with(s, "/utility");
-            }
-            bool operator()(const std::string& lhs, const std::string& rhs) const noexcept {
-                bool lcore = is_core(lhs), rcore = is_core(rhs);
-                if (lcore && ! rcore)
-                    return true;
-                else if (rcore && ! lcore)
-                    return false;
-                else
-                    return lhs < rhs;
-            }
-        };
-
         using test_function = void (*)();
-        using test_map = std::map<std::string, test_function, compare_modules>;
+        using test_index = std::vector<std::pair<std::string, test_function>>;
 
         static constexpr const char* x_reset = "\x1b[0m";
         static constexpr const char* x_head = "\x1b[38;5;220m";
@@ -344,19 +318,8 @@ namespace RS {
             return fails;
         }
 
-        static test_map& test_functions() noexcept {
-            static test_map funcs;
-            return funcs;
-        }
-
         static void record_failure() {
             ++test_failures();
-        }
-
-        static void register_test(test_function f, const std::string& project, const std::string& module) {
-            auto key = project + '/' + module;
-            std::replace(key.begin(), key.end(), '_', '-');
-            test_functions()[key] = f;
         }
 
         static void print_build(std::ostringstream&) {}
@@ -511,7 +474,7 @@ namespace RS {
             #endif
         }
 
-        static int test_main() {
+        static int test_main(const test_index& index) {
             using namespace std::chrono;
             std::regex unit_pattern;
             const char* unit_ptr = getenv("UNIT");
@@ -526,7 +489,7 @@ namespace RS {
                 std::cout << x_head << "Running test modules" << x_reset << std::endl;
                 std::cout << x_decor << rule << x_reset << std::endl;
                 auto start = system_clock::now();
-                for (auto&& test: test_functions()) {
+                for (auto& test: index) {
                     if (std::regex_search(test.first, unit_pattern)) {
                         std::cout << x_info << "Testing " << test.first << x_reset << std::endl;
                         test.second();

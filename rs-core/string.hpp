@@ -614,9 +614,19 @@ namespace RS {
 
     template <typename T>
     U8string fp_format(T t, char mode = 'g', int prec = 6) {
+        using namespace std::literals;
         static const U8string modes = "EFGZefgz";
         if (modes.find(mode) == npos)
             throw std::invalid_argument("Invalid floating point mode: " + quote(U8string{mode}));
+        if (t == 0) {
+            switch (mode) {
+                case 'E': case 'e':  return prec < 1 ? "0"s + mode + '0' : "0."s + U8string(prec, '0') + mode + "0";
+                case 'F': case 'f':  return prec < 1 ? "0"s : "0."s + U8string(prec, '0');
+                case 'G': case 'g':  return "0";
+                case 'Z': case 'z':  return prec < 2 ? "0"s : "0."s + U8string(prec - 1, '0');
+                default:             break;
+            }
+        }
         U8string buf(20, '\0'), fmt;
         switch (mode) {
             case 'Z':  fmt = "%#.*G"; break;
@@ -887,7 +897,7 @@ namespace RS {
                 c = 'k';
             auto pp = strchr(prefixes, c);
             if (pp) {
-                int steps = pp - prefixes - 8;
+                auto steps = pp - prefixes - 8;
                 double limit = log10(limits::max() / fabs(x)) / 3;
                 if (steps > limit)
                     throw std::range_error("Out of range: " + quote(s));

@@ -60,11 +60,14 @@ mainly to be referenced by inclusion in other projects' makefiles; it can also
 be used to run the library's own unit tests.
 
 The library is written in C++14 (more or less); you will need an up-to-date
-C++ compiler, probably a recent version of Clang or GCC. I developed it mainly
-on macOS, currently using Clang 9.0, as well as testing with GCC 6/7 on
-Windows. All test builds are made using strict compilation mode (`-Wall
--Wextra -Werror`). It will not work with any existing release of Microsoft
-Visual C++.
+C++ compiler. It has been tested with:
+
+* Apple Clang/Xcode 9.0 on MacOS
+* GCC 6.4+ on Linux and Cygwin
+* Microsoft Visual Studio 2017.4 on Windows
+
+All test builds are made using a strict diagnostic mode (`-Wall -Wextra
+-Werror` on Clang and GCC, `/W4 /WX /permissive-` on MSVC).
 
 Because I'm primarily targeting a short list of compilers rather than a
 specific edition of the C++ standard, the code makes a few assumptions that

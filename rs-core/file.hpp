@@ -27,6 +27,8 @@
     #include <sys/cygwin.h>
 #endif
 
+RS_LDLIB(msvc: shell32);
+
 namespace RS {
 
     class File:
@@ -466,7 +468,7 @@ namespace RS {
             std::wstring wpath(256, L'\0');
             uint32_t rc = 0;
             for (;;) {
-                rc = GetCurrentDirectoryW(wpath.size(), &wpath[0]);
+                rc = GetCurrentDirectoryW(uint32_t(wpath.size()), &wpath[0]);
                 auto err = GetLastError();
                 if (rc == 0)
                     throw std::system_error(err, windows_category());

@@ -2,6 +2,7 @@
 
 #include "rs-core/common.hpp"
 #include "rs-core/float.hpp"
+#include "rs-core/io.hpp"
 #include "rs-core/string.hpp"
 #include "rs-core/time.hpp"
 #include <algorithm>
@@ -15,7 +16,7 @@ namespace RS {
 
     // Terminal I/O operations
 
-    inline bool is_stdout_redirected() noexcept { return ! isatty(1); }
+    inline bool is_stdout_redirected() noexcept { return ! RS_US_NAME(isatty)(1); }
 
     namespace RS_Detail {
 
@@ -140,7 +141,7 @@ namespace RS {
         size_t n_left = bar_length - current_pos + tail_length + 2;
         size_t n_advance = new_pos - current_pos;
         size_t n_right = bar_length - new_pos + 2;
-        *out_ptr << xt_move_left(n_left) << xt_green << U8string(n_advance, '+') << xt_move_right(n_right) << xt_yellow << message << xt_reset << std::flush;
+        *out_ptr << xt_move_left(int(n_left)) << xt_green << U8string(n_advance, '+') << xt_move_right(int(n_right)) << xt_yellow << message << xt_reset << std::flush;
         current_pos = new_pos;
     }
 

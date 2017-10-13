@@ -21,7 +21,7 @@ namespace RS {
             void destroy(ForwardIterator i, ForwardIterator j) {
                 using T = typename std::iterator_traits<ForwardIterator>::value_type;
                 for (; i != j; ++i)
-                    i->~T();
+                    (*i).~T();
             }
 
             template <typename InputIterator, typename ForwardIterator>
@@ -411,7 +411,7 @@ namespace RS {
     void CompactArray<T, N>::erase(const_iterator i) noexcept {
         auto mut = begin() + (i - begin());
         std::move(i + 1, cend(), mut);
-        (end() - 1)->~T();
+        end()[-1].~T();
         --num;
     }
 
@@ -427,7 +427,7 @@ namespace RS {
 
     template <typename T, size_t N>
     void CompactArray<T, N>::pop_back() noexcept {
-        (end() - 1)->~T();
+        end()[-1].~T();
         --num;
     }
 

@@ -338,7 +338,7 @@ namespace RS {
                         ms = 0;
                     else if (ms >= INFINITE)
                         ms = INFINITE - 1;
-                    if (SleepConditionVariableCS(&wcond, &lock.mx->wcrit, ms)) {
+                    if (SleepConditionVariableCS(&wcond, &lock.mx->wcrit, uint32_t(ms))) {
                         if (p())
                             return true;
                     } else {

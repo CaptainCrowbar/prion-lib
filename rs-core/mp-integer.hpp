@@ -70,8 +70,6 @@ namespace RS {
         std::vector<uint32_t> rep; // Least significant word first
         void init(const char* s, int base);
         void trim() noexcept;
-        static constexpr int clz32(uint32_t x) noexcept { return x == 0 ? 32 : sizeof(int) >= 4 ? __builtin_clz(x) : __builtin_clzl(x); }
-        static constexpr int popcount32(uint32_t x) noexcept { return sizeof(int) >= 4 ? __builtin_popcount(x) : __builtin_popcountl(x); }
         static constexpr int digit_2(char c) noexcept { return c == '0' ? 0 : c == '1' ? 1 : -1; }
         static constexpr int digit_10(char c) noexcept { return c >= '0' && c <= '9' ? int(c - '0') : -1; }
         static constexpr int digit_16(char c) noexcept
@@ -126,7 +124,7 @@ namespace RS {
             sum >>= 32;
         }
         if (sum)
-            rep.push_back(sum);
+            rep.push_back(uint32_t(sum));
         trim();
         return *this;
     }
@@ -221,14 +219,14 @@ namespace RS {
     inline size_t Nat::bits() const noexcept {
         size_t n = 32 * rep.size();
         if (! rep.empty())
-            n -= clz32(rep.back());
+            n -= 32 - ilog2p1(rep.back());
         return n;
     }
 
     inline size_t Nat::bits_set() const noexcept {
         size_t n = 0;
         for (auto i: rep)
-            n += popcount32(i);
+            n += ibits(i);
         return n;
     }
 

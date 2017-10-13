@@ -133,14 +133,32 @@ for src in sorted(sources):
             text += ' \\\n    ' + ' '.join(sorted(deps[folder]))
     print(text, file=out)
 
+def gcc_lib(name):
+    return '-l' + name
+
+def msvc_lib(name):
+    if len(name) == 1:
+        return name + 'lib.lib'
+    else:
+        return name + '.lib'
+
+if '' in libraries:
+    msvc_libs = [msvc_lib(lib) for lib in libraries['']]
+    gcc_libs = [gcc_lib(lib) for lib in libraries['']]
+    print('ifeq ($(LIBTAG),msvc)', file=out)
+    print('    LDLIBS += ' + ' '.join(msvc_libs), file=out)
+    print('else', file=out)
+    print('    LDLIBS += ' + ' '.join(gcc_libs), file=out)
+    print('endif', file=out)
+    del libraries['']
+
 for system in sorted(libraries):
     libs = libraries[system]
     if libs:
-        if system:
-            print('ifeq ($(LIBTAG),{0})'.format(system), file=out)
-        ldlibs = 'LDLIBS +='
-        for lib in libs:
-            ldlibs += ' -l' + lib
-        print(ldlibs, file=out)
-        if system:
-            print('endif', file=out)
+        print('ifeq ($(LIBTAG),{0})'.format(system), file=out)
+        if system == 'msvc':
+            ldlibs = [msvc_lib(lib) for lib in libs]
+        else:
+            ldlibs = [gcc_lib(lib) for lib in libs]
+        print('    LDLIBS += ' + ' '.join(ldlibs), file=out)
+        print('endif', file=out)

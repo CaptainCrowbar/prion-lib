@@ -8,23 +8,36 @@
 # otherwise, if any application modules exist, the application is installable;
 # otherwise, nothing is installable.
 
-# Common variables
+# Project identity
 
 LIBROOT ?= ..
 project_name := $(shell ls */*.{c,h,cpp,hpp} 2>/dev/null | sed -E 's!/.*!!'| uniq -c | sort | tail -n 1 | sed -E 's!^[ 0-9]+!!')
 project_tag := $(shell echo "$$PWD" | sed -E 's!^([^/]*/)*([^/]*-)?!!')
+dependency_file := dependencies.make
 install_prefix := /usr/local
+scripts_dir := $(LIBROOT)/core-lib/scripts
+
+# Toolset identity
+
 build_host := $(shell uname | tr A-Z a-z | sed -E 's/[^a-z].*//')
-build_target := $(shell gcc -v 2>&1 | grep '^Target:' | sed -E -e 's/^Target: //' -e 's/[0-9.]*$$//' | tr A-Z a-z)
-cross_host := $(shell echo $(build_target) | tr A-Z a-z | sed -E -e 's/-gnu$$//' -e 's/.*-//' -e 's/[^a-z].*//')
+
+ifeq ($(TOOLS),msvc)
+	build_target := $(shell cl 2>&1 | head -n 1 | sed -E 's/^.*Version ([0-9]+)\.([0-9]+)\.[0-9]+ for (.+)$$/msvc-\1\2-\3/')
+	cross_target := msvc
+else
+	build_target := $(shell gcc -v 2>&1 | grep '^Target:' | sed -E -e 's/^Target: //' -e 's/[0-9.]*$$//' | tr A-Z a-z)
+	cross_target := $(shell echo $(build_target) | tr A-Z a-z | sed -E -e 's/-gnu$$//' -e 's/.*-//' -e 's/[^a-z].*//')
+endif
+
+# Toolset configuration
+
+# Start with generic Unix settings, then modify based on the toolset.
+# Empty comments are a makefile trick to create a variable value with a trailing space.
+
 BUILD := build/$(build_target)
+LIBTAG := $(cross_target)
 CXX := g++
-AR := ar
-ARFLAGS := -rsu
-LDLIBS :=
-STRIP := @echo >/dev/null
-LIBTAG :=
-common_flags := -I. -march=ivybridge -mfpmath=sse
+common_flags := -march=ivybridge -mfpmath=sse
 diagnostic_flags := -Wall -Wextra -Werror
 cc_specific_flags :=
 cxx_specific_flags :=
@@ -32,10 +45,120 @@ objc_specific_flags :=
 cc_defines := -DNDEBUG=1
 nontest_flags := -O2
 test_flags := -O1
-ld_specific_flags := -L$(BUILD)
+cc_output := -o #
+include_path := -I.
+AR := ar
+ar_specific_flags := -rsu
+ar_output :=
+LDLIBS :=
+ld_specific_flags :=
+ld_output := -o #
+library_path := -L$(BUILD)
+lib_prefix := lib
+lib_suffix := .a
 exe_suffix :=
-dependency_file := dependencies.make
-static_library := $(BUILD)/lib$(project_name).a
+native_windows :=
+STRIP := @echo >/dev/null
+
+ifeq ($(build_host),cygwin)
+	exe_suffix := .exe
+endif
+
+ifeq ($(cross_target),msvc)
+	install_prefix := ~/Dropbox/Lib/msvc
+	windows_prefix := $(shell cygpath -aw $(install_prefix))
+	vcpkg_prefix := $(VCPKG_ROOT)/installed/x64-windows-static
+	CXX := cl
+	common_flags := /EHc /EHs /fp:precise /Gy /MT /MP /nologo /sdl /utf-8 /Y-
+	diagnostic_flags := /W4 /WX
+	cc_specific_flags :=
+	cxx_specific_flags := /permissive- /std:c++latest
+	cc_defines := /D_CRT_SECURE_NO_WARNINGS=1 /DNDEBUG=1 /DNOMINMAX=1 /DUNICODE=1 /D_UNICODE=1 /DWINVER=0x601 /D_WIN32_WINNT=0x601
+	nontest_flags := /O2
+	test_flags :=
+	cc_output := /Fo
+	include_path := /I. /I$(windows_prefix)/include /I$(vcpkg_prefix)/include
+	AR := lib
+	ar_specific_flags :=
+	ar_output := /OUT:
+	LD := link
+	LDLIBS :=
+	ld_specific_flags := /CGTHREADS:4 /MACHINE:X64 /NOLOGO /NXCOMPAT /SUBSYSTEM:CONSOLE
+	ld_output := /OUT:
+	library_path := /LIBPATH:$(BUILD) /LIBPATH:$(windows_prefix)/lib /LIBPATH:$(vcpkg_prefix)/lib
+	lib_prefix :=
+	lib_suffix := .lib
+	RC := rc
+	RCFLAGS :=
+	rc_output := /fo
+	native_windows := yes
+endif
+
+ifeq ($(cross_target),cygwin)
+	cc_defines += -D_REENTRANT=1 -D_XOPEN_SOURCE=700
+	cxx_specific_flags += -std=gnu++1z
+	ld_specific_flags += -s -Wl,--enable-auto-import
+endif
+
+ifeq ($(cross_target),mingw)
+	mingw_root := $(shell type -P gcc | sed -E 's!/bin/.+!!')
+	install_prefix := $(mingw_root)
+	common_flags += -mthreads
+	cc_defines += -DNOMINMAX=1 -DUNICODE=1 -D_UNICODE=1 -DWINVER=0x601 -D_WIN32_WINNT=0x601 -DPCRE_STATIC=1
+	cxx_specific_flags += -std=gnu++1z
+	ld_specific_flags += -s -Wl,--enable-auto-import
+	RC := windres
+	RCFLAGS := -O coff
+	rc_output :=
+	native_windows := yes
+endif
+
+ifeq ($(cross_target),darwin)
+	LIBTAG := mac
+	CXX := clang++
+	cc_defines += -D_DARWIN_C_SOURCE=1 -D_REENTRANT=1 -D_XOPEN_SOURCE=700
+	cxx_specific_flags += -std=c++1z -stdlib=libc++
+	ld_specific_flags += -framework Cocoa
+	STRIP := strip
+endif
+
+ifeq ($(cross_target),linux)
+	cc_defines += -D_REENTRANT=1 -D_XOPEN_SOURCE=700
+	cxx_specific_flags += -std=gnu++1z
+	ld_specific_flags += -s
+endif
+
+ifneq ($(shell grep -Fo sdl $(dependency_file)),)
+	cc_defines += -DSDL_MAIN_HANDLED=1
+endif
+
+# Collect the build tools and their options
+
+CC := $(CXX)
+OBJC := $(CXX)
+OBJCXX := $(CXX)
+CFLAGS := $(common_flags) $(diagnostic_flags) $(include_path) $(cc_specific_flags) $(cc_defines) $(nontest_flags)
+CXXFLAGS := $(common_flags) $(diagnostic_flags) $(include_path) $(cxx_specific_flags) $(cc_defines) $(nontest_flags)
+OBJCFLAGS := $(common_flags) $(diagnostic_flags) $(include_path) $(objc_specific_flags) $(cc_defines) $(nontest_flags)
+OBJCXXFLAGS := $(common_flags) $(diagnostic_flags) $(include_path) $(objc_specific_flags) $(cxx_specific_flags) $(cc_defines) $(nontest_flags)
+test_cflags := $(common_flags) $(diagnostic_flags) $(include_path) $(cc_specific_flags) $(cc_defines) $(test_flags)
+test_cxxflags := $(common_flags) $(diagnostic_flags) $(include_path) $(cxx_specific_flags) $(cc_defines) $(test_flags)
+test_objcflags := $(common_flags) $(diagnostic_flags) $(include_path) $(objc_specific_flags) $(cc_defines) $(test_flags)
+test_objcxxflags := $(common_flags) $(diagnostic_flags) $(include_path) $(objc_specific_flags) $(cxx_specific_flags) $(cc_defines) $(test_flags)
+
+ifeq ($(cross_target),msvc)
+	ARFLAGS := $(ar_specific_flags) $(library_path)
+	LDFLAGS := $(ld_specific_flags) $(library_path)
+	test_ldflags := $(ld_specific_flags) $(library_path)
+else
+	ARFLAGS := $(ar_specific_flags)
+	LD := $(CXX)
+	LDFLAGS := $(common_flags) $(diagnostic_flags) $(cc_defines) $(nontest_flags) $(ld_specific_flags) $(library_path)
+	test_ldflags := $(common_flags) $(diagnostic_flags) $(cc_defines) $(test_flags) $(ld_specific_flags) $(library_path)
+endif
+
+# File names
+
 all_headers := $(shell find $(project_name) -name *.hpp)
 library_headers := $(filter-out $(project_name)/library.hpp Makefile,$(shell grep -EL '// NOT INSTALLED' $(all_headers) Makefile)) # Dummy entry to avoid empty list
 all_sources := $(shell find $(project_name) -name *.c -or -name *.cpp -or -name *.m -or -name *.mm)
@@ -48,79 +171,13 @@ library_objects := $(shell sed -E 's!$(project_name)/([^ ]+)\.[a-z]+!$(BUILD)/\1
 doc_index := $(wildcard $(project_name)/index.md)
 doc_sources := $(shell find $(project_name) -name '*.md' | sort)
 doc_pages := doc/style.css doc/index.html $(patsubst $(project_name)/%.md,doc/%.html,$(doc_sources))
-scripts_dir := $(LIBROOT)/core-lib/scripts
+static_library := $(BUILD)/$(lib_prefix)$(project_name)$(lib_suffix)
 
-# System or tool specific variables
-
-ifeq ($(build_host),cygwin)
-	LIBTAG := cygwin
-	exe_suffix := .exe
-	ld_specific_flags += -Wl,--enable-auto-import
-endif
-
-ifeq ($(build_host),darwin)
-	LIBTAG := mac
-	CXX := clang++
-	cc_defines += -D_DARWIN_C_SOURCE=1
-	ld_specific_flags += -framework Cocoa
-endif
-
-ifeq ($(build_host),linux)
-	LIBTAG := linux
-endif
-
-ifeq ($(CXX),clang++)
-	STRIP := strip
-	cxx_specific_flags += -std=c++1z -stdlib=libc++
-else
-	cxx_specific_flags += -std=gnu++1z
-	ld_specific_flags += -s
-endif
-
-ifeq ($(cross_host),mingw)
-	LIBTAG := mingw
-	mingw_root := $(shell type -P gcc | sed -E 's!/bin/.+!!')
-	install_prefix := $(mingw_root)
-	common_flags += -mthreads
-	cc_defines += -DNOMINMAX=1 -DUNICODE=1 -D_UNICODE=1 -DWINVER=0x601 -D_WIN32_WINNT=0x601 -DPCRE_STATIC=1
-	RC := windres
-	RCFLAGS := -O coff
+ifneq ($(native_windows),)
 	resource_files := $(wildcard resources/*.rc) $(wildcard resources/*.ico)
 	resource_object := $(patsubst resources/%.rc,$(BUILD)/%.o,$(firstword $(resource_files)))
 	app_objects += $(resource_object)
-else
-	cc_defines += -D_REENTRANT=1 -D_XOPEN_SOURCE=700
 endif
-
-ifneq ($(shell grep -Fo sdl $(dependency_file)),)
-	cc_defines += -DSDL_MAIN_HANDLED=1
-endif
-
-ifeq ($(library_sources),)
-	static_target :=
-else
-	static_target := $(static_library)
-endif
-
-app_target := $(BUILD)/$(project_name)$(exe_suffix)
-unit_test_target := $(BUILD)/test-$(project_name)$(exe_suffix)
-
-# Collect the build tools and their options
-
-CC := $(CXX)
-OBJC := $(CXX)
-OBJCXX := $(CXX)
-LD := $(CXX)
-CFLAGS := $(common_flags) $(diagnostic_flags) $(cc_specific_flags) $(cc_defines) $(nontest_flags)
-CXXFLAGS := $(common_flags) $(diagnostic_flags) $(cxx_specific_flags) $(cc_defines) $(nontest_flags)
-OBJCFLAGS := $(common_flags) $(diagnostic_flags) $(objc_specific_flags) $(cc_defines) $(nontest_flags)
-OBJCXXFLAGS := $(common_flags) $(diagnostic_flags) $(objc_specific_flags) $(cxx_specific_flags) $(cc_defines) $(nontest_flags)
-LDFLAGS := $(common_flags) $(diagnostic_flags) $(cc_defines) $(nontest_flags) $(ld_specific_flags)
-test_cflags := $(common_flags) $(diagnostic_flags) $(cc_specific_flags) $(cc_defines) $(test_flags)
-test_cxxflags := $(common_flags) $(diagnostic_flags) $(cxx_specific_flags) $(cc_defines) $(test_flags)
-test_objcflags := $(common_flags) $(diagnostic_flags) $(objc_specific_flags) $(cc_defines) $(test_flags)
-test_objcxxflags := $(common_flags) $(diagnostic_flags) $(objc_specific_flags) $(cxx_specific_flags) $(cc_defines) $(test_flags)
-test_ldflags := $(common_flags) $(diagnostic_flags) $(cc_defines) $(test_flags) $(ld_specific_flags)
 
 # Work out which kind of installable target we want
 
@@ -142,6 +199,14 @@ else
 	endif
 endif
 
+app_target := $(BUILD)/$(project_name)$(exe_suffix)
+static_target :=
+test_target := $(BUILD)/test-$(project_name)$(exe_suffix)
+
+ifneq ($(library_sources),)
+	static_target := $(static_library)
+endif
+
 # Common build targets
 
 .DELETE_ON_ERROR:
@@ -152,7 +217,7 @@ endif
 all: static app tests doc
 
 unlink:
-	rm -f $(static_library) $(app_target) $(unit_test_target)
+	rm -f $(static_library) $(app_target) $(test_target)
 
 undoc:
 	rm -f doc/*.html
@@ -216,11 +281,11 @@ endif
 
 ifneq ($(test_sources),)
 
-tests: $(unit_test_target)
+tests: $(test_target)
 
 check: all
 	@rm -rf __test_*
-	$(unit_test_target)
+	$(test_target)
 	@rm -rf __test_*
 
 help-test: help-app
@@ -267,10 +332,10 @@ help-install: help-test
 	@echo "    symlinks   = Install the library using symlinks"
 	@echo "    uninstall  = Uninstall the library"
 
-ifeq ($(cross_host),mingw)
+ifeq ($(native_windows),yes)
 
 symlinks:
-	$(error make symlinks is not supported on $(cross_host), use make install)
+	$(error make symlinks is not supported on $(cross_target), use make install)
 
 else
 
@@ -300,10 +365,10 @@ help-install: help-test
 	@echo "    symlinks   = Install the application using symlinks"
 	@echo "    uninstall  = Uninstall the application"
 
-ifeq ($(cross_host),mingw)
+ifeq ($(native_windows),yes)
 
 symlinks:
-	$(error make symlinks is not supported on $(cross_host), use make install)
+	$(error make symlinks is not supported on $(cross_target), use make install)
 
 else
 
@@ -334,10 +399,10 @@ help-install: help-test
 	@echo "    symlinks   = Install the application using symlinks"
 	@echo "    uninstall  = Uninstall the application"
 
-ifeq ($(cross_host),mingw)
+ifeq ($(native_windows),yes)
 
 symlinks:
-	$(error make symlinks is not supported on $(cross_host), use make install)
+	$(error make symlinks is not supported on $(cross_target), use make install)
 
 else
 
@@ -372,8 +437,8 @@ endif
 
 # System specific link libraries
 
-ifneq ($(cross_host),mingw)
-	ifneq ($(cross_host),linux)
+ifeq ($(native_windows),)
+	ifneq ($(cross_target),linux)
 		LDLIBS += -liconv
 	endif
 	LDLIBS += -lpthread -lz
@@ -383,40 +448,40 @@ endif
 
 $(BUILD)/%-test.o: $(project_name)/%-test.c
 	@mkdir -p $(dir $@)
-	$(CC) $(test_cflags) -c $< -o $@
+	$(CC) $(test_cflags) -c $< $(cc_output)$@
 
 $(BUILD)/%-test.o: $(project_name)/%-test.cpp
 	@mkdir -p $(dir $@)
-	$(CXX) $(test_cxxflags) -c $< -o $@
+	$(CXX) $(test_cxxflags) -c $< $(cc_output)$@
 
 $(BUILD)/%-test.o: $(project_name)/%-test.m
 	@mkdir -p $(dir $@)
-	$(OBJC) $(test_objcflags) -c $< -o $@
+	$(OBJC) $(test_objcflags) -c $< $(cc_output)$@
 
 $(BUILD)/%-test.o: $(project_name)/%-test.mm
 	@mkdir -p $(dir $@)
-	$(OBJCXX) $(test_objcxxflags) -c $< -o $@
+	$(OBJCXX) $(test_objcxxflags) -c $< $(cc_output)$@
 
 $(BUILD)/%.o: $(project_name)/%.c
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< $(cc_output)$@
 
 $(BUILD)/%.o: $(project_name)/%.cpp
 	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< $(cc_output)$@
 
 $(BUILD)/%.o: $(project_name)/%.m
 	@mkdir -p $(dir $@)
-	$(OBJC) $(OBJCFLAGS) -c $< -o $@
+	$(OBJC) $(OBJCFLAGS) -c $< $(cc_output)$@
 
 $(BUILD)/%.o: $(project_name)/%.mm
 	@mkdir -p $(dir $@)
-	$(OBJCXX) $(OBJCXXFLAGS) -c $< -o $@
+	$(OBJCXX) $(OBJCXXFLAGS) -c $< $(cc_output)$@
 
-ifeq ($(cross_host),mingw)
+ifeq ($(cross_target),mingw)
 $(resource_object): $(resource_files)
 	mkdir -p $(dir $@)
-	$(RC) $(RCFLAGS) $< $@
+	$(RC) $(RCFLAGS) $< $(rc_output) $@
 endif
 
 # Rules for building the final target from objects
@@ -424,18 +489,18 @@ endif
 $(static_library): $(library_objects)
 	@mkdir -p $(dir $@)
 	@rm -f $@
-	$(AR) $(ARFLAGS) $@ $^
+	$(AR) $(ARFLAGS) $(ar_output)$@ $^
 
 $(app_target): $(app_objects) $(static_target)
 	@mkdir -p $(dir $@)
 	@rm -f $@
-	$(LD) $(LDFLAGS) $^ $(LDLIBS) -o $@
+	$(LD) $(LDFLAGS) $^ $(LDLIBS) $(ld_output)$@
 	$(STRIP) $@
 
-$(unit_test_target): $(test_objects) $(static_target)
+$(test_target): $(test_objects) $(static_target)
 	@mkdir -p $(dir $@)
 	@rm -f $@
-	$(LD) $(test_ldflags) $^ $(LDLIBS) -o $@
+	$(LD) $(test_ldflags) $^ $(LDLIBS) $(ld_output)$@
 	$(STRIP) $@
 
 # Other build rules
@@ -444,6 +509,9 @@ $(project_name)/library.hpp: $(library_headers)
 	echo "#pragma once" > $@
 	echo >> $@
 	echo $(sort $(library_headers)) | tr ' ' '\n' | sed -E 's/.+/#include "&"/' >> $@
+
+$(project_name)/unit-test.cpp: $(filter-out $(project_name)/unit-test.cpp,$(test_sources))
+	$(scripts_dir)/make-tests
 
 ifeq ($(doc_index),)
 doc/index.html: $(doc_sources) $(scripts_dir)/make-doc $(scripts_dir)/make-index

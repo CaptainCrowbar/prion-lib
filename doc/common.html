@@ -67,17 +67,6 @@
 <h2 id="preprocessor-macros">Preprocessor macros</h2>
 <div class="defns">
 <ul>
-<li><code>#define</code> <strong><code>RS_ASSUME</code></strong><code>(expr)</code> <em>[compiler may assume <code>bool(expr)</code> is always true]</em></li>
-<li><code>#define</code> <strong><code>RS_LIKELY</code></strong><code>(expr)</code> <em>[returns <code>bool(expr)</code>; compiler should optimize for the true case]</em></li>
-<li><code>#define</code> <strong><code>RS_UNLIKELY</code></strong><code>(expr)</code> <em>[returns <code>bool(expr)</code>; compiler should optimize for the false case]</em></li>
-<li><code>#define</code> <strong><code>RS_NOTREACHED</code></strong> <em>[compiler may assume this line will never be reached]</em></li>
-</ul>
-<p>Optimization hints. These have no semantic effect on the program (if the
-absolute conditions in <code>RS_ASSUME</code> and <code>RS_NOTREACHED</code> are not violated), but
-give the compiler hints concerning its expected behaviour.</p>
-</div>
-<div class="defns">
-<ul>
 <li><code>#define</code> <strong><code>RS_BITMASK_OPERATORS</code></strong><code>(EC)</code></li>
 </ul>
 <p>Defines bit manipulation and related operators for an <code>enum class</code> (unary <code>!</code>,
@@ -872,9 +861,9 @@ negative, or if <code>T</code> is signed and the true result would be out of ran
 truncated to an integer). Behaviour is undefined if the argument is negative.</p>
 </div>
 <h3 id="bitwise-operations">Bitwise operations</h3>
-<p>For all functions in this section that are templated on the argument type,
-results are unspecified if the argument is negative, and the function will
-fail to compile if the argument is not an integer.</p>
+<p>For all functions in this section that are templated on the argument type, the
+function will fail to compile if <code>T</code> is not an integer, and behaviour is
+undefined if <code>T</code> is signed and the argument is negative.</p>
 <div class="defns">
 <ul>
 <li><code>template &lt;typename T&gt; constexpr int</code> <strong><code>ibits</code></strong><code>(T t) noexcept</code></li>
@@ -886,8 +875,9 @@ fail to compile if the argument is not an integer.</p>
 <li><code>template &lt;typename T&gt; constexpr T</code> <strong><code>ifloor2</code></strong><code>(T t) noexcept</code></li>
 <li><code>template &lt;typename T&gt; constexpr T</code> <strong><code>iceil2</code></strong><code>(T t) noexcept</code></li>
 </ul>
-<p>Return the argument rounded down or up to a power of 2. The result of
-<code>iceil2()</code> is unspecified if the correct answer is not representable.</p>
+<p>Return the argument rounded down or up to a power of 2. For <code>iceil2()</code>,
+behaviour is undefined if the argument is large enough that the correct answer
+is not representable.</p>
 </div>
 <div class="defns">
 <ul>

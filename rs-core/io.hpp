@@ -20,6 +20,12 @@
     #define RS_W32(x) x
 #endif
 
+#ifdef _MSC_VER
+    #define RS_US_NAME(x) _##x
+#else
+    #define RS_US_NAME(x) ::x
+#endif
+
 namespace RS {
 
     // I/O abstract base class
@@ -120,7 +126,7 @@ namespace RS {
                 int c = getc();
                 if (c == '\n' || c == EOF)
                     break;
-                s += c;
+                s += char(c);
             }
             return s;
         }
@@ -227,14 +233,14 @@ namespace RS {
         virtual void flush() noexcept override;
         virtual int getc() noexcept override;
         virtual bool is_open() const noexcept override { return bool(fp); }
-        virtual bool is_terminal() const noexcept override { return isatty(fd()); }
+        virtual bool is_terminal() const noexcept override { return RS_US_NAME(isatty)(fd()); }
         virtual void putc(char c) override;
         virtual size_t read(void* ptr, size_t maxlen) noexcept override;
         virtual std::string read_line() override;
         virtual void seek(ptrdiff_t offset, int which = SEEK_CUR) noexcept override;
         virtual ptrdiff_t tell() noexcept override;
         virtual size_t write(const void* ptr, size_t len) override;
-        int fd() const noexcept { return fileno(get()); }
+        int fd() const noexcept { return RS_US_NAME(fileno)(get()); }
         FILE* get() const noexcept { return fp.get(); }
         FILE* release() noexcept { return fp.release(); }
         void ungetc(char c);
@@ -246,8 +252,12 @@ namespace RS {
         Resource<FILE*> fp;
     };
 
-        inline Cstdio::Cstdio(FILE* f, bool owner) noexcept:
-        fp(f, owner ? [] (FILE* f) { if (f) ::fclose(f); } : [] (FILE*) {}) {}
+        inline Cstdio::Cstdio(FILE* f, bool owner) noexcept {
+            if (owner)
+                fp = {f, [] (FILE* f) { if (f) ::fclose(f); }};
+            else
+                fp = {f, [] (FILE*) {}};
+        }
 
         inline Cstdio::Cstdio(const File& f, mode m) {
             if (f.empty() || f.name() == "-") {
@@ -399,7 +409,7 @@ namespace RS {
         virtual void close() noexcept override;
         virtual void flush() noexcept override;
         virtual bool is_open() const noexcept override { return fd.get() != -1; }
-        virtual bool is_terminal() const noexcept override { return isatty(get()); }
+        virtual bool is_terminal() const noexcept override { return RS_US_NAME(isatty)(get()); }
         virtual size_t read(void* ptr, size_t maxlen) noexcept override;
         virtual void seek(ptrdiff_t offset, int which = SEEK_CUR) noexcept override;
         virtual ptrdiff_t tell() noexcept override;
@@ -415,10 +425,21 @@ namespace RS {
         static Fdio std_error() noexcept { return Fdio(2, false); }
     private:
         Resource<int, -1> fd;
+        #ifdef _MSC_VER
+            using iosize = unsigned;
+            using ofsize = long;
+        #else
+            using iosize = size_t;
+            using ofsize = ptrdiff_t;
+        #endif
     };
 
-        inline Fdio::Fdio(int f, bool owner) noexcept:
-        fd(f, owner ? [] (int f) { if (f != -1) ::close(f); } : [] (int) {}) {}
+        inline Fdio::Fdio(int f, bool owner) noexcept {
+            if (owner)
+                fd = {f, [] (int f) { if (f != -1) RS_US_NAME(close)(f); }};
+            else
+                fd = {f, [] (int) {}};
+        }
 
         inline Fdio::Fdio(const File& f, mode m) {
             if (f.empty() || f.name() == "-") {
@@ -453,7 +474,7 @@ namespace RS {
             int f = fd.release();
             if (f != -1) {
                 errno = 0;
-                ::close(f);
+                RS_US_NAME(close)(f);
                 set_error(errno);
             }
         }
@@ -474,43 +495,43 @@ namespace RS {
 
         inline size_t Fdio::read(void* ptr, size_t maxlen) noexcept {
             errno = 0;
-            auto rc = ::read(get(), ptr, maxlen);
+            auto rc = RS_US_NAME(read)(get(), ptr, iosize(maxlen));
             set_error(errno);
             return rc;
         }
 
         inline void Fdio::seek(ptrdiff_t offset, int which) noexcept {
             errno = 0;
-            ::lseek(get(), offset, which);
+            RS_US_NAME(lseek)(get(), ofsize(offset), which);
             set_error(errno);
         }
 
         inline ptrdiff_t Fdio::tell() noexcept {
             errno = 0;
-            ptrdiff_t offset = ::lseek(get(), 0, SEEK_CUR);
+            auto offset = RS_US_NAME(lseek)(get(), 0, SEEK_CUR);
             set_error(errno);
             return offset;
         }
 
         inline size_t Fdio::write(const void* ptr, size_t len) {
             errno = 0;
-            size_t n = ::write(get(), ptr, len);
+            size_t n = RS_US_NAME(write)(get(), ptr, iosize(len));
             set_error(errno);
             return n;
         }
 
         inline Fdio Fdio::dup() noexcept {
             errno = 0;
-            int rc = ::dup(get());
+            int rc = RS_US_NAME(dup)(get());
             set_error(errno);
             return Fdio(rc);
         }
 
-        inline Fdio Fdio::dup(int fd) noexcept {
+        inline Fdio Fdio::dup(int f) noexcept {
             errno = 0;
-            ::dup2(get(), fd);
+            RS_US_NAME(dup2)(get(), f);
             set_error(errno);
-            return Fdio(fd);
+            return Fdio(f);
         }
 
         inline Fdio Fdio::null() noexcept {
@@ -528,7 +549,7 @@ namespace RS {
                 (void)winmem;
                 ::pipe(fds);
             #else
-                _pipe(fds, winmem, O_BINARY);
+                _pipe(fds, iosize(winmem), O_BINARY);
             #endif
             int err = errno;
             std::pair<Fdio, Fdio> pair;
@@ -571,8 +592,12 @@ namespace RS {
             Resource<void*> fh;
         };
 
-            inline Winio::Winio(void* f, bool owner) noexcept:
-            fh(f, owner ? [] (void* f) { if (f && f != INVALID_HANDLE_VALUE) CloseHandle(f); } : [] (void*) {}) {}
+            inline Winio::Winio(void* f, bool owner) noexcept {
+                if (owner)
+                    fh = {f, [] (void* f) { if (f && f != INVALID_HANDLE_VALUE) CloseHandle(f); }};
+                else
+                    fh = {f, [] (void*) {}};
+            }
 
             inline Winio::Winio(const File& f, mode m) {
                 if (f.empty() || f.name() == "-") {
@@ -622,11 +647,11 @@ namespace RS {
             inline bool Winio::is_terminal() const noexcept {
                 auto h = get();
                 if (h == GetStdHandle(STD_INPUT_HANDLE))
-                    return isatty(0);
+                    return RS_US_NAME(isatty)(0);
                 else if (h == GetStdHandle(STD_OUTPUT_HANDLE))
-                    return isatty(1);
+                    return RS_US_NAME(isatty)(1);
                 else if (h == GetStdHandle(STD_ERROR_HANDLE))
-                    return isatty(2);
+                    return RS_US_NAME(isatty)(2);
                 else
                     return false;
             }
@@ -634,7 +659,7 @@ namespace RS {
             inline size_t Winio::read(void* ptr, size_t maxlen) noexcept {
                 DWORD n = 0;
                 SetLastError(0);
-                ReadFile(get(), ptr, maxlen, &n, nullptr);
+                ReadFile(get(), ptr, uint32_t(maxlen), &n, nullptr);
                 set_error(GetLastError(), windows_category());
                 return n;
             }
@@ -666,7 +691,7 @@ namespace RS {
             inline size_t Winio::write(const void* ptr, size_t len) {
                 DWORD n = 0;
                 SetLastError(0);
-                WriteFile(get(), ptr, len, &n, nullptr);
+                WriteFile(get(), ptr, uint32_t(len), &n, nullptr);
                 set_error(GetLastError(), windows_category());
                 return n;
             }

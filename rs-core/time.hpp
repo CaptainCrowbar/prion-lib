@@ -57,7 +57,7 @@ namespace RS {
             #else
                 t = _mkgmtime(&stm);
             #endif
-        system_clock::time_point::rep extra(fsec * system_clock::time_point::duration(seconds(1)).count());
+        system_clock::time_point::rep extra(int64_t(fsec * system_clock::time_point::duration(seconds(1)).count()));
         return system_clock::from_time_t(t) + system_clock::time_point::duration(extra);
     }
 

@@ -12,31 +12,23 @@ By Ross Smith
 
 A typical test module will look something like this:
 
-    #include "project/module.hpp"
+    #include "project1/module1.hpp"
     #include "rs-core/unit-test.hpp"
-    TEST_MAIN;
-    TEST_MODULE(project, module) {
-        int answer;
-        TRY(answer = 6 * 9);
+    void test_project1_module1_stuff() {
+        int answer = 0;
+        TRY(answer = multiply(6, 9));
         TEST_EQUAL(answer, 42);
     }
 
+Test functions follow the naming convention
+`test_`_project_`_`_module_`_`_description_`()`; the module name is expected
+to match the test file name (_module_`-test.cpp`). The test compilation script
+(`scripts/make-tests`) finds all of these functions and assembles them into a
+`unit-test.cpp` file; the `Makefile` regenerates this if any test file
+changes.
+
 Please note that all of the macros here may evaluate their arguments more than
 once.
-
-* `#define` **`TEST_MAIN`**
-
-Supplies the main function for a test program. This must appear at global
-scope in one module if there is no user-supplied `main()` function. The main
-function will check for a `UNIT` environment variable, parsing it as a regular
-expression, and only the tests whose name (in _"project/module"_ form)
-contains the pattern will be run. The return value from `TEST_MAIN` is zero on
-success, 1 if any tests failed.
-
-* `#define` **`TEST_MODULE`**`(project, module)`
-
-This supplies the function signature for a module test function (see above for
-typical usage).
 
 * `#define` **`FAIL`**`(message)`
 

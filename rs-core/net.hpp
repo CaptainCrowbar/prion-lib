@@ -27,6 +27,7 @@
 #endif
 
 RS_LDLIB(mingw: ws2_32);
+RS_LDLIB(msvc: ws2_32);
 
 namespace RS {
 
@@ -105,6 +106,12 @@ namespace RS {
 
     namespace RS_Detail {
 
+        #ifdef _MSC_VER
+            using socket_iosize = int;
+        #else
+            using socket_iosize = size_t;
+        #endif
+
         template <typename T>
         struct NetResult {
             T res = 0;
@@ -149,9 +156,7 @@ namespace RS {
 
     // IP address classes
 
-    class IPv4:
-    public LessThanComparable<IPv4>,
-    private NetBase {
+    class IPv4 {
     public:
         static constexpr size_t size = 4;
         IPv4() noexcept { udata = 0; }
@@ -181,6 +186,8 @@ namespace RS {
 
         inline IPv4::IPv4(const U8string& s) {
             using namespace RS_Detail;
+            static const NetBase init;
+            (void)init;
             clear_error();
             auto rc = net_call(inet_pton(AF_INET, s.data(), bytes)).fail_if(-1, "inet_pton()");
             if (rc.res == 0)
@@ -189,6 +196,8 @@ namespace RS {
 
         inline U8string IPv4::str() const {
             using namespace RS_Detail;
+            static const NetBase init;
+            (void)init;
             auto vbytes = const_cast<uint8_t*>(bytes); // Windows brain damage
             U8string s(16, '\0');
             for (;;) {
@@ -212,12 +221,14 @@ namespace RS {
         }
 
         inline bool operator==(IPv4 lhs, IPv4 rhs) noexcept { return lhs.value() == rhs.value(); }
+        inline bool operator!=(IPv4 lhs, IPv4 rhs) noexcept { return lhs.value() != rhs.value(); }
         inline bool operator<(IPv4 lhs, IPv4 rhs) noexcept { return lhs.value() < rhs.value(); }
+        inline bool operator>(IPv4 lhs, IPv4 rhs) noexcept { return lhs.value() > rhs.value(); }
+        inline bool operator<=(IPv4 lhs, IPv4 rhs) noexcept { return lhs.value() <= rhs.value(); }
+        inline bool operator>=(IPv4 lhs, IPv4 rhs) noexcept { return lhs.value() >= rhs.value(); }
         inline std::ostream& operator<<(std::ostream& out, IPv4 ip) { return out << ip.str(); }
 
-    class IPv6:
-    public LessThanComparable<IPv6>,
-    private NetBase {
+    class IPv6 {
     public:
         static constexpr size_t size = 16;
         IPv6() noexcept { memset(bytes, 0, sizeof(bytes)); }
@@ -244,6 +255,8 @@ namespace RS {
 
         inline IPv6::IPv6(const U8string& s) {
             using namespace RS_Detail;
+            static const NetBase init;
+            (void)init;
             clear_error();
             auto rc = net_call(inet_pton(AF_INET6, s.data(), bytes)).fail_if(-1, "inet_pton()");
             if (rc.res == 0)
@@ -252,6 +265,8 @@ namespace RS {
 
         inline U8string IPv6::str() const {
             using namespace RS_Detail;
+            static const NetBase init;
+            (void)init;
             auto vbytes = const_cast<uint8_t*>(bytes); // Windows brain damage
             U8string s(40, '\0');
             for (;;) {
@@ -275,22 +290,25 @@ namespace RS {
         }
 
         inline bool operator==(IPv6 lhs, IPv6 rhs) noexcept { return memcmp(&lhs, &rhs, IPv6::size) == 0; }
+        inline bool operator!=(IPv6 lhs, IPv6 rhs) noexcept { return ! (lhs == rhs); }
         inline bool operator<(IPv6 lhs, IPv6 rhs) noexcept { return memcmp(&lhs, &rhs, IPv6::size) < 0; }
+        inline bool operator>(IPv6 lhs, IPv6 rhs) noexcept { return rhs < lhs; }
+        inline bool operator<=(IPv6 lhs, IPv6 rhs) noexcept { return ! (rhs < lhs); }
+        inline bool operator>=(IPv6 lhs, IPv6 rhs) noexcept { return ! (lhs < rhs); }
         inline std::ostream& operator<<(std::ostream& out, IPv6 ip) { return out << ip.str(); }
 
-    class SocketAddress:
-    public LessThanComparable<SocketAddress>,
-    private NetBase {
+    class SocketAddress {
     private:
-        union {
+        union sa_union_type {
             sockaddr base;
             sockaddr_in inet4;
             sockaddr_in6 inet6;
-        } sa_union;
+        };
+        sa_union_type sa_union;
         size_t current_size = 0;
     public:
-        static constexpr size_t max_size = sizeof(sa_union);
-        SocketAddress() noexcept { memset(&sa_union, 0, sizeof(sa_union)); }
+        static constexpr size_t max_size = sizeof(sa_union_type);
+        SocketAddress() noexcept { memset(&sa_union, 0, sizeof(sa_union_type)); }
         SocketAddress(IPv4 ip, uint16_t port = 0) noexcept;
         SocketAddress(IPv6 ip, uint16_t port = 0, uint32_t flow = 0, uint32_t scope = 0) noexcept;
         SocketAddress(const void* ptr, size_t n) noexcept;
@@ -322,7 +340,7 @@ namespace RS {
 
         inline SocketAddress::SocketAddress(IPv6 ip, uint16_t port, uint32_t flow, uint32_t scope) noexcept:
         SocketAddress() {
-            memset(&sa_union, 0, sizeof(sa_union));
+            memset(&sa_union, 0, sizeof(sa_union_type));
             sa_union.inet6.sin6_family = AF_INET6;
             sa_union.inet6.sin6_port = htons(port);
             sa_union.inet6.sin6_flowinfo = htonl(flow);
@@ -400,13 +418,14 @@ namespace RS {
             current_size = n;
         }
 
-        inline bool operator==(const SocketAddress& lhs, const SocketAddress& rhs) noexcept {
-            return mem_compare(lhs.native(), lhs.size(), rhs.native(), rhs.size()) == 0;
-        }
-
-        inline bool operator<(const SocketAddress& lhs, const SocketAddress& rhs) noexcept {
-            return mem_compare(lhs.native(), lhs.size(), rhs.native(), rhs.size()) < 0;
-        }
+        inline bool operator==(const SocketAddress& lhs, const SocketAddress& rhs) noexcept
+            { return mem_compare(lhs.native(), lhs.size(), rhs.native(), rhs.size()) == 0; }
+        inline bool operator!=(const SocketAddress& lhs, const SocketAddress& rhs) noexcept { return ! (lhs == rhs); }
+        inline bool operator<(const SocketAddress& lhs, const SocketAddress& rhs) noexcept
+            { return mem_compare(lhs.native(), lhs.size(), rhs.native(), rhs.size()) < 0; }
+        inline bool operator>(const SocketAddress& lhs, const SocketAddress& rhs) noexcept { return rhs < lhs; }
+        inline bool operator<=(const SocketAddress& lhs, const SocketAddress& rhs) noexcept { return ! (rhs < lhs); }
+        inline bool operator>=(const SocketAddress& lhs, const SocketAddress& rhs) noexcept { return ! (lhs < rhs); }
 
         inline std::ostream& operator<<(std::ostream& out, const SocketAddress& s) {
             if (s == SocketAddress())
@@ -438,6 +457,11 @@ namespace RS {
             static constexpr int eai_noname = WSAHOST_NOT_FOUND;
             static constexpr int eai_overflow = ERROR_INSUFFICIENT_BUFFER;
             static constexpr int eai_system = -1; // No equivalent on Windows
+        #endif
+        #ifdef _MSC_VER
+            using name_size = uint32_t;
+        #else
+            using name_size = size_t;
         #endif
         class addrinfo_error_category:
         public std::error_category {
@@ -506,7 +530,7 @@ namespace RS {
             U8string name(100, '\0');
             for (;;) {
                 clear_error();
-                int rc = getnameinfo(addr.native(), addr.size(), &name[0], name.size(), nullptr, 0, 0);
+                int rc = getnameinfo(addr.native(), socklen_t(addr.size()), &name[0], name_size(name.size()), nullptr, 0, 0);
                 int err = get_error();
                 switch (rc) {
                     case 0:             return null_term_str(name);
@@ -614,9 +638,9 @@ namespace RS {
             clear_error();
             while (written < len) {
                 if (to)
-                    rc = net_call(::sendto(native(), csrc, len, flags, to->native(), to->size()));
+                    rc = net_call(::sendto(native(), csrc, socket_iosize(len), flags, to->native(), socket_iosize(to->size())));
                 else
-                    rc = net_call(::send(native(), csrc, len, flags));
+                    rc = net_call(::send(native(), csrc, socket_iosize(len), flags));
                 if (rc.res == -1 && rc.err == e_again)
                     sleep_for(microseconds(10));
                 else
@@ -642,10 +666,10 @@ namespace RS {
             using namespace RS_Detail;
             if (local) {
                 clear_error();
-                net_call(::bind(native(), local.native(), local.size())).fail_if(-1, "bind()");
+                net_call(::bind(native(), local.native(), socket_iosize(local.size()))).fail_if(-1, "bind()");
             }
             clear_error();
-            net_call(::connect(native(), remote.native(), remote.size())).fail_if(-1, "connect()");
+            net_call(::connect(native(), remote.native(), socket_iosize(remote.size()))).fail_if(-1, "connect()");
             control_blocking(native(), false);
             control_nagle(native(), false);
         }
@@ -682,7 +706,7 @@ namespace RS {
             ::setsockopt(sock.native(), SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
             if (local) {
                 clear_error();
-                net_call(::bind(sock.native(), local.native(), local.size())).fail_if(-1, "bind()");
+                net_call(::bind(sock.native(), local.native(), socket_iosize(local.size()))).fail_if(-1, "bind()");
             }
             control_blocking(native(), false);
             clear_error();
@@ -704,11 +728,11 @@ namespace RS {
             using namespace RS_Detail;
             if (local) {
                 clear_error();
-                net_call(::bind(native(), local.native(), local.size())).fail_if(-1, "bind()");
+                net_call(::bind(native(), local.native(), socket_iosize(local.size()))).fail_if(-1, "bind()");
             }
             if (remote) {
                 clear_error();
-                net_call(::connect(native(), remote.native(), remote.size())).fail_if(-1, "connect()");
+                net_call(::connect(native(), remote.native(), socket_iosize(remote.size()))).fail_if(-1, "connect()");
             }
             control_blocking(native(), false);
         }
@@ -846,11 +870,11 @@ namespace RS {
             clear_error();
             if (from) {
                 socklen_t addrlen = SocketAddress::max_size;
-                rc = net_call(::recvfrom(native(), cdst, maxlen, 0, from->native(), &addrlen)).fail_if(-1, "recvfrom()");
+                rc = net_call(::recvfrom(native(), cdst, socket_iosize(maxlen), 0, from->native(), &addrlen)).fail_if(-1, "recvfrom()");
                 if (rc.res > 0)
                     from->set_size(addrlen);
             } else {
-                rc = net_call(::recv(native(), cdst, maxlen, 0)).fail_if(-1, "recv()");
+                rc = net_call(::recv(native(), cdst, socket_iosize(maxlen), 0)).fail_if(-1, "recv()");
             }
             if (rc.res == 0)
                 do_close();

@@ -94,7 +94,7 @@
     #include <unistd.h>
 #endif
 
-// Fix GNU brain damage
+// GNU brain damage
 
 #ifdef __GNUC__
     #ifdef major
@@ -105,16 +105,14 @@
     #endif
 #endif
 
-// Other preprocessor macros
+// Microsoft brain damage
 
-#ifdef __clang__
-    #define RS_ASSUME(expr) __builtin_assume(bool(expr))
-#else
-    #define RS_ASSUME(expr)
+#ifdef _MSC_VER
+    #pragma warning(disable: 4127) // conditional expression is constant
+    #pragma warning(disable: 4310) // cast truncates constant value
 #endif
-#define RS_LIKELY(expr) bool(__builtin_expect(bool(expr), 1))
-#define RS_UNLIKELY(expr) bool(__builtin_expect(bool(expr), 0))
-#define RS_NOTREACHED __builtin_unreachable()
+
+// Other preprocessor macros
 
 #define RS_BITMASK_OPERATORS(EC) \
     inline constexpr bool operator!(EC x) noexcept { return std::underlying_type_t<EC>(x) == 0; } \
@@ -128,16 +126,22 @@
 
 #define RS_OVERLOAD(f) [] (auto&&... args) { return f(std::forward<decltype(args)>(args)...); }
 
+#ifdef __GNUC__
+    #define RS_ATTR_UNUSED __attribute__((__unused__))
+#else
+    #define RS_ATTR_UNUSED
+#endif
+
 #define RS_ENUM_IMPLEMENTATION(EnumType, IntType, class_tag, name_prefix, first_value, first_name, ...) \
     enum class_tag EnumType: IntType { first_name = first_value, __VA_ARGS__, RS_enum_sentinel }; \
-    inline __attribute__((__unused__)) std::ostream& operator<<(std::ostream& out, EnumType t) { \
+    inline RS_ATTR_UNUSED std::ostream& operator<<(std::ostream& out, EnumType t) { \
         ::RS::RS_Detail::write_enum(out, t, first_value, name_prefix, #first_name "," #__VA_ARGS__); \
         return out; \
     } \
-    constexpr __attribute__((__unused__)) bool enum_is_valid(EnumType t) noexcept { \
+    constexpr RS_ATTR_UNUSED bool enum_is_valid(EnumType t) noexcept { \
         return IntType(t) >= IntType(first_value) && IntType(t) < IntType(EnumType::RS_enum_sentinel); \
     } \
-    inline __attribute__((__unused__)) std::vector<EnumType> RS_enum_values(EnumType) { \
+    inline RS_ATTR_UNUSED std::vector<EnumType> RS_enum_values(EnumType) { \
         IntType n = IntType(EnumType::RS_enum_sentinel) - IntType(first_value); \
         std::vector<EnumType> v(n); \
         for (IntType i = 0; i < n; ++i) \
@@ -233,7 +237,7 @@ namespace RS {
     template <typename Range> using RangeValue = typename RS_Detail::CommonRangeTraits<Range>::value_type;
 
     constexpr const char* ascii_whitespace = "\t\n\v\f\r ";
-    constexpr size_t npos = std::string::npos;
+    constexpr size_t npos = size_t(-1);
 
     template <typename T> constexpr auto as_signed(T t) noexcept { return static_cast<std::make_signed_t<T>>(t); }
     template <typename T> constexpr auto as_unsigned(T t) noexcept { return static_cast<std::make_unsigned_t<T>>(t); }
@@ -273,11 +277,14 @@ namespace RS {
             s += digits[b % 16];
         }
 
+        template <typename T, bool = std::is_signed<T>::value> struct SimpleAbs { constexpr T operator()(T t) const noexcept { return t; } };
+        template <typename T> struct SimpleAbs<T, true> { constexpr T operator()(T t) const noexcept { return t < T(0) ? - t : t; } };
+
         template <typename T>
         U8string int_to_string(T x, int base, size_t digits) {
             bool neg = x < T(0);
-            auto b = as_unsigned(base);
-            auto y = neg ? as_unsigned(- x) : as_unsigned(x);
+            auto b = as_unsigned(T(base));
+            auto y = as_unsigned(SimpleAbs<T>()(x));
             U8string s;
             do {
                 auto d = int(y % b);
@@ -482,6 +489,15 @@ namespace RS {
     template <typename T> using LittleEndian = Endian<T, little_endian>;
 
     template <typename T, ByteOrder B> inline std::ostream& operator<<(std::ostream& out, Endian<T, B> t) { return out << t.get(); }
+
+    static_assert(sizeof(BigEndian<uint8_t>) == 1);
+    static_assert(sizeof(BigEndian<uint16_t>) == 2);
+    static_assert(sizeof(BigEndian<uint32_t>) == 4);
+    static_assert(sizeof(BigEndian<uint64_t>) == 8);
+    static_assert(sizeof(LittleEndian<uint8_t>) == 1);
+    static_assert(sizeof(LittleEndian<uint16_t>) == 2);
+    static_assert(sizeof(LittleEndian<uint32_t>) == 4);
+    static_assert(sizeof(LittleEndian<uint64_t>) == 8);
 
     // Exceptions
 
@@ -936,7 +952,7 @@ namespace RS {
         IntegerSequenceIterator() = default;
         IntegerSequenceIterator(T init, T delta): cur(init), del(delta) {}
         const T& operator*() const noexcept { return cur; }
-        IntegerSequenceIterator& operator+=(ptrdiff_t n) noexcept { cur += n * del; return *this; }
+        IntegerSequenceIterator& operator+=(ptrdiff_t n) noexcept { cur = T(cur + n * del); return *this; }
         ptrdiff_t operator-(const IntegerSequenceIterator& rhs) const noexcept { return (ptrdiff_t(cur) - ptrdiff_t(rhs.cur)) / ptrdiff_t(del); }
     private:
         T cur, del;
@@ -1062,11 +1078,11 @@ namespace RS {
 
         template <typename T> constexpr T unsigned_gcd(T a, T b) noexcept { return b == T(0) ? a : unsigned_gcd(b, a % b); }
 
-        template <typename T, bool I = std::is_integral<T>::value, bool F = std::is_floating_point<T>::value>
+        template <typename T, char Mode = NumberMode<T>::value>
         struct ShiftLeft;
 
         template <typename T>
-        struct ShiftLeft<T, true, false> {
+        struct ShiftLeft<T, 'S'> {
             static constexpr int maxbits = 8 * sizeof(T);
             T operator()(T t, int n) const {
                 if (n <= - maxbits || n >= maxbits)
@@ -1081,7 +1097,20 @@ namespace RS {
         };
 
         template <typename T>
-        struct ShiftLeft<T, false, true> {
+        struct ShiftLeft<T, 'U'> {
+            static constexpr int maxbits = 8 * sizeof(T);
+            T operator()(T t, int n) const {
+                if (n <= - maxbits || n >= maxbits)
+                    return 0;
+                else if (n >= 0)
+                    return t << n;
+                else
+                    return t >> - n;
+            }
+        };
+
+        template <typename T>
+        struct ShiftLeft<T, 'F'> {
             T operator()(T t, int n) const {
                 using std::ldexp;
                 return ldexp(t, n);
@@ -1223,17 +1252,39 @@ namespace RS {
 
     }
 
-    template <typename T>
-    constexpr size_t ibits(T t) noexcept {
-        static_assert(std::is_integral<T>::value);
-        return __builtin_popcountll(uint64_t(t));
-    }
+    #ifdef __GNUC__
 
-    template <typename T>
-    constexpr size_t ilog2p1(T t) noexcept {
-        static_assert(std::is_integral<T>::value);
-        return t ? 64 - __builtin_clzll(uint64_t(t)) : 0;
-    }
+        template <typename T>
+        constexpr size_t ibits(T t) noexcept {
+            static_assert(std::is_integral<T>::value);
+            return __builtin_popcountll(uint64_t(t));
+        }
+
+        template <typename T>
+        constexpr size_t ilog2p1(T t) noexcept {
+            static_assert(std::is_integral<T>::value);
+            return t ? 64 - __builtin_clzll(uint64_t(t)) : 0;
+        }
+
+    #else
+
+        template <typename T>
+        constexpr size_t ibits(T t) noexcept {
+            static constexpr uint8_t bits16[16] = {0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4};
+            size_t n = 0;
+            for (; t; t >>= 4) { n += bits16[t & 0xf]; }
+            return n;
+        }
+
+        template <typename T>
+        constexpr size_t ilog2p1(T t) noexcept {
+            size_t n = 0;
+            for (; t > 0xff; t >>= 8) { n += 8; }
+            for (; t; t >>= 1) { ++n; }
+            return n;
+        }
+
+    #endif
 
     template <typename T>
     constexpr T ifloor2(T t) noexcept {
@@ -1322,6 +1373,7 @@ namespace RS {
 
         template <typename Function, typename Tuple, size_t... Indices>
         decltype(auto) invoke_helper(Function&& f, Tuple&& t, std::index_sequence<Indices...>) {
+            (void)t; // MSVC bug
             return f(std::get<Indices>(std::forward<Tuple>(t))...);
         }
 

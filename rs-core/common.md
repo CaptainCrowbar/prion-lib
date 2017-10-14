@@ -899,3 +899,7 @@ A single `ScopedTransaction` object can be used for multiple transactions.
 Once `commit()` or `rollback()` is called, the undo stack is discarded, and
 any newly added function pairs become part of a new cycle, equivalent to a
 newly constructed `ScopedTransaction`.
+
+* `template <typename T> auto` **`make_lock`**`(T& t) { return std::unique_lock<T>(t); }`
+
+Simple wrapper function to create a mutex lock.

@@ -1142,5 +1142,11 @@ called since the last <code>call()</code>.</p>
 <p>A single <code>ScopedTransaction</code> object can be used for multiple transactions.
 Once <code>commit()</code> or <code>rollback()</code> is called, the undo stack is discarded, and
 any newly added function pairs become part of a new cycle, equivalent to a
-newly constructed <code>ScopedTransaction</code>.</p></body>
+newly constructed <code>ScopedTransaction</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; auto</code> <strong><code>make_lock</code></strong><code>(T&amp; t) { return std::unique_lock&lt;T&gt;(t); }</code></li>
+</ul>
+<p>Simple wrapper function to create a mutex lock.</p></body>
 </html>

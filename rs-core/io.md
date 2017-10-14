@@ -165,13 +165,12 @@ handle to null and abandons ownership of the stream.
 Calls the native `ungetc()` function to push one byte back into the stream
 buffer.
 
-* `static Cstdio Cstdio::`**`null`**`() noexcept`
+* `static Cstdio Cstdio::`**`dev_null`**`() noexcept`
 * `static Cstdio Cstdio::`**`std_input`**`() noexcept`
 * `static Cstdio Cstdio::`**`std_output`**`() noexcept`
 * `static Cstdio Cstdio::`**`std_error`**`() noexcept`
 
-Standard streams. The `null()` function opens `"/dev/null"` or the equivalent
-for reading and writing.
+Standard streams.
 
 ## Unix file descriptor I/O ##
 
@@ -259,7 +258,7 @@ descriptor.
 Return the native file descriptor. The `release()` function sets the internal
 descriptor to -1 and abandons ownership of the stream.
 
-* `static Fdio Fdio::`**`null`**`() noexcept`
+* `static Fdio Fdio::`**`dev_null`**`() noexcept`
 * `static Fdio Fdio::`**`std_input`**`() noexcept`
 * `static Fdio Fdio::`**`std_output`**`() noexcept`
 * `static Fdio Fdio::`**`std_error`**`() noexcept`
@@ -305,7 +304,7 @@ Other life cycle operations.
 Return the native file handle. The `release()` function sets the internal
 handle to null and abandons ownership of the stream.
 
-* `static Winio Winio::`**`null`**`() noexcept`
+* `static Winio Winio::`**`dev_null`**`() noexcept`
 * `static Winio Winio::`**`std_input`**`() noexcept`
 * `static Winio Winio::`**`std_output`**`() noexcept`
 * `static Winio Winio::`**`std_error`**`() noexcept`

@@ -270,7 +270,7 @@ void test_core_io_null_device() {
 
     {
         Cstdio io;
-        TRY(io = Cstdio::null());
+        TRY(io = Cstdio::dev_null());
         TRY(text = io.read_str(20));
         TRY(text = io.read_str(20));
         TEST_EQUAL(text, "");
@@ -278,7 +278,7 @@ void test_core_io_null_device() {
 
     {
         Cstdio io;
-        TRY(io = Cstdio::null());
+        TRY(io = Cstdio::dev_null());
         TRY(io.write_str("Hello world\n"));
         TRY(io.write_str("Hello world\n"));
         TRY(text = io.read_str(20));
@@ -290,7 +290,7 @@ void test_core_io_null_device() {
 
     {
         Fdio io;
-        TRY(io = Fdio::null());
+        TRY(io = Fdio::dev_null());
         TRY(text = io.read_str(20));
         TRY(text = io.read_str(20));
         TEST_EQUAL(text, "");
@@ -298,7 +298,7 @@ void test_core_io_null_device() {
 
     {
         Fdio io;
-        TRY(io = Fdio::null());
+        TRY(io = Fdio::dev_null());
         TRY(io.write_str("Hello world\n"));
         TRY(io.write_str("Hello world\n"));
         TRY(text = io.read_str(20));
@@ -310,7 +310,7 @@ void test_core_io_null_device() {
 
         {
             Winio io;
-            TRY(io = Winio::null());
+            TRY(io = Winio::dev_null());
             TRY(text = io.read_str(20));
             TRY(text = io.read_str(20));
             TEST_EQUAL(text, "");
@@ -318,7 +318,7 @@ void test_core_io_null_device() {
 
         {
             Winio io;
-            TRY(io = Winio::null());
+            TRY(io = Winio::dev_null());
             TRY(io.write_str("Hello world\n"));
             TRY(io.write_str("Hello world\n"));
             TRY(text = io.read_str(20));

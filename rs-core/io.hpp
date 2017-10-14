@@ -244,7 +244,7 @@ namespace RS {
         FILE* get() const noexcept { return fp.get(); }
         FILE* release() noexcept { return fp.release(); }
         void ungetc(char c);
-        static Cstdio null() noexcept;
+        static Cstdio dev_null() noexcept;
         static Cstdio std_input() noexcept { return Cstdio(stdin, false); }
         static Cstdio std_output() noexcept { return Cstdio(stdout, false); }
         static Cstdio std_error() noexcept { return Cstdio(stderr, false); }
@@ -389,7 +389,7 @@ namespace RS {
             set_error(errno);
         }
 
-        inline Cstdio Cstdio::null() noexcept {
+        inline Cstdio Cstdio::dev_null() noexcept {
             Cstdio io(null_device, "r+");
             ::fgetc(io.get()); // Clear bogus ioctl error
             return io;
@@ -418,7 +418,7 @@ namespace RS {
         Fdio dup(int f) noexcept;
         int get() const noexcept { return fd.get(); }
         int release() noexcept { return fd.release(); }
-        static Fdio null() noexcept;
+        static Fdio dev_null() noexcept;
         static std::pair<Fdio, Fdio> pipe(size_t winmem = 1024);
         static Fdio std_input() noexcept { return Fdio(0, false); }
         static Fdio std_output() noexcept { return Fdio(1, false); }
@@ -534,7 +534,7 @@ namespace RS {
             return Fdio(f);
         }
 
-        inline Fdio Fdio::null() noexcept {
+        inline Fdio Fdio::dev_null() noexcept {
             int iomode = O_RDWR;
             #ifdef O_CLOEXEC
                 iomode |= O_CLOEXEC;
@@ -584,7 +584,7 @@ namespace RS {
             virtual size_t write(const void* ptr, size_t len) override;
             void* get() const noexcept { return fh.get(); }
             void* release() noexcept { return fh.release(); }
-            static Winio null() noexcept;
+            static Winio dev_null() noexcept;
             static Winio std_input() noexcept { return Winio(GetStdHandle(STD_INPUT_HANDLE), false); }
             static Winio std_output() noexcept { return Winio(GetStdHandle(STD_OUTPUT_HANDLE), false); }
             static Winio std_error() noexcept { return Winio(GetStdHandle(STD_ERROR_HANDLE), false); }
@@ -696,7 +696,7 @@ namespace RS {
                 return n;
             }
 
-            inline Winio Winio::null() noexcept {
+            inline Winio Winio::dev_null() noexcept {
                 return Winio(null_device, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING);
             }
 

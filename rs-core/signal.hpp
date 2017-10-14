@@ -9,6 +9,7 @@
 #include <deque>
 #include <initializer_list>
 #include <map>
+#include <mutex>
 #include <vector>
 
 namespace RS {
@@ -38,7 +39,7 @@ namespace RS {
             std::deque<int> queue;
             std::atomic<bool> open;
         #else
-            Mutex mutex;
+            std::mutex mutex;
             ConditionVariable cv;
             bool open;
         #endif

@@ -200,8 +200,6 @@ extern void test_core_string_unicode();
 extern void test_core_table_class();
 extern void test_core_terminal_progress_bar();
 extern void test_core_terminal_io_operations();
-extern void test_core_thread_class();
-extern void test_core_thread_synchronisation_objects();
 extern void test_core_time_date_types();
 extern void test_core_time_general_operations();
 extern void test_core_time_date_formatting();
@@ -425,8 +423,6 @@ int main() {
         { "core/table/class", test_core_table_class },
         { "core/terminal/progress-bar", test_core_terminal_progress_bar },
         { "core/terminal/io-operations", test_core_terminal_io_operations },
-        { "core/thread/class", test_core_thread_class },
-        { "core/thread/synchronisation-objects", test_core_thread_synchronisation_objects },
         { "core/time/date-types", test_core_time_date_types },
         { "core/time/general-operations", test_core_time_general_operations },
         { "core/time/date-formatting", test_core_time_date_formatting },

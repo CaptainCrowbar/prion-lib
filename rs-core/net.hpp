@@ -26,7 +26,6 @@
     #include <sys/socket.h>
 #endif
 
-RS_LDLIB(mingw: ws2_32);
 RS_LDLIB(msvc: ws2_32);
 
 namespace RS {

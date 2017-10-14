@@ -10,6 +10,7 @@
 #include <iterator>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <new>
 #include <ostream>
 #include <regex>
@@ -331,8 +332,8 @@ namespace RS {
         }
 
         static void print_out(const std::string& str) {
-            static RS_Detail::SyncMutex mtx;
-            RS_Detail::SyncMutexLock lock(mtx);
+            static std::mutex mtx;
+            auto lock = make_lock(mtx);
             std::cout << str << std::endl;
         }
 

@@ -194,52 +194,51 @@ constructor opens the file using one of the standard `IO::mode` values,
 defaulting to read only. The third constructor opens the file using the same
 flags used in the Posix `open()` function.
 
-| Flag                  | Description                                    | Posix    | Apple    | Cygwin   | Linux    | Mingw    | MSVC     |
-| ----                  | -----------                                    | -----    | -----    | ------   | -----    | -----    | ----     |
-| _Access mode flags_   |                                                |          |          |          |          |          |          |
-| `O_EXEC`              | Open for execute only                          | Posix    | &mdash;  | Cygwin   | &mdash;  | &mdash;  | &mdash;  |
-| `O_RDONLY`            | Open for reading only                          | Posix    | Apple    | Cygwin   | Linux    | Mingw    | MSVC     |
-| `O_RDWR`              | Open for reading and writing                   | Posix    | Apple    | Cygwin   | Linux    | Mingw    | MSVC     |
-| `O_SEARCH`            | Open directory for search only                 | Posix    | &mdash;  | Cygwin   | &mdash;  | &mdash;  | &mdash;  |
-| `O_WRONLY`            | Open for writing only                          | Posix    | Apple    | Cygwin   | Linux    | Mingw    | MSVC     |
-| _Other Posix flags_   |                                                |          |          |          |          |          |          |
-| `O_APPEND`            | Set append mode                                | Posix    | Apple    | Cygwin   | Linux    | Mingw    | MSVC     |
-| `O_CLOEXEC`           | Implicitly set `FD_CLOEXEC`                    | Posix    | Apple    | Cygwin   | Linux    | &mdash;  | &mdash;  |
-| `O_CREAT`             | Create if file does not exist                  | Posix    | Apple    | Cygwin   | Linux    | Mingw    | MSVC     |
-| `O_DIRECTORY`         | Must be a directory                            | Posix    | Apple    | Cygwin   | Linux    | &mdash;  | &mdash;  |
-| `O_DSYNC`             | Synchronize data                               | Posix    | &mdash;  | Cygwin   | Linux    | &mdash;  | &mdash;  |
-| `O_EXCL`              | Error if file already exists                   | Posix    | Apple    | Cygwin   | Linux    | Mingw    | MSVC     |
-| `O_NOCTTY`            | Don't assign controlling terminal              | Posix    | Apple    | Cygwin   | Linux    | &mdash;  | &mdash;  |
-| `O_NOFOLLOW`          | Don't follow symlinks                          | Posix    | Apple    | Cygwin   | Linux    | &mdash;  | &mdash;  |
-| `O_NONBLOCK`          | No delay                                       | Posix    | Apple    | Cygwin   | Linux    | &mdash;  | &mdash;  |
-| `O_RSYNC`             | Synchronize read operations                    | Posix    | &mdash;  | Cygwin   | Linux    | &mdash;  | &mdash;  |
-| `O_SYNC`              | Synchronize write operations                   | Posix    | &mdash;  | Cygwin   | Linux    | &mdash;  | &mdash;  |
-| `O_TRUNC`             | Truncate to zero length                        | Posix    | Apple    | Cygwin   | Linux    | Mingw    | MSVC     |
-| `O_TTY_INIT`          | Set `termios` structure if this is a terminal  | Posix    | &mdash;  | Cygwin   | &mdash;  | &mdash;  | &mdash;  |
-| _Non-standard flags_  |                                                |          |          |          |          |          |          |
-| `O_ASYNC`             | Signal process group when data ready           | &mdash;  | Apple    | &mdash;  | Linux    | &mdash;  | &mdash;  |
-| `O_BINARY`            | Open in binary mode                            | &mdash;  | &mdash;  | Cygwin   | &mdash;  | Mingw    | MSVC     |
-| `O_DIRECT`            | Minimize caching                               | &mdash;  | &mdash;  | Cygwin   | Linux    | &mdash;  | &mdash;  |
-| `O_EVTONLY`           | Descriptor for event notification only         | &mdash;  | Apple    | &mdash;  | &mdash;  | &mdash;  | &mdash;  |
-| `O_EXLOCK`            | Open with exclusive file lock                  | &mdash;  | Apple    | &mdash;  | Linux    | &mdash;  | &mdash;  |
-| `O_FSYNC`             | Synchronous writes                             | &mdash;  | Apple    | &mdash;  | Linux    | &mdash;  | &mdash;  |
-| `O_LARGEFILE`         | Allow files too large for a 32-bit offset      | &mdash;  | &mdash;  | &mdash;  | Linux    | &mdash;  | &mdash;  |
-| `O_NDELAY`            | Synonym for `O_NONBLOCK`                       | &mdash;  | Apple    | Cygwin   | Linux    | &mdash;  | &mdash;  |
-| `O_NOATIME`           | Don't update last access time                  | &mdash;  | &mdash;  | &mdash;  | Linux    | &mdash;  | &mdash;  |
-| `O_NOINHERIT`         | Prevent creation of a shared descriptor        | &mdash;  | &mdash;  | &mdash;  | &mdash;  | Mingw    | MSVC     |
-| `O_PATH`              | Path-only handle, do not open file             | &mdash;  | &mdash;  | &mdash;  | Linux    | &mdash;  | &mdash;  |
-| `O_RANDOM`            | Optimize for random access                     | &mdash;  | &mdash;  | &mdash;  | &mdash;  | Mingw    | MSVC     |
-| `O_RAW`               | Synonym for `O_BINARY`                         | &mdash;  | &mdash;  | &mdash;  | &mdash;  | Mingw    | &mdash;  |
-| `O_SEQUENTIAL`        | Optimize for sequential access                 | &mdash;  | &mdash;  | &mdash;  | &mdash;  | Mingw    | MSVC     |
-| `O_SHLOCK`            | Open with shared file lock                     | &mdash;  | Apple    | &mdash;  | Linux    | &mdash;  | &mdash;  |
-| `O_SHORT_LIVED`       | If possible do not flush to disk               | &mdash;  | &mdash;  | &mdash;  | &mdash;  | Mingw    | MSVC     |
-| `O_SYMLINK`           | Allow opening a symlink                        | &mdash;  | Apple    | &mdash;  | &mdash;  | &mdash;  | &mdash;  |
-| `O_TEMPORARY`         | Delete file when last descriptor is closed     | &mdash;  | &mdash;  | &mdash;  | &mdash;  | Mingw    | MSVC     |
-| `O_TMPFILE`           | Delete file when last descriptor is closed     | &mdash;  | &mdash;  | &mdash;  | Linux    | &mdash;  | &mdash;  |
-| `O_TEXT`              | Open in text mode                              | &mdash;  | &mdash;  | Cygwin   | &mdash;  | Mingw    | MSVC     |
-| `O_U8TEXT`            | Open in UTF-8 text mode                        | &mdash;  | &mdash;  | &mdash;  | &mdash;  | Mingw    | MSVC     |
-| `O_U16TEXT`           | Open in UTF-16 text mode                       | &mdash;  | &mdash;  | &mdash;  | &mdash;  | Mingw    | MSVC     |
-| `O_WTEXT`             | Open in UTF-16 text mode, check for BOM        | &mdash;  | &mdash;  | &mdash;  | &mdash;  | Mingw    | MSVC     |
+| Flag                  | Description                                    | Posix    | Apple    | Cygwin   | Linux    | MSVC     |
+| ----                  | -----------                                    | -----    | -----    | ------   | -----    | ----     |
+| _Access mode flags_   |                                                |          |          |          |          |          |
+| `O_EXEC`              | Open for execute only                          | Posix    | &mdash;  | Cygwin   | &mdash;  | &mdash;  |
+| `O_RDONLY`            | Open for reading only                          | Posix    | Apple    | Cygwin   | Linux    | MSVC     |
+| `O_RDWR`              | Open for reading and writing                   | Posix    | Apple    | Cygwin   | Linux    | MSVC     |
+| `O_SEARCH`            | Open directory for search only                 | Posix    | &mdash;  | Cygwin   | &mdash;  | &mdash;  |
+| `O_WRONLY`            | Open for writing only                          | Posix    | Apple    | Cygwin   | Linux    | MSVC     |
+| _Other Posix flags_   |                                                |          |          |          |          |          |
+| `O_APPEND`            | Set append mode                                | Posix    | Apple    | Cygwin   | Linux    | MSVC     |
+| `O_CLOEXEC`           | Implicitly set `FD_CLOEXEC`                    | Posix    | Apple    | Cygwin   | Linux    | &mdash;  |
+| `O_CREAT`             | Create if file does not exist                  | Posix    | Apple    | Cygwin   | Linux    | MSVC     |
+| `O_DIRECTORY`         | Must be a directory                            | Posix    | Apple    | Cygwin   | Linux    | &mdash;  |
+| `O_DSYNC`             | Synchronize data                               | Posix    | &mdash;  | Cygwin   | Linux    | &mdash;  |
+| `O_EXCL`              | Error if file already exists                   | Posix    | Apple    | Cygwin   | Linux    | MSVC     |
+| `O_NOCTTY`            | Don't assign controlling terminal              | Posix    | Apple    | Cygwin   | Linux    | &mdash;  |
+| `O_NOFOLLOW`          | Don't follow symlinks                          | Posix    | Apple    | Cygwin   | Linux    | &mdash;  |
+| `O_NONBLOCK`          | No delay                                       | Posix    | Apple    | Cygwin   | Linux    | &mdash;  |
+| `O_RSYNC`             | Synchronize read operations                    | Posix    | &mdash;  | Cygwin   | Linux    | &mdash;  |
+| `O_SYNC`              | Synchronize write operations                   | Posix    | &mdash;  | Cygwin   | Linux    | &mdash;  |
+| `O_TRUNC`             | Truncate to zero length                        | Posix    | Apple    | Cygwin   | Linux    | MSVC     |
+| `O_TTY_INIT`          | Set `termios` structure if this is a terminal  | Posix    | &mdash;  | Cygwin   | &mdash;  | &mdash;  |
+| _Non-standard flags_  |                                                |          |          |          |          |          |
+| `O_ASYNC`             | Signal process group when data ready           | &mdash;  | Apple    | &mdash;  | Linux    | &mdash;  |
+| `O_BINARY`            | Open in binary mode                            | &mdash;  | &mdash;  | Cygwin   | &mdash;  | MSVC     |
+| `O_DIRECT`            | Minimize caching                               | &mdash;  | &mdash;  | Cygwin   | Linux    | &mdash;  |
+| `O_EVTONLY`           | Descriptor for event notification only         | &mdash;  | Apple    | &mdash;  | &mdash;  | &mdash;  |
+| `O_EXLOCK`            | Open with exclusive file lock                  | &mdash;  | Apple    | &mdash;  | Linux    | &mdash;  |
+| `O_FSYNC`             | Synchronous writes                             | &mdash;  | Apple    | &mdash;  | Linux    | &mdash;  |
+| `O_LARGEFILE`         | Allow files too large for a 32-bit offset      | &mdash;  | &mdash;  | &mdash;  | Linux    | &mdash;  |
+| `O_NDELAY`            | Synonym for `O_NONBLOCK`                       | &mdash;  | Apple    | Cygwin   | Linux    | &mdash;  |
+| `O_NOATIME`           | Don't update last access time                  | &mdash;  | &mdash;  | &mdash;  | Linux    | &mdash;  |
+| `O_NOINHERIT`         | Prevent creation of a shared descriptor        | &mdash;  | &mdash;  | &mdash;  | &mdash;  | MSVC     |
+| `O_PATH`              | Path-only handle, do not open file             | &mdash;  | &mdash;  | &mdash;  | Linux    | &mdash;  |
+| `O_RANDOM`            | Optimize for random access                     | &mdash;  | &mdash;  | &mdash;  | &mdash;  | MSVC     |
+| `O_SEQUENTIAL`        | Optimize for sequential access                 | &mdash;  | &mdash;  | &mdash;  | &mdash;  | MSVC     |
+| `O_SHLOCK`            | Open with shared file lock                     | &mdash;  | Apple    | &mdash;  | Linux    | &mdash;  |
+| `O_SHORT_LIVED`       | If possible do not flush to disk               | &mdash;  | &mdash;  | &mdash;  | &mdash;  | MSVC     |
+| `O_SYMLINK`           | Allow opening a symlink                        | &mdash;  | Apple    | &mdash;  | &mdash;  | &mdash;  |
+| `O_TEMPORARY`         | Delete file when last descriptor is closed     | &mdash;  | &mdash;  | &mdash;  | &mdash;  | MSVC     |
+| `O_TMPFILE`           | Delete file when last descriptor is closed     | &mdash;  | &mdash;  | &mdash;  | Linux    | &mdash;  |
+| `O_TEXT`              | Open in text mode                              | &mdash;  | &mdash;  | Cygwin   | &mdash;  | MSVC     |
+| `O_U8TEXT`            | Open in UTF-8 text mode                        | &mdash;  | &mdash;  | &mdash;  | &mdash;  | MSVC     |
+| `O_U16TEXT`           | Open in UTF-16 text mode                       | &mdash;  | &mdash;  | &mdash;  | &mdash;  | MSVC     |
+| `O_WTEXT`             | Open in UTF-16 text mode, check for BOM        | &mdash;  | &mdash;  | &mdash;  | &mdash;  | MSVC     |
 
 * `Fdio::`**`Fdio`**`() noexcept`
 * `virtual Fdio::`**`~Fdio`**`() noexcept`

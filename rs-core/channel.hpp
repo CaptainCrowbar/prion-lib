@@ -2,18 +2,21 @@
 
 #include "rs-core/common.hpp"
 #include "rs-core/optional.hpp"
-#include "rs-core/thread.hpp"
 #include "rs-core/time.hpp"
 #include <algorithm>
 #include <atomic>
 #include <chrono>
+#include <condition_variable>
 #include <deque>
 #include <exception>
 #include <functional>
+#include <future>
 #include <map>
+#include <mutex>
 #include <ostream>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <utility>
 
 namespace RS {
@@ -191,8 +194,8 @@ namespace RS {
     protected:
         virtual state do_wait(Interval::time t);
     private:
-        mutable Mutex mutex;
-        ConditionVariable cv;
+        mutable std::mutex mutex;
+        std::condition_variable cv;
         bool open = true;
     };
 
@@ -228,8 +231,8 @@ namespace RS {
     private:
         using clock_type = ReliableClock;
         using time_point = clock_type::time_point;
-        mutable Mutex mutex;
-        ConditionVariable cv;
+        mutable std::mutex mutex;
+        std::condition_variable cv;
         time_point next_tick = time_point::max();
         bool open = true;
     };
@@ -294,7 +297,7 @@ namespace RS {
     protected:
         virtual Channel::state do_wait(Interval::time t);
     private:
-        Mutex mutex;
+        std::mutex mutex;
         generator gen;
     };
 
@@ -333,8 +336,8 @@ namespace RS {
     protected:
         virtual Channel::state do_wait(Interval::time t);
     private:
-        Mutex mutex;
-        ConditionVariable cv;
+        std::mutex mutex;
+        std::condition_variable cv;
         bool open = true;
         std::deque<T> queue;
         Channel::state get_status() noexcept;
@@ -419,8 +422,8 @@ namespace RS {
     protected:
         virtual Channel::state do_wait(Interval::time t);
     private:
-        Mutex mutex;
-        ConditionVariable cv;
+        std::mutex mutex;
+        std::condition_variable cv;
         T value;
         Channel::state st = Channel::state::waiting;
     };
@@ -489,8 +492,8 @@ namespace RS {
     protected:
         virtual state do_wait(Interval::time t);
     private:
-        Mutex mutex;
-        ConditionVariable cv;
+        std::mutex mutex;
+        std::condition_variable cv;
         std::string buf;
         size_t ofs = 0;
         bool open = true;
@@ -610,7 +613,7 @@ namespace RS {
         struct task_info {
             mode runmode;
             callback call;
-            Thread thread;
+            std::future<void> thread;
             std::atomic<bool> done;
             std::exception_ptr error;
         };
@@ -705,7 +708,7 @@ namespace RS {
                 if (calls == 0)
                     sleep_for(interval());
                 else
-                    Thread::yield();
+                    std::this_thread::yield();
             }
         }
 
@@ -745,7 +748,7 @@ namespace RS {
                     }
                     task.done = true;
                 };
-                task.thread = Thread(payload);
+                task.thread = std::async(std::launch::async, payload);
             }
         }
 

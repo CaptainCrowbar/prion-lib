@@ -5,6 +5,7 @@
 #include "rs-core/unit-test.hpp"
 #include <chrono>
 #include <deque>
+#include <mutex>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -49,7 +50,7 @@ namespace {
             return polled_wait(t);
         }
     private:
-        Mutex mutex;
+        std::mutex mutex;
         std::deque<int> queue;
         bool open = true;
     };

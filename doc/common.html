@@ -119,9 +119,9 @@ all targets, you will need a separate <code>RS_LDLIB()</code> line for each targ
 
 <ul>
 <li><code>apple:</code></li>
-<li><code>linux:</code></li>
-<li><code>mingw:</code></li>
 <li><code>cygwin:</code></li>
+<li><code>linux:</code></li>
+<li><code>msvc:</code></li>
 </ul>
 <p><code>RS_LDLIB()</code> lines are picked up at the <code>"make dep"</code> stage; if you change a
 link library, the change will not be detected until dependencies are rebuilt.</p>
@@ -270,7 +270,7 @@ pointer is null.</p>
 <p>An error category instance for translating Win32 API error codes; naturally
 this is only defined on builds that use the Win32 API. (MSVC provides this
 through <code>std::system_category()</code>, but GCC does not supply any equivalent on
-Cygwin or Mingw.)</p>
+Cygwin.)</p>
 </div>
 <h3 id="metaprogramming-and-type-traits">Metaprogramming and type traits</h3>
 <div class="defns">

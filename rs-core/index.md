@@ -8,7 +8,6 @@
     * [`"rs-core/optional.hpp"`](optional.html) - Optional type
     * [`"rs-core/variant.hpp"`](variant.html) - Variant type
 * _Concurrency_
-    * [`"rs-core/thread.hpp"`](thread.html) - Threads
     * [`"rs-core/channel.hpp"`](channel.html) - Message dispatch
     * [`"rs-core/process.hpp"`](process.html) - Process control
     * [`"rs-core/signal.hpp"`](signal.html) - Signal handling
@@ -62,9 +61,9 @@ be used to run the library's own unit tests.
 The library is written in C++14 (more or less); you will need an up-to-date
 C++ compiler. It has been tested with:
 
-* Apple Clang/Xcode 9.0 on MacOS
-* GCC 6.4+ on Linux and Cygwin
-* Microsoft Visual Studio 2017.4 on Windows
+* Apple Clang/Xcode 9 on MacOS
+* GCC 6 and 7 on Linux and Cygwin
+* Microsoft Visual Studio 2017 on Windows
 
 All test builds are made using a strict diagnostic mode (`-Wall -Wextra
 -Werror` on Clang and GCC, `/W4 /WX /permissive-` on MSVC).

@@ -56,11 +56,13 @@
 #include <iterator>
 #include <limits>
 #include <memory>
+#include <mutex>
 #include <ostream>
 #include <random>
 #include <sstream>
 #include <string>
 #include <system_error>
+#include <thread>
 #include <tuple>
 #include <type_traits>
 #include <typeinfo>
@@ -71,23 +73,18 @@
     #include <mach/mach.h>
 #endif
 
-#ifndef __MINGW32__
-    #include <mutex>
-#endif
-
 #ifdef _WIN32
-    #ifdef __CYGWIN__
-        #include <windows.h>
-    #else
+    #ifndef __CYGWIN__
         #include <winsock2.h>
         #include <ws2tcpip.h>
-        #include <windows.h>
+    #endif
+    #include <windows.h>
+    #ifndef __CYGWIN__
         #include <io.h>
     #endif
 #endif
 
 #ifdef _XOPEN_SOURCE
-    #include <pthread.h>
     #include <sched.h>
     #include <sys/select.h>
     #include <sys/time.h>
@@ -315,50 +312,6 @@ namespace RS {
             out << prefix;
             out.write(names, strcspn(names, " ,"));
         }
-
-        #ifdef _XOPEN_SOURCE
-
-            class SyncMutex {
-            public:
-                SyncMutex() noexcept: pmutex(PTHREAD_MUTEX_INITIALIZER) {}
-                ~SyncMutex() noexcept { pthread_mutex_destroy(&pmutex); }
-                void lock() noexcept { pthread_mutex_lock(&pmutex); }
-                bool try_lock() noexcept { return pthread_mutex_trylock(&pmutex) == 0; }
-                void unlock() noexcept { pthread_mutex_unlock(&pmutex); }
-            private:
-                friend class ConditionVariable;
-                pthread_mutex_t pmutex;
-                RS_NO_COPY_MOVE(SyncMutex)
-            };
-
-        #else
-
-            class SyncMutex {
-            public:
-                SyncMutex() noexcept { InitializeCriticalSection(&wcrit); }
-                ~SyncMutex() noexcept { DeleteCriticalSection(&wcrit); }
-                void lock() noexcept { EnterCriticalSection(&wcrit); }
-                bool try_lock() noexcept { return TryEnterCriticalSection(&wcrit); }
-                void unlock() noexcept { LeaveCriticalSection(&wcrit); }
-            private:
-                friend class ConditionVariable;
-                CRITICAL_SECTION wcrit;
-                RS_NO_COPY_MOVE(SyncMutex)
-            };
-
-        #endif
-
-        class SyncMutexLock {
-        public:
-            SyncMutexLock() = default;
-            explicit SyncMutexLock(SyncMutex& m) noexcept: mx(&m) { mx->lock(); }
-            ~SyncMutexLock() noexcept { if (mx) mx->unlock(); }
-            SyncMutexLock(SyncMutexLock&& lock) noexcept: mx(lock.mx) { lock.mx = nullptr; }
-            SyncMutexLock& operator=(SyncMutexLock&& lock) noexcept { if (mx) mx->unlock(); mx = lock.mx; lock.mx = nullptr; return *this; }
-        private:
-            friend class ConditionVariable;
-            SyncMutex* mx = nullptr;
-        };
 
     }
 
@@ -1690,6 +1643,8 @@ namespace RS {
         std::vector<callback> stack;
     };
 
+    template <typename T> inline auto make_lock(T& t) { return std::unique_lock<T>(t); }
+
     // [Things that need to go at the end because of dependencies]
 
     // Logging
@@ -1699,29 +1654,19 @@ namespace RS {
         template <typename T>
         int hash_xcolour(T t) noexcept {
             using namespace std::chrono;
-            static const auto init = uint32_t(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count());
-            uint32_t x = init, y = 0;
-            auto pt = reinterpret_cast<const uint8_t*>(&t);
-            for (size_t i = 0; i < sizeof(T); i += 4) {
-                memcpy(&y, pt + i, 4);
-                x ^= y;
-            }
-            std::minstd_rand rng(x);
+            static const auto c = uint32_t(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count());
+            auto v = uint32_t(std::hash<T>()(t));
+            std::minstd_rand rng(c ^ v);
             std::uniform_int_distribution<> dist(17, 230);
             return dist(rng);
         }
 
         inline void log_message(const U8string& msg) {
             using namespace std::chrono;
-            static SyncMutex mtx;
-            SyncMutexLock lock(mtx);
-            #ifdef _XOPEN_SOURCE
-                auto thread_id = pthread_self();
-            #else
-                auto thread_id = GetCurrentThreadId();
-            #endif
+            static std::mutex mtx;
+            auto lock = make_lock(mtx);
             U8string text = "\x1b[38;5;";
-            text += decfmt(hash_xcolour(thread_id));
+            text += decfmt(hash_xcolour(std::this_thread::get_id()));
             text += "m# ";
             text += msg;
             text += "\x1b[0m\n";

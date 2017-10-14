@@ -100,19 +100,6 @@ ifeq ($(cross_target),cygwin)
 	ld_specific_flags += -s -Wl,--enable-auto-import
 endif
 
-ifeq ($(cross_target),mingw)
-	mingw_root := $(shell type -P gcc | sed -E 's!/bin/.+!!')
-	install_prefix := $(mingw_root)
-	common_flags += -mthreads
-	cc_defines += -DNOMINMAX=1 -DUNICODE=1 -D_UNICODE=1 -DWINVER=0x601 -D_WIN32_WINNT=0x601 -DPCRE_STATIC=1
-	cxx_specific_flags += -std=gnu++1z
-	ld_specific_flags += -s -Wl,--enable-auto-import
-	RC := windres
-	RCFLAGS := -O coff
-	rc_output :=
-	native_windows := yes
-endif
-
 ifeq ($(cross_target),darwin)
 	LIBTAG := mac
 	CXX := clang++
@@ -477,12 +464,6 @@ $(BUILD)/%.o: $(project_name)/%.m
 $(BUILD)/%.o: $(project_name)/%.mm
 	@mkdir -p $(dir $@)
 	$(OBJCXX) $(OBJCXXFLAGS) -c $< $(cc_output)$@
-
-ifeq ($(cross_target),mingw)
-$(resource_object): $(resource_files)
-	mkdir -p $(dir $@)
-	$(RC) $(RCFLAGS) $< $(rc_output) $@
-endif
 
 # Rules for building the final target from objects
 

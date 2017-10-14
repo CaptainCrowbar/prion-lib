@@ -52,15 +52,13 @@ Random number engine classes based on the above functions.
 * `using` **`Urandom32`** `= Urandom<uint32_t>`
 * `using` **`Urandom64`** `= Urandom<uint64_t>`
 
-Generate random numbers from the system's standard random device. On Unix this
-reads from `/dev/urandom`. The result type `T` must be a primitive integer
-type. (This is similar to `std::random_device`, which is not implemented on
-all of my target systems.)
+Generate random numbers from the system's standard random device. The result
+type `T` must be a primitive integer type.
 
 * `void` **`urandom_bytes`**`(void* ptr, size_t n) noexcept`
 
-Copies random bytes from the system's standard random device. This will do
-nothing if either argument is null.
+Copies random bytes from the random device. This will do nothing if either
+argument is null.
 
 ### Xoroshiro generator ###
 

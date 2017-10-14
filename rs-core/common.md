@@ -60,9 +60,9 @@ all targets, you will need a separate `RS_LDLIB()` line for each target.
 
 <!-- TEXT -->
 * `apple:`
-* `linux:`
-* `mingw:`
 * `cygwin:`
+* `linux:`
+* `msvc:`
 
 `RS_LDLIB()` lines are picked up at the `"make dep"` stage; if you change a
 link library, the change will not be detected until dependencies are rebuilt.
@@ -184,7 +184,7 @@ pointer is null.
 An error category instance for translating Win32 API error codes; naturally
 this is only defined on builds that use the Win32 API. (MSVC provides this
 through `std::system_category()`, but GCC does not supply any equivalent on
-Cygwin or Mingw.)
+Cygwin.)
 
 ### Metaprogramming and type traits ###
 

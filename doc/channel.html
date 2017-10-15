@@ -194,7 +194,7 @@ or an empty value on failure.</p>
 <li><code>static constexpr size_t StreamChannel::</code><strong><code>default_buffer</code></strong> <code>= 16384</code></li>
 <li><code>virtual size_t StreamChannel::</code><strong><code>read</code></strong><code>(void* dst, size_t maxlen) = 0</code></li>
 <li><code>size_t StreamChannel::</code><strong><code>buffer</code></strong><code>() const noexcept</code></li>
-<li><code>void set_StreamChannel::</code><strong><code>buffer</code></strong><code>(size_t n) noexcept</code></li>
+<li><code>void StreamChannel::</code><strong><code>set_buffer</code></strong><code>(size_t n) noexcept</code></li>
 <li><code>std::string StreamChannel::</code><strong><code>read_all</code></strong><code>()</code></li>
 <li><code>std::string StreamChannel::</code><strong><code>read_str</code></strong><code>()</code></li>
 <li><code>size_t StreamChannel::</code><strong><code>read_to</code></strong><code>(std::string&amp; dst)</code></li>

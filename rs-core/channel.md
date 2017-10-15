@@ -136,7 +136,7 @@ or an empty value on failure.
     * `static constexpr size_t StreamChannel::`**`default_buffer`** `= 16384`
     * `virtual size_t StreamChannel::`**`read`**`(void* dst, size_t maxlen) = 0`
     * `size_t StreamChannel::`**`buffer`**`() const noexcept`
-    * `void set_StreamChannel::`**`buffer`**`(size_t n) noexcept`
+    * `void StreamChannel::`**`set_buffer`**`(size_t n) noexcept`
     * `std::string StreamChannel::`**`read_all`**`()`
     * `std::string StreamChannel::`**`read_str`**`()`
     * `size_t StreamChannel::`**`read_to`**`(std::string& dst)`

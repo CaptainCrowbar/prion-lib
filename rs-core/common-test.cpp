@@ -139,22 +139,6 @@ namespace {
     using tuple1 = std::tuple<char>;
     using tuple2 = std::tuple<size_t, char>;
 
-    class Counted {
-    public:
-        Counted() { ++num; }
-        Counted(const Counted&) { ++num; }
-        Counted(Counted&&) = default;
-        ~Counted() { --num; }
-        Counted& operator=(const Counted&) = default;
-        Counted& operator=(Counted&&) = default;
-        static int count() { return num; }
-        static void reset() { num = 0; }
-    private:
-        static int num;
-    };
-
-    int Counted::num = 0;
-
 }
 
 void test_core_common_preprocessor_macros() {
@@ -1880,22 +1864,24 @@ void test_core_common_function_operations() {
 
 void test_core_common_generic_function_objects() {
 
-    Counted::reset();
-    TEST_EQUAL(Counted::count(), 0);
+    using account = Accountable<void>;
 
-    Counted* cp = nullptr;
-    std::shared_ptr<Counted> csp;
-    TRY(csp.reset(new Counted));
-    TEST_EQUAL(Counted::count(), 1);
+    account::reset();
+    TEST_EQUAL(account::count(), 0);
+
+    account* cp = nullptr;
+    std::shared_ptr<account> csp;
+    TRY(csp.reset(new account));
+    TEST_EQUAL(account::count(), 1);
     TRY(csp.reset());
-    TEST_EQUAL(Counted::count(), 0);
-    TRY(csp.reset(new Counted, do_nothing));
-    TEST_EQUAL(Counted::count(), 1);
+    TEST_EQUAL(account::count(), 0);
+    TRY(csp.reset(new account, do_nothing));
+    TEST_EQUAL(account::count(), 1);
     cp = csp.get();
     TRY(csp.reset());
-    TEST_EQUAL(Counted::count(), 1);
+    TEST_EQUAL(account::count(), 1);
     delete cp;
-    TEST_EQUAL(Counted::count(), 0);
+    TEST_EQUAL(account::count(), 0);
 
     int n1 = 42, n2 = 0;
     U8string s1 = "Hello world", s2;

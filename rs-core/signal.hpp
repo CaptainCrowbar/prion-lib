@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <atomic>
 #include <chrono>
+#include <condition_variable>
 #include <csignal>
 #include <deque>
 #include <initializer_list>
@@ -40,7 +41,7 @@ namespace RS {
             std::atomic<bool> open;
         #else
             std::mutex mutex;
-            ConditionVariable cv;
+            std::condition_variable cv;
             bool open;
         #endif
     };

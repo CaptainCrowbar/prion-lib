@@ -25,9 +25,9 @@ namespace RS {
         using value_type = T;
         static constexpr size_t dim = N;
         Vector() noexcept { std::fill(begin(), end(), T(0)); }
-        template <typename T2> explicit Vector(T2 t) noexcept { std::fill(begin(), end(), t); }
+        template <typename T2> explicit Vector(T2 t);
         template <typename... Args> Vector(Args... args) noexcept: arr{{implicit_cast<T>(args)...}} {}
-        template <typename T2> explicit Vector(const T2* ptr) noexcept { std::copy_n(ptr, N, arr.data()); }
+        template <typename T2> explicit Vector(const T2* ptr) noexcept { std::transform(ptr, ptr + N, arr.data(), implicit_cast<T, T2>); }
         template <typename T2, size_t N2> Vector(const Vector<T2, N2>& v) noexcept;
         template <typename T2, size_t N2> Vector& operator=(const Vector<T2, N2>& v) noexcept;
         T& operator[](size_t i) noexcept { return arr[i]; }
@@ -101,10 +101,16 @@ namespace RS {
     using Float4 = Vector<float, 4>;        using Double4 = Vector<double, 4>;  using Ldouble4 = Vector<long double, 4>;
 
     template <typename T, size_t N>
+    template <typename T2>
+    Vector<T, N>::Vector(T2 t) noexcept {
+        std::fill(begin(), end(), implicit_cast<T>(t));
+    }
+
+    template <typename T, size_t N>
     template <typename T2, size_t N2>
     Vector<T, N>::Vector(const Vector<T2, N2>& v) noexcept {
         static_assert(N2 == N);
-        std::copy(v.begin(), v.end(), begin());
+        std::transform(v.begin(), v.end(), begin(), implicit_cast<T, T2>);
     }
 
     template <typename T, size_t N>

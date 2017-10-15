@@ -565,14 +565,19 @@ namespace RS {
     template <typename T2, typename T1> T2& as(std::shared_ptr<T1>& ptr) { if (ptr) return dynamic_cast<T2&>(*ptr); else throw std::bad_cast(); }
     template <typename T2, typename T1> T2& as(const std::shared_ptr<T1>& ptr) { if (ptr) return dynamic_cast<T2&>(*ptr); else throw std::bad_cast(); }
 
-    template <typename T2, typename T1> inline T2 binary_cast(const T1& t) noexcept {
+    template <typename T2, typename T1>
+    inline T2 binary_cast(const T1& t) noexcept {
         static_assert(sizeof(T2) == sizeof(T1));
         T2 t2;
         memcpy(&t2, &t, sizeof(t));
         return t2;
     }
 
-    template <typename T2, typename T1> inline T2 implicit_cast(const T1& t) { return t; }
+    template <typename T2, typename T1>
+    inline T2 implicit_cast(const T1& t) {
+        static_assert(std::is_convertible<T1, T2>::value);
+        return static_cast<T2>(t);
+    }
 
     // [Constants and literals]
 

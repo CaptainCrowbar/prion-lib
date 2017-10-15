@@ -137,8 +137,10 @@ def gcc_lib(name):
     return '-l' + name
 
 def msvc_lib(name):
-    if len(name) == 1:
+    if name == 'z':
         return name + 'lib.lib'
+    elif name == 'curl' or name == 'sodium':
+        return 'lib' + name + '.lib'
     else:
         return name + '.lib'
 

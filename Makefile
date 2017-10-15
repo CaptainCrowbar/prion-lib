@@ -465,6 +465,12 @@ $(BUILD)/%.o: $(project_name)/%.mm
 	@mkdir -p $(dir $@)
 	$(OBJCXX) $(OBJCXXFLAGS) -c $< $(cc_output)$@
 
+ifneq ($(resource_object),)
+$(resource_object): $(resource_files)
+	@mkdir -p $(dir $@)
+	$(RC) $(RCFLAGS) $(rc_output)$@ $<
+endif
+
 # Rules for building the final target from objects
 
 $(static_library): $(library_objects)

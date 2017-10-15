@@ -25,7 +25,7 @@ namespace RS {
         using value_type = T;
         static constexpr size_t dim = N;
         Vector() noexcept { std::fill(begin(), end(), T(0)); }
-        template <typename T2> explicit Vector(T2 t);
+        template <typename T2> explicit Vector(T2 t) noexcept { std::fill(begin(), end(), implicit_cast<T>(t)); }
         template <typename... Args> Vector(Args... args) noexcept: arr{{implicit_cast<T>(args)...}} {}
         template <typename T2> explicit Vector(const T2* ptr) noexcept { std::transform(ptr, ptr + N, arr.data(), implicit_cast<T, T2>); }
         template <typename T2, size_t N2> Vector(const Vector<T2, N2>& v) noexcept;
@@ -99,12 +99,6 @@ namespace RS {
     using Float2 = Vector<float, 2>;        using Double2 = Vector<double, 2>;  using Ldouble2 = Vector<long double, 2>;
     using Float3 = Vector<float, 3>;        using Double3 = Vector<double, 3>;  using Ldouble3 = Vector<long double, 3>;
     using Float4 = Vector<float, 4>;        using Double4 = Vector<double, 4>;  using Ldouble4 = Vector<long double, 4>;
-
-    template <typename T, size_t N>
-    template <typename T2>
-    Vector<T, N>::Vector(T2 t) noexcept {
-        std::fill(begin(), end(), implicit_cast<T>(t));
-    }
 
     template <typename T, size_t N>
     template <typename T2, size_t N2>

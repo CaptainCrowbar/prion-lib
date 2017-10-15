@@ -625,12 +625,12 @@ a different value type, it must be assignment compatible with the first.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename F&gt; void</code> <strong><code>do_n</code></strong><code>(size_t n, F f)</code></li>
-<li><code>template &lt;typename F&gt; void</code> <strong><code>for_n</code></strong><code>(size_t n, F f)</code></li>
+<li><code>template &lt;typename T, typename F&gt; void</code> <strong><code>do_n</code></strong><code>(T n, F f)</code></li>
+<li><code>template &lt;typename T, typename F&gt; void</code> <strong><code>for_n</code></strong><code>(T n, F f)</code></li>
 </ul>
-<p>These simply call the function <code>n</code> times. The <code>do_n()</code> loop expects a function
-that takes no arguments, while <code>for_n()</code> passes the iteration count (zero to
-<code>n-1</code>) as an argument.</p>
+<p>These simply call the function <code>n</code> times. <code>T</code> must be an integer. The <code>do_n()</code>
+loop expects a function that takes no arguments, while <code>for_n()</code> passes the
+iteration count (zero to <code>n-1</code>) as an argument.</p>
 </div>
 <div class="defns">
 <ul>

@@ -463,12 +463,12 @@ Returns a vector composed by concatenating all of the argument ranges. The
 value type is that of the first argument range. If any subsequent argument has
 a different value type, it must be assignment compatible with the first.
 
-* `template <typename F> void` **`do_n`**`(size_t n, F f)`
-* `template <typename F> void` **`for_n`**`(size_t n, F f)`
+* `template <typename T, typename F> void` **`do_n`**`(T n, F f)`
+* `template <typename T, typename F> void` **`for_n`**`(T n, F f)`
 
-These simply call the function `n` times. The `do_n()` loop expects a function
-that takes no arguments, while `for_n()` passes the iteration count (zero to
-`n-1`) as an argument.
+These simply call the function `n` times. `T` must be an integer. The `do_n()`
+loop expects a function that takes no arguments, while `for_n()` passes the
+iteration count (zero to `n-1`) as an argument.
 
 * `template <typename Container> void` **`ensure_min`**`(Container& con, size_t n)`
 * `template <typename Container, typename T> void` **`ensure_min`**`(Container& con, size_t n, const T& t)`

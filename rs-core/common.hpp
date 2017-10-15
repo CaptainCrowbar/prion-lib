@@ -746,15 +746,17 @@ namespace RS {
             con.resize(n);
     }
 
-    template <typename F>
-    void do_n(size_t n, F f) {
-        for (; n != 0; --n)
+    template <typename T, typename F>
+    void do_n(T n, F f) {
+        static_assert(std::is_integral<T>::value);
+        for (T i = T(0); i < n; ++i)
             f();
     }
 
-    template <typename F>
-    void for_n(size_t n, F f) {
-        for (size_t i = 0; i < n; ++i)
+    template <typename T, typename F>
+    void for_n(T n, F f) {
+        static_assert(std::is_integral<T>::value);
+        for (T i = T(0); i < n; ++i)
             f(i);
     }
 

@@ -417,6 +417,13 @@ namespace RS {
         static std::string preformat(std::nullptr_t) { return "null"; }
         template <typename T> static T preformat(const std::atomic<T>& t) { return t; }
 
+        template <typename T1, typename T2>
+        static std::string preformat(const std::pair<T1, T2>& p) {
+            std::ostringstream out;
+            out << '(' << preformat(p.first) << ',' << preformat(p.second) << ')';
+            return out.str();
+        }
+
         template <typename R, typename I = decltype(std::begin(std::declval<R>())),
             typename V = typename std::iterator_traits<I>::value_type>
         struct FormatRange {

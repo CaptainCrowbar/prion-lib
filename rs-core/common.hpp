@@ -228,6 +228,12 @@ namespace RS {
             using value_type = typename std::iterator_traits<iterator>::value_type;
         };
 
+        // https://stackoverflow.com/questions/41207774/how-do-i-create-a-tuple-of-n-ts-from-an-array-of-t
+        template <size_t... Sequence, typename Array>
+        constexpr auto array_to_tuple_helper(const Array& array, std::index_sequence<Sequence...>) {
+            return std::make_tuple(array[Sequence]...);
+        }
+
     }
 
     template <typename Range> using RangeIterator = typename RS_Detail::CommonRangeTraits<Range>::iterator;
@@ -235,6 +241,16 @@ namespace RS {
 
     constexpr const char* ascii_whitespace = "\t\n\v\f\r ";
     constexpr size_t npos = size_t(-1);
+
+    template <typename T, size_t N>
+    constexpr auto array_to_tuple(const T (&array)[N]) {
+        return RS_Detail::array_to_tuple_helper(array, std::make_index_sequence<N>{});
+    }
+
+    template <typename T, size_t N>
+    constexpr auto array_to_tuple(const std::array<T, N> &array) {
+        return RS_Detail::array_to_tuple_helper(array, std::make_index_sequence<N>{});
+    }
 
     template <typename T> constexpr auto as_signed(T t) noexcept { return static_cast<std::make_signed_t<T>>(t); }
     template <typename T> constexpr auto as_unsigned(T t) noexcept { return static_cast<std::make_unsigned_t<T>>(t); }
@@ -795,6 +811,42 @@ namespace RS {
     template <typename Range1, typename Range2>
     bool sets_intersect(const Range1& r1, const Range2& r2) {
         return sets_intersect(r1, r2, std::less<>());
+    }
+
+    inline void sort_list() noexcept {}
+    template <typename T> inline void sort_list(T&) noexcept {}
+
+    template <typename T>
+    inline void sort_list(T& t1, T& t2) noexcept {
+        using std::swap;
+        if (t2 < t1)
+            swap(t1, t2);
+    }
+
+    template <typename T, typename... Args>
+    inline void sort_list(T& t, Args&... args) {
+        static constexpr size_t N = sizeof...(Args) + 1;
+        std::array<T, N> array{{t, args...}};
+        std::sort(array.begin(), array.end());
+        std::tie(t, args...) = array_to_tuple(array);
+    }
+
+    template <typename Compare> inline void sort_list_by(Compare) noexcept {}
+    template <typename Compare, typename T> inline void sort_list_by(Compare, T&) noexcept {}
+
+    template <typename Compare, typename T>
+    inline void sort_list_by(Compare c, T& t1, T& t2) {
+        using std::swap;
+        if (c(t2, t1))
+            swap(t1, t2);
+    }
+
+    template <typename Compare, typename T, typename... Args>
+    inline void sort_list_by(Compare c, T& t, Args&... args) {
+        static constexpr size_t N = sizeof...(Args) + 1;
+        std::array<T, N> array{{t, args...}};
+        std::sort(array.begin(), array.end(), c);
+        std::tie(t, args...) = array_to_tuple(array);
     }
 
     template <typename Range>

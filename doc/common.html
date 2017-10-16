@@ -661,6 +661,13 @@ are assumed to be ordered in accordance with the comparison predicate.</p>
 </div>
 <div class="defns">
 <ul>
+<li><code>template &lt;typename... Args&gt; void</code> <strong><code>sort_list</code></strong><code>(Args&amp;... args)</code></li>
+<li><code>template &lt;typename Compare, typename... Args&gt; void</code> <strong><code>sort_list_by</code></strong><code>(Compare c, Args&amp;... args)</code></li>
+</ul>
+<p>Sort an explicit list of variables.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>template &lt;typename Range&gt; [value type]</code> <strong><code>sum_of</code></strong><code>(const Range&amp; r)</code></li>
 <li><code>template &lt;typename Range&gt; [value type]</code> <strong><code>product_of</code></strong><code>(const Range&amp; r)</code></li>
 </ul>
@@ -763,6 +770,14 @@ C-style arrays and is <code>constexpr</code>.</p>
 <li><code>template &lt;typename T&gt; constexpr Irange&lt;T*&gt;</code> <strong><code>array_range</code></strong><code>(T* ptr, size_t len)</code></li>
 </ul>
 <p>Returns <code>irange(ptr,ptr+len)</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T, size_t N&gt; constexpr std::tuple&lt;T,...&gt;</code> <strong><code>array_to_tuple</code></strong><code>(const T (&amp;array)[N])</code></li>
+<li><code>template &lt;typename T, size_t N&gt; constexpr std::tuple&lt;T,...&gt;</code> <strong><code>array_to_tuple</code></strong><code>(const std::array&lt;T, N&gt; &amp;array)</code></li>
+</ul>
+<p>Convert a C-style array or a <code>std::array</code> to a tuple containing the same
+values.</p>
 </div>
 <h2 id="arithmetic-functions">Arithmetic functions</h2>
 <h3 id="generic-arithmetic-functions">Generic arithmetic functions</h3>

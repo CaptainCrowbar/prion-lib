@@ -1,6 +1,7 @@
 #include "rs-core/common.hpp"
 #include "rs-core/unit-test.hpp"
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstddef>
 #include <ctime>
@@ -917,6 +918,20 @@ void test_core_common_generic_algorithms() {
     is2 = {10,20};
     TEST(! sets_intersect(is1, is2));
 
+    s = "edcba";  TRY(sort_list());                              TEST_EQUAL(s, "edcba");
+    s = "edcba";  TRY(sort_list(s[0]));                          TEST_EQUAL(s, "edcba");
+    s = "edcba";  TRY(sort_list(s[0], s[1]));                    TEST_EQUAL(s, "decba");
+    s = "edcba";  TRY(sort_list(s[0], s[1], s[2]));              TEST_EQUAL(s, "cdeba");
+    s = "edcba";  TRY(sort_list(s[0], s[1], s[2], s[3]));        TEST_EQUAL(s, "bcdea");
+    s = "edcba";  TRY(sort_list(s[0], s[1], s[2], s[3], s[4]));  TEST_EQUAL(s, "abcde");
+
+    s = "abcde";  TRY(sort_list_by(std::greater<>()));                                TEST_EQUAL(s, "abcde");
+    s = "abcde";  TRY(sort_list_by(std::greater<>(), s[0]));                          TEST_EQUAL(s, "abcde");
+    s = "abcde";  TRY(sort_list_by(std::greater<>(), s[0], s[1]));                    TEST_EQUAL(s, "bacde");
+    s = "abcde";  TRY(sort_list_by(std::greater<>(), s[0], s[1], s[2]));              TEST_EQUAL(s, "cbade");
+    s = "abcde";  TRY(sort_list_by(std::greater<>(), s[0], s[1], s[2], s[3]));        TEST_EQUAL(s, "dcbae");
+    s = "abcde";  TRY(sort_list_by(std::greater<>(), s[0], s[1], s[2], s[3], s[4]));  TEST_EQUAL(s, "edcba");
+
     std::vector<int> iv0, iv5 = {1,2,3,4,5};
     const std::vector<int>& civ5(iv5);
     double d = 0;
@@ -1069,6 +1084,23 @@ void test_core_common_range_types() {
     TEST_EQUAL(car.size(), 5);
     TRY(std::copy(car.begin(), car.end(), overwrite(s1)));
     TEST_EQUAL(s1, "Hello");
+
+    int a[5] = {1,2,3,4,5};
+    std::array<int, 5> b = {{6,7,8,9,10}};
+
+    auto t = array_to_tuple(a);
+    auto u = array_to_tuple(b);
+
+    TEST_EQUAL(std::get<0>(t), 1);
+    TEST_EQUAL(std::get<1>(t), 2);
+    TEST_EQUAL(std::get<2>(t), 3);
+    TEST_EQUAL(std::get<3>(t), 4);
+    TEST_EQUAL(std::get<4>(t), 5);
+    TEST_EQUAL(std::get<0>(u), 6);
+    TEST_EQUAL(std::get<1>(u), 7);
+    TEST_EQUAL(std::get<2>(u), 8);
+    TEST_EQUAL(std::get<3>(u), 9);
+    TEST_EQUAL(std::get<4>(u), 10);
 
 }
 

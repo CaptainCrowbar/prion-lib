@@ -491,6 +491,11 @@ found.
 Test whether two ordered ranges (sets) have any elements in common. The ranges
 are assumed to be ordered in accordance with the comparison predicate.
 
+* `template <typename... Args> void` **`sort_list`**`(Args&... args)`
+* `template <typename Compare, typename... Args> void` **`sort_list_by`**`(Compare c, Args&... args)`
+
+Sort an explicit list of variables.
+
 * `template <typename Range> [value type]` **`sum_of`**`(const Range& r)`
 * `template <typename Range> [value type]` **`product_of`**`(const Range& r)`
 
@@ -581,6 +586,12 @@ A wrapper for a pair of iterators, usable as a range in standard algorithms.
 * `template <typename T> constexpr Irange<T*>` **`array_range`**`(T* ptr, size_t len)`
 
 Returns `irange(ptr,ptr+len)`.
+
+* `template <typename T, size_t N> constexpr std::tuple<T,...>` **`array_to_tuple`**`(const T (&array)[N])`
+* `template <typename T, size_t N> constexpr std::tuple<T,...>` **`array_to_tuple`**`(const std::array<T, N> &array)`
+
+Convert a C-style array or a `std::array` to a tuple containing the same
+values.
 
 ## Arithmetic functions ##
 

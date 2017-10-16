@@ -152,6 +152,11 @@ all_sources := $(shell find $(project_name) -name *.c -or -name *.cpp -or -name 
 app_sources := $(shell echo "$(all_sources)" | tr ' ' '\n' | grep app-)
 test_sources := $(shell echo "$(all_sources)" | tr ' ' '\n' | grep '[-]test')
 library_sources := $(filter-out $(app_sources) $(test_sources),$(all_sources))
+
+ifneq ($(test_sources),)
+	test_sources := $(sort $(test_sources) $(project_name)/unit-test.cpp)
+endif
+
 app_objects := $(shell sed -E 's!$(project_name)/([^ ]+)\.[a-z]+!$(BUILD)/\1.o!g' <<< '$(app_sources)')
 test_objects := $(shell sed -E 's!$(project_name)/([^ ]+)\.[a-z]+!$(BUILD)/\1.o!g' <<< '$(test_sources)')
 library_objects := $(shell sed -E 's!$(project_name)/([^ ]+)\.[a-z]+!$(BUILD)/\1.o!g' <<< '$(library_sources)')

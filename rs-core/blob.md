@@ -23,10 +23,10 @@ By Ross Smith
     * `Blob& Blob::`**`operator=`**`(Blob&& b) noexcept`
     * `void* Blob::`**`data`**`() noexcept`
     * `const void* Blob::`**`data`**`() const noexcept`
-    * `uint8_t* Blob::`**`bdata`**`() noexcept`
-    * `const uint8_t* Blob::`**`bdata`**`() const noexcept`
-    * `char* Blob::`**`cdata`**`() noexcept`
-    * `const char* Blob::`**`cdata`**`() const noexcept`
+    * `uint8_t* Blob::`**`b_data`**`() noexcept`
+    * `const uint8_t* Blob::`**`b_data`**`() const noexcept`
+    * `char* Blob::`**`c_data`**`() noexcept`
+    * `const char* Blob::`**`c_data`**`() const noexcept`
     * `Irange<uint8_t*> Blob::`**`bytes`**`() noexcept`
     * `Irange<const uint8_t*> Blob::`**`bytes`**`() const noexcept`
     * `Irange<char*> Blob::`**`chars`**`() noexcept`
@@ -74,7 +74,7 @@ For all functions that take a pointer and length, if a null pointer is passed,
 the length is ignored and the effect is the same as passing a valid pointer
 and zero length.
 
-The `[bc]data()` functions return pointers to the beginning of the blob. The
+The `*data()` functions return pointers to the beginning of the blob. The
 `bytes()` and `chars()` functions return a pair of pointers marking the
 beginning and end of the blob.
 

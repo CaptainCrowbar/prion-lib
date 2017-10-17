@@ -37,10 +37,10 @@
 <li><code>Blob&amp; Blob::</code><strong><code>operator=</code></strong><code>(Blob&amp;&amp; b) noexcept</code></li>
 <li><code>void* Blob::</code><strong><code>data</code></strong><code>() noexcept</code></li>
 <li><code>const void* Blob::</code><strong><code>data</code></strong><code>() const noexcept</code></li>
-<li><code>uint8_t* Blob::</code><strong><code>bdata</code></strong><code>() noexcept</code></li>
-<li><code>const uint8_t* Blob::</code><strong><code>bdata</code></strong><code>() const noexcept</code></li>
-<li><code>char* Blob::</code><strong><code>cdata</code></strong><code>() noexcept</code></li>
-<li><code>const char* Blob::</code><strong><code>cdata</code></strong><code>() const noexcept</code></li>
+<li><code>uint8_t* Blob::</code><strong><code>b_data</code></strong><code>() noexcept</code></li>
+<li><code>const uint8_t* Blob::</code><strong><code>b_data</code></strong><code>() const noexcept</code></li>
+<li><code>char* Blob::</code><strong><code>c_data</code></strong><code>() noexcept</code></li>
+<li><code>const char* Blob::</code><strong><code>c_data</code></strong><code>() const noexcept</code></li>
 <li><code>Irange&lt;uint8_t*&gt; Blob::</code><strong><code>bytes</code></strong><code>() noexcept</code></li>
 <li><code>Irange&lt;const uint8_t*&gt; Blob::</code><strong><code>bytes</code></strong><code>() const noexcept</code></li>
 <li><code>Irange&lt;char*&gt; Blob::</code><strong><code>chars</code></strong><code>() noexcept</code></li>
@@ -86,7 +86,7 @@ invalidate all pointers into the old blob.</p>
 <p>For all functions that take a pointer and length, if a null pointer is passed,
 the length is ignored and the effect is the same as passing a valid pointer
 and zero length.</p>
-<p>The <code>[bc]data()</code> functions return pointers to the beginning of the blob. The
+<p>The <code>*data()</code> functions return pointers to the beginning of the blob. The
 <code>bytes()</code> and <code>chars()</code> functions return a pair of pointers marking the
 beginning and end of the blob.</p>
 <p>The <code>copy()</code> function reallocates the blob to the required size and copies the

@@ -26,14 +26,14 @@ namespace RS {
         Blob& operator=(Blob&& b) noexcept { Blob b2(std::move(b)); swap(b2); return *this; }
         void* data() noexcept { return ptr; }
         const void* data() const noexcept { return ptr; }
-        uint8_t* bdata() noexcept { return static_cast<uint8_t*>(ptr); }
-        const uint8_t* bdata() const noexcept { return static_cast<const uint8_t*>(ptr); }
-        char* cdata() noexcept { return static_cast<char*>(ptr); }
-        const char* cdata() const noexcept { return static_cast<const char*>(ptr); }
-        Irange<uint8_t*> bytes() noexcept { return {bdata(), bdata() + len}; }
-        Irange<const uint8_t*> bytes() const noexcept { return {bdata(), bdata() + len}; }
-        Irange<char*> chars() noexcept { return {cdata(), cdata() + len}; }
-        Irange<const char*> chars() const noexcept { return {cdata(), cdata() + len}; }
+        uint8_t* b_data() noexcept { return static_cast<uint8_t*>(ptr); }
+        const uint8_t* b_data() const noexcept { return static_cast<const uint8_t*>(ptr); }
+        char* c_data() noexcept { return static_cast<char*>(ptr); }
+        const char* c_data() const noexcept { return static_cast<const char*>(ptr); }
+        Irange<uint8_t*> bytes() noexcept { return {b_data(), b_data() + len}; }
+        Irange<const uint8_t*> bytes() const noexcept { return {b_data(), b_data() + len}; }
+        Irange<char*> chars() noexcept { return {c_data(), c_data() + len}; }
+        Irange<const char*> chars() const noexcept { return {c_data(), c_data() + len}; }
         void clear() noexcept { Blob b; swap(b); }
         void copy(const void* p, size_t n) { Blob b; b.init_copy(p, n); swap(b); }
         bool empty() const noexcept { return len == 0; }
@@ -45,7 +45,7 @@ namespace RS {
         void reset(void* p, size_t n) { Blob b(p, n); swap(b); }
         template <typename F> void reset(void* p, size_t n, F f) { Blob b(p, n, f); swap(b); }
         size_t size() const noexcept { return len; }
-        std::string str() const { return empty() ? std::string() : std::string(cdata(), len); }
+        std::string str() const { return empty() ? std::string() : std::string(c_data(), len); }
         void swap(Blob& b) noexcept { std::swap(ptr, b.ptr); std::swap(len, b.len); del.swap(b.del); }
     private:
         void* ptr = nullptr;

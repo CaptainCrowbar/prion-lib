@@ -3,7 +3,6 @@
 extern void test_core_common_preprocessor_macros();
 extern void test_core_common_integer_types();
 extern void test_core_common_string_types();
-extern void test_core_common_exceptions();
 extern void test_core_common_metaprogramming();
 extern void test_core_common_type_adapters();
 extern void test_core_common_type_related_functions();
@@ -226,7 +225,6 @@ int main() {
         { "core/common/preprocessor-macros", test_core_common_preprocessor_macros },
         { "core/common/integer-types", test_core_common_integer_types },
         { "core/common/string-types", test_core_common_string_types },
-        { "core/common/exceptions", test_core_common_exceptions },
         { "core/common/metaprogramming", test_core_common_metaprogramming },
         { "core/common/type-adapters", test_core_common_type_adapters },
         { "core/common/type-related-functions", test_core_common_type_related_functions },

@@ -107,7 +107,7 @@ namespace RS {
                 else if (rc == WAIT_TIMEOUT)
                     cs = state::waiting;
                 else if (err == ERROR_INVALID_HANDLE)
-                    throw std::system_error(err, windows_category());
+                    throw std::system_error(err, std::system_category());
                 else
                     cs = state::closed;
             #endif

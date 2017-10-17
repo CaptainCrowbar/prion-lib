@@ -258,20 +258,6 @@ string of <code>n</code> null characters, instead of undefined behaviour.</p>
 <code>std::rethrow_exception()</code>, except that it does nothing if the exception
 pointer is null.</p>
 </div>
-<div class="defns">
-<ul>
-<li><code>class</code> <strong><code>WindowsCategory</code></strong><code>: public std::error_category</code><ul>
-<li><code>virtual U8string WindowsCategory::</code><strong><code>message</code></strong><code>(int ev) const</code></li>
-<li><code>virtual const char* WindowsCategory::</code><strong><code>name</code></strong><code>() const noexcept</code></li>
-</ul>
-</li>
-<li><code>const std::error_category&amp;</code> <strong><code>windows_category</code></strong><code>() noexcept</code></li>
-</ul>
-<p>An error category instance for translating Win32 API error codes; naturally
-this is only defined on builds that use the Win32 API. (MSVC provides this
-through <code>std::system_category()</code>, but GCC does not supply any equivalent on
-Cygwin.)</p>
-</div>
 <h3 id="metaprogramming-and-type-traits">Metaprogramming and type traits</h3>
 <div class="defns">
 <ul>

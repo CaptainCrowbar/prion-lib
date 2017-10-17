@@ -434,25 +434,6 @@ void test_core_common_string_types() {
 
 }
 
-void test_core_common_exceptions() {
-
-    #ifdef _WIN32
-
-        U8string s;
-
-        TRY(s = windows_category().message(ERROR_INVALID_FUNCTION));
-        TEST_EQUAL(s, "Incorrect function.");
-        try {
-            throw std::system_error(ERROR_INVALID_FUNCTION, windows_category(), "SomeFunction()");
-        }
-        catch (const std::exception& ex) {
-            TEST_MATCH(std::string(ex.what()), "^SomeFunction\\(\\).+Incorrect function\\.$");
-        }
-
-    #endif
-
-}
-
 void test_core_common_metaprogramming() {
 
     TEST_TYPE(BinaryType<char>, uint8_t);

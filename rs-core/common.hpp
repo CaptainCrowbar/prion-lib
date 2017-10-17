@@ -38,6 +38,7 @@
 // Includes go here so anything that needs the macros above will see them
 
 #include <algorithm>
+#include <array>
 #include <cerrno>
 #include <chrono>
 #include <clocale>
@@ -61,7 +62,6 @@
 #include <random>
 #include <sstream>
 #include <string>
-#include <system_error>
 #include <thread>
 #include <tuple>
 #include <type_traits>
@@ -471,33 +471,6 @@ namespace RS {
     // Exceptions
 
     inline void rethrow(std::exception_ptr p) { if (p) std::rethrow_exception(p); }
-
-    #ifdef _WIN32
-
-        class WindowsCategory:
-        public std::error_category {
-        public:
-            virtual U8string message(int ev) const {
-                static constexpr uint32_t flags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
-                wchar_t* wptr = nullptr;
-                auto units = FormatMessageW(flags, nullptr, ev, 0, reinterpret_cast<wchar_t*>(&wptr), 0, nullptr);
-                std::shared_ptr<wchar_t> wshare(wptr, LocalFree);
-                int bytes = WideCharToMultiByte(CP_UTF8, 0, wptr, units, nullptr, 0, nullptr, nullptr);
-                std::string text(bytes, '\0');
-                WideCharToMultiByte(CP_UTF8, 0, wptr, units, &text[0], bytes, nullptr, nullptr);
-                text.resize(text.find_last_not_of(ascii_whitespace) + 1);
-                text.shrink_to_fit();
-                return text;
-            }
-            virtual const char* name() const noexcept { return "Win32"; }
-        };
-
-        inline const std::error_category& windows_category() noexcept {
-            static const WindowsCategory cat;
-            return cat;
-        }
-
-    #endif
 
     // Metaprogramming and type traits
 

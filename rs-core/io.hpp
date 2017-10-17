@@ -489,7 +489,7 @@ namespace RS {
                 if (h == INVALID_HANDLE_VALUE)
                     set_error(EBADF);
                 else if (! FlushFileBuffers(h))
-                    set_error(GetLastError(), windows_category());
+                    set_error(GetLastError(), std::system_category());
             #endif
         }
 
@@ -616,7 +616,7 @@ namespace RS {
                     distance.QuadPart = 0;
                     SetLastError(0);
                     SetFilePointerEx(get(), distance, nullptr, FILE_END);
-                    set_error(GetLastError(), windows_category());
+                    set_error(GetLastError(), std::system_category());
                 }
             }
 
@@ -627,7 +627,7 @@ namespace RS {
                 auto rc = CreateFileW(wfile.data(), desired_access, share_mode, security_attributes, creation_disposition, flags_and_attributes, template_file);
                 int err = GetLastError();
                 *this = Winio(rc);
-                set_error(err, windows_category());
+                set_error(err, std::system_category());
             }
 
             inline void Winio::close() noexcept {
@@ -635,13 +635,13 @@ namespace RS {
                 if (h && h != INVALID_HANDLE_VALUE) {
                     SetLastError(0);
                     CloseHandle(h);
-                    set_error(GetLastError(), windows_category());
+                    set_error(GetLastError(), std::system_category());
                 }
             }
 
             inline void Winio::flush() noexcept {
                 if (! FlushFileBuffers(get()))
-                    set_error(GetLastError(), windows_category());
+                    set_error(GetLastError(), std::system_category());
             }
 
             inline bool Winio::is_terminal() const noexcept {
@@ -660,7 +660,7 @@ namespace RS {
                 DWORD n = 0;
                 SetLastError(0);
                 ReadFile(get(), ptr, uint32_t(maxlen), &n, nullptr);
-                set_error(GetLastError(), windows_category());
+                set_error(GetLastError(), std::system_category());
                 return n;
             }
 
@@ -676,7 +676,7 @@ namespace RS {
                 }
                 SetLastError(0);
                 SetFilePointerEx(get(), distance, nullptr, method);
-                set_error(GetLastError(), windows_category());
+                set_error(GetLastError(), std::system_category());
             }
 
             inline ptrdiff_t Winio::tell() noexcept {
@@ -684,7 +684,7 @@ namespace RS {
                 distance.QuadPart = result.QuadPart = 0;
                 SetLastError(0);
                 SetFilePointerEx(get(), distance, &result, FILE_CURRENT);
-                set_error(GetLastError(), windows_category());
+                set_error(GetLastError(), std::system_category());
                 return result.QuadPart;
             }
 
@@ -692,7 +692,7 @@ namespace RS {
                 DWORD n = 0;
                 SetLastError(0);
                 WriteFile(get(), ptr, uint32_t(len), &n, nullptr);
-                set_error(GetLastError(), windows_category());
+                set_error(GetLastError(), std::system_category());
                 return n;
             }
 

@@ -176,16 +176,6 @@ Rethrows the exception, if one is present. This is the same as
 `std::rethrow_exception()`, except that it does nothing if the exception
 pointer is null.
 
-* `class` **`WindowsCategory`**`: public std::error_category`
-    * `virtual U8string WindowsCategory::`**`message`**`(int ev) const`
-    * `virtual const char* WindowsCategory::`**`name`**`() const noexcept`
-* `const std::error_category&` **`windows_category`**`() noexcept`
-
-An error category instance for translating Win32 API error codes; naturally
-this is only defined on builds that use the Win32 API. (MSVC provides this
-through `std::system_category()`, but GCC does not supply any equivalent on
-Cygwin.)
-
 ### Metaprogramming and type traits ###
 
 * `template <typename T> using` **`BinaryType`** `= [unsigned integer type]`

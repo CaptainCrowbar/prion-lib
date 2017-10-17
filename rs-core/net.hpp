@@ -63,7 +63,6 @@ namespace RS {
 
             inline void clear_error() noexcept { errno = 0; }
             inline int get_error() noexcept { return errno; }
-            inline auto& net_category() { return std::generic_category(); }
 
         }
 
@@ -97,7 +96,6 @@ namespace RS {
 
             inline void clear_error() noexcept { WSASetLastError(0); }
             inline int get_error() noexcept { return WSAGetLastError(); }
-            inline auto& net_category() { return windows_category(); }
 
         }
 
@@ -117,7 +115,7 @@ namespace RS {
             int err = 0;
             const NetResult& fail_if(T t, const char* f) const {
                 if (res == t)
-                    throw std::system_error(err, net_category(), f);
+                    throw std::system_error(err, std::system_category(), f);
                 return *this;
             }
         };

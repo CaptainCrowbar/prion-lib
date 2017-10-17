@@ -460,7 +460,7 @@ namespace RS {
             auto wpath = native();
             if (! SetCurrentDirectoryW(wpath.data())) {
                 auto err = GetLastError();
-                throw std::system_error(err, windows_category(), path);
+                throw std::system_error(err, std::system_category(), path);
             }
         }
 
@@ -471,7 +471,7 @@ namespace RS {
                 rc = GetCurrentDirectoryW(uint32_t(wpath.size()), &wpath[0]);
                 auto err = GetLastError();
                 if (rc == 0)
-                    throw std::system_error(err, windows_category());
+                    throw std::system_error(err, std::system_category());
                 else if (rc < wpath.size())
                     break;
                 wpath.resize(2 * wpath.size());
@@ -504,7 +504,7 @@ namespace RS {
                 rc = DeleteFileW(wpath.data());
             auto err = GetLastError();
             if (! rc)
-                throw std::system_error(err, windows_category(), path);
+                throw std::system_error(err, std::system_category(), path);
         }
 
         inline void File::normalize() noexcept {
@@ -538,7 +538,7 @@ namespace RS {
             std::wstring wpath(MAX_PATH, L'\0');
             auto rc = SHGetFolderPath(nullptr, id, nullptr, 0, &wpath[0]);
             if (rc != S_OK)
-                throw std::system_error(rc, windows_category());
+                throw std::system_error(rc, std::system_category());
             null_term(wpath);
             return wpath;
         }
@@ -556,16 +556,16 @@ namespace RS {
             if (rc)
                 return;
             if (err != ERROR_PATH_NOT_FOUND || ! mkdir_p)
-                throw std::system_error(err, windows_category(), path);
+                throw std::system_error(err, std::system_category(), path);
             File p = parent();
             if (p == *this)
-                throw std::system_error(err, windows_category(), path);
+                throw std::system_error(err, std::system_category(), path);
             p.mkdir(recurse);
             SetLastError(0);
             rc = CreateDirectoryW(wpath.data(), nullptr);
             err = GetLastError();
             if (! rc)
-                throw std::system_error(err, windows_category(), path);
+                throw std::system_error(err, std::system_category(), path);
         }
 
     #endif

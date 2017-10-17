@@ -76,7 +76,7 @@ namespace RS {
         virtual ptrdiff_t tell() noexcept = 0;
         virtual size_t write(const void* ptr, size_t len) = 0;
         virtual void write_n(size_t n, char c);
-        void check() const { if (status) throw std::system_error(status); }
+        void check(const U8string& detail = "") const;
         void clear_error() noexcept { set_error(0); }
         std::error_code error() const noexcept { return status; }
         template <typename... Args> void format(const U8string& pattern, const Args&... args) { write_str(fmt(pattern, args...)); }
@@ -138,6 +138,15 @@ namespace RS {
             do_n(qr.first, [&] { write(buf.data(), block); });
             if (qr.second)
                 write(buf.data(), qr.second);
+        }
+
+        inline void IO::check(const U8string& detail) const {
+            if (status) {
+                if (detail.empty())
+                    throw std::system_error(status);
+                else
+                    throw std::system_error(status, detail);
+            }
         }
 
         template <typename... Args>

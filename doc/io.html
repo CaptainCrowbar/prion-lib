@@ -145,15 +145,17 @@ a space between each pair of arguments, followed by a line feed.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>void IO::</code><strong><code>check</code></strong><code>() const</code></li>
+<li><code>void IO::</code><strong><code>check</code></strong><code>(const U8string&amp; detail = "") const</code></li>
 <li><code>void IO::</code><strong><code>clear_error</code></strong><code>() noexcept</code></li>
 <li><code>std::error_code IO::</code><strong><code>error</code></strong><code>() const noexcept</code></li>
 </ul>
 <p>Error handling functions. The <code>error()</code> function returns any pending error
-status; <code>check()</code> throws <code>std::system_error</code> if an error is set. Once an error
-happens, the error status remains set until <code>clear_error()</code> is called,
-although the actual error code may be changed if a subsequent operation
-generates a different error.</p>
+status; <code>check()</code> throws <code>std::system_error</code> if an error is set. An optional
+argument can be added to <code>check()</code> to supply additional information for the
+exception's error message, such as a file name. Once an error happens, the
+error status remains set until <code>clear_error()</code> is called, although the actual
+error code may be changed if a subsequent operation generates a different
+error.</p>
 </div>
 <div class="defns">
 <ul>

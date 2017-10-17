@@ -103,15 +103,17 @@ and writes the resulting string to the output stream. The `print()` function
 formats each argument using `to_str()`, writing them to the output stream with
 a space between each pair of arguments, followed by a line feed.
 
-* `void IO::`**`check`**`() const`
+* `void IO::`**`check`**`(const U8string& detail = "") const`
 * `void IO::`**`clear_error`**`() noexcept`
 * `std::error_code IO::`**`error`**`() const noexcept`
 
 Error handling functions. The `error()` function returns any pending error
-status; `check()` throws `std::system_error` if an error is set. Once an error
-happens, the error status remains set until `clear_error()` is called,
-although the actual error code may be changed if a subsequent operation
-generates a different error.
+status; `check()` throws `std::system_error` if an error is set. An optional
+argument can be added to `check()` to supply additional information for the
+exception's error message, such as a file name. Once an error happens, the
+error status remains set until `clear_error()` is called, although the actual
+error code may be changed if a subsequent operation generates a different
+error.
 
 * `Irange<line_iterator> IO::`**`lines`**`()`
 

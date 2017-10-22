@@ -191,8 +191,8 @@ characters.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename C&gt; void</code> <strong><code>null_term</code></strong><code>(basic_string&lt;C&gt;&amp; str) noexcept</code></li>
-<li><code>template &lt;typename C&gt; basic_string&lt;C&gt;</code> <strong><code>null_term_str</code></strong><code>(const basic_string&lt;C&gt;&amp; str)</code></li>
+<li><code>template &lt;typename C&gt; void</code> <strong><code>null_term</code></strong><code>(std::basic_string&lt;C&gt;&amp; str) noexcept</code></li>
+<li><code>template &lt;typename C&gt; std::basic_string&lt;C&gt;</code> <strong><code>null_term_str</code></strong><code>(const std::basic_string&lt;C&gt;&amp; str)</code></li>
 </ul>
 <p>Cut off a string at the first null character (useful after the string has been
 used as an output buffer by some C APIs).</p>
@@ -432,16 +432,24 @@ dynamic type of the referenced object.</p>
 <li><code>template &lt;typename S2, typename S1&gt; S2</code> <strong><code>uconv</code></strong><code>(const S1&amp; s)</code></li>
 </ul>
 <p>Converts between UTF representations. The input and output types (<code>S1</code> and
-<code>S2</code>) must be instantiations of <code>basic_string</code> with 8, 16, or 32 bit character
-types. If the character types are the same size, the input string is copied to
-the output without any validity checking; otherwise, invalid UTF in the input
-is replaced with the standard Unicode replacement character (<code>U+FFFD</code>) in the
-output.</p>
+<code>S2</code>) must be instantiations of <code>std::basic_string</code> with 8, 16, or 32 bit
+character types. If the character types are the same size, the input string is
+copied to the output without any validity checking; otherwise, invalid UTF in
+the input is replaced with the standard Unicode replacement character
+(<code>U+FFFD</code>) in the output.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename C&gt; bool</code> <strong><code>uvalid</code></strong><code>(const basic_string&lt;C&gt;&amp; s) noexcept</code></li>
-<li><code>template &lt;typename C&gt; bool</code> <strong><code>uvalid</code></strong><code>(const basic_string&lt;C&gt;&amp; s, size_t&amp; n) noexcept</code></li>
+<li><code>template &lt;typename C&gt; size_t</code> <strong><code>ulength</code></strong><code>(const std::basic_string&lt;C&gt;&amp; s) noexcept</code></li>
+</ul>
+<p>Returns the number of characters (Unicode scalar values) in a string. The UTF
+encoding is chosen based on <code>sizeof(C)</code>; the result is unspecified if the
+string is not valid UTF.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename C&gt; bool</code> <strong><code>uvalid</code></strong><code>(const std::basic_string&lt;C&gt;&amp; s) noexcept</code></li>
+<li><code>template &lt;typename C&gt; bool</code> <strong><code>uvalid</code></strong><code>(const std::basic_string&lt;C&gt;&amp; s, size_t&amp; n) noexcept</code></li>
 </ul>
 <p>Check a string for a valid UTF encoding; the encoding is deduced from the size
 of the character type. The second version reports the number of code units

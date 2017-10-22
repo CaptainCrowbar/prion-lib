@@ -193,6 +193,27 @@ namespace RS {
             return n;
         }
 
+        template <typename C>
+        struct UtfLength {
+            size_t operator()(const std::basic_string<C>& s) const noexcept {
+                switch (sizeof(C)) {
+                    case 1:
+                        return std::count_if(s.begin(), s.end(), [] (C c) {
+                            auto b = uint8_t(c);
+                            return b <= 0x7f || (b >= 0xc2 && b <= 0xf4);
+                        });
+                    case 2:
+                        return std::count_if(s.begin(), s.end(), [] (C c) {
+                            auto u = uint16_t(c);
+                            return u <= 0xdbff || u >= 0xe000;
+                        });
+                    default: {
+                        return s.size();
+                    }
+                }
+            }
+        };
+
         template <typename C, size_t N = sizeof(C)>
         struct UtfValidate;
 
@@ -268,6 +289,11 @@ namespace RS {
     template <typename Dst, typename Src>
     Dst uconv(const Src& s) {
         return RS_Detail::UtfConvert<Src, Dst>()(s);
+    }
+
+    template <typename C>
+    size_t ulength(const std::basic_string<C>& s) noexcept {
+        return RS_Detail::UtfLength<C>()(s);
     }
 
     template <typename C>

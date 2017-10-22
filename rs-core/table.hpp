@@ -64,7 +64,7 @@ namespace RS {
                     width = 2;
                 } else {
                     text += row[c];
-                    width = row[c].size();
+                    width = ulength(row[c]);
                 }
                 if (c != columns - 1)
                     text.append(tab.widths[c] - width + 2, ' ');
@@ -84,11 +84,12 @@ namespace RS {
         if (s.empty())
             s = "--";
         row.push_back(s);
+        size_t len = ulength(s);
         if (widths.size() < row.size()) {
-            widths.push_back(s.size());
+            widths.push_back(len);
         } else {
             auto& width = widths[row.size() - 1];
-            width = std::max(width, s.size());
+            width = std::max(width, len);
         }
     }
 

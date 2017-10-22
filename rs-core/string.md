@@ -146,8 +146,8 @@ Replaces all whitespace in a string with a single space, and trims leading and
 trailing whitespace. All non-ASCII bytes are treated as non-whitespace
 characters.
 
-* `template <typename C> void` **`null_term`**`(basic_string<C>& str) noexcept`
-* `template <typename C> basic_string<C>` **`null_term_str`**`(const basic_string<C>& str)`
+* `template <typename C> void` **`null_term`**`(std::basic_string<C>& str) noexcept`
+* `template <typename C> std::basic_string<C>` **`null_term_str`**`(const std::basic_string<C>& str)`
 
 Cut off a string at the first null character (useful after the string has been
 used as an output buffer by some C APIs).
@@ -354,14 +354,20 @@ dynamic type of the referenced object.
 * `template <typename S2, typename S1> S2` **`uconv`**`(const S1& s)`
 
 Converts between UTF representations. The input and output types (`S1` and
-`S2`) must be instantiations of `basic_string` with 8, 16, or 32 bit character
-types. If the character types are the same size, the input string is copied to
-the output without any validity checking; otherwise, invalid UTF in the input
-is replaced with the standard Unicode replacement character (`U+FFFD`) in the
-output.
+`S2`) must be instantiations of `std::basic_string` with 8, 16, or 32 bit
+character types. If the character types are the same size, the input string is
+copied to the output without any validity checking; otherwise, invalid UTF in
+the input is replaced with the standard Unicode replacement character
+(`U+FFFD`) in the output.
 
-* `template <typename C> bool` **`uvalid`**`(const basic_string<C>& s) noexcept`
-* `template <typename C> bool` **`uvalid`**`(const basic_string<C>& s, size_t& n) noexcept`
+* `template <typename C> size_t` **`ulength`**`(const std::basic_string<C>& s) noexcept`
+
+Returns the number of characters (Unicode scalar values) in a string. The UTF
+encoding is chosen based on `sizeof(C)`; the result is unspecified if the
+string is not valid UTF.
+
+* `template <typename C> bool` **`uvalid`**`(const std::basic_string<C>& s) noexcept`
+* `template <typename C> bool` **`uvalid`**`(const std::basic_string<C>& s, size_t& n) noexcept`
 
 Check a string for a valid UTF encoding; the encoding is deduced from the size
 of the character type. The second version reports the number of code units

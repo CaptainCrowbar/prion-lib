@@ -1148,6 +1148,19 @@ void test_core_string_unicode() {
     TRY(sw = uconv<std::wstring>(t32));      TEST_EQUAL(sw, tw);
     TRY(sw = uconv<std::wstring>(tw));       TEST_EQUAL(sw, tw);
 
+    TRY(n = ulength(u8""s));       TEST_EQUAL(n, 0);
+    TRY(n = ulength(u8"hello"s));  TEST_EQUAL(n, 5);
+    TRY(n = ulength(u8"αβγδε"s));  TEST_EQUAL(n, 5);
+    TRY(n = ulength(u""s));        TEST_EQUAL(n, 0);
+    TRY(n = ulength(u"hello"s));   TEST_EQUAL(n, 5);
+    TRY(n = ulength(u"αβγδε"s));   TEST_EQUAL(n, 5);
+    TRY(n = ulength(U""s));        TEST_EQUAL(n, 0);
+    TRY(n = ulength(U"hello"s));   TEST_EQUAL(n, 5);
+    TRY(n = ulength(U"αβγδε"s));   TEST_EQUAL(n, 5);
+    TRY(n = ulength(L""s));        TEST_EQUAL(n, 0);
+    TRY(n = ulength(L"hello"s));   TEST_EQUAL(n, 5);
+    TRY(n = ulength(L"αβγδε"s));   TEST_EQUAL(n, 5);
+
     TEST(uvalid(""s, n));                       TEST_EQUAL(n, 0);
     TEST(uvalid(u""s, n));                      TEST_EQUAL(n, 0);
     TEST(uvalid(U""s, n));                      TEST_EQUAL(n, 0);

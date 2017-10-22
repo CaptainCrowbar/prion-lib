@@ -151,7 +151,7 @@ system's native API.
 * `using` **`WcharEquivalent`** `= [char16_t or char32_t]`
 * `using` **`WstringEquivalent`** `= [std::u16string or std::u32string]`
 
-These are defined to reflect the encoding represented by `wchar_t` ad
+These are defined to reflect the encoding represented by `wchar_t` and
 `std::wstring`. Systems where wide strings are neither UTF-16 nor UTF-32 are
 not supported.
 

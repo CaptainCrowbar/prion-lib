@@ -163,7 +163,8 @@ library_objects := $(shell sed -E 's!$(project_name)/([^ ]+)\.[a-z]+!$(BUILD)/\1
 doc_index := $(wildcard $(project_name)/index.md)
 doc_sources := $(shell find $(project_name) -name '*.md' | sort)
 doc_pages := doc/style.css doc/index.html $(patsubst $(project_name)/%.md,doc/%.html,$(doc_sources))
-static_library := $(BUILD)/$(lib_prefix)$(project_name)$(lib_suffix)
+static_name := $(lib_prefix)$(project_name)$(lib_suffix)
+static_library := $(BUILD)/$(static_name)
 
 ifneq ($(native_windows),)
 	resource_files := $(wildcard resources/*.rc) $(wildcard resources/*.ico)
@@ -191,12 +192,26 @@ else
 	endif
 endif
 
-app_target := $(BUILD)/$(project_name)$(exe_suffix)
+app_name := $(project_name)$(exe_suffix)
+app_target := $(BUILD)/$(app_name)
+test_name := test-$(project_name)$(exe_suffix)
+test_target := $(BUILD)/$(test_name)
 static_target :=
-test_target := $(BUILD)/test-$(project_name)$(exe_suffix)
 
 ifneq ($(library_sources),)
 	static_target := $(static_library)
+endif
+
+install_app :=
+install_include :=
+install_static :=
+
+ifneq ($(install_prefix),)
+	install_app := $(install_prefix)/bin/$(app_name)
+	install_include := $(install_prefix)/include/$(project_name)
+	ifneq ($(static_library),)
+		install_static := $(install_prefix)/lib/$(static_name)
+	endif
 endif
 
 # Common build targets
@@ -313,11 +328,11 @@ ifeq ($(install_type),application)
 static: $(static_target)
 
 install: uninstall app
-	mkdir -p $(install_prefix)/bin
-	cp $(app_target) $(install_prefix)/bin
+	@mkdir -p $(dir $(install_app))
+	cp $(app_target) $(install_app)
 
 uninstall:
-	rm -f $(install_prefix)/bin/$(notdir $(app_target))
+	if [ -f "$(install_app)" ]; then rm $(install_app); fi
 
 help-install: help-test
 	@echo "    install    = Install the library"
@@ -332,8 +347,8 @@ symlinks:
 else
 
 symlinks: uninstall app
-	mkdir -p $(install_prefix)/bin
-	ln -fs $(abspath $(app_target)) $(install_prefix)/bin
+	@mkdir -p $(dir $(install_app))
+	ln -s $(abspath $(app_target)) $(install_app)
 
 endif
 
@@ -346,11 +361,12 @@ ifeq ($(install_type),header-lib)
 static: $(static_target) $(project_name)/library.hpp
 
 install: uninstall static
-	mkdir -p $(install_prefix)/lib $(install_prefix)/include/$(project_name)
-	cp $(library_headers) $(project_name)/library.hpp $(install_prefix)/include/$(project_name)
+	@mkdir -p $(install_include)
+	cp $(library_headers) $(project_name)/library.hpp $(install_include)
 
 uninstall:
-	if [ "$(install_prefix)" ]; then rm -f $(install_prefix)/lib/$(notdir $(static_library)); rm -rf $(install_prefix)/include/$(project_name); fi
+	if [ -h "$(install_include)" ]; then rm $(install_include); fi
+	if [ -d "$(install_include)" ]; then rm -f $(install_include)/*; rmdir $(install_include); fi
 
 help-install: help-test
 	@echo "    install    = Install the application"
@@ -365,8 +381,8 @@ symlinks:
 else
 
 symlinks: uninstall static
-	mkdir -p $(install_prefix)/lib $(install_prefix)/include
-	ln -fs $(abspath $(project_name)) $(install_prefix)/include
+	@mkdir -p $(dir $(install_include))
+	ln -s $(abspath $(project_name)) $(install_include)
 
 endif
 
@@ -379,12 +395,14 @@ ifeq ($(install_type),object-lib)
 static: $(static_target) $(project_name)/library.hpp
 
 install: uninstall static
-	mkdir -p $(install_prefix)/lib $(install_prefix)/include/$(project_name)
-	cp $(library_headers) $(project_name)/library.hpp $(install_prefix)/include/$(project_name)
-	cp $(static_library) $(install_prefix)/lib
+	@mkdir -p $(install_include) $(dir $(install_static))
+	cp $(library_headers) $(project_name)/library.hpp $(install_include)
+	cp $(static_library) $(install_static)
 
 uninstall:
-	if [ "$(install_prefix)" ]; then rm -f $(install_prefix)/lib/$(notdir $(static_library)); rm -rf $(install_prefix)/include/$(project_name); fi
+	if [ -h "$(install_include)" ]; then rm $(install_include); fi
+	if [ -d "$(install_include)" ]; then rm -f $(install_include)/*; rmdir $(install_include); fi
+	if [ -f "$(install_static)" ]; then rm $(install_static); fi
 
 help-install: help-test
 	@echo "    install    = Install the application"
@@ -399,9 +417,9 @@ symlinks:
 else
 
 symlinks: uninstall static
-	mkdir -p $(install_prefix)/lib $(install_prefix)/include
-	ln -fs $(abspath $(project_name)) $(install_prefix)/include
-	ln -fs $(abspath $(static_library)) $(install_prefix)/lib
+	@mkdir -p $(dir $(install_include)) $(dir $(install_static))
+	ln -s $(abspath $(project_name)) $(install_include)
+	ln -s $(abspath $(static_library)) $(install_static)
 
 endif
 

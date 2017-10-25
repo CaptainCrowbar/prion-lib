@@ -79,7 +79,7 @@ ifeq ($(cross_target),msvc)
 	cc_output := /Fo
 	include_path := /I. /I$(windows_prefix)/include /I$(vcpkg_prefix)/include
 	AR := lib
-	ar_specific_flags :=
+	ar_specific_flags := /NOLOGO
 	ar_output := /OUT:
 	LD := link
 	LDLIBS :=

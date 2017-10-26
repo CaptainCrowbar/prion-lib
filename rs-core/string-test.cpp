@@ -5,6 +5,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <tuple>
 #include <typeindex>
 #include <typeinfo>
 #include <utility>
@@ -488,7 +489,7 @@ void test_core_string_property() {
 
 void test_core_string_manipulation() {
 
-    std::string s;
+    std::string s, s1, s2;
     std::wstring ws;
     Strings sv;
 
@@ -571,6 +572,24 @@ void test_core_string_manipulation() {
     ws = L""s;              TEST_EQUAL(null_term_str(ws), L"");
     ws = L"Hello world"s;   TEST_EQUAL(null_term_str(ws), L"Hello world");
     ws = L"Hello\0world"s;  TEST_EQUAL(null_term_str(ws), L"Hello");
+
+    s = "";                                   TRY(std::tie(s1, s2) = partition_at(s, ""));    TEST_EQUAL(s1, "");             TEST_EQUAL(s2, "");
+    s = "";                                   TRY(std::tie(s1, s2) = partition_at(s, ";;"));  TEST_EQUAL(s1, "");             TEST_EQUAL(s2, "");
+    s = "Hello world";                        TRY(std::tie(s1, s2) = partition_at(s, ""));    TEST_EQUAL(s1, "Hello world");  TEST_EQUAL(s2, "");
+    s = "Hello world";                        TRY(std::tie(s1, s2) = partition_at(s, ";;"));  TEST_EQUAL(s1, "Hello world");  TEST_EQUAL(s2, "");
+    s = "Hello world;;hello again;;goodbye";  TRY(std::tie(s1, s2) = partition_at(s, ";;"));  TEST_EQUAL(s1, "Hello world");  TEST_EQUAL(s2, "hello again;;goodbye");
+    s = ";;Hello world;;";                    TRY(std::tie(s1, s2) = partition_at(s, ";;"));  TEST_EQUAL(s1, "");             TEST_EQUAL(s2, "Hello world;;");
+
+    s = "";                                   TRY(std::tie(s1, s2) = partition_by(s));          TEST_EQUAL(s1, "");             TEST_EQUAL(s2, "");
+    s = "";                                   TRY(std::tie(s1, s2) = partition_by(s, ""));      TEST_EQUAL(s1, "");             TEST_EQUAL(s2, "");
+    s = "";                                   TRY(std::tie(s1, s2) = partition_by(s, ".,:;"));  TEST_EQUAL(s1, "");             TEST_EQUAL(s2, "");
+    s = "Hello";                              TRY(std::tie(s1, s2) = partition_by(s));          TEST_EQUAL(s1, "Hello");        TEST_EQUAL(s2, "");
+    s = "Hello world";                        TRY(std::tie(s1, s2) = partition_by(s));          TEST_EQUAL(s1, "Hello");        TEST_EQUAL(s2, "world");
+    s = " Hello world";                       TRY(std::tie(s1, s2) = partition_by(s));          TEST_EQUAL(s1, "");             TEST_EQUAL(s2, "Hello world");
+    s = "The quick brown fox";                TRY(std::tie(s1, s2) = partition_by(s));          TEST_EQUAL(s1, "The");          TEST_EQUAL(s2, "quick brown fox");
+    s = "Hello world";                        TRY(std::tie(s1, s2) = partition_by(s, ""));      TEST_EQUAL(s1, "Hello world");  TEST_EQUAL(s2, "");
+    s = "Hello world";                        TRY(std::tie(s1, s2) = partition_by(s, ".,:;"));  TEST_EQUAL(s1, "Hello world");  TEST_EQUAL(s2, "");
+    s = "Hello world;;hello again;;goodbye";  TRY(std::tie(s1, s2) = partition_by(s, ".,:;"));  TEST_EQUAL(s1, "Hello world");  TEST_EQUAL(s2, "hello again;;goodbye");
 
     TRY(s = quote(""s));                      TEST_EQUAL(s, "\"\""s);
     TRY(s = quote("\"\""s));                  TEST_EQUAL(s, "\"\\\"\\\"\""s);

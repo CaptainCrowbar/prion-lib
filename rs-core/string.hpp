@@ -512,6 +512,29 @@ namespace RS {
         return result;
     }
 
+    inline std::pair<std::string, std::string> partition_at(const std::string& str, const std::string& delim) {
+        if (delim.empty())
+            return {str, {}};
+        size_t p = str.find(delim);
+        if (p == npos)
+            return {str, {}};
+        else
+            return {str.substr(0, p), str.substr(p + delim.size(), npos)};
+    }
+
+    inline std::pair<std::string, std::string> partition_by(const std::string& str, const std::string& delims = ascii_whitespace) {
+        if (delims.empty())
+            return {str, {}};
+        size_t p = str.find_first_of(delims);
+        if (p == npos)
+            return {str, {}};
+        size_t q = str.find_first_not_of(delims, p);
+        if (q == npos)
+            return {str.substr(0, p), {}};
+        else
+            return {str.substr(0, p), str.substr(q, npos)};
+    }
+
     inline U8string quote(const std::string& str) { return RS_Detail::quote_string(str, true); }
     inline U8string bquote(const std::string& str) { return RS_Detail::quote_string(str, false); }
 

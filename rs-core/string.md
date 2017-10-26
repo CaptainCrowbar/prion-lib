@@ -152,6 +152,16 @@ characters.
 Cut off a string at the first null character (useful after the string has been
 used as an output buffer by some C APIs).
 
+* `std::pair<std::string, std::string>` **`partition_at`**`(const std::string& str, const std::string& delim)`
+* `std::pair<std::string, std::string>` **`partition_by`**`(const std::string& str, const std::string& delims = ascii_whitespace)`
+
+These break a string into two parts at the first delimiter, returning the
+parts before and after the delimiter. If the delimiter is not found, or is
+empty, the returned pair contains the complete original string and an empty
+string. The `partition_at()` function breaks the string at the first
+occurrence of the delimiter substring; `partition_by()` breaks it at the first
+contiguous group of one or more bytes from the delimiter list.
+
 * `U8string` **`quote`**`(const std::string& str)`
 * `U8string` **`bquote`**`(const std::string& str)`
 

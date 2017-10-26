@@ -199,6 +199,18 @@ used as an output buffer by some C APIs).</p>
 </div>
 <div class="defns">
 <ul>
+<li><code>std::pair&lt;std::string, std::string&gt;</code> <strong><code>partition_at</code></strong><code>(const std::string&amp; str, const std::string&amp; delim)</code></li>
+<li><code>std::pair&lt;std::string, std::string&gt;</code> <strong><code>partition_by</code></strong><code>(const std::string&amp; str, const std::string&amp; delims = ascii_whitespace)</code></li>
+</ul>
+<p>These break a string into two parts at the first delimiter, returning the
+parts before and after the delimiter. If the delimiter is not found, or is
+empty, the returned pair contains the complete original string and an empty
+string. The <code>partition_at()</code> function breaks the string at the first
+occurrence of the delimiter substring; <code>partition_by()</code> breaks it at the first
+contiguous group of one or more bytes from the delimiter list.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>U8string</code> <strong><code>quote</code></strong><code>(const std::string&amp; str)</code></li>
 <li><code>U8string</code> <strong><code>bquote</code></strong><code>(const std::string&amp; str)</code></li>
 </ul>

@@ -8,6 +8,7 @@
 #include <mutex>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <vector>
 
 using namespace RS;
@@ -274,7 +275,7 @@ void test_core_channel_timer() {
     TRY(cs = chan.wait(100ms));
     TEST_EQUAL(cs, Channel::state::ready);
 
-    TRY(sleep_for(150ms));
+    TRY(std::this_thread::sleep_for(150ms));
     TRY(cs = chan.wait(1ms));
     TEST_EQUAL(cs, Channel::state::ready);
     TRY(cs = chan.wait(1ms));

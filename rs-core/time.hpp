@@ -139,41 +139,6 @@ namespace RS {
 
     // Timing utilities
 
-    namespace RS_Detail {
-
-        #ifdef _XOPEN_SOURCE
-
-            using SleepUnit = std::chrono::microseconds;
-
-            inline void sleep_for(SleepUnit t) noexcept {
-                static constexpr unsigned long M = 1'000'000;
-                auto usec = t.count();
-                if (usec > 0) {
-                    timeval tv;
-                    tv.tv_sec = usec / M;
-                    tv.tv_usec = usec % M;
-                    select(0, nullptr, nullptr, nullptr, &tv);
-                } else {
-                    sched_yield();
-                }
-            }
-
-        #else
-
-            using SleepUnit = std::chrono::milliseconds;
-
-            inline void sleep_for(SleepUnit t) noexcept {
-                auto msec = t.count();
-                if (msec > 0)
-                    Sleep(uint32_t(msec));
-                else
-                    Sleep(0);
-            }
-
-        #endif
-
-    }
-
     class Stopwatch {
     public:
         RS_NO_COPY_MOVE(Stopwatch)
@@ -199,22 +164,6 @@ namespace RS {
         int prec;
         ReliableClock::time_point start;
     };
-
-    template <typename R, typename P>
-    void sleep_for(std::chrono::duration<R, P> t) noexcept {
-        using namespace std::chrono;
-        RS_Detail::sleep_for(duration_cast<RS_Detail::SleepUnit>(t));
-    }
-
-    inline void sleep_for(double t) noexcept {
-        using namespace std::chrono;
-        RS_Detail::sleep_for(duration_cast<RS_Detail::SleepUnit>(Dseconds(t)));
-    }
-
-    template <typename C, typename D>
-    void sleep_until(std::chrono::time_point<C, D> t) noexcept {
-        sleep_for(t - C::now());
-    }
 
     // System specific time and date conversions
 

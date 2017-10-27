@@ -580,7 +580,7 @@ namespace RS {
                 if (now >= deadline)
                     return Channel::state::waiting;
                 auto remaining = std::min(duration_cast<Interval::time>(deadline - now), interval());
-                sleep_for(remaining);
+                std::this_thread::sleep_for(remaining);
             }
         }
 
@@ -706,7 +706,7 @@ namespace RS {
                     }
                 }
                 if (calls == 0)
-                    sleep_for(interval());
+                    std::this_thread::sleep_for(interval());
                 else
                     std::this_thread::yield();
             }

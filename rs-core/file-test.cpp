@@ -7,6 +7,7 @@
 #include <fstream>
 #include <string>
 #include <system_error>
+#include <thread>
 #include <vector>
 
 using namespace RS;

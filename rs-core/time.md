@@ -101,16 +101,6 @@ Simple timer for debugging. The destructor will write (using `logx()`) the
 name and the elapsed time since construction. The note on exceptions for
 `logx()` above applies here too.
 
-* `template <typename R, typename P> void` **`sleep_for`**`(duration<R, P> t) noexcept`
-* `void` **`sleep_for`**`(double t) noexcept`
-* `template <typename C, typename D> void` **`sleep_until`**`(time_point<C, D> t) noexcept`
-
-Suspend the current thread for the specified interval, supplied as a duration,
-a number of seconds, or an absolute time. Calling this with a duration less
-than or equal to zero will cause the thread to yield its time slice.
-Resolution is system dependent. Behaviour is undefined if the duration exceeds
-31 days.
-
 ### System specific time and date conversions ###
 
 * _Unix_

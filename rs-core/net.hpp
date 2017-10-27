@@ -623,6 +623,7 @@ namespace RS {
         inline bool Socket::do_write(const void* src, size_t len, const SocketAddress* to) {
             using namespace RS_Detail;
             using namespace std::chrono;
+            using namespace std::literals;
             if (! src || sock == no_socket)
                 return false;
             auto csrc = static_cast<const char*>(src);
@@ -639,7 +640,7 @@ namespace RS {
                 else
                     rc = net_call(::send(native(), csrc, socket_iosize(len), flags));
                 if (rc.res == -1 && rc.err == e_again)
-                    sleep_for(microseconds(10));
+                    std::this_thread::sleep_for(10us);
                 else
                     rc.fail_if(-1, to ? "sendto()" : "send()");
                 written += rc.res;

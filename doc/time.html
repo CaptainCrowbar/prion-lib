@@ -209,18 +209,6 @@ fractions of a second.</p>
 name and the elapsed time since construction. The note on exceptions for
 <code>logx()</code> above applies here too.</p>
 </div>
-<div class="defns">
-<ul>
-<li><code>template &lt;typename R, typename P&gt; void</code> <strong><code>sleep_for</code></strong><code>(duration&lt;R, P&gt; t) noexcept</code></li>
-<li><code>void</code> <strong><code>sleep_for</code></strong><code>(double t) noexcept</code></li>
-<li><code>template &lt;typename C, typename D&gt; void</code> <strong><code>sleep_until</code></strong><code>(time_point&lt;C, D&gt; t) noexcept</code></li>
-</ul>
-<p>Suspend the current thread for the specified interval, supplied as a duration,
-a number of seconds, or an absolute time. Calling this with a duration less
-than or equal to zero will cause the thread to yield its time slice.
-Resolution is system dependent. Behaviour is undefined if the duration exceeds
-31 days.</p>
-</div>
 <h3 id="system-specific-time-and-date-conversions">System specific time and date conversions</h3>
 <div class="defns">
 <ul>

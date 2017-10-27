@@ -111,10 +111,10 @@ namespace RS {
                     if (t <= Interval::time()) {
                         return state::waiting;
                     } else if (t < delta) {
-                        sleep_for(t);
+                        std::this_thread::sleep_for(t);
                         t = Interval::time();
                     } else {
-                        sleep_for(delta);
+                        std::this_thread::sleep_for(delta);
                         t -= delta;
                     }
                 }

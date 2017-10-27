@@ -8,6 +8,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <vector>
 
 using namespace RS;
@@ -278,7 +279,7 @@ void test_core_net_tcp_client_server() {
         std::unique_ptr<TcpClient> client;
         std::string msg;
         size_t n = 0;
-        sleep_for(200ms);
+        std::this_thread::sleep_for(200ms);
         TRY(client = std::make_unique<TcpClient>(IPv4::localhost(), port));
         TEST_EQUAL(client->wait(10ms), Channel::state::waiting);
         TEST_EQUAL(client->remote().ipv4(), IPv4::localhost());
@@ -349,18 +350,18 @@ void test_core_net_socket_set() {
 
     auto t2 = std::async([] {
         std::unique_ptr<TcpClient> client;
-        sleep_for(50ms);
+        std::this_thread::sleep_for(50ms);
         TRY(client = std::make_unique<TcpClient>(IPv4::localhost(), port));
         TRY(client->write_str("alpha"));
-        sleep_for(200ms);
+        std::this_thread::sleep_for(200ms);
     });
 
     auto t3 = std::async([] {
         std::unique_ptr<TcpClient> client;
-        sleep_for(50ms);
+        std::this_thread::sleep_for(50ms);
         TRY(client = std::make_unique<TcpClient>(IPv4::localhost(), port));
         TRY(client->write_str("bravo"));
-        sleep_for(200ms);
+        std::this_thread::sleep_for(200ms);
     });
 
     TRY(t1.wait());

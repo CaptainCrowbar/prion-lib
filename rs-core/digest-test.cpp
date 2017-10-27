@@ -47,17 +47,17 @@ void test_core_digest_utility_functions() {
 
 void test_core_digest_adler32() {
 
-    TEST_EQUAL(uint32_t(Adler32()(sample1.data(), sample1.size())), 0x00000001);
-    TEST_EQUAL(uint32_t(Adler32()(sample2.data(), sample2.size())), 0x18ab043d);
-    TEST_EQUAL(uint32_t(Adler32()(sample3.data(), sample3.size())), 0x55d5a572);
+    TEST_EQUAL(digest<Adler32>(sample1), 0x00000001);
+    TEST_EQUAL(digest<Adler32>(sample2), 0x18ab043d);
+    TEST_EQUAL(digest<Adler32>(sample3), 0x55d5a572);
 
 }
 
 void test_core_digest_crc32() {
 
-    TEST_EQUAL(uint32_t(Crc32()(sample1.data(), sample1.size())), 0x00000000);
-    TEST_EQUAL(uint32_t(Crc32()(sample2.data(), sample2.size())), 0x8bd69e52);
-    TEST_EQUAL(uint32_t(Crc32()(sample3.data(), sample3.size())), 0x8f92322f);
+    TEST_EQUAL(digest<Crc32>(sample1), 0x00000000);
+    TEST_EQUAL(digest<Crc32>(sample2), 0x8bd69e52);
+    TEST_EQUAL(digest<Crc32>(sample3), 0x8f92322f);
 
 }
 
@@ -88,10 +88,10 @@ void test_core_digest_md5() {
     RT result;
     U8string hexstr;
 
-    TRY(result = Md5()(sample1.data(), sample1.size()));
+    TRY(result = digest<Md5>(sample1));
     TRY(hexstr = hex(result));
     TEST_EQUAL(hexstr, "d41d8cd98f00b204e9800998ecf8427e");
-    TRY(result = Md5()(sample2.data(), sample2.size()));
+    TRY(result = digest<Md5>(sample2));
     TRY(hexstr = hex(result));
     TEST_EQUAL(hexstr, "3e25960a79dbc69b674cd4ec67a72c62");
 
@@ -104,10 +104,10 @@ void test_core_digest_sha1() {
     RT result;
     U8string hexstr;
 
-    TRY(result = Sha1()(sample1.data(), sample1.size()));
+    TRY(result = digest<Sha1>(sample1));
     TRY(hexstr = hex(result));
     TEST_EQUAL(hexstr, "da39a3ee5e6b4b0d3255bfef95601890afd80709");
-    TRY(result = Sha1()(sample2.data(), sample2.size()));
+    TRY(result = digest<Sha1>(sample2));
     TRY(hexstr = hex(result));
     TEST_EQUAL(hexstr, "7b502c3a1f48c8609ae212cdfb639dee39673f5e");
 
@@ -120,10 +120,10 @@ void test_core_digest_sha256() {
     RT result;
     U8string hexstr;
 
-    TRY(result = Sha256()(sample1.data(), sample1.size()));
+    TRY(result = digest<Sha256>(sample1));
     TRY(hexstr = hex(result));
     TEST_EQUAL(hexstr, "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
-    TRY(result = Sha256()(sample2.data(), sample2.size()));
+    TRY(result = digest<Sha256>(sample2));
     TRY(hexstr = hex(result));
     TEST_EQUAL(hexstr, "64ec88ca00b268e5ba1a35678a1b5316d212f4f366b2477232534a8aeca37f3c");
 
@@ -136,10 +136,10 @@ void test_core_digest_sha512() {
     RT result;
     U8string hexstr;
 
-    TRY(result = Sha512()(sample1.data(), sample1.size()));
+    TRY(result = digest<Sha512>(sample1));
     TRY(hexstr = hex(result));
     TEST_EQUAL(hexstr, "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e");
-    TRY(result = Sha512()(sample2.data(), sample2.size()));
+    TRY(result = digest<Sha512>(sample2));
     TRY(hexstr = hex(result));
     TEST_EQUAL(hexstr, "b7f783baed8297f0db917462184ff4f08e69c2d5e5f79a942600f9725f58ce1f29c18139bf80b06c0fff2bdd34738452ecf40c488c22a7e3d80cdf6f9c1c0d47");
 

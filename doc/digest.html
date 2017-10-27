@@ -142,6 +142,13 @@ behaviour.</p>
 <h2 id="utility-functions">Utility functions</h2>
 <div class="defns">
 <ul>
+<li><code>template &lt;typename MD&gt; MD::result_type</code> <strong><code>digest</code></strong><code>(const void* ptr, size_t n)</code></li>
+<li><code>template &lt;typename MD&gt; MD::result_type</code> <strong><code>digest</code></strong><code>(const std::string&amp; s)</code></li>
+</ul>
+<p>Convenience wrappers for message digest classes.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>template &lt;size_t N&gt; U8string</code> <strong><code>hex</code></strong><code>(const std::array&lt;uint8_t, N&gt;&amp; bytes)</code></li>
 </ul>
 <p>Convenience function to convert an array of bytes into a hexadecimal string.</p></body>

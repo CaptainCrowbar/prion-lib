@@ -205,6 +205,18 @@ namespace RS {
 
     // Utility functions
 
+    template <typename MD>
+    typename MD::result_type digest(const void* ptr, size_t n) {
+        MD md;
+        md(ptr, n);
+        return md;
+    }
+
+    template <typename MD>
+    typename MD::result_type digest(const std::string& s) {
+        return digest<MD>(s.data(), s.size());
+    }
+
     template <size_t N>
     U8string hex(const std::array<uint8_t, N>& bytes) {
         using namespace RS_Detail;

@@ -284,10 +284,9 @@ namespace RS {
     #ifdef _WIN32
 
         inline std::chrono::system_clock::time_point filetime_to_timepoint(const FILETIME& ft) noexcept {
-            using namespace RS::Literals;
             using namespace std::chrono;
-            static constexpr int64_t filetime_freq = 10'000'000; // FILETIME ticks (100 ns) per second
-            static constexpr int64_t windows_epoch = 11'644'473'600ll; // Windows epoch (1601) to Unix epoch (1970)
+            static constexpr int64_t filetime_freq = 10'000'000;        // FILETIME ticks (100 ns) per second
+            static constexpr int64_t windows_epoch = 11'644'473'600ll;  // Windows epoch (1601) to Unix epoch (1970) in seconds
             int64_t ticks = (int64_t(ft.dwHighDateTime) << 32) + int64_t(ft.dwLowDateTime);
             int64_t sec = ticks / filetime_freq - windows_epoch;
             int64_t nsec = 100ll * (ticks % filetime_freq);
@@ -296,9 +295,11 @@ namespace RS {
 
         inline FILETIME timepoint_to_filetime(const std::chrono::system_clock::time_point& tp) noexcept {
             using namespace std::chrono;
+            static constexpr uint64_t filetime_freq = 10'000'000;        // FILETIME ticks (100 ns) per second
+            static constexpr uint64_t windows_epoch = 11'644'473'600ll;  // Windows epoch (1601) to Unix epoch (1970) in seconds
             auto unix_time = tp - system_clock::from_time_t(0);
             uint64_t nsec = duration_cast<nanoseconds>(unix_time).count();
-            uint64_t ticks = nsec / 100ll;
+            uint64_t ticks = nsec / 100ll + filetime_freq * windows_epoch;
             return {uint32_t(ticks & 0xfffffffful), uint32_t(ticks >> 32)};
         }
 

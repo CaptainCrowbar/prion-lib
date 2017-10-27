@@ -216,9 +216,9 @@ void test_core_time_system_specific_conversions() {
         static constexpr int64_t epoch = 11'644'473'600ll;
         static constexpr int64_t freq = 10'000'000ll;
 
-        int64_t n;
-        FILETIME ft;
-        system_clock::time_point tp;
+        int64_t n = 0;
+        FILETIME ft, ft2;
+        system_clock::time_point tp, tp2;
         system_clock::duration d;
 
         n = epoch * freq;
@@ -226,6 +226,9 @@ void test_core_time_system_specific_conversions() {
         TRY(tp = filetime_to_timepoint(ft));
         d = tp - system_clock::from_time_t(0);
         TEST_EQUAL(d.count(), 0);
+        TRY(ft2 = timepoint_to_filetime(tp));
+        TEST_EQUAL(ft2.dwHighDateTime, ft.dwHighDateTime);
+        TEST_EQUAL(ft2.dwLowDateTime, ft.dwLowDateTime);
 
         n += 86'400 * freq;
         ft = {uint32_t(n), uint32_t(n >> 32)};
@@ -235,13 +238,13 @@ void test_core_time_system_specific_conversions() {
 
         tp = system_clock::from_time_t(0);
         TRY(ft = timepoint_to_filetime(tp));
-        TEST_EQUAL(ft.dwHighDateTime, 0);
-        TEST_EQUAL(ft.dwLowDateTime, 0);
+        TRY(tp2 = filetime_to_timepoint(ft));
+        TEST_EQUAL(tp2.time_since_epoch().count(), tp.time_since_epoch().count());
 
-        tp = system_clock::from_time_t(86'400);
+        tp = system_clock::from_time_t(1'234'567'890);
         TRY(ft = timepoint_to_filetime(tp));
-        TEST_EQUAL(ft.dwHighDateTime, 201);
-        TEST_EQUAL(ft.dwLowDateTime, 711'573'504);
+        TRY(tp2 = filetime_to_timepoint(ft));
+        TEST_EQUAL(tp2.time_since_epoch().count(), tp.time_since_epoch().count());
 
     #endif
 

@@ -23,6 +23,7 @@
 <li><a href="#file-system-query-operations">File system query operations</a></li>
 <li><a href="#file-system-update-operations">File system update operations</a></li>
 <li><a href="#io-operations">I/O operations</a></li>
+<li><a href="#metadata-operations">Metadata operations</a></li>
 <li><a href="#standard-locations">Standard locations</a></li>
 </ul>
 </li>
@@ -248,6 +249,22 @@ this will overwrite any existing file with the same name, if possible; if the
 instead (the <code>append</code> flag has no effect if the file does not already exist).
 This will throw <code>std::system_error</code> if anything goes wrong.</p>
 </div>
+<h3 id="metadata-operations">Metadata operations</h3>
+<div class="defns">
+<ul>
+<li><code>system_clock::time_point File::</code><strong><code>atime</code></strong><code>() const</code></li>
+<li><code>system_clock::time_point File::</code><strong><code>mtime</code></strong><code>() const</code></li>
+<li><code>void File::</code><strong><code>set_atime</code></strong><code>() const</code></li>
+<li><code>void File::</code><strong><code>set_atime</code></strong><code>(system_clock::time_point t) const</code></li>
+<li><code>void File::</code><strong><code>set_mtime</code></strong><code>() const</code></li>
+<li><code>void File::</code><strong><code>set_mtime</code></strong><code>(system_clock::time_point t) const</code></li>
+</ul>
+<p>Query or set the access or modification time of a file. The query functions
+will return a default constructed time point (equal to the epoch) if the file
+does not exist. The set functions default to the current time, and will
+attempt to create the file if it does not already exist. All of these will
+throw <code>std::system_error</code> if anything else goes wrong.</p>
+</div>
 <h3 id="standard-locations">Standard locations</h3>
 <div class="defns">
 <ul>
@@ -260,11 +277,12 @@ This will throw <code>std::system_error</code> if anything goes wrong.</p>
 <ul>
 <li><code>static File File::</code><strong><code>user_home</code></strong><code>()</code></li>
 <li><code>static File File::</code><strong><code>user_documents</code></strong><code>()</code></li>
+<li><code>static File File::</code><strong><code>user_cache</code></strong><code>()</code></li>
 <li><code>static File File::</code><strong><code>user_settings</code></strong><code>()</code></li>
 </ul>
 <p>Query some standard directory locations. On Unix, these will check the value
-of the <code>HOME</code> environment variable first, and only consult the system API if
-that fails.</p>
+of the <code>HOME</code> environment variable first (and the <code>XDG_*</code> variables where
+relevant), and only consult the system API if that fails.</p>
 <p>Typical values on common operating systems:</p>
 <table>
 <thead>
@@ -287,6 +305,12 @@ that fails.</p>
 <td><code>&lt;home&gt;/Documents</code></td>
 <td><code>&lt;home&gt;/Documents</code></td>
 <td><code>&lt;home&gt;/Documents</code></td>
+</tr>
+<tr>
+<td><code>user_cache()</code></td>
+<td><code>&lt;home&gt;/.cache</code></td>
+<td><code>&lt;home&gt;/Library/Caches</code></td>
+<td><code>&lt;home&gt;/AppData/Local</code></td>
 </tr>
 <tr>
 <td><code>user_settings()</code></td>

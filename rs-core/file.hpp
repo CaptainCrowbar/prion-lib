@@ -2,8 +2,10 @@
 
 #include "rs-core/common.hpp"
 #include "rs-core/string.hpp"
+#include "rs-core/time.hpp"
 #include <algorithm>
 #include <cerrno>
+#include <chrono>
 #include <cstdio>
 #include <new>
 #include <cstdio>
@@ -15,8 +17,10 @@
 
 #ifdef _XOPEN_SOURCE
     #include <dirent.h>
+    #include <fcntl.h>
     #include <pwd.h>
     #include <sys/stat.h>
+    #include <sys/time.h>
     #include <sys/types.h>
     #include <unistd.h>
 #else
@@ -74,11 +78,19 @@ namespace RS {
         std::string load(size_t limit = npos, uint32_t flags = 0) const;
         void save(const void* ptr, size_t len, uint32_t flags = 0) const;
         void save(const std::string& content, uint32_t flags = 0) const { save(content.data(), content.size(), flags); }
+        // Metadata operations
+        std::chrono::system_clock::time_point atime() const;
+        std::chrono::system_clock::time_point mtime() const;
+        void set_atime() const { set_atime(std::chrono::system_clock::now()); }
+        void set_atime(std::chrono::system_clock::time_point t) const;
+        void set_mtime() const { set_mtime(std::chrono::system_clock::now()); }
+        void set_mtime(std::chrono::system_clock::time_point t) const;
         // Standard locations
         void set_cwd() const;
         static File cwd();
         static File user_home();
         static File user_documents();
+        static File user_cache();
         static File user_settings();
     private:
         std::string path;
@@ -322,7 +334,70 @@ namespace RS {
                 throw std::system_error(err, std::generic_category(), path);
         }
 
+        // Metadata operations
+
+        inline std::chrono::system_clock::time_point File::atime() const {
+            struct stat st;
+            if (::stat(path.data(), &st) == -1)
+                return {};
+            timespec ts =
+                #ifdef __APPLE__
+                    st.st_atimespec;
+                #else
+                    st.st_atim;
+                #endif
+            return timespec_to_timepoint(ts);
+        }
+
+        inline std::chrono::system_clock::time_point File::mtime() const {
+            struct stat st;
+            if (::stat(path.data(), &st) == -1)
+                return {};
+            timespec ts =
+                #ifdef __APPLE__
+                    st.st_mtimespec;
+                #else
+                    st.st_mtim;
+                #endif
+            return timespec_to_timepoint(ts);
+        }
+
+        inline void File::set_atime(std::chrono::system_clock::time_point t) const {
+            errno = 0;
+            int fd = ::open(path.data(), O_RDWR | O_CREAT);
+            int err = errno;
+            if (fd == -1)
+                throw std::system_error(err, std::generic_category(), path);
+            Resource<int, -1> res(fd, ::close);
+            timespec times[2];
+            times[0] = timepoint_to_timespec(t);
+            times[1].tv_nsec = UTIME_OMIT;
+            errno = 0;
+            int rc = ::futimens(res, times);
+            err = errno;
+            if (rc == -1)
+                throw std::system_error(err, std::generic_category(), path);
+        }
+
+        inline void File::set_mtime(std::chrono::system_clock::time_point t) const {
+            errno = 0;
+            int fd = ::open(path.data(), O_RDWR | O_CREAT);
+            int err = errno;
+            if (fd == -1)
+                throw std::system_error(err, std::generic_category(), path);
+            Resource<int, -1> res(fd, ::close);
+            timespec times[2];
+            times[0].tv_nsec = UTIME_OMIT;
+            times[1] = timepoint_to_timespec(t);
+            errno = 0;
+            int rc = ::futimens(res, times);
+            err = errno;
+            if (rc == -1)
+                throw std::system_error(err, std::generic_category(), path);
+        }
+
         // Standard locations
+        // For Linux see https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
 
         inline void File::set_cwd() const {
             if (chdir(path.data()) == -1) {
@@ -349,7 +424,7 @@ namespace RS {
         }
 
         inline File File::user_home() {
-            auto home = getenv("HOME");
+            auto home = ::getenv("HOME");
             if (home && *home)
                 return home;
             std::string buf(256, '\0');
@@ -369,11 +444,27 @@ namespace RS {
             return user_home() / "Documents";
         }
 
+        inline File File::user_cache() {
+            #ifdef __APPLE__
+                return user_home() / "Library/Caches";
+            #else
+                auto env = ::getenv("XDG_CONFIG_HOME");
+                if (env && *env)
+                    return env;
+                else
+                    return user_home() / ".config";
+            #endif
+        }
+
         inline File File::user_settings() {
             #ifdef __APPLE__
                 return user_home() / "Library/Application Support";
             #else
-                return user_home() / ".config";
+                auto env = ::getenv("XDG_CACHE_HOME");
+                if (env && *env)
+                    return env;
+                else
+                    return user_home() / ".cache";
             #endif
         }
 
@@ -454,6 +545,64 @@ namespace RS {
                 return 0;
         }
 
+        // Metadata operations
+
+        inline std::chrono::system_clock::time_point File::atime() const {
+            std::wstring wpath = native();
+            auto fh = CreateFileW(wpath.data(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+            if (! fh)
+                return {};
+            auto res = make_resource(fh, CloseHandle);
+            FILETIME ft;
+            if (GetFileTime(res, nullptr, &ft, nullptr))
+                return filetime_to_timepoint(ft);
+            else
+                return {};
+        }
+
+        inline std::chrono::system_clock::time_point File::mtime() const {
+            std::wstring wpath = native();
+            auto fh = CreateFileW(wpath.data(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+            if (! fh)
+                return {};
+            auto res = make_resource(fh, CloseHandle);
+            FILETIME ft;
+            if (GetFileTime(res, nullptr, nullptr, &ft))
+                return filetime_to_timepoint(ft);
+            else
+                return {};
+        }
+
+        inline void File::set_atime(std::chrono::system_clock::time_point t) const {
+            std::wstring wpath = native();
+            SetLastError(0);
+            auto fh = CreateFileW(wpath.data(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+            auto err = GetLastError();
+            if (! fh)
+                throw std::system_error(err, std::system_category(), path);
+            auto res = make_resource(fh, CloseHandle);
+            auto ft = timepoint_to_filetime(time);
+            auto rc = SetFileTime(res, nullptr, &ft, nullptr);
+            err = GetLastError();
+            if (! rc)
+                throw std::system_error(err, std::system_category(), path);
+        }
+
+        inline void File::set_mtime(std::chrono::system_clock::time_point t) const {
+            std::wstring wpath = native();
+            SetLastError(0);
+            auto fh = CreateFileW(wpath.data(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+            auto err = GetLastError();
+            if (! fh)
+                throw std::system_error(err, std::system_category(), path);
+            auto res = make_resource(fh, CloseHandle);
+            auto ft = timepoint_to_filetime(time);
+            auto rc = SetFileTime(res, nullptr, nullptr, &ft);
+            err = GetLastError();
+            if (! rc)
+                throw std::system_error(err, std::system_category(), path);
+        }
+
         // Standard locations
 
         inline void File::set_cwd() const {
@@ -486,6 +635,10 @@ namespace RS {
 
         inline File File::user_documents() {
             return get_known_folder(CSIDL_MYDOCUMENTS);
+        }
+
+        inline File File::user_cache() {
+            return get_known_folder(CSIDL_LOCAL_APPDATA);
         }
 
         inline File File::user_settings() {

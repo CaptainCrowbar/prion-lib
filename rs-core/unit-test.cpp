@@ -65,6 +65,7 @@ extern void test_core_file_names();
 extern void test_core_file_system_queries();
 extern void test_core_file_system_update();
 extern void test_core_file_io();
+extern void test_core_file_metadata();
 extern void test_core_file_standard_locations();
 extern void test_core_float_arithmetic_constants();
 extern void test_core_float_arithmetic_functions();
@@ -287,6 +288,7 @@ int main() {
         { "core/file/system-queries", test_core_file_system_queries },
         { "core/file/system-update", test_core_file_system_update },
         { "core/file/io", test_core_file_io },
+        { "core/file/metadata", test_core_file_metadata },
         { "core/file/standard-locations", test_core_file_standard_locations },
         { "core/float/arithmetic-constants", test_core_float_arithmetic_constants },
         { "core/float/arithmetic-functions", test_core_float_arithmetic_functions },

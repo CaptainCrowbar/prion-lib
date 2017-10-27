@@ -2,6 +2,7 @@
 #include "rs-core/string.hpp"
 #include "rs-core/unit-test.hpp"
 #include <algorithm>
+#include <chrono>
 #include <cstdio>
 #include <fstream>
 #include <string>
@@ -9,6 +10,7 @@
 #include <vector>
 
 using namespace RS;
+using namespace std::chrono;
 using namespace std::literals;
 
 void test_core_file_names() {
@@ -263,6 +265,46 @@ void test_core_file_io() {
 
 }
 
+void test_core_file_metadata() {
+
+    File file = "__test__";
+    system_clock::time_point date, epoch;
+    seconds sec;
+
+    TEST(! file.exists());
+    TRY(date = file.atime());
+    TRY(sec = duration_cast<seconds>(date - epoch));
+    TEST_EQUAL(sec.count(), 0);
+    TRY(date = file.mtime());
+    TRY(sec = duration_cast<seconds>(date - epoch));
+    TEST_EQUAL(sec.count(), 0);
+
+    { std::ofstream out(file.name()); }
+
+    TEST(file.exists());
+    TRY(date = file.atime());
+    TRY(sec = duration_cast<seconds>(system_clock::now() - date));
+    TEST_NEAR_EPSILON(sec.count(), 0, 2);
+    TRY(date = file.mtime());
+    TRY(sec = duration_cast<seconds>(system_clock::now() - date));
+    TEST_NEAR_EPSILON(sec.count(), 0, 2);
+
+    TRY(file.set_atime(system_clock::now() - 1min));
+    TRY(date = file.atime());
+    TRY(sec = duration_cast<seconds>(system_clock::now() - date));
+    TEST_NEAR_EPSILON(sec.count(), 60, 2);
+
+    TRY(file.set_mtime(system_clock::now() - 2min));
+    TRY(date = file.mtime());
+    TRY(sec = duration_cast<seconds>(system_clock::now() - date));
+    TEST_NEAR_EPSILON(sec.count(), 120, 2);
+
+    TRY(file.remove());
+    std::this_thread::sleep_for(250ms);
+    TEST(! file.exists());
+
+}
+
 void test_core_file_standard_locations() {
 
     File cd, f;
@@ -287,6 +329,15 @@ void test_core_file_standard_locations() {
 
     TRY(f = File::user_documents());
     TEST_MATCH(f.name(), "/Documents$");
+
+    TRY(f = File::user_cache());
+    #ifdef __APPLE__
+        TEST_MATCH(f.name(), "/Library/Caches$");
+    #elif defined(_XOPEN_SOURCE)
+        TEST_MATCH(f.name(), "/.cache$");
+    #else
+        TEST_MATCH(f.name(), "/AppData/Local$");
+    #endif
 
     TRY(f = File::user_settings());
     #ifdef __APPLE__

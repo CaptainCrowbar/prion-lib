@@ -7,11 +7,11 @@ $(BUILD)/common-test.o: rs-core/common-test.cpp rs-core/common.hpp rs-core/unit-
 $(BUILD)/compact-array-test.o: rs-core/compact-array-test.cpp rs-core/common.hpp rs-core/compact-array.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/unit-test.hpp
 $(BUILD)/digest-test.o: rs-core/digest-test.cpp rs-core/common.hpp rs-core/digest.hpp rs-core/string.hpp rs-core/unit-test.hpp
 $(BUILD)/encoding-test.o: rs-core/encoding-test.cpp rs-core/common.hpp rs-core/encoding.hpp rs-core/string.hpp rs-core/unit-test.hpp
-$(BUILD)/file-test.o: rs-core/file-test.cpp rs-core/common.hpp rs-core/file.hpp rs-core/string.hpp rs-core/unit-test.hpp
+$(BUILD)/file-test.o: rs-core/file-test.cpp rs-core/common.hpp rs-core/file.hpp rs-core/string.hpp rs-core/time.hpp rs-core/unit-test.hpp
 $(BUILD)/float-test.o: rs-core/float-test.cpp rs-core/common.hpp rs-core/float.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp
 $(BUILD)/grid-test.o: rs-core/grid-test.cpp rs-core/common.hpp rs-core/grid.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp
 $(BUILD)/index-table-test.o: rs-core/index-table-test.cpp rs-core/common.hpp rs-core/index-table.hpp rs-core/string.hpp rs-core/unit-test.hpp
-$(BUILD)/io-test.o: rs-core/io-test.cpp rs-core/common.hpp rs-core/file.hpp rs-core/io.hpp rs-core/string.hpp rs-core/unit-test.hpp
+$(BUILD)/io-test.o: rs-core/io-test.cpp rs-core/common.hpp rs-core/file.hpp rs-core/io.hpp rs-core/string.hpp rs-core/time.hpp rs-core/unit-test.hpp
 $(BUILD)/kwargs-test.o: rs-core/kwargs-test.cpp rs-core/common.hpp rs-core/kwargs.hpp rs-core/unit-test.hpp
 $(BUILD)/meta-test.o: rs-core/meta-test.cpp rs-core/common.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/unit-test.hpp
 $(BUILD)/mp-integer-test.o: rs-core/mp-integer-test.cpp rs-core/common.hpp rs-core/mp-integer.hpp rs-core/rational.hpp rs-core/string.hpp rs-core/unit-test.hpp

@@ -186,6 +186,21 @@ this will overwrite any existing file with the same name, if possible; if the
 instead (the `append` flag has no effect if the file does not already exist).
 This will throw `std::system_error` if anything goes wrong.
 
+### Metadata operations ###
+
+* `system_clock::time_point File::`**`atime`**`() const`
+* `system_clock::time_point File::`**`mtime`**`() const`
+* `void File::`**`set_atime`**`() const`
+* `void File::`**`set_atime`**`(system_clock::time_point t) const`
+* `void File::`**`set_mtime`**`() const`
+* `void File::`**`set_mtime`**`(system_clock::time_point t) const`
+
+Query or set the access or modification time of a file. The query functions
+will return a default constructed time point (equal to the epoch) if the file
+does not exist. The set functions default to the current time, and will
+attempt to create the file if it does not already exist. All of these will
+throw `std::system_error` if anything else goes wrong.
+
 ### Standard locations ###
 
 * `void File::`**`set_cwd`**`() const`
@@ -195,11 +210,12 @@ Query or set the current working directory.
 
 * `static File File::`**`user_home`**`()`
 * `static File File::`**`user_documents`**`()`
+* `static File File::`**`user_cache`**`()`
 * `static File File::`**`user_settings`**`()`
 
 Query some standard directory locations. On Unix, these will check the value
-of the `HOME` environment variable first, and only consult the system API if
-that fails.
+of the `HOME` environment variable first (and the `XDG_*` variables where
+relevant), and only consult the system API if that fails.
 
 Typical values on common operating systems:
 
@@ -207,4 +223,5 @@ Function            | Linux               | Mac                                 
 --------            | -----               | ---                                   | -------
 `user_home()`       | `/home/<username>`  | `/Users/<username>`                   | `C:/Users/<username>`
 `user_documents()`  | `<home>/Documents`  | `<home>/Documents`                    | `<home>/Documents`
+`user_cache()`      | `<home>/.cache`     | `<home>/Library/Caches`               | `<home>/AppData/Local`
 `user_settings()`   | `<home>/.config`    | `<home>/Library/Application Support`  | `<home>/AppData/Roaming`

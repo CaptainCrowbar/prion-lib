@@ -447,11 +447,11 @@ namespace RS {
             #ifdef __APPLE__
                 return user_home() / "Library/Caches";
             #else
-                auto env = ::getenv("XDG_CONFIG_HOME");
+                auto env = ::getenv("XDG_CACHE_HOME");
                 if (env && *env)
                     return env;
                 else
-                    return user_home() / ".config";
+                    return user_home() / ".cache";
             #endif
         }
 
@@ -459,11 +459,11 @@ namespace RS {
             #ifdef __APPLE__
                 return user_home() / "Library/Application Support";
             #else
-                auto env = ::getenv("XDG_CACHE_HOME");
+                auto env = ::getenv("XDG_CONFIG_HOME");
                 if (env && *env)
                     return env;
                 else
-                    return user_home() / ".cache";
+                    return user_home() / ".config";
             #endif
         }
 

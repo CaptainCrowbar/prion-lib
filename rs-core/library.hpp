@@ -34,3 +34,4 @@
 #include "rs-core/uuid.hpp"
 #include "rs-core/variant.hpp"
 #include "rs-core/vector.hpp"
+#include "rs-core/zlib.hpp"

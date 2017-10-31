@@ -7,6 +7,8 @@
     * [`"rs-core/kwargs.hpp"`](kwargs.html) - Keyword arguments
     * [`"rs-core/optional.hpp"`](optional.html) - Optional type
     * [`"rs-core/variant.hpp"`](variant.html) - Variant type
+* _Compression_
+    * [`"rs-core/zlib.hpp"`](zlib.html) - Zlib compression
 * _Concurrency_
     * [`"rs-core/channel.hpp"`](channel.html) - Message dispatch
     * [`"rs-core/process.hpp"`](process.html) - Process control

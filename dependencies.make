@@ -32,6 +32,7 @@ $(BUILD)/unit-test.o: rs-core/unit-test.cpp rs-core/common.hpp rs-core/unit-test
 $(BUILD)/uuid-test.o: rs-core/uuid-test.cpp rs-core/common.hpp rs-core/float.hpp rs-core/random.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/uuid.hpp rs-core/vector.hpp
 $(BUILD)/variant-test.o: rs-core/variant-test.cpp rs-core/common.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/variant.hpp
 $(BUILD)/vector-test.o: rs-core/vector-test.cpp rs-core/common.hpp rs-core/float.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp
+$(BUILD)/zlib-test.o: rs-core/zlib-test.cpp rs-core/common.hpp rs-core/file.hpp rs-core/float.hpp rs-core/io.hpp rs-core/random.hpp rs-core/string.hpp rs-core/time.hpp rs-core/unit-test.hpp rs-core/vector.hpp rs-core/zlib.hpp
 ifeq ($(LIBTAG),cygwin)
     LDLIBS += -lcrypto
 endif
@@ -39,5 +40,5 @@ ifeq ($(LIBTAG),linux)
     LDLIBS += -lcrypto
 endif
 ifeq ($(LIBTAG),msvc)
-    LDLIBS += advapi32.lib shell32.lib ws2_32.lib
+    LDLIBS += advapi32.lib shell32.lib ws2_32.lib zlib.lib
 endif

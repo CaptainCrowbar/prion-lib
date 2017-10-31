@@ -218,6 +218,8 @@ extern void test_core_vector_3d_coordinate_transformations();
 extern void test_core_vector_projective();
 extern void test_core_vector_primitives();
 extern void test_core_vector_quaternions();
+extern void test_core_zlib_compression();
+extern void test_core_zlib_io();
 
 int main() {
 
@@ -441,6 +443,8 @@ int main() {
         { "core/vector/projective", test_core_vector_projective },
         { "core/vector/primitives", test_core_vector_primitives },
         { "core/vector/quaternions", test_core_vector_quaternions },
+        { "core/zlib/compression", test_core_zlib_compression },
+        { "core/zlib/io", test_core_zlib_io },
 
     };
 

@@ -339,58 +339,42 @@ namespace RS {
             struct stat st;
             if (::stat(path.data(), &st) == -1)
                 return {};
-            timespec ts =
-                #ifdef __APPLE__
-                    st.st_atimespec;
-                #else
-                    st.st_atim;
-                #endif
-            return timespec_to_timepoint(ts);
+            #ifdef __APPLE__
+                return timespec_to_timepoint(st.st_atimespec);
+            #else
+                return timespec_to_timepoint(st.st_atim);
+            #endif
         }
 
         inline std::chrono::system_clock::time_point File::mtime() const {
             struct stat st;
             if (::stat(path.data(), &st) == -1)
                 return {};
-            timespec ts =
-                #ifdef __APPLE__
-                    st.st_mtimespec;
-                #else
-                    st.st_mtim;
-                #endif
-            return timespec_to_timepoint(ts);
+            #ifdef __APPLE__
+                return timespec_to_timepoint(st.st_mtimespec);
+            #else
+                return timespec_to_timepoint(st.st_mtim);
+            #endif
         }
 
         inline void File::set_atime(std::chrono::system_clock::time_point t) const {
+            timeval times[2];
+            times[0] = timepoint_to_timeval(t);
+            times[1] = timepoint_to_timeval(mtime());
             errno = 0;
-            int fd = ::open(path.data(), O_RDWR | O_CREAT);
+            int rc = ::utimes(path.data(), times);
             int err = errno;
-            if (fd == -1)
-                throw std::system_error(err, std::generic_category(), path);
-            Resource<int, -1> res(fd, ::close);
-            timespec times[2];
-            times[0] = timepoint_to_timespec(t);
-            times[1].tv_nsec = UTIME_OMIT;
-            errno = 0;
-            int rc = ::futimens(res, times);
-            err = errno;
             if (rc == -1)
                 throw std::system_error(err, std::generic_category(), path);
         }
 
         inline void File::set_mtime(std::chrono::system_clock::time_point t) const {
+            timeval times[2];
+            times[0] = timepoint_to_timeval(atime());
+            times[1] = timepoint_to_timeval(t);
             errno = 0;
-            int fd = ::open(path.data(), O_RDWR | O_CREAT);
+            int rc = ::utimes(path.data(), times);
             int err = errno;
-            if (fd == -1)
-                throw std::system_error(err, std::generic_category(), path);
-            Resource<int, -1> res(fd, ::close);
-            timespec times[2];
-            times[0].tv_nsec = UTIME_OMIT;
-            times[1] = timepoint_to_timespec(t);
-            errno = 0;
-            int rc = ::futimens(res, times);
-            err = errno;
             if (rc == -1)
                 throw std::system_error(err, std::generic_category(), path);
         }

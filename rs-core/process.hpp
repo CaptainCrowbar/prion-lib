@@ -66,7 +66,7 @@ namespace RS {
         inline void StreamProcess::do_close() noexcept {
             if (! fp)
                 return;
-            int rc = RS_US_NAME(pclose)(fp);
+            int rc = RS_IO_FUNCTION(pclose)(fp);
             if (st == -1)
                 st = rc;
             fp = nullptr;
@@ -78,7 +78,7 @@ namespace RS {
                 return state::closed;
             if (t < Interval::time())
                 t = {};
-            int fd = RS_US_NAME(fileno)(fp);
+            int fd = RS_IO_FUNCTION(fileno)(fp);
             auto cs = state::closed;
             #ifdef _XOPEN_SOURCE
                 fd_set fds;

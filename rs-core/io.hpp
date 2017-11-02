@@ -13,34 +13,17 @@
 #include <string>
 #include <system_error>
 #include <utility>
+#include <vector>
 
 #ifdef _XOPEN_SOURCE
-    #define RS_W32(x) 0
+    #define RS_IO_FUNCTION(f) ::f
 #else
-    #define RS_W32(x) x
-#endif
-
-#ifdef _MSC_VER
-    #define RS_US_NAME(x) _##x
-#else
-    #define RS_US_NAME(x) ::x
+    #define RS_IO_FUNCTION(f) _##f
 #endif
 
 namespace RS {
 
     // I/O abstract base class
-
-    namespace RS_Detail {
-
-        inline void print_helper(U8string&) {}
-
-        template <typename T, typename... Args>
-        void print_helper(U8string& s, const T& t, const Args&... args) {
-            s += to_str(t) + ' ';
-            print_helper(s, args...);
-        }
-
-    }
 
     class IO {
     public:
@@ -89,28 +72,14 @@ namespace RS {
         void write_line(const std::string& str);
         size_t write_str(const std::string& str);
     protected:
-        struct mode_info {
-            const char* cstdio_mode = nullptr;
-            int fdio_mode = 0;
-            uint32_t winio_access = 0;
-            uint32_t winio_creation = 0;
-        };
-        #ifdef __CYGWIN__
-            static constexpr int fdio_default = O_BINARY;
-            static constexpr int fdio_mask = O_BINARY | O_TEXT;
-            static constexpr const char* null_device = "/dev/null";
-        #elif defined(_XOPEN_SOURCE)
-            static constexpr int fdio_default = 0;
-            static constexpr int fdio_mask = 0;
-            static constexpr const char* null_device = "/dev/null";
-        #else
-            static constexpr int fdio_default = _O_BINARY;
-            static constexpr int fdio_mask = _O_BINARY | _O_TEXT | _O_U8TEXT | _O_U16TEXT | _O_WTEXT;
-            static constexpr const char* null_device = "NUL:";
-        #endif
+        static constexpr const char* null_device =
+            #ifdef _XOPEN_SOURCE
+                "/dev/null";
+            #else
+                "NUL:";
+            #endif
         IO() = default;
         void set_error(int err, const std::error_category& cat = std::generic_category()) noexcept;
-        static const mode_info& get_mode_info(mode m);
     private:
         std::error_code status;
     };
@@ -151,12 +120,8 @@ namespace RS {
 
         template <typename... Args>
         void IO::print(const Args&... args) {
-            using namespace RS_Detail;
-            U8string s;
-            print_helper(s, args...);
-            if (! s.empty())
-                s.pop_back();
-            write_line(s);
+            std::vector<U8string> vec{to_str(args)...};
+            write_line(join(vec, " "));
         }
 
         inline std::string IO::read_all() {
@@ -213,20 +178,6 @@ namespace RS {
             return *this;
         }
 
-        inline const IO::mode_info& IO::get_mode_info(mode m) {
-            static const mode_info dummy;
-            static const std::map<mode, mode_info> map = {
-                { mode::read_only,      { "rb",     O_RDONLY,                   RS_W32(GENERIC_READ),                RS_W32(OPEN_EXISTING)  }},
-                { mode::write_only,     { "wb",     O_WRONLY|O_CREAT|O_TRUNC,   RS_W32(GENERIC_WRITE),               RS_W32(CREATE_ALWAYS)  }},
-                { mode::append,         { "ab",     O_WRONLY|O_APPEND|O_CREAT,  RS_W32(GENERIC_WRITE),               RS_W32(OPEN_ALWAYS)    }},
-                { mode::create_always,  { "wb+",    O_RDWR|O_CREAT|O_TRUNC,     RS_W32(GENERIC_READ|GENERIC_WRITE),  RS_W32(CREATE_ALWAYS)  }},
-                { mode::open_always,    { nullptr,  O_RDWR|O_CREAT,             RS_W32(GENERIC_READ|GENERIC_WRITE),  RS_W32(OPEN_ALWAYS)    }},
-                { mode::open_existing,  { "rb+",    O_RDWR,                     RS_W32(GENERIC_READ|GENERIC_WRITE),  RS_W32(OPEN_EXISTING)  }},
-            };
-            auto it = map.find(m);
-            return it == map.end() ? dummy : it->second;
-        }
-
     // C standard I/O
 
     class Cstdio:
@@ -242,14 +193,14 @@ namespace RS {
         virtual void flush() noexcept override;
         virtual int getc() noexcept override;
         virtual bool is_open() const noexcept override { return bool(fp); }
-        virtual bool is_terminal() const noexcept override { return RS_US_NAME(isatty)(fd()); }
+        virtual bool is_terminal() const noexcept override { return RS_IO_FUNCTION(isatty)(fd()); }
         virtual void putc(char c) override;
         virtual size_t read(void* ptr, size_t maxlen) noexcept override;
         virtual std::string read_line() override;
         virtual void seek(ptrdiff_t offset, int which = SEEK_CUR) noexcept override;
         virtual ptrdiff_t tell() noexcept override;
         virtual size_t write(const void* ptr, size_t len) override;
-        int fd() const noexcept { return RS_US_NAME(fileno)(get()); }
+        int fd() const noexcept { return RS_IO_FUNCTION(fileno)(get()); }
         FILE* get() const noexcept { return fp.get(); }
         FILE* release() noexcept { return fp.release(); }
         void ungetc(char c);
@@ -289,7 +240,16 @@ namespace RS {
                 if (! fp)
                     *this = Cstdio(f, "wb+");
             } else {
-                *this = Cstdio(f, get_mode_info(m).cstdio_mode);
+                U8string cmode;
+                switch (m) {
+                    case mode::read_only:      cmode = "rb"; break;
+                    case mode::write_only:     cmode = "wb"; break;
+                    case mode::append:         cmode = "ab"; break;
+                    case mode::create_always:  cmode = "wb+"; break;
+                    case mode::open_existing:  cmode = "rb+"; break;
+                    default:                   break;
+                }
+                *this = Cstdio(f, cmode);
             }
         }
 
@@ -418,7 +378,7 @@ namespace RS {
         virtual void close() noexcept override;
         virtual void flush() noexcept override;
         virtual bool is_open() const noexcept override { return fd.get() != -1; }
-        virtual bool is_terminal() const noexcept override { return RS_US_NAME(isatty)(get()); }
+        virtual bool is_terminal() const noexcept override { return RS_IO_FUNCTION(isatty)(get()); }
         virtual size_t read(void* ptr, size_t maxlen) noexcept override;
         virtual void seek(ptrdiff_t offset, int which = SEEK_CUR) noexcept override;
         virtual ptrdiff_t tell() noexcept override;
@@ -445,7 +405,7 @@ namespace RS {
 
         inline Fdio::Fdio(int f, bool owner) noexcept {
             if (owner)
-                fd = {f, [] (int f) { if (f != -1) RS_US_NAME(close)(f); }};
+                fd = {f, [] (int f) { if (f != -1) RS_IO_FUNCTION(close)(f); }};
             else
                 fd = {f, [] (int) {}};
         }
@@ -460,16 +420,30 @@ namespace RS {
                     return;
                 }
             }
-            *this = Fdio(f, get_mode_info(m).fdio_mode, 0666);
+            int fmode = 0;
+            switch (m) {
+                case mode::read_only:      fmode = O_RDONLY; break;
+                case mode::write_only:     fmode = O_WRONLY|O_CREAT|O_TRUNC; break;
+                case mode::append:         fmode = O_WRONLY|O_APPEND|O_CREAT; break;
+                case mode::create_always:  fmode = O_RDWR|O_CREAT|O_TRUNC; break;
+                case mode::open_always:    fmode = O_RDWR|O_CREAT; break;
+                case mode::open_existing:  fmode = O_RDWR; break;
+                default:                   break;
+            }
+            *this = Fdio(f, fmode, 0666);
         }
 
         inline Fdio::Fdio(const File& f, int iomode, int perm) {
-            if (! (iomode & fdio_mask))
-                iomode |= fdio_default;
             #ifdef _XOPEN_SOURCE
+                #ifdef __CYGWIN__
+                    if (! (iomode & (O_BINARY | O_TEXT)))
+                        iomode |= O_BINARY;
+                #endif
                 errno = 0;
                 auto rc = ::open(f.c_name(), iomode, perm);
             #else
+                if (! (iomode & (_O_BINARY | _O_TEXT | _O_U8TEXT | _O_U16TEXT | _O_WTEXT)))
+                    iomode |= _O_BINARY;
                 auto wfile = f.native();
                 errno = 0;
                 auto rc = _wopen(wfile.data(), iomode, perm);
@@ -483,7 +457,7 @@ namespace RS {
             int f = fd.release();
             if (f != -1) {
                 errno = 0;
-                RS_US_NAME(close)(f);
+                RS_IO_FUNCTION(close)(f);
                 set_error(errno);
             }
         }
@@ -504,41 +478,41 @@ namespace RS {
 
         inline size_t Fdio::read(void* ptr, size_t maxlen) noexcept {
             errno = 0;
-            auto rc = RS_US_NAME(read)(get(), ptr, iosize(maxlen));
+            auto rc = RS_IO_FUNCTION(read)(get(), ptr, iosize(maxlen));
             set_error(errno);
             return rc;
         }
 
         inline void Fdio::seek(ptrdiff_t offset, int which) noexcept {
             errno = 0;
-            RS_US_NAME(lseek)(get(), ofsize(offset), which);
+            RS_IO_FUNCTION(lseek)(get(), ofsize(offset), which);
             set_error(errno);
         }
 
         inline ptrdiff_t Fdio::tell() noexcept {
             errno = 0;
-            auto offset = RS_US_NAME(lseek)(get(), 0, SEEK_CUR);
+            auto offset = RS_IO_FUNCTION(lseek)(get(), 0, SEEK_CUR);
             set_error(errno);
             return offset;
         }
 
         inline size_t Fdio::write(const void* ptr, size_t len) {
             errno = 0;
-            size_t n = RS_US_NAME(write)(get(), ptr, iosize(len));
+            size_t n = RS_IO_FUNCTION(write)(get(), ptr, iosize(len));
             set_error(errno);
             return n;
         }
 
         inline Fdio Fdio::dup() noexcept {
             errno = 0;
-            int rc = RS_US_NAME(dup)(get());
+            int rc = RS_IO_FUNCTION(dup)(get());
             set_error(errno);
             return Fdio(rc);
         }
 
         inline Fdio Fdio::dup(int f) noexcept {
             errno = 0;
-            RS_US_NAME(dup2)(get(), f);
+            RS_IO_FUNCTION(dup2)(get(), f);
             set_error(errno);
             return Fdio(f);
         }
@@ -618,8 +592,17 @@ namespace RS {
                         return;
                     }
                 }
-                auto& info = get_mode_info(m);
-                *this = Winio(f, info.winio_access, 0, nullptr, info.winio_creation);
+                uint32_t access = 0, creation = 0;
+                switch (m) {
+                    case mode::read_only:      access = GENERIC_READ; creation = OPEN_EXISTING; break;
+                    case mode::write_only:     access = GENERIC_WRITE; creation = CREATE_ALWAYS; break;
+                    case mode::append:         access = GENERIC_WRITE; creation = OPEN_ALWAYS; break;
+                    case mode::create_always:  access = GENERIC_READ | GENERIC_WRITE; creation = CREATE_ALWAYS; break;
+                    case mode::open_always:    access = GENERIC_READ | GENERIC_WRITE; creation = OPEN_ALWAYS; break;
+                    case mode::open_existing:  access = GENERIC_READ | GENERIC_WRITE; creation = OPEN_EXISTING; break;
+                    default:                   break;
+                }
+                *this = Winio(f, access, 0, nullptr, creation);
                 if (m == mode::append) {
                     LARGE_INTEGER distance;
                     distance.QuadPart = 0;
@@ -656,11 +639,11 @@ namespace RS {
             inline bool Winio::is_terminal() const noexcept {
                 auto h = get();
                 if (h == GetStdHandle(STD_INPUT_HANDLE))
-                    return RS_US_NAME(isatty)(0);
+                    return RS_IO_FUNCTION(isatty)(0);
                 else if (h == GetStdHandle(STD_OUTPUT_HANDLE))
-                    return RS_US_NAME(isatty)(1);
+                    return RS_IO_FUNCTION(isatty)(1);
                 else if (h == GetStdHandle(STD_ERROR_HANDLE))
-                    return RS_US_NAME(isatty)(2);
+                    return RS_IO_FUNCTION(isatty)(2);
                 else
                     return false;
             }

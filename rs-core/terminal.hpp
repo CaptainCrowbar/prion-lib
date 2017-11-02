@@ -16,7 +16,7 @@ namespace RS {
 
     // Terminal I/O operations
 
-    inline bool is_stdout_redirected() noexcept { return ! RS_US_NAME(isatty)(1); }
+    inline bool is_stdout_redirected() noexcept { return ! RS_IO_FUNCTION(isatty)(1); }
 
     namespace RS_Detail {
 

@@ -18,8 +18,10 @@
 <li><a href="#contents">Contents</a></li>
 <li><a href="#time-and-date-operations">Time and date operations</a><ul>
 <li><a href="#time-and-date-types">Time and date types</a></li>
+<li><a href="#supporting-types">Supporting types</a></li>
 <li><a href="#general-time-and-date-operations">General time and date operations</a></li>
 <li><a href="#time-and-date-formatting">Time and date formatting</a></li>
+<li><a href="#time-and-date-parsing">Time and date parsing</a></li>
 </ul>
 </li>
 <li><a href="#timing-utilities">Timing utilities</a><ul>
@@ -53,7 +55,19 @@ values that do not represent a valid date.</p>
 be <code>high_resolution_clock</code> if <code>high_resolution_clock::is_steady</code> is true,
 otherwise <code>steady_clock</code>.</p>
 </div>
-<h3 id="general-time-and-date-operations">General time and date operations</h3>
+<h3 id="supporting-types">Supporting types</h3>
+<div class="defns">
+<ul>
+<li><code>enum class</code> <strong><code>DateOrder</code></strong><ul>
+<li><code>DateOrder::</code><strong><code>ymd</code></strong></li>
+<li><code>DateOrder::</code><strong><code>dmy</code></strong></li>
+<li><code>DateOrder::</code><strong><code>mdy</code></strong></li>
+</ul>
+</li>
+</ul>
+<p>This is passed to the <code>parse_date()</code> function to indicate which order the date
+elements are in.</p>
+</div>
 <div class="defns">
 <ul>
 <li><code>enum class</code> <strong><code>Zone</code></strong><ul>
@@ -67,6 +81,7 @@ broken down date is expressed in UTC or the local time zone. For all functions
 that take a <code>Zone</code> argument, behaviour is unspecified if the argument is not
 one of these two values.</p>
 </div>
+<h3 id="general-time-and-date-operations">General time and date operations</h3>
 <div class="defns">
 <ul>
 <li><code>template &lt;typename R, typename P&gt; void</code> <strong><code>from_seconds</code></strong><code>(double s, duration&lt;R, P&gt;&amp; d) noexcept</code></li>
@@ -194,6 +209,41 @@ is a limitation of <code>strftime()</code>).</p>
 </ul>
 <p>Formats a time duration in days, hours, minutes, seconds, and (if <code>prec&gt;0</code>)
 fractions of a second.</p>
+</div>
+<h3 id="time-and-date-parsing">Time and date parsing</h3>
+<div class="defns">
+<ul>
+<li><code>system_clock::time_point</code> <strong><code>parse_date</code></strong><code>(const U8string&amp; str, DateOrder order = DateOrder::ymd, Zone z = Zone::utc)</code></li>
+</ul>
+<p>Parse a date expressed in broken down format (e.g. <code>"2017-11-04 11:53:00"</code>).
+Year, month, and day are required; the <code>order</code> argument indicates which order
+these are in; the month can be a number, an abbreviation, or a full English
+name (case insensitive). Hours, minutes, seconds, and fractions of a second
+are optional. Fields can be separated with spaces or any ASCII punctuation
+marks; following ISO convention, a <code>"T"</code> can also be used between the date and
+time. This function does not make any attempt to interpret a time zone in the
+string. It will throw <code>std::invalid_argument</code> if the format is invalid;
+behaviour is unspecified if the format is correct but the string does not
+represent a valid date; behaviour is undefined if the date is outside the
+representable range of the system clock, or either of the order or zone
+arguments is not one of the enumeration values.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename R, typename P&gt; void</code> <strong><code>parse_time</code></strong><code>(const U8string&amp; str, duration&lt;R, P&gt;&amp; t)</code></li>
+<li><code>template &lt;typename D&gt; D</code> <strong><code>parse_time</code></strong><code>(const U8string&amp; str)</code></li>
+</ul>
+<p>Parse a time expressed in Julian years, days, hours, minutes, and seconds
+(e.g. <code>"12y 345d 12h 34m 56s"</code>). Spaces are ignored; a leading sign is
+allowed; any number can be a floating point number with decimals and
+exponents; units can be abbreviations or full words; years can have any SI
+prefix with a positive exponent (e.g. <code>"65 My"</code>); seconds can have any SI
+prefix with a negative exponent (e.g. <code>"100 µs"</code>); either <code>"u"</code> or <code>"µ"</code> can
+be used for "micro". These will throw <code>std::invalid_argument</code> if the format is
+invalid; behaviour is undefined if the format is correct but the resulting
+time cannot be represented by the duration type, or if the second version of
+<code>parse_time()</code> is called with a return type that is not an instantiation of
+<code>std::chrono::duration</code>.</p>
 </div>
 <h2 id="timing-utilities">Timing utilities</h2>
 <div class="defns">

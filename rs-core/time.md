@@ -30,7 +30,15 @@ This is the highest resolution clock that can be trusted to be steady. It will
 be `high_resolution_clock` if `high_resolution_clock::is_steady` is true,
 otherwise `steady_clock`.
 
-### General time and date operations ###
+### Supporting types ###
+
+* `enum class` **`DateOrder`**
+    * `DateOrder::`**`ymd`**
+    * `DateOrder::`**`dmy`**
+    * `DateOrder::`**`mdy`**
+
+This is passed to the `parse_date()` function to indicate which order the date
+elements are in.
 
 * `enum class` **`Zone`**
     * `Zone::`**`utc`**
@@ -40,6 +48,8 @@ This is passed to some of the time and date functions to indicate whether a
 broken down date is expressed in UTC or the local time zone. For all functions
 that take a `Zone` argument, behaviour is unspecified if the argument is not
 one of these two values.
+
+### General time and date operations ###
 
 * `template <typename R, typename P> void` **`from_seconds`**`(double s, duration<R, P>& d) noexcept`
 * `template <typename R, typename P> double` **`to_seconds`**`(const duration<R, P>& d) noexcept`
@@ -89,6 +99,38 @@ For reference, the portable subset of the `strftime()` formatting codes are:
 
 Formats a time duration in days, hours, minutes, seconds, and (if `prec>0`)
 fractions of a second.
+
+### Time and date parsing ###
+
+* `system_clock::time_point` **`parse_date`**`(const U8string& str, DateOrder order = DateOrder::ymd, Zone z = Zone::utc)`
+
+Parse a date expressed in broken down format (e.g. `"2017-11-04 11:53:00"`).
+Year, month, and day are required; the `order` argument indicates which order
+these are in; the month can be a number, an abbreviation, or a full English
+name (case insensitive). Hours, minutes, seconds, and fractions of a second
+are optional. Fields can be separated with spaces or any ASCII punctuation
+marks; following ISO convention, a `"T"` can also be used between the date and
+time. This function does not make any attempt to interpret a time zone in the
+string. It will throw `std::invalid_argument` if the format is invalid;
+behaviour is unspecified if the format is correct but the string does not
+represent a valid date; behaviour is undefined if the date is outside the
+representable range of the system clock, or either of the order or zone
+arguments is not one of the enumeration values.
+
+* `template <typename R, typename P> void` **`parse_time`**`(const U8string& str, duration<R, P>& t)`
+* `template <typename D> D` **`parse_time`**`(const U8string& str)`
+
+Parse a time expressed in Julian years, days, hours, minutes, and seconds
+(e.g. `"12y 345d 12h 34m 56s"`). Spaces are ignored; a leading sign is
+allowed; any number can be a floating point number with decimals and
+exponents; units can be abbreviations or full words; years can have any SI
+prefix with a positive exponent (e.g. `"65 My"`); seconds can have any SI
+prefix with a negative exponent (e.g. `"100 µs"`); either `"u"` or `"µ"` can
+be used for "micro". These will throw `std::invalid_argument` if the format is
+invalid; behaviour is undefined if the format is correct but the resulting
+time cannot be represented by the duration type, or if the second version of
+`parse_time()` is called with a return type that is not an instantiation of
+`std::chrono::duration`.
 
 ## Timing utilities ##
 

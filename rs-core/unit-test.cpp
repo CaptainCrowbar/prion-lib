@@ -202,7 +202,10 @@ extern void test_core_terminal_progress_bar();
 extern void test_core_terminal_io_operations();
 extern void test_core_time_date_types();
 extern void test_core_time_general_operations();
-extern void test_core_time_date_formatting();
+extern void test_core_time_format_date();
+extern void test_core_time_format_time();
+extern void test_core_time_parse_date();
+extern void test_core_time_parse_time();
 extern void test_core_time_system_specific_conversions();
 extern void test_core_uuid_class();
 extern void test_core_variant_types();
@@ -427,7 +430,10 @@ int main() {
         { "core/terminal/io-operations", test_core_terminal_io_operations },
         { "core/time/date-types", test_core_time_date_types },
         { "core/time/general-operations", test_core_time_general_operations },
-        { "core/time/date-formatting", test_core_time_date_formatting },
+        { "core/time/format-date", test_core_time_format_date },
+        { "core/time/format-time", test_core_time_format_time },
+        { "core/time/parse-date", test_core_time_parse_date },
+        { "core/time/parse-time", test_core_time_parse_time },
         { "core/time/system-specific-conversions", test_core_time_system_specific_conversions },
         { "core/uuid/class", test_core_uuid_class },
         { "core/variant/types", test_core_variant_types },

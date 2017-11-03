@@ -1,10 +1,13 @@
 #pragma once
 
 #include "rs-core/common.hpp"
+#include "rs-core/string.hpp"
 #include <algorithm>
 #include <chrono>
 #include <cmath>
+#include <cstdlib>
 #include <ratio>
+#include <stdexcept>
 #include <type_traits>
 
 namespace RS {
@@ -16,9 +19,10 @@ namespace RS {
     using Dyears = std::chrono::duration<double, std::ratio<31557600>>;
     using ReliableClock = std::conditional_t<std::chrono::high_resolution_clock::is_steady, std::chrono::high_resolution_clock, std::chrono::steady_clock>;
 
-    // General time and date operations
+    RS_ENUM_CLASS(DateOrder, int, 1, ymd, dmy, mdy);
+    RS_ENUM_CLASS(Zone, int, 1, utc, local);
 
-    RS_ENUM_CLASS(Zone, int, 1, utc, local)
+    // General time and date operations
 
     template <typename R, typename P>
     void from_seconds(double s, std::chrono::duration<R, P>& d) noexcept {
@@ -135,6 +139,150 @@ namespace RS {
         }
         result += 's';
         return result;
+    }
+
+    // Time and date parsing
+
+    namespace RS_Detail {
+
+        inline void date_skip_punct(const char*& ptr) {
+            while (ascii_ispunct(*ptr) || ascii_isspace(*ptr))
+                ++ptr;
+        };
+
+        inline bool date_read_number(const char*& ptr, int& result) {
+            date_skip_punct(ptr);
+            if (! ascii_isdigit(*ptr))
+                return false;
+            char* next = nullptr;
+            result = int(std::strtoul(ptr, &next, 10));
+            ptr = next;
+            return true;
+        };
+
+        inline bool date_read_number(const char*& ptr, double& result) {
+            date_skip_punct(ptr);
+            if (! ascii_isdigit(*ptr))
+                return false;
+            char* next = nullptr;
+            result = std::strtod(ptr, &next);
+            ptr = next;
+            return true;
+        };
+
+        inline bool date_read_month(const char*& ptr, int& result) {
+            date_skip_punct(ptr);
+            if (ascii_isdigit(*ptr))
+                return date_read_number(ptr, result);
+            else if (! ascii_isalpha(*ptr) || ! ptr[1] || ! ptr[2])
+                return false;
+            U8string mon(ptr, 3);
+            mon = ascii_lowercase(mon);
+            if (mon == "jan")       result = 1;
+            else if (mon == "feb")  result = 2;
+            else if (mon == "mar")  result = 3;
+            else if (mon == "apr")  result = 4;
+            else if (mon == "may")  result = 5;
+            else if (mon == "jun")  result = 6;
+            else if (mon == "jul")  result = 7;
+            else if (mon == "aug")  result = 8;
+            else if (mon == "sep")  result = 9;
+            else if (mon == "oct")  result = 10;
+            else if (mon == "nov")  result = 11;
+            else if (mon == "dec")  result = 12;
+            else                    return false;
+            ptr += 3;
+            while (ascii_isalpha(*ptr))
+                ++ptr;
+            return true;
+        };
+
+    }
+
+    inline std::chrono::system_clock::time_point parse_date(const U8string& s, DateOrder order = DateOrder::ymd, Zone z = Zone::utc) {
+        using namespace RS_Detail;
+        using namespace std::chrono;
+        int year = 0, month = 0, day = 0, hour = 0, min = 0;
+        double sec = 0;
+        const char* ptr = s.data();
+        bool ok = true;
+        switch (order) {
+            case DateOrder::ymd:  ok = date_read_number(ptr, year) && date_read_month(ptr, month) && date_read_number(ptr, day); break;
+            case DateOrder::dmy:  ok = date_read_number(ptr, day) && date_read_month(ptr, month) && date_read_number(ptr, year); break;
+            case DateOrder::mdy:  ok = date_read_month(ptr, month) && date_read_number(ptr, day) && date_read_number(ptr, year); break;
+            default:              break;
+        }
+        if (! ok)
+            throw std::invalid_argument("Invalid date: " + quote(s));
+        date_skip_punct(ptr);
+        if (*ptr == 'T' || *ptr == 't')
+            ++ptr;
+        date_read_number(ptr, hour);
+        date_read_number(ptr, min);
+        date_read_number(ptr, sec);
+        return make_date(year, month, day, hour, min, sec, z);
+    }
+
+    template <typename R, typename P>
+    void parse_time(const U8string& s, std::chrono::duration<R, P>& t) {
+        using namespace std::chrono;
+        using namespace std::literals;
+        using duration_type = duration<R, P>;
+        static constexpr double jyear = 31'557'600;
+        U8string ns = replace(s, " "s, ""s);
+        const char* ptr = ns.data();
+        const char* end = ptr + ns.size();
+        char sign = '+';
+        if (*ptr == '+' || *ptr == '-')
+            sign = *ptr++;
+        if (ptr == end)
+            throw std::invalid_argument("Invalid time: " + quote(s));
+        double count = 0, seconds = 0;
+        char* next = nullptr;
+        U8string unit;
+        while (ptr != end) {
+            if (! ascii_isdigit(*ptr))
+                throw std::invalid_argument("Invalid time: " + quote(s));
+            count = std::strtod(ptr, &next);
+            unit.clear();
+            while (next != end && ascii_isalpha(*next))
+                unit += *next++;
+            if (starts_with(unit, "Yy"s))         count *= jyear * 1.0e24;
+            else if (starts_with(unit, "Zy"s))    count *= jyear * 1.0e21;
+            else if (starts_with(unit, "Ey"s))    count *= jyear * 1.0e18;
+            else if (starts_with(unit, "Py"s))    count *= jyear * 1.0e15;
+            else if (starts_with(unit, "Ty"s))    count *= jyear * 1.0e12;
+            else if (starts_with(unit, "Gy"s))    count *= jyear * 1.0e9;
+            else if (starts_with(unit, "My"s))    count *= jyear * 1.0e6;
+            else if (starts_with(unit, "ky"s))    count *= jyear * 1.0e3;
+            else if (starts_with(unit, "ms"s))    count *= 1.0e-3;
+            else if (starts_with(unit, "us"s))    count *= 1.0e-6;
+            else if (starts_with(unit, u8"µs"s))  count *= 1.0e-6;
+            else if (starts_with(unit, "ns"s))    count *= 1.0e-9;
+            else if (starts_with(unit, "ps"s))    count *= 1.0e-12;
+            else if (starts_with(unit, "fs"s))    count *= 1.0e-15;
+            else if (starts_with(unit, "as"s))    count *= 1.0e-18;
+            else if (starts_with(unit, "zs"s))    count *= 1.0e-21;
+            else if (starts_with(unit, "ys"s))    count *= 1.0e-24;
+            else if (starts_with(unit, "y"s))     count *= jyear;
+            else if (starts_with(unit, "d"s))     count *= 86400.0;
+            else if (starts_with(unit, "h"s))     count *= 3600.0;
+            else if (starts_with(unit, "m"s))     count *= 60.0;
+            else if (starts_with(unit, "s"s))     {}
+            else                                  throw std::invalid_argument("Invalid time: " + quote(s));
+            seconds += count;
+            ptr = next;
+        }
+        if (sign == '-')
+            seconds = - seconds;
+        t = duration_cast<duration_type>(Dseconds(seconds));
+    }
+
+    template <typename D>
+    D parse_time(const U8string& str) {
+        D time;
+        parse_time(str, time);
+        return time;
     }
 
     // Timing utilities

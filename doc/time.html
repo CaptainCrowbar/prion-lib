@@ -18,7 +18,7 @@
 <li><a href="#contents">Contents</a></li>
 <li><a href="#time-and-date-operations">Time and date operations</a><ul>
 <li><a href="#time-and-date-types">Time and date types</a></li>
-<li><a href="#supporting-types">Supporting types</a></li>
+<li><a href="#constants">Constants</a></li>
 <li><a href="#general-time-and-date-operations">General time and date operations</a></li>
 <li><a href="#time-and-date-formatting">Time and date formatting</a></li>
 <li><a href="#time-and-date-parsing">Time and date parsing</a></li>
@@ -55,31 +55,25 @@ values that do not represent a valid date.</p>
 be <code>high_resolution_clock</code> if <code>high_resolution_clock::is_steady</code> is true,
 otherwise <code>steady_clock</code>.</p>
 </div>
-<h3 id="supporting-types">Supporting types</h3>
+<h3 id="constants">Constants</h3>
 <div class="defns">
 <ul>
-<li><code>enum class</code> <strong><code>DateOrder</code></strong><ul>
-<li><code>DateOrder::</code><strong><code>ymd</code></strong></li>
-<li><code>DateOrder::</code><strong><code>dmy</code></strong></li>
-<li><code>DateOrder::</code><strong><code>mdy</code></strong></li>
+<li><code>constexpr uint32_t</code> <strong><code>utc_zone</code></strong></li>
+<li><code>constexpr uint32_t</code> <strong><code>local_zone</code></strong></li>
 </ul>
-</li>
-</ul>
-<p>This is passed to the <code>parse_date()</code> function to indicate which order the date
-elements are in.</p>
+<p>One of these is passed to some of the time and date functions to indicate
+whether a broken down date is expressed in UTC or the local time zone. If none
+of these are present, the default is <code>utc_zone</code>.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>enum class</code> <strong><code>Zone</code></strong><ul>
-<li><code>Zone::</code><strong><code>utc</code></strong></li>
-<li><code>Zone::</code><strong><code>local</code></strong></li>
+<li><code>constexpr uint32_t</code> <strong><code>ymd_order</code></strong></li>
+<li><code>constexpr uint32_t</code> <strong><code>dmy_order</code></strong></li>
+<li><code>constexpr uint32_t</code> <strong><code>mdy_order</code></strong></li>
 </ul>
-</li>
-</ul>
-<p>This is passed to some of the time and date functions to indicate whether a
-broken down date is expressed in UTC or the local time zone. For all functions
-that take a <code>Zone</code> argument, behaviour is unspecified if the argument is not
-one of these two values.</p>
+<p>One of these is passed to the <code>parse_date()</code> function to indicate which order
+the date elements are in. If none of these are present, the default is
+<code>ymd_order</code>.</p>
 </div>
 <h3 id="general-time-and-date-operations">General time and date operations</h3>
 <div class="defns">
@@ -92,25 +86,28 @@ number of seconds.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>system_clock::time_point</code> <strong><code>make_date</code></strong><code>(int year, int month, int day, int hour = 0, int min = 0, double sec = 0, Zone z = Zone::utc) noexcept</code></li>
+<li><code>system_clock::time_point</code> <strong><code>make_date</code></strong><code>(int year, int month, int day, int hour = 0, int min = 0, double sec = 0, uint32_t flags = utc_zone) noexcept</code></li>
 </ul>
 <p>Converts a broken down date into a time point. Behaviour if any of the date
-arguments are invalid follows the same rules as <code>mktime()</code>.</p>
+arguments are invalid follows the same rules as <code>mktime()</code>. This will throw
+<code>std::invalid_argument</code> if an invalid combination of flags is passed.</p>
 </div>
 <h3 id="time-and-date-formatting">Time and date formatting</h3>
 <div class="defns">
 <ul>
-<li><code>U8string</code> <strong><code>format_date</code></strong><code>(system_clock::time_point tp, int prec = 0, Zone z = Zone::utc)</code></li>
-<li><code>U8string</code> <strong><code>format_date</code></strong><code>(system_clock::time_point tp, const U8string&amp; format, Zone z = Zone::utc)</code></li>
+<li><code>U8string</code> <strong><code>format_date</code></strong><code>(system_clock::time_point tp, int prec = 0, uint32_t flags = utc_zone)</code></li>
+<li><code>U8string</code> <strong><code>format_date</code></strong><code>(system_clock::time_point tp, const U8string&amp; format, uint32_t flags = utc_zone)</code></li>
 </ul>
 <p>These convert a time point into a broken down date and format it. The first
 version writes the date in ISO 8601 format (<code>"yyyy-mm-dd hh:mm:ss"</code>). If
 <code>prec</code> is greater than zero, the specified number of decimal places will be
 added to the seconds field.</p>
 <p>The second version writes the date using the conventions of <code>strftime()</code>. This
-will return an empty string if anything goes wrong; there is no way to
-distinguish between a conversion error and a legitimately empty result (this
+will return an empty string if anything goes wrong (there is no way to
+distinguish between a conversion error and a legitimately empty result; this
 is a limitation of <code>strftime()</code>).</p>
+<p>Both of these will throw <code>std::invalid_argument</code> if an invalid combination of
+flags is passed.</p>
 <p>For reference, the portable subset of the <code>strftime()</code> formatting codes are:</p>
 <table>
 <thead>
@@ -213,20 +210,19 @@ fractions of a second.</p>
 <h3 id="time-and-date-parsing">Time and date parsing</h3>
 <div class="defns">
 <ul>
-<li><code>system_clock::time_point</code> <strong><code>parse_date</code></strong><code>(const U8string&amp; str, DateOrder order = DateOrder::ymd, Zone z = Zone::utc)</code></li>
+<li><code>system_clock::time_point</code> <strong><code>parse_date</code></strong><code>(const U8string&amp; str, uint32_t flags = utc_zone | ymd_order)</code></li>
 </ul>
 <p>Parse a date expressed in broken down format (e.g. <code>"2017-11-04 11:53:00"</code>).
-Year, month, and day are required; the <code>order</code> argument indicates which order
-these are in; the month can be a number, an abbreviation, or a full English
-name (case insensitive). Hours, minutes, seconds, and fractions of a second
-are optional. Fields can be separated with spaces or any ASCII punctuation
-marks; following ISO convention, a <code>"T"</code> can also be used between the date and
-time. This function does not make any attempt to interpret a time zone in the
-string. It will throw <code>std::invalid_argument</code> if the format is invalid;
-behaviour is unspecified if the format is correct but the string does not
-represent a valid date; behaviour is undefined if the date is outside the
-representable range of the system clock, or either of the order or zone
-arguments is not one of the enumeration values.</p>
+Year, month, and day are required, in the order specified by the <code>flags</code>
+argument; the month can be a number, an abbreviation, or a full English name
+(case insensitive). Hours, minutes, seconds, and fractions of a second are
+optional. Fields can be separated with spaces or any ASCII punctuation marks;
+following ISO convention, a <code>"T"</code> can also be used between the date and time.
+This function does not make any attempt to interpret a time zone in the
+string. It will throw <code>std::invalid_argument</code> if the format is invalid or an
+invalid combination of flags is supplied; behaviour is unspecified if the
+format is correct but the string does not represent a valid date; behaviour is
+undefined if the date is outside the representable range of the system clock.</p>
 </div>
 <div class="defns">
 <ul>

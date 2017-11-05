@@ -61,7 +61,7 @@ void test_core_time_general_operations() {
     TRY(tp = make_date(2000, 1, 2, 3, 4, 5));
     TRY(n1 = int64_t(system_clock::to_time_t(tp)));
     TEST_EQUAL(n1, 946'782'245);
-    TRY(tp = make_date(2000, 1, 2, 3, 4, 5, Zone::local));
+    TRY(tp = make_date(2000, 1, 2, 3, 4, 5, local_zone));
     TRY(n2 = int64_t(system_clock::to_time_t(tp)));
     TEST_COMPARE(std::abs(n2 - n1), <=, 86400);
 
@@ -94,8 +94,8 @@ void test_core_time_format_date() {
     TEST_EQUAL(str, "02/01/2000 03:04");
     TRY(str = format_date(tp, ""));
     TEST_EQUAL(str, "");
-    TRY(tp = make_date(2000, 1, 2, 3, 4, 5, Zone::local));
-    TRY(str = format_date(tp, 0, Zone::local));
+    TRY(tp = make_date(2000, 1, 2, 3, 4, 5, local_zone));
+    TRY(str = format_date(tp, 0, local_zone));
     TEST_EQUAL(str, "2000-01-02 03:04:05");
 
 }
@@ -152,21 +152,21 @@ void test_core_time_parse_date() {
     system_clock::time_point date;
     U8string str;
 
-    TRY(date = parse_date("2017-11-04"));                          TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 00:00:00.000");
-    TRY(date = parse_date("2017 Nov 4"));                          TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 00:00:00.000");
-    TRY(date = parse_date("2017-11-04 12"));                       TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 12:00:00.000");
-    TRY(date = parse_date("2017-11-04 12:34"));                    TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 12:34:00.000");
-    TRY(date = parse_date("2017-11-04 12:34:56"));                 TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 12:34:56.000");
-    TRY(date = parse_date("2017-11-04 12:34:56.789"));             TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 12:34:56.789");
-    TRY(date = parse_date("2017-11-04T12:34:56"));                 TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 12:34:56.000");
-    TRY(date = parse_date("4 Nov 2017", DateOrder::dmy));          TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 00:00:00.000");
-    TRY(date = parse_date("Nov 4 2017", DateOrder::mdy));          TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 00:00:00.000");
-    TRY(date = parse_date("4/11/2017/12/34/56", DateOrder::dmy));  TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 12:34:56.000");
-    TRY(date = parse_date("11/4/2017/12/34/56", DateOrder::mdy));  TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 12:34:56.000");
+    TRY(date = parse_date("2017-11-04"));                     TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 00:00:00.000");
+    TRY(date = parse_date("2017 Nov 4"));                     TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 00:00:00.000");
+    TRY(date = parse_date("2017-11-04 12"));                  TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 12:00:00.000");
+    TRY(date = parse_date("2017-11-04 12:34"));               TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 12:34:00.000");
+    TRY(date = parse_date("2017-11-04 12:34:56"));            TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 12:34:56.000");
+    TRY(date = parse_date("2017-11-04 12:34:56.789"));        TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 12:34:56.789");
+    TRY(date = parse_date("2017-11-04T12:34:56"));            TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 12:34:56.000");
+    TRY(date = parse_date("4 Nov 2017", dmy_order));          TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 00:00:00.000");
+    TRY(date = parse_date("Nov 4 2017", mdy_order));          TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 00:00:00.000");
+    TRY(date = parse_date("4/11/2017/12/34/56", dmy_order));  TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 12:34:56.000");
+    TRY(date = parse_date("11/4/2017/12/34/56", mdy_order));  TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 12:34:56.000");
 
     TEST_THROW(parse_date(""), std::invalid_argument);
     TEST_THROW(parse_date("Nov 4, 2017"), std::invalid_argument);
-    TEST_THROW(parse_date("Nov 2017", DateOrder::mdy), std::invalid_argument);
+    TEST_THROW(parse_date("Nov 2017", mdy_order), std::invalid_argument);
 
 }
 

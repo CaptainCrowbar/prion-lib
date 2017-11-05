@@ -30,24 +30,22 @@ This is the highest resolution clock that can be trusted to be steady. It will
 be `high_resolution_clock` if `high_resolution_clock::is_steady` is true,
 otherwise `steady_clock`.
 
-### Supporting types ###
+### Constants ###
 
-* `enum class` **`DateOrder`**
-    * `DateOrder::`**`ymd`**
-    * `DateOrder::`**`dmy`**
-    * `DateOrder::`**`mdy`**
+* `constexpr uint32_t` **`utc_zone`**
+* `constexpr uint32_t` **`local_zone`**
 
-This is passed to the `parse_date()` function to indicate which order the date
-elements are in.
+One of these is passed to some of the time and date functions to indicate
+whether a broken down date is expressed in UTC or the local time zone. If none
+of these are present, the default is `utc_zone`.
 
-* `enum class` **`Zone`**
-    * `Zone::`**`utc`**
-    * `Zone::`**`local`**
+* `constexpr uint32_t` **`ymd_order`**
+* `constexpr uint32_t` **`dmy_order`**
+* `constexpr uint32_t` **`mdy_order`**
 
-This is passed to some of the time and date functions to indicate whether a
-broken down date is expressed in UTC or the local time zone. For all functions
-that take a `Zone` argument, behaviour is unspecified if the argument is not
-one of these two values.
+One of these is passed to the `parse_date()` function to indicate which order
+the date elements are in. If none of these are present, the default is
+`ymd_order`.
 
 ### General time and date operations ###
 
@@ -57,15 +55,16 @@ one of these two values.
 Convenience functions to convert between a `duration` and a floating point
 number of seconds.
 
-* `system_clock::time_point` **`make_date`**`(int year, int month, int day, int hour = 0, int min = 0, double sec = 0, Zone z = Zone::utc) noexcept`
+* `system_clock::time_point` **`make_date`**`(int year, int month, int day, int hour = 0, int min = 0, double sec = 0, uint32_t flags = utc_zone) noexcept`
 
 Converts a broken down date into a time point. Behaviour if any of the date
-arguments are invalid follows the same rules as `mktime()`.
+arguments are invalid follows the same rules as `mktime()`. This will throw
+`std::invalid_argument` if an invalid combination of flags is passed.
 
 ### Time and date formatting ###
 
-* `U8string` **`format_date`**`(system_clock::time_point tp, int prec = 0, Zone z = Zone::utc)`
-* `U8string` **`format_date`**`(system_clock::time_point tp, const U8string& format, Zone z = Zone::utc)`
+* `U8string` **`format_date`**`(system_clock::time_point tp, int prec = 0, uint32_t flags = utc_zone)`
+* `U8string` **`format_date`**`(system_clock::time_point tp, const U8string& format, uint32_t flags = utc_zone)`
 
 These convert a time point into a broken down date and format it. The first
 version writes the date in ISO 8601 format (`"yyyy-mm-dd hh:mm:ss"`). If
@@ -73,9 +72,12 @@ version writes the date in ISO 8601 format (`"yyyy-mm-dd hh:mm:ss"`). If
 added to the seconds field.
 
 The second version writes the date using the conventions of `strftime()`. This
-will return an empty string if anything goes wrong; there is no way to
-distinguish between a conversion error and a legitimately empty result (this
+will return an empty string if anything goes wrong (there is no way to
+distinguish between a conversion error and a legitimately empty result; this
 is a limitation of `strftime()`).
+
+Both of these will throw `std::invalid_argument` if an invalid combination of
+flags is passed.
 
 For reference, the portable subset of the `strftime()` formatting codes are:
 
@@ -102,20 +104,19 @@ fractions of a second.
 
 ### Time and date parsing ###
 
-* `system_clock::time_point` **`parse_date`**`(const U8string& str, DateOrder order = DateOrder::ymd, Zone z = Zone::utc)`
+* `system_clock::time_point` **`parse_date`**`(const U8string& str, uint32_t flags = utc_zone | ymd_order)`
 
 Parse a date expressed in broken down format (e.g. `"2017-11-04 11:53:00"`).
-Year, month, and day are required; the `order` argument indicates which order
-these are in; the month can be a number, an abbreviation, or a full English
-name (case insensitive). Hours, minutes, seconds, and fractions of a second
-are optional. Fields can be separated with spaces or any ASCII punctuation
-marks; following ISO convention, a `"T"` can also be used between the date and
-time. This function does not make any attempt to interpret a time zone in the
-string. It will throw `std::invalid_argument` if the format is invalid;
-behaviour is unspecified if the format is correct but the string does not
-represent a valid date; behaviour is undefined if the date is outside the
-representable range of the system clock, or either of the order or zone
-arguments is not one of the enumeration values.
+Year, month, and day are required, in the order specified by the `flags`
+argument; the month can be a number, an abbreviation, or a full English name
+(case insensitive). Hours, minutes, seconds, and fractions of a second are
+optional. Fields can be separated with spaces or any ASCII punctuation marks;
+following ISO convention, a `"T"` can also be used between the date and time.
+This function does not make any attempt to interpret a time zone in the
+string. It will throw `std::invalid_argument` if the format is invalid or an
+invalid combination of flags is supplied; behaviour is unspecified if the
+format is correct but the string does not represent a valid date; behaviour is
+undefined if the date is outside the representable range of the system clock.
 
 * `template <typename R, typename P> void` **`parse_time`**`(const U8string& str, duration<R, P>& t)`
 * `template <typename D> D` **`parse_time`**`(const U8string& str)`

@@ -19,8 +19,13 @@ namespace RS {
     using Dyears = std::chrono::duration<double, std::ratio<31557600>>;
     using ReliableClock = std::conditional_t<std::chrono::high_resolution_clock::is_steady, std::chrono::high_resolution_clock, std::chrono::steady_clock>;
 
-    RS_ENUM_CLASS(DateOrder, int, 1, ymd, dmy, mdy);
-    RS_ENUM_CLASS(Zone, int, 1, utc, local);
+    // Constants
+
+    constexpr auto utc_zone    = uint32_t(1) << 0;
+    constexpr auto local_zone  = uint32_t(1) << 1;
+    constexpr auto ymd_order   = uint32_t(1) << 2;
+    constexpr auto dmy_order   = uint32_t(1) << 3;
+    constexpr auto mdy_order   = uint32_t(1) << 4;
 
     // General time and date operations
 
@@ -36,8 +41,11 @@ namespace RS {
         return duration_cast<Dseconds>(d).count();
     }
 
-    inline std::chrono::system_clock::time_point make_date(int year, int month, int day, int hour = 0, int min = 0, double sec = 0, Zone z = Zone::utc) noexcept {
+    inline std::chrono::system_clock::time_point make_date(int year, int month, int day, int hour = 0, int min = 0, double sec = 0, uint32_t flags = utc_zone) noexcept {
         using namespace std::chrono;
+        uint32_t zone = flags & (utc_zone | local_zone);
+        if (ibits(zone) > 1 || flags - zone)
+            throw std::invalid_argument("Invalid date flags: 0x" + hex(flags, 1));
         double isec = 0, fsec = modf(sec, &isec);
         if (fsec < 0) {
             isec -= 1;
@@ -53,7 +61,7 @@ namespace RS {
         stm.tm_year = year - 1900;
         stm.tm_isdst = -1;
         time_t t;
-        if (z == Zone::local)
+        if (zone == local_zone)
             t = mktime(&stm);
         else
             #ifdef _XOPEN_SOURCE
@@ -76,10 +84,15 @@ namespace RS {
     // very long localized date format, but there doesn't seem to be a better
     // solution.
 
-    inline U8string format_date(std::chrono::system_clock::time_point tp, const U8string& format, Zone z = Zone::utc) {
+    inline U8string format_date(std::chrono::system_clock::time_point tp, const U8string& format, uint32_t flags = utc_zone) {
         using namespace std::chrono;
+        uint32_t zone = flags & (utc_zone | local_zone);
+        if (ibits(zone) > 1 || flags - zone)
+            throw std::invalid_argument("Invalid date flags: 0x" + hex(flags, 1));
+        if (format.empty())
+            return {};
         auto t = system_clock::to_time_t(tp);
-        tm stm = z == Zone::local ? *localtime(&t) : *gmtime(&t);
+        tm stm = zone == local_zone ? *localtime(&t) : *gmtime(&t);
         U8string result(std::max(2 * format.size(), size_t(100)), '\0');
         auto rc = strftime(&result[0], result.size(), format.data(), &stm);
         if (rc == 0) {
@@ -91,10 +104,13 @@ namespace RS {
         return result;
     }
 
-    inline U8string format_date(std::chrono::system_clock::time_point tp, int prec = 0, Zone z = Zone::utc) {
+    inline U8string format_date(std::chrono::system_clock::time_point tp, int prec = 0, uint32_t flags = utc_zone) {
         using namespace std::chrono;
         using namespace std::literals;
-        U8string result = format_date(tp, "%Y-%m-%d %H:%M:%S"s, z);
+        uint32_t zone = flags & (utc_zone | local_zone);
+        if (ibits(zone) > 1 || flags - zone)
+            throw std::invalid_argument("Invalid date flags: 0x" + hex(flags, 1));
+        U8string result = format_date(tp, "%Y-%m-%d %H:%M:%S"s, zone);
         if (prec > 0) {
             double sec = to_seconds(tp.time_since_epoch());
             double isec;
@@ -199,18 +215,21 @@ namespace RS {
 
     }
 
-    inline std::chrono::system_clock::time_point parse_date(const U8string& s, DateOrder order = DateOrder::ymd, Zone z = Zone::utc) {
+    inline std::chrono::system_clock::time_point parse_date(const U8string& s, uint32_t flags = utc_zone | ymd_order) {
         using namespace RS_Detail;
         using namespace std::chrono;
+        uint32_t order = flags & (ymd_order | dmy_order | mdy_order);
+        uint32_t zone = flags & (utc_zone | local_zone);
+        if (ibits(order) > 1 || ibits(zone) > 1 || flags - order - zone)
+            throw std::invalid_argument("Invalid date flags: 0x" + hex(flags, 1));
         int year = 0, month = 0, day = 0, hour = 0, min = 0;
         double sec = 0;
         const char* ptr = s.data();
         bool ok = true;
         switch (order) {
-            case DateOrder::ymd:  ok = date_read_number(ptr, year) && date_read_month(ptr, month) && date_read_number(ptr, day); break;
-            case DateOrder::dmy:  ok = date_read_number(ptr, day) && date_read_month(ptr, month) && date_read_number(ptr, year); break;
-            case DateOrder::mdy:  ok = date_read_month(ptr, month) && date_read_number(ptr, day) && date_read_number(ptr, year); break;
-            default:              break;
+            case dmy_order:  ok = date_read_number(ptr, day) && date_read_month(ptr, month) && date_read_number(ptr, year); break;
+            case mdy_order:  ok = date_read_month(ptr, month) && date_read_number(ptr, day) && date_read_number(ptr, year); break;
+            default:         ok = date_read_number(ptr, year) && date_read_month(ptr, month) && date_read_number(ptr, day); break;
         }
         if (! ok)
             throw std::invalid_argument("Invalid date: " + quote(s));
@@ -220,7 +239,7 @@ namespace RS {
         date_read_number(ptr, hour);
         date_read_number(ptr, min);
         date_read_number(ptr, sec);
-        return make_date(year, month, day, hour, min, sec, z);
+        return make_date(year, month, day, hour, min, sec, zone);
     }
 
     template <typename R, typename P>

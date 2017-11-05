@@ -38,12 +38,12 @@ void test_core_time_date_types() {
 
 void test_core_time_general_operations() {
 
-    hours h;
-    minutes m;
-    seconds s;
-    milliseconds ms;
-    system_clock::time_point tp;
-    int64_t n1, n2;
+    hours h = {};
+    minutes m = {};
+    seconds s = {};
+    milliseconds ms = {};
+    system_clock::time_point tp = {};
+    int64_t n1 = 0, n2 = 0;
 
     TRY(from_seconds(7200.0, h));   TEST_EQUAL(h.count(), 2);
     TRY(from_seconds(7200.0, m));   TEST_EQUAL(m.count(), 120);
@@ -69,8 +69,8 @@ void test_core_time_general_operations() {
 
 void test_core_time_format_date() {
 
-    system_clock::time_point tp;
-    system_clock::duration d;
+    system_clock::time_point tp = {};
+    system_clock::duration d = {};
     U8string str;
 
     TRY(tp = make_date(2000, 1, 2, 3, 4, 5));
@@ -149,7 +149,7 @@ void test_core_time_format_time() {
 
 void test_core_time_parse_date() {
 
-    system_clock::time_point date;
+    system_clock::time_point date = {};
     U8string str;
 
     TRY(date = parse_date("2017-11-04"));                     TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 00:00:00.000");
@@ -172,9 +172,9 @@ void test_core_time_parse_date() {
 
 void test_core_time_parse_time() {
 
-    Dseconds dsec;
-    seconds sec;
-    microseconds usec;
+    Dseconds dsec = {};
+    seconds sec = {};
+    microseconds usec = {};
 
     TRY(dsec = parse_time<Dseconds>("0s"));                    TEST_EQUAL(dsec.count(), 0);
     TRY(dsec = parse_time<Dseconds>("42s"));                   TEST_EQUAL(dsec.count(), 42);
@@ -217,12 +217,12 @@ void test_core_time_system_specific_conversions() {
     using IntSec = duration<int64_t>;
     using IntDays = duration<int64_t, std::ratio<86400>>;
 
-    IntMsec ims;
-    IntSec is;
-    IntDays id;
-    Dseconds fs;
-    timespec ts;
-    timeval tv;
+    IntMsec ims = {};
+    IntSec is = {};
+    IntDays id = {};
+    Dseconds fs = {};
+    timespec ts = {};
+    timeval tv = {};
 
     ts = {0, 0};                 TRY(timespec_to_duration(ts, fs));   TEST_EQUAL(fs.count(), 0);
     ts = {0, 0};                 TRY(timespec_to_duration(ts, id));   TEST_EQUAL(id.count(), 0);
@@ -288,9 +288,9 @@ void test_core_time_system_specific_conversions() {
         static constexpr int64_t freq = 10'000'000ll;
 
         int64_t n = 0;
-        FILETIME ft, ft2;
-        system_clock::time_point tp, tp2;
-        system_clock::duration d;
+        FILETIME ft = {}, ft2 = {};
+        system_clock::time_point tp = {}, tp2 = {};
+        system_clock::duration d = {};
 
         n = epoch * freq;
         ft = {uint32_t(n), uint32_t(n >> 32)};

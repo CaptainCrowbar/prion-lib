@@ -55,7 +55,7 @@ the date elements are in. If none of these are present, the default is
 Convenience functions to convert between a `duration` and a floating point
 number of seconds.
 
-* `system_clock::time_point` **`make_date`**`(int year, int month, int day, int hour = 0, int min = 0, double sec = 0, uint32_t flags = utc_zone) noexcept`
+* `system_clock::time_point` **`make_date`**`(int year, int month, int day, int hour = 0, int min = 0, double sec = 0, uint32_t flags = utc_zone)`
 
 Converts a broken down date into a time point. Behaviour if any of the date
 arguments are invalid follows the same rules as `mktime()`. This will throw

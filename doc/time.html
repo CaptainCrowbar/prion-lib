@@ -86,7 +86,7 @@ number of seconds.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>system_clock::time_point</code> <strong><code>make_date</code></strong><code>(int year, int month, int day, int hour = 0, int min = 0, double sec = 0, uint32_t flags = utc_zone) noexcept</code></li>
+<li><code>system_clock::time_point</code> <strong><code>make_date</code></strong><code>(int year, int month, int day, int hour = 0, int min = 0, double sec = 0, uint32_t flags = utc_zone)</code></li>
 </ul>
 <p>Converts a broken down date into a time point. Behaviour if any of the date
 arguments are invalid follows the same rules as <code>mktime()</code>. This will throw

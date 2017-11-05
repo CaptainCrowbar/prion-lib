@@ -41,7 +41,7 @@ namespace RS {
         return duration_cast<Dseconds>(d).count();
     }
 
-    inline std::chrono::system_clock::time_point make_date(int year, int month, int day, int hour = 0, int min = 0, double sec = 0, uint32_t flags = utc_zone) noexcept {
+    inline std::chrono::system_clock::time_point make_date(int year, int month, int day, int hour = 0, int min = 0, double sec = 0, uint32_t flags = utc_zone) {
         using namespace std::chrono;
         uint32_t zone = flags & (utc_zone | local_zone);
         if (ibits(zone) > 1 || flags - zone)

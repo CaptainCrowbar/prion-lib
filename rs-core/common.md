@@ -704,25 +704,6 @@ Bitwise rotate left or right. The bit count is reduced modulo the number of
 bits in `T`; a negative shift in one direction is treated as a positive shift
 in the other.
 
-## Debugging utilities ##
-
-### Logging ###
-
-* `void` **`logx`**`(const U8string& msg) noexcept`
-* `void` **`logx`**`(const char* msg) noexcept`
-* `template <typename... Args> void` **`logx`**`(Args... args) noexcept`
-
-These write a message to standard output, followed by a line feed and an
-output flush. If multiple arguments are supplied, they are delimited with a
-space.
-
-This is intended for use in multithreaded code that needs coherent logging
-output. A private mutex is used to ensure that messages from different threads
-are not interleaved. Output from different threads will be given different
-colours, chosen at random based on a hash of the thread ID. Because these are
-intended only for debugging the code around them, any exceptions thrown by
-their internal workings are silently ignored.
-
 ## Functional utilities ##
 
 ### Function traits ###
@@ -908,3 +889,22 @@ newly constructed `ScopedTransaction`.
 * `template <typename T> auto` **`make_lock`**`(T& t) { return std::unique_lock<T>(t); }`
 
 Simple wrapper function to create a mutex lock.
+
+## I/O utilities ##
+
+### Logging ###
+
+* `void` **`logx`**`(const U8string& msg) noexcept`
+* `void` **`logx`**`(const char* msg) noexcept`
+* `template <typename... Args> void` **`logx`**`(Args... args) noexcept`
+
+These write a message to standard output, followed by a line feed and an
+output flush. If multiple arguments are supplied, they are delimited with a
+space.
+
+This is intended for use in multithreaded code that needs coherent logging
+output. A private mutex is used to ensure that messages from different threads
+are not interleaved. Output from different threads will be given different
+colours, chosen at random based on a hash of the thread ID. Because these are
+intended only for debugging the code around them, any exceptions thrown by
+their internal workings are silently ignored.

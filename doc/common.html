@@ -48,16 +48,16 @@
 <li><a href="#bitwise-operations">Bitwise operations</a></li>
 </ul>
 </li>
-<li><a href="#debugging-utilities">Debugging utilities</a><ul>
-<li><a href="#logging">Logging</a></li>
-</ul>
-</li>
 <li><a href="#functional-utilities">Functional utilities</a><ul>
 <li><a href="#function-traits">Function traits</a></li>
 <li><a href="#function-operations">Function operations</a></li>
 <li><a href="#generic-function-objects">Generic function objects</a></li>
 <li><a href="#hash-functions">Hash functions</a></li>
 <li><a href="#scope-guards">Scope guards</a></li>
+</ul>
+</li>
+<li><a href="#io-utilities">I/O utilities</a><ul>
+<li><a href="#logging">Logging</a></li>
 </ul>
 </li>
 </ul>
@@ -912,24 +912,6 @@ Returns zero if the argument is not an ASCII letter.</p>
 bits in <code>T</code>; a negative shift in one direction is treated as a positive shift
 in the other.</p>
 </div>
-<h2 id="debugging-utilities">Debugging utilities</h2>
-<h3 id="logging">Logging</h3>
-<div class="defns">
-<ul>
-<li><code>void</code> <strong><code>logx</code></strong><code>(const U8string&amp; msg) noexcept</code></li>
-<li><code>void</code> <strong><code>logx</code></strong><code>(const char* msg) noexcept</code></li>
-<li><code>template &lt;typename... Args&gt; void</code> <strong><code>logx</code></strong><code>(Args... args) noexcept</code></li>
-</ul>
-<p>These write a message to standard output, followed by a line feed and an
-output flush. If multiple arguments are supplied, they are delimited with a
-space.</p>
-<p>This is intended for use in multithreaded code that needs coherent logging
-output. A private mutex is used to ensure that messages from different threads
-are not interleaved. Output from different threads will be given different
-colours, chosen at random based on a hash of the thread ID. Because these are
-intended only for debugging the code around them, any exceptions thrown by
-their internal workings are silently ignored.</p>
-</div>
 <h2 id="functional-utilities">Functional utilities</h2>
 <h3 id="function-traits">Function traits</h3>
 <div class="defns">
@@ -1152,5 +1134,23 @@ newly constructed <code>ScopedTransaction</code>.</p>
 <ul>
 <li><code>template &lt;typename T&gt; auto</code> <strong><code>make_lock</code></strong><code>(T&amp; t) { return std::unique_lock&lt;T&gt;(t); }</code></li>
 </ul>
-<p>Simple wrapper function to create a mutex lock.</p></body>
+<p>Simple wrapper function to create a mutex lock.</p>
+</div>
+<h2 id="io-utilities">I/O utilities</h2>
+<h3 id="logging">Logging</h3>
+<div class="defns">
+<ul>
+<li><code>void</code> <strong><code>logx</code></strong><code>(const U8string&amp; msg) noexcept</code></li>
+<li><code>void</code> <strong><code>logx</code></strong><code>(const char* msg) noexcept</code></li>
+<li><code>template &lt;typename... Args&gt; void</code> <strong><code>logx</code></strong><code>(Args... args) noexcept</code></li>
+</ul>
+<p>These write a message to standard output, followed by a line feed and an
+output flush. If multiple arguments are supplied, they are delimited with a
+space.</p>
+<p>This is intended for use in multithreaded code that needs coherent logging
+output. A private mutex is used to ensure that messages from different threads
+are not interleaved. Output from different threads will be given different
+colours, chosen at random based on a hash of the thread ID. Because these are
+intended only for debugging the code around them, any exceptions thrown by
+their internal workings are silently ignored.</p></body>
 </html>

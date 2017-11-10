@@ -17,12 +17,10 @@
 <li><a href="#binary-and-text-encodings">Binary and Text Encodings</a><ul>
 <li><a href="#contents">Contents</a></li>
 <li><a href="#encoding-base-class">Encoding base class</a></li>
-<li><a href="#escape-encoding">Escape encoding</a></li>
-<li><a href="#quote-encoding">Quote encoding</a></li>
+<li><a href="#character-escape-encodings">Character escape encodings</a></li>
 <li><a href="#hex-encoding">Hex encoding</a></li>
 <li><a href="#base-64-encoding">Base 64 encoding</a></li>
-<li><a href="#ascii85-encoding">Ascii85 encoding</a></li>
-<li><a href="#z85-encoding">Z85 encoding</a></li>
+<li><a href="#base-85-encodings">Base 85 encodings</a></li>
 </ul>
 </li>
 </ul>
@@ -58,23 +56,18 @@ may be less than <code>len</code> if the encoded format includes a termination m
 <p>Behaviour of <code>encode_bytes()</code> and <code>decode_bytes()</code> is undefined if <code>src</code> is
 null.</p>
 </div>
-<h2 id="escape-encoding">Escape encoding</h2>
+<h2 id="character-escape-encodings">Character escape encodings</h2>
 <div class="defns">
 <ul>
 <li><code>class</code> <strong><code>EscapeEncoding</code></strong><code>: public Encoding</code></li>
-</ul>
-<p>Bytes outside the printable ASCII range (32-126) are represented by escape
-codes; those inside the range are copied unchanged, apart from the backslash.</p>
-</div>
-<h2 id="quote-encoding">Quote encoding</h2>
-<div class="defns">
-<ul>
 <li><code>class</code> <strong><code>QuoteEncoding</code></strong><code>: public Encoding</code></li>
 </ul>
-<p>The same encoding as <code>EscapeEncoding</code>, with the output enclosed in quote marks
-(and embedded quotes also escaped). The decoder will do nothing if the input
-does not start with a quote; otherwise, decoding will stop with the next
-unescaped quote.</p>
+<p>Bytes outside the printable ASCII range (32-126) are represented by escape
+codes; those inside the range are copied unchanged, apart from the backslash.
+<code>QuoteEncoding</code> gives the same encoding as <code>EscapeEncoding</code>, except that the
+output is enclosed in quote marks, and embedded quotes are also escaped. The
+quote decoder will do nothing if the input does not start with a quote;
+otherwise, decoding will stop with the next unescaped quote.</p>
 </div>
 <h2 id="hex-encoding">Hex encoding</h2>
 <div class="defns">
@@ -95,21 +88,14 @@ for 63, and will work with or without padding characters at the end; embedded
 padding characters, resulting from concatenation of multiple encoded strings,
 will be handled correctly, and will not be treated as a terminator.</p>
 </div>
-<h2 id="ascii85-encoding">Ascii85 encoding</h2>
+<h2 id="base-85-encodings">Base 85 encodings</h2>
 <div class="defns">
 <ul>
 <li><code>class</code> <strong><code>Ascii85Encoding</code></strong><code>: public Encoding</code></li>
-</ul>
-<p>Adobe variant of <a href="https://en.wikipedia.org/wiki/Ascii85">base 85 encoding</a>.
-Leading <code>"&lt;~"</code> and trailing <code>"~&gt;"</code> will be generated when encoding, and
-recognized but not required when decoding.</p>
-</div>
-<h2 id="z85-encoding">Z85 encoding</h2>
-<div class="defns">
-<ul>
 <li><code>class</code> <strong><code>Z85Encoding</code></strong><code>: public Encoding</code></li>
 </ul>
-<p>ZeroMQ variant of <a href="https://en.wikipedia.org/wiki/Ascii85">base 85 encoding</a>.
-Leading <code>"&lt;~"</code> and trailing <code>"~&gt;"</code> will be generated when encoding, and
-recognized but not required when decoding.</p></body>
+<p>The Adobe and ZeroMQ variants of <a href="https://en.wikipedia.org/wiki/Ascii85">base 85
+encoding</a>. Leading <code>"&lt;~"</code> and trailing
+<code>"~&gt;"</code> will be generated when encoding, and recognized but not required when
+decoding.</p></body>
 </html>

@@ -39,21 +39,17 @@ may be less than `len` if the encoded format includes a termination marker.
 Behaviour of `encode_bytes()` and `decode_bytes()` is undefined if `src` is
 null.
 
-## Escape encoding ##
+## Character escape encodings ##
 
 * `class` **`EscapeEncoding`**`: public Encoding`
+* `class` **`QuoteEncoding`**`: public Encoding`
 
 Bytes outside the printable ASCII range (32-126) are represented by escape
 codes; those inside the range are copied unchanged, apart from the backslash.
-
-## Quote encoding ##
-
-* `class` **`QuoteEncoding`**`: public Encoding`
-
-The same encoding as `EscapeEncoding`, with the output enclosed in quote marks
-(and embedded quotes also escaped). The decoder will do nothing if the input
-does not start with a quote; otherwise, decoding will stop with the next
-unescaped quote.
+`QuoteEncoding` gives the same encoding as `EscapeEncoding`, except that the
+output is enclosed in quote marks, and embedded quotes are also escaped. The
+quote decoder will do nothing if the input does not start with a quote;
+otherwise, decoding will stop with the next unescaped quote.
 
 ## Hex encoding ##
 
@@ -72,18 +68,12 @@ for 63, and will work with or without padding characters at the end; embedded
 padding characters, resulting from concatenation of multiple encoded strings,
 will be handled correctly, and will not be treated as a terminator.
 
-## Ascii85 encoding ##
+## Base 85 encodings ##
 
 * `class` **`Ascii85Encoding`**`: public Encoding`
-
-Adobe variant of [base 85 encoding](https://en.wikipedia.org/wiki/Ascii85).
-Leading `"<~"` and trailing `"~>"` will be generated when encoding, and
-recognized but not required when decoding.
-
-## Z85 encoding ##
-
 * `class` **`Z85Encoding`**`: public Encoding`
 
-ZeroMQ variant of [base 85 encoding](https://en.wikipedia.org/wiki/Ascii85).
-Leading `"<~"` and trailing `"~>"` will be generated when encoding, and
-recognized but not required when decoding.
+The Adobe and ZeroMQ variants of [base 85
+encoding](https://en.wikipedia.org/wiki/Ascii85). Leading `"<~"` and trailing
+`"~>"` will be generated when encoding, and recognized but not required when
+decoding.

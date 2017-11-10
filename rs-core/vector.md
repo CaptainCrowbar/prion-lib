@@ -374,9 +374,9 @@ Hash function.
 A quaternion type based on the scalar type `T`, which must be a floating point
 arithmetic type.
 
-* `using` **`FloatQ`** `= Quaternion<float>`
-* `using` **`DoubleQ`** `= Quaternion<double>`
-* `using` **`LdoubleQ`** `= Quaternion<long double>`
+* `using` **`Qfloat`** `= Quaternion<float>`
+* `using` **`Qdouble`** `= Quaternion<double>`
+* `using` **`Qldouble`** `= Quaternion<long double>`
 
 Named instantiations.
 

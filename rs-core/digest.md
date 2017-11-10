@@ -72,19 +72,19 @@ TODO - Not fully implemented yet, multiple calls to operator() will not work
 ### SHA1 hash ###
 
 * `class` **`Sha1`**
-    * `using Md5::`**`result_type`** `= std::array<uint8_t, 20>`
+    * `using Sha1::`**`result_type`** `= std::array<uint8_t, 20>`
     * `static constexpr size_t Sha1::`**`result_size`** `= 20`
 
 ### SHA256 hash ###
 
 * `class` **`Sha256`**
-    * `using Md5::`**`result_type`** `= std::array<uint8_t, 32>`
+    * `using Sha256::`**`result_type`** `= std::array<uint8_t, 32>`
     * `static constexpr size_t Sha256::`**`result_size`** `= 32`
 
 ### SHA512 hash ###
 
 * `class` **`Sha512`**
-    * `using Md5::`**`result_type`** `= std::array<uint8_t, 64>`
+    * `using Sha512::`**`result_type`** `= std::array<uint8_t, 64>`
     * `static constexpr size_t Sha512::`**`result_size`** `= 64`
 
 ## Utility functions ##

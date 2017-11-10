@@ -110,10 +110,9 @@ a space between each pair of arguments, followed by a line feed.
 Error handling functions. The `error()` function returns any pending error
 status; `check()` throws `std::system_error` if an error is set. An optional
 argument can be added to `check()` to supply additional information for the
-exception's error message, such as a file name. Once an error happens, the
-error status remains set until `clear_error()` is called, although the actual
-error code may be changed if a subsequent operation generates a different
-error.
+exception's error message, such as a file name. The error status set by an I/O
+operation is retained only until the next I/O operation, which may change the
+error status or clear it, or `clear_error()` is called.
 
 * `Irange<line_iterator> IO::`**`lines`**`()`
 

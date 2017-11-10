@@ -84,6 +84,7 @@ all streams (it is not usually possible to seek on standard input or output).
 * `virtual size_t IO::`**`write`**`(const void* ptr, size_t len)`
 * `virtual void IO::`**`write_n`**`(size_t n, char c)`
 * `virtual void IO::`**`putc`**`(char c)`
+* `void IO::`**`write_line`**`()`
 * `void IO::`**`write_line`**`(const std::string& str)`
 * `size_t IO::`**`write_str`**`(const std::string& str)`
 * `template <typename... Args> void IO::`**`format`**`(const U8string& pattern, const Args&... args)`
@@ -98,10 +99,11 @@ The `putc()` function writes one byte.
 The `write_str()` function calls `write()` with the string contents, repeating
 the call if an incomplete write occurs but is not reported as an error;
 `write_line()` does the same thing, but will add a line feed if the string did
-not already end with one. The `format()` function calls `fmt(pattern,args...)`
-and writes the resulting string to the output stream. The `print()` function
-formats each argument using `to_str()`, writing them to the output stream with
-a space between each pair of arguments, followed by a line feed.
+not already end with one (the empty version of `write_line()` simply writes a
+line feed). The `format()` function calls `fmt(pattern,args...)` and writes
+the resulting string to the output stream. The `print()` function formats each
+argument using `to_str()`, writing them to the output stream with a space
+between each pair of arguments, followed by a line feed.
 
 * `void IO::`**`check`**`(const U8string& detail = "") const`
 * `void IO::`**`clear_error`**`() noexcept`

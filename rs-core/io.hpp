@@ -69,6 +69,7 @@ namespace RS {
         std::string read_all();
         size_t read_n(std::string& s, size_t maxlen = 1024);
         std::string read_str(size_t maxlen);
+        void write_line() { putc('\n'); }
         void write_line(const std::string& str);
         size_t write_str(const std::string& str);
     protected:
@@ -147,7 +148,7 @@ namespace RS {
 
         inline void IO::write_line(const std::string& str) {
             if (str.empty())
-                write_str("\n");
+                putc('\n');
             else if (str.back() == '\n')
                 write_str(str);
             else

@@ -10,32 +10,6 @@ namespace RS {
 
     // UUID
 
-    namespace RS_Detail {
-
-        inline int decode_hex_byte(U8string::const_iterator& i, U8string::const_iterator end) {
-            auto j = i;
-            if (end - i >= 2 && j[0] == '0' && (j[1] == 'X' || j[1] == 'x'))
-                j += 2;
-            if (end - j < 2)
-                return -1;
-            int n = 0;
-            for (auto k = j + 2; j != k; ++j) {
-                n <<= 4;
-                if (*j >= '0' && *j <= '9')
-                    n += *j - '0';
-                else if (*j >= 'A' && *j <= 'F')
-                    n += *j - 'A' + 10;
-                else if (*j >= 'a' && *j <= 'f')
-                    n += *j - 'a' + 10;
-                else
-                    return -1;
-            }
-            i = j;
-            return n;
-        }
-
-    }
-
     class Uuid:
     public LessThanComparable<Uuid> {
     public:
@@ -43,10 +17,7 @@ namespace RS {
         Uuid(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint8_t e, uint8_t f, uint8_t g, uint8_t h,
             uint8_t i, uint8_t j, uint8_t k, uint8_t l, uint8_t m, uint8_t n, uint8_t o, uint8_t p) noexcept:
             bytes{a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p} {}
-        Uuid(uint32_t abcd, uint16_t ef, uint16_t gh, uint8_t i, uint8_t j, uint8_t k, uint8_t l, uint8_t m, uint8_t n, uint8_t o, uint8_t p) noexcept:
-            bytes{uint8_t((abcd >> 24) & 0xff), uint8_t((abcd >> 16) & 0xff), uint8_t((abcd >> 8) & 0xff), uint8_t(abcd & 0xff),
-                uint8_t((ef >> 8) & 0xff), uint8_t(ef & 0xff), uint8_t((gh >> 8) & 0xff), uint8_t(gh & 0xff), i, j, k, l, m, n, o, p} {}
-        explicit Uuid(const void* ptr, size_t n) noexcept;
+        Uuid(const void* ptr, size_t n) noexcept;
         explicit Uuid(const U8string& s);
         uint8_t& operator[](size_t i) noexcept { return bytes[i]; }
         const uint8_t& operator[](size_t i) const noexcept { return bytes[i]; }
@@ -55,11 +26,13 @@ namespace RS {
         uint8_t* end() noexcept { return bytes + 16; }
         const uint8_t* end() const noexcept { return bytes + 16; }
         size_t hash() const noexcept { return djb2a(bytes, 16); }
+        size_t size() const noexcept { return 16; }
         U8string str() const;
         friend bool operator==(const Uuid& lhs, const Uuid& rhs) noexcept { return memcmp(lhs.bytes, rhs.bytes, 16) == 0; }
         friend bool operator<(const Uuid& lhs, const Uuid& rhs) noexcept { return memcmp(lhs.bytes, rhs.bytes, 16) == -1; }
     private:
         uint8_t bytes[16];
+        static int decode_hex_byte(U8string::const_iterator& i, U8string::const_iterator end) noexcept;
         static bool is_alnum(char c) noexcept { return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'); }
         static bool is_xdigit(char c) noexcept { return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f'); }
     };
@@ -83,7 +56,7 @@ namespace RS {
             i = std::find_if(i, ends, is_xdigit);
             if (i == ends)
                 break;
-            rc = RS_Detail::decode_hex_byte(i, ends);
+            rc = decode_hex_byte(i, ends);
             if (rc == -1)
                 break;
             *j++ = uint8_t(rc);
@@ -111,6 +84,28 @@ namespace RS {
         for (; i < 16; ++i)
             RS_Detail::append_hex_byte(bytes[i], s);
         return s;
+    }
+
+    inline int Uuid::decode_hex_byte(U8string::const_iterator& i, U8string::const_iterator end) noexcept {
+        auto j = i;
+        if (end - i >= 2 && j[0] == '0' && (j[1] == 'X' || j[1] == 'x'))
+            j += 2;
+        if (end - j < 2)
+            return -1;
+        int n = 0;
+        for (auto k = j + 2; j != k; ++j) {
+            n <<= 4;
+            if (*j >= '0' && *j <= '9')
+                n += *j - '0';
+            else if (*j >= 'A' && *j <= 'F')
+                n += *j - 'A' + 10;
+            else if (*j >= 'a' && *j <= 'f')
+                n += *j - 'a' + 10;
+            else
+                return -1;
+        }
+        i = j;
+        return n;
     }
 
     inline std::ostream& operator<<(std::ostream& o, const Uuid& u) { return o << u.str(); }

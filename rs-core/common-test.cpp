@@ -549,6 +549,7 @@ void test_core_common_version_number() {
     TEST_EQUAL(v.minor(), 0);
     TEST_EQUAL(v.patch(), 0);
     TEST_EQUAL(v.suffix(), "");
+    TEST_EQUAL(v.size(), 1);
     TEST_EQUAL(v.str(), "0.0");
     TEST_EQUAL(v.str(0), "");
     TEST_EQUAL(v.str(1), "0");
@@ -565,6 +566,7 @@ void test_core_common_version_number() {
     TEST_EQUAL(v.minor(), 0);
     TEST_EQUAL(v.patch(), 0);
     TEST_EQUAL(v.suffix(), "");
+    TEST_EQUAL(v.size(), 1);
     TEST_EQUAL(v.str(), "42.0");
     TEST_EQUAL(v.to32(), 0x2a000000);
 
@@ -576,6 +578,7 @@ void test_core_common_version_number() {
     TEST_EQUAL(v.minor(), 0);
     TEST_EQUAL(v.patch(), 0);
     TEST_EQUAL(v.suffix(), "beta");
+    TEST_EQUAL(v.size(), 1);
     TEST_EQUAL(v.str(), "42.0beta");
     TEST_EQUAL(v.to32(), 0x2a000000);
 
@@ -587,6 +590,7 @@ void test_core_common_version_number() {
     TEST_EQUAL(v.minor(), 2);
     TEST_EQUAL(v.patch(), 3);
     TEST_EQUAL(v.suffix(), "");
+    TEST_EQUAL(v.size(), 3);
     TEST_EQUAL(v.str(), "1.2.3");
     TEST_EQUAL(v.str(0), "1.2.3");
     TEST_EQUAL(v.str(1), "1.2.3");
@@ -603,6 +607,7 @@ void test_core_common_version_number() {
     TEST_EQUAL(v.minor(), 2);
     TEST_EQUAL(v.patch(), 3);
     TEST_EQUAL(v.suffix(), "beta");
+    TEST_EQUAL(v.size(), 3);
     TEST_EQUAL(v.str(), "1.2.3beta");
     TEST_EQUAL(v.str(0), "1.2.3beta");
     TEST_EQUAL(v.str(1), "1.2.3beta");
@@ -620,6 +625,7 @@ void test_core_common_version_number() {
     TEST_EQUAL(v.minor(), 52);
     TEST_EQUAL(v.patch(), 86);
     TEST_EQUAL(v.suffix(), "");
+    TEST_EQUAL(v.size(), 4);
     TEST_EQUAL(v.str(), "18.52.86.120");
     TEST_EQUAL(v.to32(), 0x12345678);
 
@@ -631,6 +637,7 @@ void test_core_common_version_number() {
     TEST_EQUAL(v.minor(), 0);
     TEST_EQUAL(v.patch(), 0);
     TEST_EQUAL(v.suffix(), "");
+    TEST_EQUAL(v.size(), 1);
     TEST_EQUAL(v.str(), "0.0");
     TEST_EQUAL(v.to32(), 0);
 
@@ -642,6 +649,7 @@ void test_core_common_version_number() {
     TEST_EQUAL(v.minor(), 2);
     TEST_EQUAL(v.patch(), 3);
     TEST_EQUAL(v.suffix(), "");
+    TEST_EQUAL(v.size(), 3);
     TEST_EQUAL(v.str(), "1.2.3");
     TEST_EQUAL(v.to32(), 0x01020300);
 
@@ -653,6 +661,7 @@ void test_core_common_version_number() {
     TEST_EQUAL(v.minor(), 2);
     TEST_EQUAL(v.patch(), 3);
     TEST_EQUAL(v.suffix(), "beta");
+    TEST_EQUAL(v.size(), 3);
     TEST_EQUAL(v.str(), "1.2.3beta");
     TEST_EQUAL(v.to32(), 0x01020300);
 
@@ -663,6 +672,7 @@ void test_core_common_version_number() {
     TEST_EQUAL(v.major(), 0);
     TEST_EQUAL(v.minor(), 0);
     TEST_EQUAL(v.patch(), 0);
+    TEST_EQUAL(v.size(), 1);
     TEST_EQUAL(v.suffix(), "beta");
     TEST_EQUAL(v.str(), "0.0beta");
     TEST_EQUAL(v.to32(), 0);

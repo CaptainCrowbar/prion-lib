@@ -1753,14 +1753,13 @@ namespace RS {
         unsigned major() const noexcept { return (*this)[0]; }
         unsigned minor() const noexcept { return (*this)[1]; }
         unsigned patch() const noexcept { return (*this)[2]; }
+        size_t size() const noexcept { return std::max(ver.size(), size_t(1)); }
         std::string str(size_t min_elements = 2) const;
         std::string suffix() const { return suf; }
         uint32_t to32() const noexcept;
         static Version from32(uint32_t n) noexcept;
-        friend bool operator==(const Version& lhs, const Version& rhs) noexcept
-            { return lhs.ver == rhs.ver && lhs.suf == rhs.suf; }
-        friend bool operator<(const Version& lhs, const Version& rhs) noexcept
-            { int c = compare_3way(lhs.ver, rhs.ver); return c == 0 ? lhs.suf < rhs.suf : c == -1; }
+        friend bool operator==(const Version& lhs, const Version& rhs) noexcept { return lhs.ver == rhs.ver && lhs.suf == rhs.suf; }
+        friend bool operator<(const Version& lhs, const Version& rhs) noexcept { int c = compare_3way(lhs.ver, rhs.ver); return c == 0 ? lhs.suf < rhs.suf : c == -1; }
     private:
         std::vector<unsigned> ver;
         U8string suf;

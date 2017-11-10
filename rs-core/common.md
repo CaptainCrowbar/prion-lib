@@ -323,6 +323,7 @@ conversion.
     * `unsigned Version::`**`major`**`() const noexcept`
     * `unsigned Version::`**`minor`**`() const noexcept`
     * `unsigned Version::`**`patch`**`() const noexcept`
+    * `size_t Version::`**`size`**`() const noexcept`
     * `string Version::`**`str`**`(size_t min_elements = 2) const`
     * `string Version::`**`suffix`**`() const`
     * `uint32_t Version::`**`to32`**`() const noexcept`
@@ -347,6 +348,9 @@ The indexing operator returns the requested element; it will return zero if
 the index is out of range for the stored array. The `major()`, `minor()`, and
 `patch()` functions return elements 0, 1, and 2. The `suffix()` function
 returns the trailing string element.
+
+The `size()` function returns the number of numeric elements in the version
+number. This will always return at least 1.
 
 The `str()` function (and the output operator) formats the version number in
 the conventional form; a minimum number of elements can be requested. The

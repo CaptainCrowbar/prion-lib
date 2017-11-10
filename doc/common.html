@@ -461,6 +461,7 @@ conversion.</p>
 <li><code>unsigned Version::</code><strong><code>major</code></strong><code>() const noexcept</code></li>
 <li><code>unsigned Version::</code><strong><code>minor</code></strong><code>() const noexcept</code></li>
 <li><code>unsigned Version::</code><strong><code>patch</code></strong><code>() const noexcept</code></li>
+<li><code>size_t Version::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
 <li><code>string Version::</code><strong><code>str</code></strong><code>(size_t min_elements = 2) const</code></li>
 <li><code>string Version::</code><strong><code>suffix</code></strong><code>() const</code></li>
 <li><code>uint32_t Version::</code><strong><code>to32</code></strong><code>() const noexcept</code></li>
@@ -486,6 +487,8 @@ int</code>.</p>
 the index is out of range for the stored array. The <code>major()</code>, <code>minor()</code>, and
 <code>patch()</code> functions return elements 0, 1, and 2. The <code>suffix()</code> function
 returns the trailing string element.</p>
+<p>The <code>size()</code> function returns the number of numeric elements in the version
+number. This will always return at least 1.</p>
 <p>The <code>str()</code> function (and the output operator) formats the version number in
 the conventional form; a minimum number of elements can be requested. The
 <code>to32()</code> and <code>from32()</code> functions pack or unpack the version into a 32 bit

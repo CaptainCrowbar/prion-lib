@@ -27,8 +27,6 @@ extern void test_core_algorithm_find_optimum();
 extern void test_core_algorithm_paired_for_each();
 extern void test_core_algorithm_paired_sort();
 extern void test_core_algorithm_paired_transform();
-extern void test_core_algorithm_topological_order();
-extern void test_core_algorithm_reverse_topological_order();
 extern void test_core_array_map_class();
 extern void test_core_array_map_set();
 extern void test_core_blob_class();
@@ -207,6 +205,8 @@ extern void test_core_time_format_time();
 extern void test_core_time_parse_date();
 extern void test_core_time_parse_time();
 extern void test_core_time_system_specific_conversions();
+extern void test_core_topological_order_algorithm();
+extern void test_core_topological_order_reverse();
 extern void test_core_uuid_class();
 extern void test_core_variant_types();
 extern void test_core_variant_behaviour();
@@ -255,8 +255,6 @@ int main() {
         { "core/algorithm/paired-for-each", test_core_algorithm_paired_for_each },
         { "core/algorithm/paired-sort", test_core_algorithm_paired_sort },
         { "core/algorithm/paired-transform", test_core_algorithm_paired_transform },
-        { "core/algorithm/topological-order", test_core_algorithm_topological_order },
-        { "core/algorithm/reverse-topological-order", test_core_algorithm_reverse_topological_order },
         { "core/array-map/class", test_core_array_map_class },
         { "core/array-map/set", test_core_array_map_set },
         { "core/blob/class", test_core_blob_class },
@@ -435,6 +433,8 @@ int main() {
         { "core/time/parse-date", test_core_time_parse_date },
         { "core/time/parse-time", test_core_time_parse_time },
         { "core/time/system-specific-conversions", test_core_time_system_specific_conversions },
+        { "core/topological-order/algorithm", test_core_topological_order_algorithm },
+        { "core/topological-order/reverse", test_core_topological_order_reverse },
         { "core/uuid/class", test_core_uuid_class },
         { "core/variant/types", test_core_variant_types },
         { "core/variant/behaviour", test_core_variant_behaviour },

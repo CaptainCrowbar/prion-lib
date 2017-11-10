@@ -21,6 +21,7 @@
     * [`"rs-core/index-table.hpp"`](index-table.html) - Multi-index map
     * [`"rs-core/scale-map.hpp"`](scale-map.html) - Interpolating associative array
     * [`"rs-core/stack.hpp"`](stack.html) - Deterministic stack
+    * [`"rs-core/topological-order.hpp"`](topological-order.html) - Topological order
 * _Functional programming_
     * [`"rs-core/algorithm.hpp"`](algorithm.html) -- Algorithms
     * [`"rs-core/cache.hpp"`](cache.html) -- Function memoization

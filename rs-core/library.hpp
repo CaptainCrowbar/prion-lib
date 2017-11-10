@@ -30,6 +30,7 @@
 #include "rs-core/table.hpp"
 #include "rs-core/terminal.hpp"
 #include "rs-core/time.hpp"
+#include "rs-core/topological-order.hpp"
 #include "rs-core/unit-test.hpp"
 #include "rs-core/uuid.hpp"
 #include "rs-core/variant.hpp"

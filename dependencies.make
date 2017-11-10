@@ -28,6 +28,7 @@ $(BUILD)/string-test.o: rs-core/string-test.cpp rs-core/common.hpp rs-core/strin
 $(BUILD)/table-test.o: rs-core/table-test.cpp rs-core/common.hpp rs-core/string.hpp rs-core/table.hpp rs-core/unit-test.hpp
 $(BUILD)/terminal-test.o: rs-core/terminal-test.cpp rs-core/common.hpp rs-core/file.hpp rs-core/float.hpp rs-core/io.hpp rs-core/string.hpp rs-core/terminal.hpp rs-core/time.hpp rs-core/unit-test.hpp rs-core/vector.hpp
 $(BUILD)/time-test.o: rs-core/time-test.cpp rs-core/common.hpp rs-core/string.hpp rs-core/time.hpp rs-core/unit-test.hpp
+$(BUILD)/topological-order-test.o: rs-core/topological-order-test.cpp rs-core/common.hpp rs-core/string.hpp rs-core/topological-order.hpp rs-core/unit-test.hpp
 $(BUILD)/unit-test.o: rs-core/unit-test.cpp rs-core/common.hpp rs-core/unit-test.hpp
 $(BUILD)/uuid-test.o: rs-core/uuid-test.cpp rs-core/common.hpp rs-core/float.hpp rs-core/random.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/uuid.hpp rs-core/vector.hpp
 $(BUILD)/variant-test.o: rs-core/variant-test.cpp rs-core/common.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/variant.hpp

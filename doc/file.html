@@ -127,6 +127,16 @@ delimiter.</p>
 </div>
 <div class="defns">
 <ul>
+<li><code>File File::</code><strong><code>change_ext</code></strong><code>(const std::string&amp; new_ext) const</code></li>
+</ul>
+<p>Return a copy of the file name but with a new extension replacing the old one.
+If the original file had no extension, the new one will simply be appended to
+it. The new extension may be empty; otherwise, a dot will be inserted if the
+extension does not start with one. This will throw <code>std::invalid_argument</code> if
+the original file name was empty or ended with a slash.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>[see below] File::</code><strong><code>native</code></strong><code>() const</code></li>
 </ul>
 <p>Returns the operating system's native form of the name. On Windows (including

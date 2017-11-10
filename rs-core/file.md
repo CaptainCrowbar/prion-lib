@@ -86,6 +86,14 @@ extension is empty. For example, `"/foo/bar/hello.txt"` will be split into
 `"hello"` and `".txt"`. A leading dot is not counted as an extension
 delimiter.
 
+* `File File::`**`change_ext`**`(const std::string& new_ext) const`
+
+Return a copy of the file name but with a new extension replacing the old one.
+If the original file had no extension, the new one will simply be appended to
+it. The new extension may be empty; otherwise, a dot will be inserted if the
+extension does not start with one. This will throw `std::invalid_argument` if
+the original file name was empty or ended with a slash.
+
 * `[see below] File::`**`native`**`() const`
 
 Returns the operating system's native form of the name. On Windows (including

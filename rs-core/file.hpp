@@ -9,6 +9,7 @@
 #include <cstdio>
 #include <new>
 #include <ostream>
+#include <stdexcept>
 #include <string>
 #include <system_error>
 #include <utility>
@@ -56,6 +57,7 @@ namespace RS {
         File leaf() const;
         std::string base() const;
         std::string ext() const;
+        File change_ext(const std::string& new_ext) const;
         #if defined(_XOPEN_SOURCE) && ! defined(__CYGWIN__)
             std::string native() const { return path; }
         #else
@@ -123,6 +125,20 @@ namespace RS {
         size_t start = path.find_last_of('/') + 1;
         size_t dot = path.find_last_of('.');
         return dot > start + 1 && dot != npos ? path.substr(dot, npos) : std::string();
+    }
+
+    inline File File::change_ext(const std::string& new_ext) const {
+        if (path.empty() || path.back() == '/')
+            throw std::invalid_argument("Can't change file extension on " + quote(path));
+        std::string result = path;
+        size_t start = result.find_last_of('/') + 1;
+        size_t dot = result.find_last_of('.');
+        if (dot > start + 1 && dot != npos)
+            result.resize(dot);
+        if (! new_ext.empty() && new_ext[0] != '.')
+            result += '.';
+        result += new_ext;
+        return result;
     }
 
     inline File operator/(const File& lhs, const File& rhs) {

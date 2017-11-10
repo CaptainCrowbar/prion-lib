@@ -5,6 +5,7 @@
 #include <chrono>
 #include <cstdio>
 #include <fstream>
+#include <stdexcept>
 #include <string>
 #include <system_error>
 #include <thread>
@@ -36,6 +37,29 @@ void test_core_file_names() {
     TRY(f = "/abc/def.ghi");      TEST_EQUAL(f.parent().name(), "/abc");      TEST_EQUAL(f.leaf().name(), "def.ghi");      TEST_EQUAL(f.base(), "def");      TEST_EQUAL(f.ext(), ".ghi");
     TRY(f = "/abc/def/ghi");      TEST_EQUAL(f.parent().name(), "/abc/def");  TEST_EQUAL(f.leaf().name(), "ghi");          TEST_EQUAL(f.base(), "ghi");      TEST_EQUAL(f.ext(), "");
     TRY(f = "/abc/def/ghi.jkl");  TEST_EQUAL(f.parent().name(), "/abc/def");  TEST_EQUAL(f.leaf().name(), "ghi.jkl");      TEST_EQUAL(f.base(), "ghi");      TEST_EQUAL(f.ext(), ".jkl");
+
+    TRY(f = "hello");               TRY(f = f.change_ext(".doc"));  TEST_EQUAL(f.name(), "hello.doc");
+    TRY(f = "hello");               TRY(f = f.change_ext("doc"));   TEST_EQUAL(f.name(), "hello.doc");
+    TRY(f = "hello");               TRY(f = f.change_ext(""));      TEST_EQUAL(f.name(), "hello");
+    TRY(f = "hello.txt");           TRY(f = f.change_ext(".doc"));  TEST_EQUAL(f.name(), "hello.doc");
+    TRY(f = "hello.txt");           TRY(f = f.change_ext("doc"));   TEST_EQUAL(f.name(), "hello.doc");
+    TRY(f = "hello.txt");           TRY(f = f.change_ext(""));      TEST_EQUAL(f.name(), "hello");
+    TRY(f = "hello.world.txt");     TRY(f = f.change_ext(".doc"));  TEST_EQUAL(f.name(), "hello.world.doc");
+    TRY(f = "hello.world.txt");     TRY(f = f.change_ext("doc"));   TEST_EQUAL(f.name(), "hello.world.doc");
+    TRY(f = "hello.world.txt");     TRY(f = f.change_ext(""));      TEST_EQUAL(f.name(), "hello.world");
+    TRY(f = ".hello");              TRY(f = f.change_ext(".doc"));  TEST_EQUAL(f.name(), ".hello.doc");
+    TRY(f = ".hello");              TRY(f = f.change_ext("doc"));   TEST_EQUAL(f.name(), ".hello.doc");
+    TRY(f = ".hello");              TRY(f = f.change_ext(""));      TEST_EQUAL(f.name(), ".hello");
+    TRY(f = "/foo/bar/hello");      TRY(f = f.change_ext(".doc"));  TEST_EQUAL(f.name(), "/foo/bar/hello.doc");
+    TRY(f = "/foo/bar/hello");      TRY(f = f.change_ext("doc"));   TEST_EQUAL(f.name(), "/foo/bar/hello.doc");
+    TRY(f = "/foo/bar/hello");      TRY(f = f.change_ext(""));      TEST_EQUAL(f.name(), "/foo/bar/hello");
+    TRY(f = "/foo/bar/hello.txt");  TRY(f = f.change_ext(".doc"));  TEST_EQUAL(f.name(), "/foo/bar/hello.doc");
+    TRY(f = "/foo/bar/hello.txt");  TRY(f = f.change_ext("doc"));   TEST_EQUAL(f.name(), "/foo/bar/hello.doc");
+    TRY(f = "/foo/bar/hello.txt");  TRY(f = f.change_ext(""));      TEST_EQUAL(f.name(), "/foo/bar/hello");
+
+    TRY(f = "");     TEST_THROW(f.change_ext(".doc"), std::invalid_argument);
+    TRY(f = "/");    TEST_THROW(f.change_ext(".doc"), std::invalid_argument);
+    TRY(f = "C:/");  TEST_THROW(f.change_ext(".doc"), std::invalid_argument);
 
     TRY(f = "");                    TEST(! f.is_absolute());
     TRY(f = "hello");               TEST(! f.is_absolute());

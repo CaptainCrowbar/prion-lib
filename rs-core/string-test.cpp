@@ -58,6 +58,18 @@ void test_core_string_literals() {
     TRY(s = ""_doc);
     TEST_EQUAL(s, "");
 
+    TRY(s = R"(Hello world.)"_doc);
+    TEST_EQUAL(s,
+        "Hello world.\n"
+    );
+
+    TRY(s = R"(
+        Hello world.
+    )"_doc);
+    TEST_EQUAL(s,
+        "Hello world.\n"
+    );
+
     TRY(s = R"(
 
         Hello world.
@@ -68,11 +80,13 @@ void test_core_string_literals() {
 
     )"_doc);
     TEST_EQUAL(s,
+        "\n"
         "Hello world.\n"
         "\n"
         "    Hello again.\n"
         "\n"
         "Goodbye.\n"
+        "\n"
     );
 
     TRY(s =

@@ -48,9 +48,9 @@ the string into words delimited by whitespace.</p>
 <ul>
 <li><code>U8string</code> <strong><code>operator""_doc</code></strong><code>(const char* p, size_t n)</code></li>
 </ul>
-<p>The <code>""_doc</code> literal trims leading and trailing empty lines, and removes any
-common leading indentation from all non-empty lines. Tab indentation is
-converted to 4 spaces.</p>
+<p>The <code>""_doc</code> literal removes a leading line feed if present, adds a trailing
+one if not present, and removes any common leading indentation from all non-
+empty lines. Tab indentation is converted to 4 spaces.</p>
 <p>Example:</p>
 <pre><code>R"(
     Hello world.

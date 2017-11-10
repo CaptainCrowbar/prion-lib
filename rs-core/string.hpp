@@ -1104,11 +1104,12 @@ namespace RS {
             auto lines = splitv_lines(U8string(p, n));
             for (auto& line: lines)
                 line = trim_right(line);
-            lines.erase(lines.begin(), std::find_if(lines.begin(), lines.end(), [] (auto& s) { return ! s.empty(); }));
+            if (! lines.empty() && lines.front().empty())
+                lines.erase(lines.begin());
+            if (! lines.empty() && lines.back().empty())
+                lines.pop_back();
             if (lines.empty())
                 return {};
-            while (lines.back().empty())
-                lines.pop_back();
             size_t margin = npos;
             for (auto& line: lines) {
                 if (! line.empty()) {

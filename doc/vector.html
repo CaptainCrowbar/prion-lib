@@ -616,6 +616,14 @@ the quaternion is zero.</p>
 </div>
 <div class="defns">
 <ul>
+<li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const Quaternion&amp; q)</code></li>
+<li><code>U8string</code> <strong><code>to_str</code></strong><code>(const Quaternion&amp; q)</code></li>
+</ul>
+<p>Simple string formatting; this simply writes the quaternion in the same format
+as a 4-vector.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>template &lt;typename T&gt; struct std::</code><strong><code>hash</code></strong><code>&lt;Quaternion&lt;T&gt;&gt;</code></li>
 </ul>
 <p>Hash function.</p>

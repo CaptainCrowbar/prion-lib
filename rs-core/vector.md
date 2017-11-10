@@ -476,6 +476,12 @@ the quaternion is zero.
 
 Component-wise conversions between a quaternion and a 4-vector,
 
+* `std::ostream&` **`operator<<`**`(std::ostream& out, const Quaternion& q)`
+* `U8string` **`to_str`**`(const Quaternion& q)`
+
+Simple string formatting; this simply writes the quaternion in the same format
+as a 4-vector.
+
 * `template <typename T> struct std::`**`hash`**`<Quaternion<T>>`
 
 Hash function.

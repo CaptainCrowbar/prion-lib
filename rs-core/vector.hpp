@@ -957,6 +957,11 @@ namespace RS {
         return std::equal(lhs.begin(), lhs.end(), rhs.begin());
     }
 
+    template <typename T>
+    std::ostream& operator<<(std::ostream& out, const Quaternion<T>& q) {
+        return out << to_str(q);
+    }
+
     // Coordinate transformations
 
     template <typename T>

@@ -32,7 +32,6 @@ namespace RS {
         friend bool operator<(const Uuid& lhs, const Uuid& rhs) noexcept { return memcmp(lhs.bytes, rhs.bytes, 16) == -1; }
     private:
         uint8_t bytes[16];
-        static int decode_hex_byte(U8string::const_iterator& i, U8string::const_iterator end) noexcept;
         static bool is_alnum(char c) noexcept { return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'); }
         static bool is_xdigit(char c) noexcept { return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f'); }
     };
@@ -56,7 +55,7 @@ namespace RS {
             i = std::find_if(i, ends, is_xdigit);
             if (i == ends)
                 break;
-            rc = decode_hex_byte(i, ends);
+            rc = RS_Detail::decode_hex_byte(i, ends);
             if (rc == -1)
                 break;
             *j++ = uint8_t(rc);
@@ -84,28 +83,6 @@ namespace RS {
         for (; i < 16; ++i)
             RS_Detail::append_hex_byte(bytes[i], s);
         return s;
-    }
-
-    inline int Uuid::decode_hex_byte(U8string::const_iterator& i, U8string::const_iterator end) noexcept {
-        auto j = i;
-        if (end - i >= 2 && j[0] == '0' && (j[1] == 'X' || j[1] == 'x'))
-            j += 2;
-        if (end - j < 2)
-            return -1;
-        int n = 0;
-        for (auto k = j + 2; j != k; ++j) {
-            n <<= 4;
-            if (*j >= '0' && *j <= '9')
-                n += *j - '0';
-            else if (*j >= 'A' && *j <= 'F')
-                n += *j - 'A' + 10;
-            else if (*j >= 'a' && *j <= 'f')
-                n += *j - 'a' + 10;
-            else
-                return -1;
-        }
-        i = j;
-        return n;
     }
 
     inline std::ostream& operator<<(std::ostream& o, const Uuid& u) { return o << u.str(); }

@@ -290,6 +290,28 @@ namespace RS {
             s += digits[b % 16];
         }
 
+        inline int decode_hex_byte(std::string::const_iterator& i, std::string::const_iterator end) noexcept {
+            auto j = i;
+            if (end - i >= 2 && j[0] == '0' && (j[1] == 'X' || j[1] == 'x'))
+                j += 2;
+            if (end - j < 2)
+                return -1;
+            int n = 0;
+            for (auto k = j + 2; j != k; ++j) {
+                n <<= 4;
+                if (*j >= '0' && *j <= '9')
+                    n += *j - '0';
+                else if (*j >= 'A' && *j <= 'F')
+                    n += *j - 'A' + 10;
+                else if (*j >= 'a' && *j <= 'f')
+                    n += *j - 'a' + 10;
+                else
+                    return -1;
+            }
+            i = j;
+            return n;
+        }
+
         template <typename T, bool = std::is_signed<T>::value> struct SimpleAbs { constexpr T operator()(T t) const noexcept { return t; } };
         template <typename T> struct SimpleAbs<T, true> { constexpr T operator()(T t) const noexcept { return t < T(0) ? - t : t; } };
 

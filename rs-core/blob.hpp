@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <functional>
 #include <new>
+#include <stdexcept>
 #include <string>
 #include <utility>
 
@@ -15,12 +16,12 @@ namespace RS {
     public LessThanComparable<Blob> {
     public:
         Blob() = default;
-        explicit Blob(size_t n) { init_size(n); }
-        Blob(size_t n, uint8_t x) { init_size(n); memset(ptr, x, len); }
+        explicit Blob(size_t n) { init(n); }
+        Blob(size_t n, uint8_t x) { init(n); memset(ptr, x, len); }
         Blob(void* p, size_t n): Blob(p, n, &std::free) {}
         template <typename F> Blob(void* p, size_t n, F f) { if (p && n) {ptr = p; len = n; del = f; } }
         ~Blob() noexcept { if (ptr && del) try { del(ptr); } catch (...) {} }
-        Blob(const Blob& b) { init_copy(b.data(), b.size()); }
+        Blob(const Blob& b) { init(b.data(), b.size()); }
         Blob(Blob&& b) noexcept: ptr(b.ptr), len(b.len) { del.swap(b.del); }
         Blob& operator=(const Blob& b) { copy(b.data(), b.size()); return *this; }
         Blob& operator=(Blob&& b) noexcept { Blob b2(std::move(b)); swap(b2); return *this; }
@@ -35,7 +36,7 @@ namespace RS {
         Irange<char*> chars() noexcept { return {c_data(), c_data() + len}; }
         Irange<const char*> chars() const noexcept { return {c_data(), c_data() + len}; }
         void clear() noexcept { Blob b; swap(b); }
-        void copy(const void* p, size_t n) { Blob b; b.init_copy(p, n); swap(b); }
+        void copy(const void* p, size_t n) { Blob b; b.init(p, n); swap(b); }
         bool empty() const noexcept { return len == 0; }
         void fill(uint8_t x) noexcept { memset(ptr, x, len); }
         size_t hash() const noexcept { return djb2a(ptr, len); }
@@ -47,26 +48,50 @@ namespace RS {
         size_t size() const noexcept { return len; }
         std::string str() const { return empty() ? std::string() : std::string(c_data(), len); }
         void swap(Blob& b) noexcept { std::swap(ptr, b.ptr); std::swap(len, b.len); del.swap(b.del); }
+        static Blob from_hex(const U8string& s);
     private:
         void* ptr = nullptr;
         size_t len = 0;
         std::function<void(void*)> del;
-        void init_copy(const void* p, size_t n) {
-            if (p && n) {
-                init_size(n);
-                memcpy(ptr, p, n);
-            }
-        }
-        void init_size(size_t n) {
-            if (n) {
-                ptr = std::malloc(n);
-                if (! ptr)
-                    throw std::bad_alloc();
-                len = n;
-                del = &std::free;
-            }
-        }
+        void init(size_t n);
+        void init(const void* p, size_t n);
     };
+
+    inline Blob Blob::from_hex(const U8string& s) {
+        std::string buf;
+        buf.reserve(s.size() / 2);
+        auto i = s.begin(), end = s.end();
+        while (i != end) {
+            auto j = std::find_if(i, end, ascii_isalnum);
+            if (j == end)
+                break;
+            i = std::find_if_not(j, end, ascii_isxdigit);
+            if ((i != end && ascii_isalnum(*i)) || (j - i) % 2)
+                throw std::invalid_argument("Invalid hex string");
+            while (j != i)
+                buf += char(RS_Detail::decode_hex_byte(j, i));
+        }
+        Blob b(buf.size());
+        memcpy(b.data(), buf.data(), buf.size());
+        return b;
+    }
+
+    inline void Blob::init(size_t n) {
+        if (n) {
+            ptr = std::malloc(n);
+            if (! ptr)
+                throw std::bad_alloc();
+            len = n;
+            del = &std::free;
+        }
+    }
+
+    inline void Blob::init(const void* p, size_t n) {
+        if (p && n) {
+            init(n);
+            memcpy(ptr, p, n);
+        }
+    }
 
     inline bool operator==(const Blob& lhs, const Blob& rhs) noexcept {
         return lhs.size() == rhs.size() && memcmp(lhs.data(), rhs.data(), lhs.size()) == 0;

@@ -44,6 +44,7 @@ By Ross Smith
     * `size_t Blob::`**`size`**`() const noexcept`
     * `string Blob::`**`str`**`() const`
     * `void Blob::`**`swap`**`(Blob& b) noexcept`
+    * `static Blob Blob::`**`from_hex`**`(const U8string& s)`
 * `bool` **`operator==`**`(const Blob& lhs, const Blob& rhs) noexcept`
 * `bool` **`operator!=`**`(const Blob& lhs, const Blob& rhs) noexcept`
 * `bool` **`operator<`**`(const Blob& lhs, const Blob& rhs) noexcept`
@@ -87,3 +88,10 @@ size is supplied, a line feed will be inserted after each block.
 The `str()` function copies the entire blob into a string.
 
 The comparison operators perform bytewise comparison by calling `memcmp()`.
+
+The `from_hex()` function translates a hexadecimal string into bytes. The
+argument string must contain zero or more contiguous blocks of hex digits,
+possibly with a `"0x"` prefix; any characters that are not ASCII alphanumerics
+are treated as delimiters. This will throw `std::invalid_argument` if any hex
+block in the string contains an odd number of digits, or if the string
+contains an ASCII alphanumeric that is not a hex digit.

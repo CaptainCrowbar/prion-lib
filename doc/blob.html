@@ -58,6 +58,7 @@
 <li><code>size_t Blob::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
 <li><code>string Blob::</code><strong><code>str</code></strong><code>() const</code></li>
 <li><code>void Blob::</code><strong><code>swap</code></strong><code>(Blob&amp; b) noexcept</code></li>
+<li><code>static Blob Blob::</code><strong><code>from_hex</code></strong><code>(const U8string&amp; s)</code></li>
 </ul>
 </li>
 <li><code>bool</code> <strong><code>operator==</code></strong><code>(const Blob&amp; lhs, const Blob&amp; rhs) noexcept</code></li>
@@ -94,5 +95,11 @@ referenced data.</p>
 <p>The <code>hex()</code> function returns the blob's data in hex form; if a nonzero block
 size is supplied, a line feed will be inserted after each block.</p>
 <p>The <code>str()</code> function copies the entire blob into a string.</p>
-<p>The comparison operators perform bytewise comparison by calling <code>memcmp()</code>.</p></body>
+<p>The comparison operators perform bytewise comparison by calling <code>memcmp()</code>.</p>
+<p>The <code>from_hex()</code> function translates a hexadecimal string into bytes. The
+argument string must contain zero or more contiguous blocks of hex digits,
+possibly with a <code>"0x"</code> prefix; any characters that are not ASCII alphanumerics
+are treated as delimiters. This will throw <code>std::invalid_argument</code> if any hex
+block in the string contains an odd number of digits, or if the string
+contains an ASCII alphanumeric that is not a hex digit.</p></body>
 </html>

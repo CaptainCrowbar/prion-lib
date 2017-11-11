@@ -1,5 +1,6 @@
 #include "rs-core/blob.hpp"
 #include "rs-core/unit-test.hpp"
+#include <stdexcept>
 
 using namespace RS;
 
@@ -59,5 +60,13 @@ void test_core_blob_class() {
     TEST_EQUAL(s, "a");
     TRY(b.clear());
     TEST_EQUAL(s, "ab");
+
+    TRY(b = Blob::from_hex(""));
+    TEST_EQUAL(b.size(), 0);
+    TRY(b = Blob::from_hex("0123 4567 89ab cdef"));
+    TEST_EQUAL(b.size(), 8);
+    TEST_EQUAL(b.hex(), "01 23 45 67 89 ab cd ef");
+
+    TEST_THROW(Blob::from_hex("abcdefgh"), std::invalid_argument);
 
 }

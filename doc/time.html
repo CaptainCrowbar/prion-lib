@@ -78,6 +78,15 @@ the date elements are in. If none of these are present, the default is
 <h3 id="general-time-and-date-operations">General time and date operations</h3>
 <div class="defns">
 <ul>
+<li><code>template &lt;typename C1, typename D1, typename C2, typename D2&gt; void</code> <strong><code>convert_time_point</code></strong><code>(time_point&lt;C1, D1&gt; src, time_point&lt;C2, D2&gt;&amp; dst)</code></li>
+</ul>
+<p>Convert a time point from one representation to another, possibly on a
+different clock. This will call <code>std::time_point_cast()</code> if possible;
+otherwise, it will check the current times on both clocks and use that to
+convert from one clock to the other.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>template &lt;typename R, typename P&gt; void</code> <strong><code>from_seconds</code></strong><code>(double s, duration&lt;R, P&gt;&amp; d) noexcept</code></li>
 <li><code>template &lt;typename R, typename P&gt; double</code> <strong><code>to_seconds</code></strong><code>(const duration&lt;R, P&gt;&amp; d) noexcept</code></li>
 </ul>

@@ -36,6 +36,36 @@ void test_core_time_date_types() {
 
 }
 
+void test_core_time_convert_time_point() {
+
+    system_clock::time_point sys1, sys2, sys3;
+    high_resolution_clock::time_point hrc1, hrc2, hrc3;
+    milliseconds msec;
+
+    sys1 = system_clock::now();
+    hrc1 = high_resolution_clock::now();
+
+    sys2 = sys1 + 1min;
+    hrc2 = hrc1 + 1min;
+
+    convert_time_point(sys2, sys3);
+    convert_time_point(hrc2, hrc3);
+
+    msec = duration_cast<milliseconds>(sys3 - sys1);
+    TEST_EQUAL(msec.count(), 60'000);
+    msec = duration_cast<milliseconds>(hrc3 - hrc1);
+    TEST_EQUAL(msec.count(), 60'000);
+
+    convert_time_point(hrc2, sys3);
+    convert_time_point(sys2, hrc3);
+
+    msec = duration_cast<milliseconds>(sys3 - sys1);
+    TEST_NEAR_EPSILON(msec.count(), 60'000, 50);
+    msec = duration_cast<milliseconds>(hrc3 - hrc1);
+    TEST_NEAR_EPSILON(msec.count(), 60'000, 50);
+
+}
+
 void test_core_time_general_operations() {
 
     hours h = {};

@@ -29,6 +29,33 @@ namespace RS {
 
     // General time and date operations
 
+    namespace RS_Detail {
+
+        template <typename C1, typename D1, typename C2, typename D2>
+        struct ConvertTimePointHelper {
+            std::chrono::time_point<C2, D2> operator()(std::chrono::time_point<C1, D1> t) const {
+                auto now1 = C1::now();
+                auto now2 = C2::now();
+                auto now3 = C1::now();
+                now1 += (now3 - now1) / 2;
+                return std::chrono::time_point_cast<D2>(now2 + (t - now1));
+            }
+        };
+
+        template <typename C, typename D1, typename D2>
+        struct ConvertTimePointHelper<C, D1, C, D2> {
+            std::chrono::time_point<C, D2> operator()(std::chrono::time_point<C, D1> t) const {
+                return std::chrono::time_point_cast<D2>(t);
+            }
+        };
+
+    }
+
+    template <typename C1, typename D1, typename C2, typename D2>
+    void convert_time_point(std::chrono::time_point<C1, D1> src, std::chrono::time_point<C2, D2>& dst) {
+        dst = RS_Detail::ConvertTimePointHelper<C1, D1, C2, D2>()(src);
+    }
+
     template <typename R, typename P>
     void from_seconds(double s, std::chrono::duration<R, P>& d) noexcept {
         using namespace std::chrono;

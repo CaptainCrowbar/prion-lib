@@ -199,6 +199,7 @@ extern void test_core_table_class();
 extern void test_core_terminal_progress_bar();
 extern void test_core_terminal_io_operations();
 extern void test_core_time_date_types();
+extern void test_core_time_convert_time_point();
 extern void test_core_time_general_operations();
 extern void test_core_time_format_date();
 extern void test_core_time_format_time();
@@ -427,6 +428,7 @@ int main() {
         { "core/terminal/progress-bar", test_core_terminal_progress_bar },
         { "core/terminal/io-operations", test_core_terminal_io_operations },
         { "core/time/date-types", test_core_time_date_types },
+        { "core/time/convert-time-point", test_core_time_convert_time_point },
         { "core/time/general-operations", test_core_time_general_operations },
         { "core/time/format-date", test_core_time_format_date },
         { "core/time/format-time", test_core_time_format_time },

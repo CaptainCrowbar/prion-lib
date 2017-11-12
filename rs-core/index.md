@@ -11,6 +11,7 @@
     * [`"rs-core/zlib.hpp"`](zlib.html) - Zlib compression
 * _Concurrency_
     * [`"rs-core/channel.hpp"`](channel.html) - Message dispatch
+    * [`"rs-core/ipc.hpp"`](ipc.html) - Interprocess communication
     * [`"rs-core/process.hpp"`](process.html) - Process control
     * [`"rs-core/signal.hpp"`](signal.html) - Signal handling
 * _Containers_

@@ -14,6 +14,7 @@
 #include "rs-core/grid.hpp"
 #include "rs-core/index-table.hpp"
 #include "rs-core/io.hpp"
+#include "rs-core/ipc.hpp"
 #include "rs-core/kwargs.hpp"
 #include "rs-core/meta.hpp"
 #include "rs-core/mp-integer.hpp"

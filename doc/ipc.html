@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Interprocess Communication</title>
+<link type="text/css" rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<h1 id="interprocess-communication">Interprocess Communication</h1>
+<p>By Ross Smith</p>
+<ul>
+<li><code>#include "rs-core/ipc.hpp"</code></li>
+</ul>
+<h2 id="contents">Contents</h2>
+<div class="toc">
+<ul>
+<li><a href="#interprocess-communication">Interprocess Communication</a><ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#named-mutex">Named mutex</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="named-mutex">Named mutex</h2>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>NamedMutex</code></strong><ul>
+<li><code>explicit NamedMutex::</code><strong><code>NamedMutex</code></strong><code>(const U8string&amp; name)</code></li>
+<li><code>NamedMutex::</code><strong><code>~NamedMutex</code></strong><code>() noexcept</code></li>
+<li><code>U8string NamedMutex::</code><strong><code>name</code></strong><code>() const</code></li>
+<li><code>void NamedMutex::</code><strong><code>lock</code></strong><code>()</code></li>
+<li><code>bool NamedMutex::</code><strong><code>try_lock</code></strong><code>()</code></li>
+<li><code>template &lt;typename R, typename P&gt; bool NamedMutex::</code><strong><code>try_lock_for</code></strong><code>(std::chrono::duration&lt;R, P&gt; rel_time)</code></li>
+<li><code>template &lt;typename C, typename D&gt; bool NamedMutex::</code><strong><code>try_lock_until</code></strong><code>(std::chrono::time_point&lt;C, D&gt; abs_time)</code></li>
+<li><code>void NamedMutex::</code><strong><code>unlock</code></strong><code>() noexcept</code></li>
+</ul>
+</li>
+</ul>
+<p>A named mutex that can be used for synchronization between processes. The
+locking functions have the usual semantics required by the standard mutual
+exclusion concept. The name may be any arbitrary string (a hash of the string
+is used for the underlying system mutex name, to avoid system specific
+restrictions on the name).</p></body>
+</html>

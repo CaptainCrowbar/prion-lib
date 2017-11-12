@@ -86,6 +86,7 @@ extern void test_core_io_null_device();
 extern void test_core_io_external_buffer();
 extern void test_core_io_internal_buffer();
 extern void test_core_io_print_formatting();
+extern void test_core_ipc_named_mutex();
 extern void test_core_kwargs_keyword_arguments();
 extern void test_core_meta_logic();
 extern void test_core_meta_append();
@@ -315,6 +316,7 @@ int main() {
         { "core/io/external-buffer", test_core_io_external_buffer },
         { "core/io/internal-buffer", test_core_io_internal_buffer },
         { "core/io/print-formatting", test_core_io_print_formatting },
+        { "core/ipc/named-mutex", test_core_ipc_named_mutex },
         { "core/kwargs/keyword-arguments", test_core_kwargs_keyword_arguments },
         { "core/meta/logic", test_core_meta_logic },
         { "core/meta/append", test_core_meta_append },

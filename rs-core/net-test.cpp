@@ -266,8 +266,8 @@ void test_core_net_tcp_client_server() {
         TEST_EQUAL(server->wait(500ms), Channel::state::ready);
         TEST(server->read(client));
         REQUIRE(client);
-        TEST_EQUAL(client->wait(10ms), Channel::state::waiting);
         TEST_EQUAL(client->remote().ipv4(), IPv4::localhost());
+        TEST_EQUAL(client->wait(10ms), Channel::state::waiting);
         TEST(client->write_str("hello"));
         TEST_EQUAL(client->wait(100ms), Channel::state::ready);
         TRY(n = client->read_to(msg));
@@ -281,12 +281,8 @@ void test_core_net_tcp_client_server() {
         size_t n = 0;
         std::this_thread::sleep_for(200ms);
         TRY(client = std::make_unique<TcpClient>(IPv4::localhost(), port));
-        TEST_EQUAL(client->wait(10ms), Channel::state::waiting);
         TEST_EQUAL(client->remote().ipv4(), IPv4::localhost());
-        TRY(n = client->read_to(msg));
-        TEST_EQUAL(n, 0);
-        TEST_EQUAL(msg, "");
-        TEST_EQUAL(client->wait(100ms), Channel::state::ready);
+        TEST_EQUAL(client->wait(500ms), Channel::state::ready);
         TRY(n = client->read_to(msg));
         TEST_EQUAL(n, 5);
         TEST_EQUAL(msg, "hello");

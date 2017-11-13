@@ -15,7 +15,7 @@ By Ross Smith
     * `PosixSignal::`**`PosixSignal`**`(std::initializer_list<int> list)`
     * `explicit PosixSignal::`**`PosixSignal`**`(const signal_list& list)`
     * `virtual PosixSignal::`**`~PosixSignal`**`() noexcept`
-    * `virtual bool PosixSignal::`**`sync`**`() const noexcept` _= true_
+    * `virtual bool PosixSignal::`**`is_async`**`() const noexcept` _= false_
     * `static U8string` **`name`**`(int s)`
 
 A channel that intercepts Unix signals, reporting them as channel messages. An

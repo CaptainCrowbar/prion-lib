@@ -263,13 +263,13 @@ void test_core_net_tcp_client_server() {
         std::string msg;
         size_t n = 0;
         TRY(server = std::make_unique<TcpServer>(IPv4(), port));
-        TEST_EQUAL(server->wait(500ms), Channel::state::ready);
+        TEST_EQUAL(server->wait_for(500ms), Channel::state::ready);
         TEST(server->read(client));
         REQUIRE(client);
         TEST_EQUAL(client->remote().ipv4(), IPv4::localhost());
-        TEST_EQUAL(client->wait(10ms), Channel::state::waiting);
+        TEST_EQUAL(client->wait_for(10ms), Channel::state::waiting);
         TEST(client->write_str("hello"));
-        TEST_EQUAL(client->wait(100ms), Channel::state::ready);
+        TEST_EQUAL(client->wait_for(100ms), Channel::state::ready);
         TRY(n = client->read_to(msg));
         TEST_EQUAL(n, 7);
         TEST_EQUAL(msg, "goodbye");
@@ -282,17 +282,17 @@ void test_core_net_tcp_client_server() {
         std::this_thread::sleep_for(200ms);
         TRY(client = std::make_unique<TcpClient>(IPv4::localhost(), port));
         TEST_EQUAL(client->remote().ipv4(), IPv4::localhost());
-        TEST_EQUAL(client->wait(500ms), Channel::state::ready);
+        TEST_EQUAL(client->wait_for(500ms), Channel::state::ready);
         TRY(n = client->read_to(msg));
         TEST_EQUAL(n, 5);
         TEST_EQUAL(msg, "hello");
         TEST(client->write_str("goodbye"));
         msg.clear();
-        TEST_EQUAL(client->wait(100ms), Channel::state::ready);
+        TEST_EQUAL(client->wait_for(100ms), Channel::state::ready);
         TRY(n = client->read_to(msg));
         TEST_EQUAL(n, 0);
         TEST_EQUAL(msg, "");
-        TEST_EQUAL(client->wait(10ms), Channel::state::closed);
+        TEST_EQUAL(client->wait_for(10ms), Channel::state::closed);
     });
 
     TRY(t1.wait());
@@ -312,22 +312,22 @@ void test_core_net_socket_set() {
         Channel::state cs = Channel::state::closed;
         Channel* cp = nullptr;
         TRY(server = std::make_unique<TcpServer>(IPv4(), port));
-        TRY(cs = server->wait(500ms));
+        TRY(cs = server->wait_for(500ms));
         TEST_EQUAL(cs, Channel::state::ready);
         TEST(server->read(client1));
         REQUIRE(client1);
-        TRY(cs = client1->wait(10ms));
+        TRY(cs = client1->wait_for(10ms));
         TEST_EQUAL(cs, Channel::state::ready);
-        TRY(cs = server->wait(100ms));
+        TRY(cs = server->wait_for(100ms));
         TEST_EQUAL(cs, Channel::state::ready);
         TEST(server->read(client2));
         REQUIRE(client2);
-        TRY(cs = client2->wait(10ms));
+        TRY(cs = client2->wait_for(10ms));
         TEST_EQUAL(cs, Channel::state::ready);
         TRY(set.insert(*client1));
         TRY(set.insert(*client2));
         for (int i = 0; i < 6; ++i) {
-            TRY(cs = set.wait(50ms));
+            TRY(cs = set.wait_for(50ms));
             if (cs != Channel::state::ready)
                 continue;
             TEST(set.read(cp));

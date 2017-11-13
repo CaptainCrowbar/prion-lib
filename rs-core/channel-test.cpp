@@ -47,7 +47,7 @@ namespace {
             queue.push_back(n);
         }
     protected:
-        virtual state do_wait(Interval::time t) {
+        virtual state do_wait_for(IntervalBase::time_unit t) {
             return polled_wait(t);
         }
     private:
@@ -69,14 +69,14 @@ void test_core_channel_true() {
     TrueChannel chan;
     Channel::state cs = Channel::state::closed;
 
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::ready);
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::ready);
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::ready);
     TRY(chan.close());
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::closed);
 
 }
@@ -86,12 +86,12 @@ void test_core_channel_false() {
     FalseChannel chan;
     Channel::state cs = Channel::state::closed;
 
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::waiting);
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::waiting);
     TRY(chan.close());
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::closed);
 
 }
@@ -103,24 +103,24 @@ void test_core_channel_generator() {
     Channel::state cs = Channel::state::closed;
     Optional<int> oi;
 
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::ready);
     TEST(chan.read(j));
     TEST_EQUAL(j, 1);
 
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::ready);
     TEST(chan.read(j));
     TEST_EQUAL(j, 2);
 
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::ready);
     TRY(oi = chan.read_opt());
     TEST(oi);
     TEST_EQUAL(*oi, 3);
 
     TRY(chan.close());
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::closed);
     TEST(! chan.read(j));
     TRY(oi = chan.read_opt());
@@ -135,49 +135,49 @@ void test_core_channel_buffer() {
     U8string s;
     size_t n = 0;
 
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::waiting);
 
     TEST(chan.write_str("Hello"));
     TEST(chan.write_str("World"));
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::ready);
     TRY(n = chan.read_to(s));
     TEST_EQUAL(n, 10);
     TEST_EQUAL(s, "HelloWorld");
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::waiting);
 
     s.clear();
     TEST(chan.write_str("Hello"));
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::ready);
     TRY(n = chan.read_to(s));
     TEST_EQUAL(n, 5);
     TEST_EQUAL(s, "Hello");
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::waiting);
 
     s.clear();
     TEST(chan.write_str("Hello"));
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::ready);
     TRY(n = chan.read_to(s));
     TEST_EQUAL(n, 5);
     TEST_EQUAL(s, "Hello");
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::waiting);
     TEST(chan.write_str("World"));
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::ready);
     TRY(n = chan.read_to(s));
     TEST_EQUAL(n, 5);
     TEST_EQUAL(s, "HelloWorld");
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::waiting);
 
     s.clear();
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::waiting);
     TRY(n = chan.read_to(s));
     TEST_EQUAL(n, 0);
@@ -185,7 +185,7 @@ void test_core_channel_buffer() {
 
     s.clear();
     TRY(chan.close());
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::closed);
     TRY(n = chan.read_to(s));
     TEST_EQUAL(n, 0);
@@ -199,32 +199,32 @@ void test_core_channel_queue() {
     Channel::state cs = Channel::state::closed;
     U8string s;
 
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::waiting);
 
     TRY(chan.write("Hello"));
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::ready);
     TEST(chan.read(s));
     TEST_EQUAL(s, "Hello");
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::waiting);
 
     TRY(chan.write("Hello"));
     TRY(chan.write("World"));
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::ready);
     TEST(chan.read(s));
     TEST_EQUAL(s, "Hello");
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::ready);
     TEST(chan.read(s));
     TEST_EQUAL(s, "World");
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::waiting);
 
     TRY(chan.close());
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::closed);
 
 }
@@ -235,32 +235,32 @@ void test_core_channel_value() {
     Channel::state cs = Channel::state::closed;
     U8string s;
 
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::waiting);
 
     TRY(chan.write("Hello"));
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::ready);
     TEST(chan.read(s));
     TEST_EQUAL(s, "Hello");
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::waiting);
 
     TRY(chan.write("Hello"));
     TRY(chan.write("World"));
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::ready);
     TEST(chan.read(s));
     TEST_EQUAL(s, "World");
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::waiting);
 
     TRY(chan.write("World"));
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::waiting);
 
     TRY(chan.close());
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::closed);
 
 }
@@ -270,19 +270,19 @@ void test_core_channel_timer() {
     TimerChannel chan(25ms);
     Channel::state cs = Channel::state::closed;
 
-    TRY(cs = chan.wait(1ms));
+    TRY(cs = chan.wait_for(1ms));
     TEST_EQUAL(cs, Channel::state::waiting);
-    TRY(cs = chan.wait(100ms));
+    TRY(cs = chan.wait_for(100ms));
     TEST_EQUAL(cs, Channel::state::ready);
 
     TRY(std::this_thread::sleep_for(150ms));
-    TRY(cs = chan.wait(1ms));
+    TRY(cs = chan.wait_for(1ms));
     TEST_EQUAL(cs, Channel::state::ready);
-    TRY(cs = chan.wait(1ms));
+    TRY(cs = chan.wait_for(1ms));
     TEST_EQUAL(cs, Channel::state::ready);
 
     TRY(chan.close());
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::closed);
 
 }
@@ -295,29 +295,29 @@ void test_core_channel_polled() {
 
     TRY(cs = chan.poll());
     TEST_EQUAL(cs, Channel::state::waiting);
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::waiting);
 
     TRY(chan.write(1));
     TRY(chan.write(2));
     TRY(chan.write(3));
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::ready);
     TEST(chan.read(i));
     TEST_EQUAL(i, 1);
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::ready);
     TEST(chan.read(i));
     TEST_EQUAL(i, 2);
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::ready);
     TEST(chan.read(i));
     TEST_EQUAL(i, 3);
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::waiting);
 
     TRY(chan.close());
-    TRY(cs = chan.wait(10ms));
+    TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::closed);
 
 }
@@ -349,7 +349,7 @@ void test_core_channel_dispatcher() {
         TEST_EQUAL(rc.why(), Dispatch::reason::closed);
         TEST_EQUAL(rc.channel, &chan);
         TEST(! rc.error);
-        TRY(cs = chan.wait(1ms));
+        TRY(cs = chan.wait_for(1ms));
         TEST_EQUAL(cs, Channel::state::closed);
         TEST_EQUAL(n, cycles);
     }
@@ -364,7 +364,7 @@ void test_core_channel_dispatcher() {
         TEST_EQUAL(rc.why(), Dispatch::reason::closed);
         TEST_EQUAL(rc.channel, &chan);
         TEST(! rc.error);
-        TRY(cs = chan.wait(1ms));
+        TRY(cs = chan.wait_for(1ms));
         TEST_EQUAL(cs, Channel::state::closed);
         TEST_EQUAL(n, cycles);
     }
@@ -379,7 +379,7 @@ void test_core_channel_dispatcher() {
         TEST_EQUAL(rc.why(), Dispatch::reason::error);
         TEST_EQUAL(rc.channel, &chan);
         TEST_THROW(rethrow(rc.error), TestException);
-        TRY(cs = chan.wait(1ms));
+        TRY(cs = chan.wait_for(1ms));
         TEST_EQUAL(n, cycles);
     }
 
@@ -393,7 +393,7 @@ void test_core_channel_dispatcher() {
         TEST_EQUAL(rc.why(), Dispatch::reason::error);
         TEST_EQUAL(rc.channel, &chan);
         TEST_THROW(rethrow(rc.error), TestException);
-        TRY(cs = chan.wait(1ms));
+        TRY(cs = chan.wait_for(1ms));
         TEST_EQUAL(n, cycles);
     }
 
@@ -410,10 +410,10 @@ void test_core_channel_dispatcher() {
             TEST_EQUAL(rc.why(), Dispatch::reason::error);
             TEST_EQUAL(rc.channel, &chan1);
             TEST_THROW(rethrow(rc.error), TestException);
-            TRY(cs = chan1.wait(1ms));
+            TRY(cs = chan1.wait_for(1ms));
             TEST_EQUAL(n1, cycles);
         }
-        TRY(cs = chan2.wait(1ms));
+        TRY(cs = chan2.wait_for(1ms));
         TEST_EQUAL(cs, Channel::state::closed);
     }
 
@@ -430,10 +430,10 @@ void test_core_channel_dispatcher() {
             TEST_EQUAL(rc.why(), Dispatch::reason::error);
             TEST_EQUAL(rc.channel, &chan1);
             TEST_THROW(rethrow(rc.error), TestException);
-            TRY(cs = chan1.wait(1ms));
+            TRY(cs = chan1.wait_for(1ms));
             TEST_EQUAL(n1, cycles);
         }
-        TRY(cs = chan2.wait(1ms));
+        TRY(cs = chan2.wait_for(1ms));
         TEST_EQUAL(cs, Channel::state::closed);
     }
 
@@ -450,10 +450,10 @@ void test_core_channel_dispatcher() {
             TEST_EQUAL(rc.why(), Dispatch::reason::error);
             TEST_EQUAL(rc.channel, &chan1);
             TEST_THROW(rethrow(rc.error), TestException);
-            TRY(cs = chan1.wait(1ms));
+            TRY(cs = chan1.wait_for(1ms));
             TEST_EQUAL(n1, cycles);
         }
-        TRY(cs = chan2.wait(1ms));
+        TRY(cs = chan2.wait_for(1ms));
         TEST_EQUAL(cs, Channel::state::closed);
     }
 
@@ -470,10 +470,10 @@ void test_core_channel_dispatcher() {
             TEST_EQUAL(rc.why(), Dispatch::reason::error);
             TEST_EQUAL(rc.channel, &chan2);
             TEST_THROW(rethrow(rc.error), TestException);
-            TRY(cs = chan2.wait(1ms));
+            TRY(cs = chan2.wait_for(1ms));
             TEST_EQUAL(n2, cycles);
         }
-        TRY(cs = chan1.wait(1ms));
+        TRY(cs = chan1.wait_for(1ms));
         TEST_EQUAL(cs, Channel::state::closed);
     }
 
@@ -494,7 +494,7 @@ void test_core_channel_dispatcher() {
         TEST_EQUAL(rc.why(), Dispatch::reason::closed);
         TEST_EQUAL(rc.channel, &chan);
         TEST(! rc.error);
-        TRY(cs = chan.wait(1ms));
+        TRY(cs = chan.wait_for(1ms));
         TEST_EQUAL(cs, Channel::state::closed);
         s = to_str(v);
         TEST_EQUAL(s, "[1,2,3,4,5]");
@@ -517,7 +517,7 @@ void test_core_channel_dispatcher() {
         TEST_EQUAL(rc.why(), Dispatch::reason::closed);
         TEST_EQUAL(rc.channel, &chan);
         TEST(! rc.error);
-        TRY(cs = chan.wait(1ms));
+        TRY(cs = chan.wait_for(1ms));
         TEST_EQUAL(cs, Channel::state::closed);
         s = to_str(v);
         TEST_EQUAL(s, "[1,2,3,4,5]");
@@ -540,7 +540,7 @@ void test_core_channel_dispatcher() {
         TEST_EQUAL(rc.why(), Dispatch::reason::closed);
         TEST_EQUAL(rc.channel, &chan);
         TEST(! rc.error);
-        TRY(cs = chan.wait(1ms));
+        TRY(cs = chan.wait_for(1ms));
         TEST_EQUAL(cs, Channel::state::closed);
         TEST_EQUAL(s, "Hello world\n");
     }
@@ -562,7 +562,7 @@ void test_core_channel_dispatcher() {
         TEST_EQUAL(rc.why(), Dispatch::reason::closed);
         TEST_EQUAL(rc.channel, &chan);
         TEST(! rc.error);
-        TRY(cs = chan.wait(1ms));
+        TRY(cs = chan.wait_for(1ms));
         TEST_EQUAL(cs, Channel::state::closed);
         TEST_EQUAL(s, "Hello world\n");
     }

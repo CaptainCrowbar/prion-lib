@@ -29,7 +29,7 @@
 <li><code>PosixSignal::</code><strong><code>PosixSignal</code></strong><code>(std::initializer_list&lt;int&gt; list)</code></li>
 <li><code>explicit PosixSignal::</code><strong><code>PosixSignal</code></strong><code>(const signal_list&amp; list)</code></li>
 <li><code>virtual PosixSignal::</code><strong><code>~PosixSignal</code></strong><code>() noexcept</code></li>
-<li><code>virtual bool PosixSignal::</code><strong><code>sync</code></strong><code>() const noexcept</code> <em>= true</em></li>
+<li><code>virtual bool PosixSignal::</code><strong><code>is_async</code></strong><code>() const noexcept</code> <em>= false</em></li>
 <li><code>static U8string</code> <strong><code>name</code></strong><code>(int s)</code></li>
 </ul>
 </li>

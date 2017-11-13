@@ -45,7 +45,7 @@ void test_core_process_stream() {
     size_t n = 0;
 
     TRY(chan = std::make_unique<StreamProcess>("ls"));
-    TRY(cs = chan->wait(100ms));
+    TRY(cs = chan->wait_for(100ms));
     TEST_EQUAL(cs, Channel::state::ready);
     TRY(n = chan->read_to(s));
     TEST_COMPARE(n, >, 0);
@@ -56,11 +56,11 @@ void test_core_process_stream() {
     TRY(s = to_str(v));
     TEST_EQUAL(s, files);
 
-    TRY(cs = chan->wait(10ms));
+    TRY(cs = chan->wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::ready);
     TRY(n = chan->read_to(s));
     TEST_EQUAL(n, 0);
-    TRY(cs = chan->wait(10ms));
+    TRY(cs = chan->wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::closed);
     TRY(st = chan->status());
     TEST_EQUAL(st, 0);
@@ -86,7 +86,7 @@ void test_core_process_text() {
     TRY(chan = std::make_unique<TextProcess>("ls"));
 
     for (int i = 1; i <= 10; ++i) {
-        TRY(cs = chan->wait(10ms));
+        TRY(cs = chan->wait_for(10ms));
         if (cs == Channel::state::closed)
             break;
         if (cs == Channel::state::ready) {

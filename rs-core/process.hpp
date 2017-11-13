@@ -28,7 +28,7 @@ namespace RS {
         virtual size_t read(void* dst, size_t maxlen);
         int status() const noexcept { return st; }
     protected:
-        virtual state do_wait(Interval::time t);
+        virtual state do_wait_for(IntervalBase::time_unit t);
     private:
         std::atomic<FILE*> fp;
         int st = -1;
@@ -72,11 +72,11 @@ namespace RS {
             fp = nullptr;
         }
 
-        inline Channel::state StreamProcess::do_wait(Interval::time t) {
+        inline Channel::state StreamProcess::do_wait_for(IntervalBase::time_unit t) {
             using namespace std::chrono;
             if (! fp)
                 return state::closed;
-            if (t < Interval::time())
+            if (t < IntervalBase::time_unit())
                 t = {};
             int fd = RS_IO_FUNCTION(fileno)(fp);
             auto cs = state::closed;
@@ -124,7 +124,7 @@ namespace RS {
         std::string read_all() { return buf + ps.read_all(); }
         int status() const noexcept { return ps.status(); }
     protected:
-        virtual state do_wait(Interval::time t);
+        virtual state do_wait_for(IntervalBase::time_unit t);
     private:
         StreamProcess ps;
         U8string buf;
@@ -152,13 +152,13 @@ namespace RS {
             return true;
         }
 
-        inline Channel::state TextProcess::do_wait(Interval::time t) {
+        inline Channel::state TextProcess::do_wait_for(IntervalBase::time_unit t) {
             using namespace std::chrono;
-            t = std::max(t, Interval::time());
+            t = std::max(t, IntervalBase::time_unit());
             auto deadline = ReliableClock::now() + t;
-            Interval::time delta = {};
+            IntervalBase::time_unit delta = {};
             for (;;) {
-                auto rc = ps.wait(delta);
+                auto rc = ps.wait_for(delta);
                 if (rc == state::closed || ! ps.read_to(buf))
                     return buf.empty() ? state::closed : state::ready;
                 size_t lf = buf.find('\n');
@@ -167,7 +167,7 @@ namespace RS {
                 auto now = ReliableClock::now();
                 if (now > deadline)
                     return state::waiting;
-                delta = duration_cast<Interval::time>(deadline - now);
+                delta = duration_cast<IntervalBase::time_unit>(deadline - now);
             }
         }
 

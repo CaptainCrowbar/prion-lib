@@ -30,9 +30,8 @@
 * _Input/output_
     * [`"rs-core/file.hpp"`](file.html) - File class
     * [`"rs-core/io.hpp"`](io.html) - I/O utilities
-    * [`"rs-core/terminal.hpp"`](terminal.html) - Terminal I/O
-* _Networking_
     * [`"rs-core/net.hpp"`](net.html) - TCP/IP networking
+    * [`"rs-core/terminal.hpp"`](terminal.html) - Terminal I/O
 * _Numerics_
     * [`"rs-core/float.hpp"`](float.html) - Floating point utilities
     * [`"rs-core/mp-integer.hpp"`](mp-integer.html) -- Multiple precision integers
@@ -43,6 +42,7 @@
 * _Text processing_
     * [`"rs-core/digest.hpp"`](digest.html) -- Message digest algorithms
     * [`"rs-core/encoding.hpp"`](encoding.html) -- Binary and text encodings
+    * [`"rs-core/serial.hpp"`](serial.html) -- JSON serialization
     * [`"rs-core/string.hpp"`](string.html) - String algorithms
     * [`"rs-core/table.hpp"`](table.html) - Simple table layout
     * [`"rs-core/uuid.hpp"`](uuid.html) - UUID

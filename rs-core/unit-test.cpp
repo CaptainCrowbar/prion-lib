@@ -183,6 +183,19 @@ extern void test_core_rational_comparison();
 extern void test_core_rational_mixed();
 extern void test_core_rational_parsing();
 extern void test_core_scale_map_class();
+extern void test_core_serial_standard_types();
+extern void test_core_serial_std_chrono();
+extern void test_core_serial_blob();
+extern void test_core_serial_compact_array();
+extern void test_core_serial_endian();
+extern void test_core_serial_file();
+extern void test_core_serial_multiprecision_integers();
+extern void test_core_serial_optional();
+extern void test_core_serial_rational();
+extern void test_core_serial_uuid();
+extern void test_core_serial_vector_matrix_quaternion();
+extern void test_core_serial_version();
+extern void test_core_serial_persistent_storage();
 extern void test_core_signal_channel();
 extern void test_core_signal_name();
 extern void test_core_stack_class();
@@ -413,6 +426,19 @@ int main() {
         { "core/rational/mixed", test_core_rational_mixed },
         { "core/rational/parsing", test_core_rational_parsing },
         { "core/scale-map/class", test_core_scale_map_class },
+        { "core/serial/standard-types", test_core_serial_standard_types },
+        { "core/serial/std-chrono", test_core_serial_std_chrono },
+        { "core/serial/blob", test_core_serial_blob },
+        { "core/serial/compact-array", test_core_serial_compact_array },
+        { "core/serial/endian", test_core_serial_endian },
+        { "core/serial/file", test_core_serial_file },
+        { "core/serial/multiprecision-integers", test_core_serial_multiprecision_integers },
+        { "core/serial/optional", test_core_serial_optional },
+        { "core/serial/rational", test_core_serial_rational },
+        { "core/serial/uuid", test_core_serial_uuid },
+        { "core/serial/vector-matrix-quaternion", test_core_serial_vector_matrix_quaternion },
+        { "core/serial/version", test_core_serial_version },
+        { "core/serial/persistent-storage", test_core_serial_persistent_storage },
         { "core/signal/channel", test_core_signal_channel },
         { "core/signal/name", test_core_signal_name },
         { "core/stack/class", test_core_stack_class },

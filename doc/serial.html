@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>JSON Serialization</title>
+<link type="text/css" rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<h1 id="json-serialization">JSON Serialization</h1>
+<p>By Ross Smith</p>
+<ul>
+<li><code>#include "rs-core/serial.hpp"</code></li>
+</ul>
+<p>This header imports the <a href="https://github.com/nlohmann/json"><code>nlohmann/json</code></a>
+library and uses it for serialization of the types in my core library.</p>
+<h2 id="contents">Contents</h2>
+<div class="toc">
+<ul>
+<li><a href="#json-serialization">JSON Serialization</a><ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#imports">Imports</a></li>
+<li><a href="#serialization-for-standard-library-types">Serialization for standard library types</a></li>
+<li><a href="#serialization-for-core-library-types">Serialization for core library types</a></li>
+<li><a href="#persistent-storage">Persistent storage</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="imports">Imports</h2>
+<div class="defns">
+<ul>
+<li><code>using nlohmann::</code><strong><code>json</code></strong></li>
+</ul>
+<p>Imported for convenience.</p>
+</div>
+<h2 id="serialization-for-standard-library-types">Serialization for standard library types</h2>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename R, typename P&gt; struct</code> <strong><code>adl_serializer</code></strong><code>&lt;std::chrono::duration&lt;R, P&gt;&gt;</code></li>
+<li><code>template &lt;typename C, typename D&gt; struct</code> <strong><code>adl_serializer</code></strong><code>&lt;std::chrono::time_point&lt;C, D&gt;&gt;</code></li>
+</ul>
+<p>These allow serialization of standard <code>&lt;chrono&gt;</code> types. Any duration can be
+deserialized as a different duration type. Any time point can also be
+deserialized as a different one, but any time point type associated with a
+clock other than <code>system_clock</code> is converted between its native clock and
+<code>system_clock</code> before serialization and after recovery (using
+<code>convert_time_point()</code> from <a href="time.html"><code>rs-core/time.hpp</code></a>), which may
+introduce rounding errors.</p>
+</div>
+<h2 id="serialization-for-core-library-types">Serialization for core library types</h2>
+<div class="defns">
+<!-- DEFN -->
+
+<p>Specializations of <code>to_json()</code> and <code>from_json()</code> are provided for:</p>
+<ul>
+<li><a href="blob.html"><code>Blob</code></a></li>
+<li><a href="compact-array.html"><code>CompactArray&lt;T,N&gt;</code></a></li>
+<li><a href="common.html"><code>Endian&lt;T,B&gt;</code></a></li>
+<li><a href="file.html"><code>File</code></a></li>
+<li><a href="mp-integer.html"><code>Int</code></a></li>
+<li><a href="vector.html"><code>Matrix&lt;T,N,L&gt;</code></a></li>
+<li><a href="mp-integer.html"><code>Nat</code></a></li>
+<li><a href="optional.html"><code>Optional&lt;T&gt;</code></a></li>
+<li><a href="vector.html"><code>Quaternion&lt;T&gt;</code></a></li>
+<li><a href="rational.html"><code>Rational&lt;T&gt;</code></a></li>
+<li><a href="uuid.html"><code>Uuid</code></a></li>
+<li><a href="vector.html"><code>Vector&lt;T,N&gt;</code></a></li>
+<li><a href="common.html"><code>Version</code></a></li>
+</ul>
+</div>
+<h2 id="persistent-storage">Persistent storage</h2>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>PersistState</code></strong><ul>
+<li><code>explicit PersistState::</code><strong><code>PersistState</code></strong><code>(const U8string&amp; id)</code></li>
+<li><code>template &lt;typename... Args&gt; explicit PersistState::</code><strong><code>PersistState</code></strong><code>(Args... id)</code></li>
+<li><code>PersistState::</code><strong><code>~PersistState</code></strong><code>() noexcept</code></li>
+<li><code>U8string PersistState::</code><strong><code>id</code></strong><code>() const</code></li>
+<li><code>File PersistState::</code><strong><code>file</code></strong><code>() const</code></li>
+<li><code>void PersistState::</code><strong><code>load</code></strong><code>()</code></li>
+<li><code>void PersistState::</code><strong><code>save</code></strong><code>()</code></li>
+<li><code>template &lt;typename R, typename P&gt; void PersistState::</code><strong><code>autosave</code></strong><code>(std::chrono::duration&lt;R, P&gt; t)</code></li>
+<li><code>void PersistState::</code><strong><code>autosave_off</code></strong><code>()</code></li>
+<li><code>void PersistState::</code><strong><code>create</code></strong><code>(const U8string&amp; key, const json&amp; value)</code></li>
+<li><code>bool PersistState::</code><strong><code>read</code></strong><code>(const U8string&amp; key, json&amp; value)</code></li>
+<li><code>void PersistState::</code><strong><code>update</code></strong><code>(const U8string&amp; key, const json&amp; value)</code></li>
+<li><code>void PersistState::</code><strong><code>erase</code></strong><code>(const U8string&amp; key)</code></li>
+</ul>
+</li>
+</ul>
+<p>Common storage for state that needs to persist between runs of a program.
+Normally only one of these will be constructed for a given program.</p>
+<p>A program identifier is supplied to the constructor, either as a slash
+delimited string or an explicit list of separate elements; typically this will
+be in the form <code>"vendor/application"</code>. The identifier is used to create a file
+in the user settings directory. To ensure file name portability, the following
+restrictions are enforced on each slash delimited element of the identifier
+(the constructor will throw <code>std::invalid_argument</code> if any of these rules are
+broken):</p>
+<ul>
+<li>Must not be an empty string</li>
+<li>Must be valid UTF-8</li>
+<li>Must not be longer than 100 bytes (per element)</li>
+<li>Must not consist entirely of punctuation (i.e. must contain at least one alphanumeric or non-ASCII character)</li>
+<li>Must not contain any ASCII control characters (code points 0-31 and 127)</li>
+<li>Must not contain any of these characters: <code>" * / : &lt; &gt; ? [ \ ] |</code></li>
+<li>Must not start or end with a space or dot</li>
+</ul>
+<p>All operations on the <code>PersistState</code> object (apart from construction and
+destruction) are fully thread safe; any member function can be called from
+multiple threads without synchronization precautions.</p>
+<p>The <code>load()</code> and <code>save()</code> functions load or save all of the persistent data to
+the settings file in JSON form. A global named mutex is used to ensure that
+loading and saving the same data from multiple processes running the same
+program is safe; however, such processes will not see each other's saved data
+unless they know to reload their state, and may overwrite each other's saves.
+The <code>load()</code> and <code>save()</code> functions may throw exceptions from the
+<code>nlohmann/json</code> library if  serialization or deserialization fails, or
+<code>std::system_error</code> if an I/O error occurs. The constructor and destructor
+call <code>load()</code> and <code>save()</code> respectively (failure in the final call to <code>save()</code>
+is silently ignored).</p>
+<p>Calling <code>autosave()</code> starts a thread that calls <code>save()</code> at regular intervals;
+<code>autosave_off()</code> deactivates this. Calling <code>autosave()</code> with a zero or
+negative interval is equivalent to calling <code>autosave_off()</code>.</p>
+<p>The <code>create()</code>, <code>read()</code>, <code>update()</code>, and <code>delete()</code> functions manipulate the
+saved data. The <code>create()</code> and <code>update()</code> functions will both create an entry
+if it does not exist, but <code>create()</code> will use the supplied value only if one
+is not already there, while <code>update()</code> will always overwrite any existing
+value. All of these are used by the <code>Persist&lt;T&gt;</code> class and should not normally
+be called explicitly.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>Persist</code></strong><ul>
+<li><code>Persist::</code><strong><code>Persist</code></strong><code>() noexcept</code></li>
+<li><code>Persist::</code><strong><code>Persist</code></strong><code>(PersistState&amp; store, const U8string&amp; key, const T&amp; init = {})</code></li>
+<li><code>Persist::</code><strong><code>~Persist</code></strong><code>() noexcept</code></li>
+<li><code>Persist::</code><strong><code>Persist</code></strong><code>(Persist&amp;&amp; p) noexcept</code></li>
+<li><code>Persist&amp; Persist::</code><strong><code>operator=</code></strong><code>(Persist&amp;&amp; p) noexcept</code></li>
+<li><code>Persist&amp; Persist::</code><strong><code>operator=</code></strong><code>(const T&amp; t)</code></li>
+<li><code>Persist::</code><strong><code>operator T</code></strong><code>() const</code></li>
+<li><code>U8string Persist::</code><strong><code>key</code></strong><code>() const</code></li>
+<li><code>T Persist::</code><strong><code>get</code></strong><code>() const</code></li>
+<li><code>void Persist::</code><strong><code>set</code></strong><code>(const T&amp; t)</code></li>
+<li><code>void Persist::</code><strong><code>erase</code></strong><code>()</code></li>
+</ul>
+</li>
+</ul>
+<p>A variable whose state persists between runs of a program. The data type <code>T</code>
+must be one for which the JSON serialization functions are available.</p>
+<p>The key string supplied to the constructor can be any non-empty, valid UTF-8
+string (the constructor will throw <code>std::invalid_argument</code> if the key is
+invalid). The initial value supplied to the constructor will only be used if
+no value is already stored for that key.</p>
+<p>The value can be queried using <code>get()</code> or the conversion operator to <code>T</code>, and
+updated using <code>set()</code> or the assignment operator from <code>T</code>. Values are stored
+internally in serialized JSON form, so both query and update are nontrivial
+operations; frequently used values should usually be copied into a separate
+<code>T</code> variable.</p></body>
+</html>

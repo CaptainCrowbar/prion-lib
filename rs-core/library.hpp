@@ -24,6 +24,7 @@
 #include "rs-core/random.hpp"
 #include "rs-core/rational.hpp"
 #include "rs-core/scale-map.hpp"
+#include "rs-core/serial.hpp"
 #include "rs-core/signal.hpp"
 #include "rs-core/stack.hpp"
 #include "rs-core/statistics.hpp"

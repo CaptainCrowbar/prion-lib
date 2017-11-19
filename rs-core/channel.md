@@ -67,7 +67,7 @@ both `Channel` and `Polled`, implementing `close()`, `poll()`, and
     * `Channel& Channel::`**`operator=`**`(Channel&& c) noexcept`
     * `virtual void Channel::`**`close`**`() noexcept = 0`
     * `virtual bool Channel::`**`is_async`**`() const noexcept` _= true_
-    * `virtual bool Channel::`**`is_multiplex`**`() const noexcept` _= false_
+    * `virtual bool Channel::`**`is_shared`**`() const noexcept` _= false_
     * `virtual state Channel::`**`poll`**`()`
     * `virtual state Channel::`**`wait`**`()`
     * `template <typename R, typename P> Channel::state Channel::`**`wait_for`**`(std::chrono::duration<R, P> t)`
@@ -85,9 +85,9 @@ If `is_async()` is false, the channel can only be used in a synchronous
 dispatch handler (see `Dispatch` below), usually because it calls an
 underlying native API that is only intended to be used from the main thread.
 
-If `is_multiplex()` is true, it is safe to call the wait functions (and
-`read()` where relevant) from multiple threads at the same time, provided it
-is acceptable for each message to be delivered to an unpredictable choice of
+If `is_shared()` is true, it is safe to call the wait functions (and `read()`
+where relevant) from multiple threads at the same time, provided it is
+acceptable for each message to be delivered to an unpredictable choice of
 thread.
 
 The channel base classes implement move operations in case a derived class
@@ -172,9 +172,9 @@ again here unless they have significantly different semantics.
 ### Trivial channels ###
 
 * `class` **`TrueChannel`**`: public EventChannel`
-    * `virtual bool TrueChannel::`**`is_multiplex`**`() const noexcept` _= true_
+    * `virtual bool TrueChannel::`**`is_shared`**`() const noexcept` _= true_
 * `class` **`FalseChannel`**`: public EventChannel`
-    * `virtual bool FalsChannel::`**`is_multiplex`**`() const noexcept` _= true_
+    * `virtual bool FalsChannel::`**`is_shared`**`() const noexcept` _= true_
 
 Trivial event channels whose wait functions always succeed immediately
 (`TrueChannel`) or always time out (`FalseChannel`).
@@ -183,7 +183,7 @@ Trivial event channels whose wait functions always succeed immediately
 
 * `class` **`TimerChannel`**`: public EventChannel, public IntervalBase`
     * `template <typename R, typename P> explicit TimerChannel::`**`TimerChannel`**`(std::chrono::duration<R, P> t) noexcept`
-    * `virtual bool TimerChannel::`**`is_multiplex`**`() const noexcept` _= true_
+    * `virtual bool TimerChannel::`**`is_shared`**`() const noexcept` _= true_
     * `void TimerChannel::`**`flush`**`() noexcept`
     * `IntervalBase::time_unit TimerChannel::`**`next`**`() const noexcept`
 
@@ -211,7 +211,7 @@ itself.
 
 * `template <typename T> class` **`QueueChannel`**`: public MessageChannel<T>`
     * `QueueChannel::`**`QueueChannel`**`()`
-    * `virtual bool QueueChannel::`**`is_multiplex`**`() const noexcept` _= true_
+    * `virtual bool QueueChannel::`**`is_shared`**`() const noexcept` _= true_
     * `void QueueChannel::`**`clear`**`() noexcept`
     * `bool QueueChannel::`**`write`**`(const T& t)`
     * `bool QueueChannel::`**`write`**`(T&& t)`
@@ -223,7 +223,7 @@ A last in, first out message queue.
 * `template <typename T> class` **`ValueChannel`**`: public MessageChannel<T>`
     * `ValueChannel::`**`ValueChannel`**`()`
     * `explicit ValueChannel::`**`ValueChannel`**`(const T& t)`
-    * `virtual bool ValueChannel::`**`is_multiplex`**`() const noexcept` _= true_
+    * `virtual bool ValueChannel::`**`is_shared`**`() const noexcept` _= true_
     * `void ValueChannel::`**`clear`**`() noexcept`
     * `bool ValueChannel::`**`write`**`(const T& t)`
     * `bool ValueChannel::`**`write`**`(T&& t)`
@@ -287,7 +287,7 @@ The `add()` functions start a synchronous or asynchronous task reading from
 the channel. They will throw `invalid_argument` if any of these conditions is
 true:
 
-* The same channel is added more than once, and the channel is not multiplex (`Channel::is_multiplex()` is false).
+* The same channel is added more than once, and the channel is not shareable (`Channel::is_shared()` is false).
 * The mode flag is not one of the `Dispatch::mode` enumeration values.
 * The channel is synchronous (`Channel::is_async()` is false), but the mode is `async`.
 * The callback function is null.

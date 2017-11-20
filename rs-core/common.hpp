@@ -1431,11 +1431,15 @@ namespace RS {
         return d;
     }
 
+    inline size_t hash_mix(size_t h1, size_t h2) noexcept {
+        return h1 ^ (h2 + 0x9e3779b9 + (h1 << 6) + (h1 >> 2));
+    }
+
     inline void hash_combine(size_t&) noexcept {}
 
     template <typename T>
     void hash_combine(size_t& hash, const T& t) noexcept {
-        hash ^= std::hash<T>()(t) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+        hash = hash_mix(hash, std::hash<T>()(t));
     }
 
     template <typename T, typename... Args>

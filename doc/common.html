@@ -977,6 +977,12 @@ overloaded), function pointers, function objects, lambda expressions, and
 </div>
 <div class="defns">
 <ul>
+<li><code>size_t</code> <strong><code>hash_mix</code></strong><code>(size_t h1, size_t h2) noexcept</code></li>
+</ul>
+<p>Combine two hash values.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>template &lt;typename... Args&gt; size_t</code> <strong><code>hash_value</code></strong><code>(const Args&amp;... args) noexcept</code></li>
 <li><code>template &lt;typename... Args&gt; void</code> <strong><code>hash_combine</code></strong><code>(size_t&amp; hash, const Args&amp;... args) noexcept</code></li>
 <li><code>template &lt;typename Range&gt; size_t</code> <strong><code>hash_range</code></strong><code>(const Range&amp; range) noexcept</code></li>

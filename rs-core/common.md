@@ -754,6 +754,10 @@ Trivial function objects.
 
 A simple, efficient hash algorithm for a string of bytes.
 
+* `size_t` **`hash_mix`**`(size_t h1, size_t h2) noexcept`
+
+Combine two hash values.
+
 * `template <typename... Args> size_t` **`hash_value`**`(const Args&... args) noexcept`
 * `template <typename... Args> void` **`hash_combine`**`(size_t& hash, const Args&... args) noexcept`
 * `template <typename Range> size_t` **`hash_range`**`(const Range& range) noexcept`

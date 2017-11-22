@@ -38,7 +38,7 @@ BUILD := build/$(build_target)
 LIBTAG := $(cross_target)
 CXX := g++
 common_flags := -march=ivybridge -mfpmath=sse
-diagnostic_flags := -Wall -Wextra -Werror
+diagnostic_flags := -fdiagnostics-color=always -Wall -Wextra -Werror
 cc_specific_flags :=
 cxx_specific_flags :=
 objc_specific_flags :=
@@ -92,6 +92,27 @@ ifeq ($(cross_target),msvc)
 	RCFLAGS :=
 	rc_output := /fo
 	native_windows := yes
+else
+	# https://www.reddit.com/r/cpp/comments/7cfea3/clipp_a_single_header_nodependency_c11_library/dpq8xgi/
+	# diagnostic_flags += -Wcast-align
+	# diagnostic_flags += -Wcast-qual
+	# diagnostic_flags += -Wconversion
+	# diagnostic_flags += -Wctor-dtor-privacy
+	# diagnostic_flags += -Wdisabled-optimization
+	# diagnostic_flags += -Wformat=2
+	# diagnostic_flags += -Winit-self
+	# diagnostic_flags += -Wmissing-declarations
+	# diagnostic_flags += -Wmissing-include-dirs
+	# diagnostic_flags += -Wnull-dereference
+	# diagnostic_flags += -Wold-style-cast
+	# diagnostic_flags += -Woverloaded-virtual
+	# diagnostic_flags += -Wpedantic
+	# diagnostic_flags += -Wredundant-decls
+	# diagnostic_flags += -Wshadow
+	# diagnostic_flags += -Wstrict-aliasing
+	# diagnostic_flags += -Wstrict-overflow=5
+	# diagnostic_flags += -Wswitch-default
+	# diagnostic_flags += -Wundef
 endif
 
 ifeq ($(cross_target),cygwin)

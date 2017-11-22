@@ -32,7 +32,8 @@ namespace RS {
     }
 
     template <typename K, typename T>
-    class ArrayMap {
+    class ArrayMap:
+    public LessThanComparable<ArrayMap<K, T>> {
     private:
         using traits = RS_Detail::ArrayMapTraits<K, T>;
         using array_type = std::vector<typename traits::value_type>;
@@ -61,6 +62,8 @@ namespace RS {
         std::pair<iterator, bool> insert(const value_type& v);
         void reserve(size_t n) { array.reserve(n); }
         size_t size() const noexcept { return array.size(); }
+        friend bool operator==(const ArrayMap& lhs, const ArrayMap& rhs) noexcept { return lhs.array == rhs.array; }
+        friend bool operator<(const ArrayMap& lhs, const ArrayMap& rhs) noexcept { return lhs.array < rhs.array; }
     };
 
     template <typename K> using ArraySet = ArrayMap<K, void>;

@@ -40,9 +40,15 @@ By Ross Smith
     * `void ArrayMap::`**`reserve`**`(size_t n)`
     * `size_t ArrayMap::`**`size`**`() const noexcept`
 * `template <typename K> using` **`ArraySet`** `= ArrayMap<K, void>`
+* `bool` **`operator==`**`(const ArrayMap& lhs, const ArrayMap& rhs) noexcept`
+* `bool` **`operator!=`**`(const ArrayMap& lhs, const ArrayMap& rhs) noexcept`
+* `bool` **`operator<`**`(const ArrayMap& lhs, const ArrayMap& rhs) noexcept`
+* `bool` **`operator>`**`(const ArrayMap& lhs, const ArrayMap& rhs) noexcept`
+* `bool` **`operator<=`**`(const ArrayMap& lhs, const ArrayMap& rhs) noexcept`
+* `bool` **`operator>=`**`(const ArrayMap& lhs, const ArrayMap& rhs) noexcept`
 
 An associative array that uses a simple sequential container internally,
 finding keys by linear search (using equality comparison). This can be more
 efficient than a tree or hash based container for small element counts; it can
 also be useful when the element type has no natural ordering or hash function.
-Member functions have their usual meaning for associative containers.
+Functions have their usual meaning for associative containers.

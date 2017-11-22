@@ -56,10 +56,16 @@
 </ul>
 </li>
 <li><code>template &lt;typename K&gt; using</code> <strong><code>ArraySet</code></strong> <code>= ArrayMap&lt;K, void&gt;</code></li>
+<li><code>bool</code> <strong><code>operator==</code></strong><code>(const ArrayMap&amp; lhs, const ArrayMap&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator!=</code></strong><code>(const ArrayMap&amp; lhs, const ArrayMap&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&lt;</code></strong><code>(const ArrayMap&amp; lhs, const ArrayMap&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&gt;</code></strong><code>(const ArrayMap&amp; lhs, const ArrayMap&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&lt;=</code></strong><code>(const ArrayMap&amp; lhs, const ArrayMap&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&gt;=</code></strong><code>(const ArrayMap&amp; lhs, const ArrayMap&amp; rhs) noexcept</code></li>
 </ul>
 <p>An associative array that uses a simple sequential container internally,
 finding keys by linear search (using equality comparison). This can be more
 efficient than a tree or hash based container for small element counts; it can
 also be useful when the element type has no natural ordering or hash function.
-Member functions have their usual meaning for associative containers.</p></body>
+Functions have their usual meaning for associative containers.</p></body>
 </html>

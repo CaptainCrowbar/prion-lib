@@ -824,7 +824,7 @@ void test_core_string_formatting() {
     TEST_EQUAL(fp_format(12.3, 'z', 3), "12.3");
     TEST_EQUAL(fp_format(123, 'z', 3), "123");
 
-    TEST_EQUAL(roman(0), "0");
+    TEST_EQUAL(roman(0), "");
     TEST_EQUAL(roman(1), "I");
     TEST_EQUAL(roman(42), "XLII");
     TEST_EQUAL(roman(1111), "MCXI");

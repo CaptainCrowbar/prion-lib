@@ -240,10 +240,11 @@ stripped. This will throw `std::invalid_argument` if the mode is not one of
 `[EFGZefgz]`; it may throw `std::system_error` under implementation defined
 circumstances.
 
-* `U8string` **`roman`**`(unsigned n)`
+* `U8string` **`roman`**`(int n)`
 
-Formats a number as a Roman numeral. Zero is written as `"0"`; numbers greater
-than 1000 use an arbitrarily long sequence of `"M"`.
+Formats a number as a Roman numeral. Numbers greater than 1000 will be written
+with an arbitrarily long sequence of `"M"`. This will return an empty string
+if the argument is less than 1.
 
 * `U8string` **`hexdump`**`(const void* ptr, size_t n, size_t block = 0)`
 * `U8string` **`hexdump`**`(const std::string& str, size_t block = 0)`

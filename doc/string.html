@@ -308,10 +308,11 @@ circumstances.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>U8string</code> <strong><code>roman</code></strong><code>(unsigned n)</code></li>
+<li><code>U8string</code> <strong><code>roman</code></strong><code>(int n)</code></li>
 </ul>
-<p>Formats a number as a Roman numeral. Zero is written as <code>"0"</code>; numbers greater
-than 1000 use an arbitrarily long sequence of <code>"M"</code>.</p>
+<p>Formats a number as a Roman numeral. Numbers greater than 1000 will be written
+with an arbitrarily long sequence of <code>"M"</code>. This will return an empty string
+if the argument is less than 1.</p>
 </div>
 <div class="defns">
 <ul>

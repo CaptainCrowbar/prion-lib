@@ -715,22 +715,20 @@ namespace RS {
         return buf;
     }
 
-    inline U8string roman(unsigned n) {
-        struct char_value { const char* str; unsigned num; };
-        static constexpr char_value table[] {
-            { "CM", 900 }, { "D", 500 }, { "CD", 400 }, { "C", 100 },
-            { "XC", 90 }, { "L", 50 }, { "XL", 40 }, { "X", 10 },
-            { "IX", 9 }, { "V", 5 }, { "IV", 4 }, { "I", 1 },
+    inline U8string roman(int n) {
+        static constexpr std::pair<int, const char*> table[] = {
+            { 900, "CM" }, { 500, "D" }, { 400, "CD" }, { 100, "C" },
+            { 90, "XC" }, { 50, "L" }, { 40, "XL" }, { 10, "X" },
+            { 9, "IX" }, { 5, "V" }, { 4, "IV" }, { 1, "I" },
         };
-        if (n == 0)
-            return "0";
-        U8string s(n / 1000, 'M');
+        if (n < 1)
+            return {};
+        U8string s(size_t(n / 1000), 'M');
         n %= 1000;
         for (auto& t: table) {
-            unsigned q = n / t.num;
-            n %= t.num;
-            for (unsigned i = 0; i < q; ++i)
-                s += t.str;
+            for (int q = n / t.first; q > 0; --q)
+                s += t.second;
+            n %= t.first;
         }
         return s;
     }

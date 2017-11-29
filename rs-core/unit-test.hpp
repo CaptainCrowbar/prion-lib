@@ -106,9 +106,9 @@
 
 #define TEST_MATCH(str, pattern) \
     do { \
+        static const std::regex local_test_regex(pattern); \
         bool local_test_status = false; \
         std::string local_test_string(str); \
-        std::regex local_test_regex(pattern); \
         TEST_IMPL(local_test_status, std::regex_search(local_test_string, local_test_regex), \
             "regex match(" #str ", " #pattern ")"); \
         if (! local_test_status) { \
@@ -119,9 +119,9 @@
 
 #define TEST_MATCH_ICASE(str, pattern) \
     do { \
+        static const std::regex local_test_regex(pattern, std::regex::icase); \
         bool local_test_status = false; \
         std::string local_test_string(str); \
-        std::regex local_test_regex(pattern, std::regex::icase); \
         TEST_IMPL(local_test_status, std::regex_search(local_test_string, local_test_regex), \
             "regex match(" #str ", " #pattern ")"); \
         if (! local_test_status) { \

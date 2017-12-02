@@ -65,36 +65,6 @@ namespace RS {
         uint64_t x;
     };
 
-    // Random device sources
-
-    inline void urandom(void* ptr, size_t n) noexcept {
-        if (! ptr || ! n)
-            return;
-        #ifdef _XOPEN_SOURCE
-            int fd = ::open("/dev/urandom", O_RDONLY);
-            ::read(fd, ptr, n);
-            ::close(fd);
-        #else
-            HCRYPTPROV handle = 0;
-            CryptAcquireContext(&handle, nullptr, nullptr, PROV_RSA_FULL, CRYPT_SILENT | CRYPT_VERIFYCONTEXT);
-            CryptGenRandom(handle, uint32_t(n), static_cast<uint8_t*>(ptr));
-            CryptReleaseContext(handle, 0);
-        #endif
-    }
-
-    template <typename T>
-    class Urandom {
-    public:
-        static_assert(std::is_integral<T>::value);
-        using result_type = T;
-        T operator()() noexcept { T u = 0; urandom(&u, sizeof(u)); return u; }
-        static constexpr T min() noexcept { return std::numeric_limits<T>::min(); }
-        static constexpr T max() noexcept { return std::numeric_limits<T>::max(); }
-    };
-
-    using Urandom32 = Urandom<uint32_t>;
-    using Urandom64 = Urandom<uint64_t>;
-
     // Xoroshiro generator
 
     class Xoroshiro:

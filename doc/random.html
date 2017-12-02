@@ -18,7 +18,6 @@
 <li><a href="#contents">Contents</a></li>
 <li><a href="#random-number-sources">Random number sources</a><ul>
 <li><a href="#lcg-functions">LCG functions</a></li>
-<li><a href="#random-device-sources">Random device sources</a></li>
 <li><a href="#xoroshiro-generator">Xoroshiro generator</a></li>
 </ul>
 </li>
@@ -75,29 +74,6 @@ from Pierre L'Ecuyer (1999),
 </li>
 </ul>
 <p>Random number engine classes based on the above functions.</p>
-</div>
-<h3 id="random-device-sources">Random device sources</h3>
-<div class="defns">
-<ul>
-<li><code>template &lt;typename T&gt; class</code> <strong><code>Urandom</code></strong><ul>
-<li><code>using Urandom::</code><strong><code>result_type</code></strong> <code>= T</code></li>
-<li><code>T Urandom::</code><strong><code>operator()</code></strong><code>() noexcept</code></li>
-<li><code>static constexpr T Urandom::</code><strong><code>min</code></strong><code>() noexcept</code></li>
-<li><code>static constexpr T Urandom::</code><strong><code>max</code></strong><code>() noexcept</code></li>
-</ul>
-</li>
-<li><code>using</code> <strong><code>Urandom32</code></strong> <code>= Urandom&lt;uint32_t&gt;</code></li>
-<li><code>using</code> <strong><code>Urandom64</code></strong> <code>= Urandom&lt;uint64_t&gt;</code></li>
-</ul>
-<p>Generate random numbers from the system's standard random device. The result
-type <code>T</code> must be a primitive integer type.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>void</code> <strong><code>urandom_bytes</code></strong><code>(void* ptr, size_t n) noexcept</code></li>
-</ul>
-<p>Copies random bytes from the random device. This will do nothing if either
-argument is null.</p>
 </div>
 <h3 id="xoroshiro-generator">Xoroshiro generator</h3>
 <div class="defns">

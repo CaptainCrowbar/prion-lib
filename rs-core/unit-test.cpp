@@ -161,7 +161,6 @@ extern void test_core_process_shell_commands();
 extern void test_core_process_stream();
 extern void test_core_process_text();
 extern void test_core_random_lcg();
-extern void test_core_random_urandom();
 extern void test_core_random_xoroshiro();
 extern void test_core_random_basic_distributions();
 extern void test_core_random_uniform_integer_distribution();
@@ -404,7 +403,6 @@ int main() {
         { "core/process/stream", test_core_process_stream },
         { "core/process/text", test_core_process_text },
         { "core/random/lcg", test_core_random_lcg },
-        { "core/random/urandom", test_core_random_urandom },
         { "core/random/xoroshiro", test_core_random_xoroshiro },
         { "core/random/basic-distributions", test_core_random_basic_distributions },
         { "core/random/uniform-integer-distribution", test_core_random_uniform_integer_distribution },

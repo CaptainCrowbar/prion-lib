@@ -69,18 +69,6 @@ void test_core_random_lcg() {
 
 }
 
-void test_core_random_urandom() {
-
-    static constexpr size_t iterations = 10'000;
-
-    Urandom32 urng32;
-    Urandom64 urng64;
-
-    CHECK_RANDOM_GENERATOR(urng32, 0, max32, mean32, sd32);
-    CHECK_RANDOM_GENERATOR(urng64, 0, max64, mean64, sd64);
-
-}
-
 void test_core_random_xoroshiro() {
 
     static constexpr uint64_t expect[] = {

@@ -42,24 +42,6 @@ from Pierre L'Ecuyer (1999),
 
 Random number engine classes based on the above functions.
 
-### Random device sources ###
-
-* `template <typename T> class` **`Urandom`**
-    * `using Urandom::`**`result_type`** `= T`
-    * `T Urandom::`**`operator()`**`() noexcept`
-    * `static constexpr T Urandom::`**`min`**`() noexcept`
-    * `static constexpr T Urandom::`**`max`**`() noexcept`
-* `using` **`Urandom32`** `= Urandom<uint32_t>`
-* `using` **`Urandom64`** `= Urandom<uint64_t>`
-
-Generate random numbers from the system's standard random device. The result
-type `T` must be a primitive integer type.
-
-* `void` **`urandom_bytes`**`(void* ptr, size_t n) noexcept`
-
-Copies random bytes from the random device. This will do nothing if either
-argument is null.
-
 ### Xoroshiro generator ###
 
 * `class` **`Xoroshiro`**

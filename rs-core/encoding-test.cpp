@@ -1,4 +1,5 @@
 #include "rs-core/encoding.hpp"
+#include "rs-core/random.hpp"
 #include "rs-core/string.hpp"
 #include "rs-core/unit-test.hpp"
 #include <string>
@@ -57,6 +58,33 @@ void test_core_encoding_hex() {
     bin.clear();  TRY(text = code.encode(""));        TEST_EQUAL(text, "");     TRY(n = code.decode(text, bin));  TEST_EQUAL(n, 0);   TEST_EQUAL(bin, "");
     bin.clear();  TRY(text = code.encode(bin1));      TEST_EQUAL(text, text1);  TRY(n = code.decode(text, bin));  TEST_EQUAL(n, 22);  TEST_EQUAL(bin, bin1);
     bin.clear();  TRY(text = code.encode(bin1, 10));  TEST_EQUAL(text, wrap1);  TRY(n = code.decode(text, bin));  TEST_EQUAL(n, 24);  TEST_EQUAL(bin, bin1);
+
+}
+
+void test_core_encoding_base32() {
+
+    static constexpr size_t limit = 1000;
+    static constexpr size_t width = 10;
+    static constexpr size_t maxreg = 200;
+
+    Base32Encoding code;
+    U8string s1, s2, s3;
+    Xoroshiro rng(42);
+
+    for (size_t n = 0; n <= limit; ++n) {
+        s1.resize(n, '\0');
+        for (char& c: s1)
+            c = char(random_integer(rng, 256));
+        size_t expanded = (n * 8 + 4) / 5;
+        if (width != 0 && expanded > width)
+            expanded += (expanded - 1) / width;
+        TRY(s2 = code.encode(s1, width));
+        TEST_EQUAL(s2.size(), expanded);
+        if (n > 0 && n <= maxreg)
+            TEST_MATCH(s2, "^([0-9a-z]{10}\\n)*[0-9a-z]{1,10}$");
+        TRY(s3 = code.decode(s2));
+        TEST_EQUAL(s3, s1);
+    }
 
 }
 

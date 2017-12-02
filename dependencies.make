@@ -6,7 +6,7 @@ $(BUILD)/channel-test.o: rs-core/channel-test.cpp rs-core/channel.hpp rs-core/co
 $(BUILD)/common-test.o: rs-core/common-test.cpp rs-core/common.hpp rs-core/unit-test.hpp
 $(BUILD)/compact-array-test.o: rs-core/compact-array-test.cpp rs-core/common.hpp rs-core/compact-array.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/unit-test.hpp
 $(BUILD)/digest-test.o: rs-core/digest-test.cpp rs-core/common.hpp rs-core/digest.hpp rs-core/string.hpp rs-core/unit-test.hpp
-$(BUILD)/encoding-test.o: rs-core/encoding-test.cpp rs-core/common.hpp rs-core/encoding.hpp rs-core/string.hpp rs-core/unit-test.hpp
+$(BUILD)/encoding-test.o: rs-core/encoding-test.cpp rs-core/common.hpp rs-core/encoding.hpp rs-core/float.hpp rs-core/random.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp
 $(BUILD)/file-test.o: rs-core/file-test.cpp rs-core/common.hpp rs-core/file.hpp rs-core/string.hpp rs-core/time.hpp rs-core/unit-test.hpp
 $(BUILD)/float-test.o: rs-core/float-test.cpp rs-core/common.hpp rs-core/float.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp
 $(BUILD)/grid-test.o: rs-core/grid-test.cpp rs-core/common.hpp rs-core/grid.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp

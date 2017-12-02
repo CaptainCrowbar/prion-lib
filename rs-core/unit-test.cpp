@@ -56,6 +56,7 @@ extern void test_core_digest_sha512();
 extern void test_core_encoding_escape();
 extern void test_core_encoding_quote();
 extern void test_core_encoding_hex();
+extern void test_core_encoding_base32();
 extern void test_core_encoding_base64();
 extern void test_core_encoding_ascii85();
 extern void test_core_encoding_z85();
@@ -298,6 +299,7 @@ int main() {
         { "core/encoding/escape", test_core_encoding_escape },
         { "core/encoding/quote", test_core_encoding_quote },
         { "core/encoding/hex", test_core_encoding_hex },
+        { "core/encoding/base32", test_core_encoding_base32 },
         { "core/encoding/base64", test_core_encoding_base64 },
         { "core/encoding/ascii85", test_core_encoding_ascii85 },
         { "core/encoding/z85", test_core_encoding_z85 },

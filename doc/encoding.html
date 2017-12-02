@@ -19,6 +19,7 @@
 <li><a href="#encoding-base-class">Encoding base class</a></li>
 <li><a href="#character-escape-encodings">Character escape encodings</a></li>
 <li><a href="#hex-encoding">Hex encoding</a></li>
+<li><a href="#base-32-encoding">Base 32 encoding</a></li>
 <li><a href="#base-64-encoding">Base 64 encoding</a></li>
 <li><a href="#base-85-encodings">Base 85 encodings</a></li>
 </ul>
@@ -75,6 +76,17 @@ otherwise, decoding will stop with the next unescaped quote.</p>
 <li><code>class</code> <strong><code>HexEncoding</code></strong><code>: public Encoding</code></li>
 </ul>
 <p>Each byte is encoded as two hexadecimal digits.</p>
+</div>
+<h2 id="base-32-encoding">Base 32 encoding</h2>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>Base32Encoding</code></strong><code>: public Encoding</code></li>
+</ul>
+<p>Each group of 5 bytes is encoded as 8 alphanumeric characters from <code>[0-9a-v]</code>;
+encoding always generates lower case, but decoding is case insensitive. No end
+marker is necessary because the length of the converted string is always
+unambiguous in both directions, but multiple encoded strings cannot be
+concatenated unless the length of each string is recorded separately.</p>
 </div>
 <h2 id="base-64-encoding">Base 64 encoding</h2>
 <div class="defns">

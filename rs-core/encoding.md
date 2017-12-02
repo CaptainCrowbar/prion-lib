@@ -57,6 +57,16 @@ otherwise, decoding will stop with the next unescaped quote.
 
 Each byte is encoded as two hexadecimal digits.
 
+## Base 32 encoding ##
+
+* `class` **`Base32Encoding`**`: public Encoding`
+
+Each group of 5 bytes is encoded as 8 alphanumeric characters from `[0-9a-v]`;
+encoding always generates lower case, but decoding is case insensitive. No end
+marker is necessary because the length of the converted string is always
+unambiguous in both directions, but multiple encoded strings cannot be
+concatenated unless the length of each string is recorded separately.
+
 ## Base 64 encoding ##
 
 * `class` **`Base64Encoding`**`: public Encoding`

@@ -469,6 +469,53 @@ void test_core_variant_behaviour() {
 
 }
 
+void test_core_variant_function_call() {
+
+    V3 v;
+    W3 w;
+    std::string s;
+
+    auto f1 = [&] (int i) { s = std::to_string(i); };
+    auto f2 = [&] (float f) { s = std::to_string(int(100 * f)); };
+
+    TRY(v = 42);     s = "x";  TRY(v.call_if<int>(f1));    TEST_EQUAL(s, "42");
+    TRY(v = 42);     s = "x";  TRY(v.call_if<float>(f2));  TEST_EQUAL(s, "x");
+    TRY(v = 1.25f);  s = "x";  TRY(v.call_if<int>(f1));    TEST_EQUAL(s, "x");
+    TRY(v = 1.25f);  s = "x";  TRY(v.call_if<float>(f2));  TEST_EQUAL(s, "125");
+    TRY(w = {});     s = "x";  TRY(w.call_if<int>(f1));    TEST_EQUAL(s, "x");
+    TRY(w = 42);     s = "x";  TRY(w.call_if<int>(f1));    TEST_EQUAL(s, "42");
+    TRY(w = 42);     s = "x";  TRY(w.call_if<float>(f2));  TEST_EQUAL(s, "x");
+    TRY(w = {});     s = "x";  TRY(w.call_if<int>(f1));    TEST_EQUAL(s, "x");
+    TRY(w = 1.25f);  s = "x";  TRY(w.call_if<int>(f1));    TEST_EQUAL(s, "x");
+    TRY(w = 1.25f);  s = "x";  TRY(w.call_if<float>(f2));  TEST_EQUAL(s, "125");
+
+    auto f3 = [] (int i) { return std::to_string(i); };
+    auto f4 = [] (float f) { return std::to_string(int(100 * f)); };
+
+    TRY(v = 42);     TRY(s = v.call_or<int>(f3));    TEST_EQUAL(s, "42");
+    TRY(v = 42);     TRY(s = v.call_or<float>(f4));  TEST_EQUAL(s, "");
+    TRY(v = 1.25f);  TRY(s = v.call_or<int>(f3));    TEST_EQUAL(s, "");
+    TRY(v = 1.25f);  TRY(s = v.call_or<float>(f4));  TEST_EQUAL(s, "125");
+    TRY(w = {});     TRY(s = w.call_or<int>(f3));    TEST_EQUAL(s, "");
+    TRY(w = 42);     TRY(s = w.call_or<int>(f3));    TEST_EQUAL(s, "42");
+    TRY(w = 42);     TRY(s = w.call_or<float>(f4));  TEST_EQUAL(s, "");
+    TRY(w = {});     TRY(s = w.call_or<int>(f3));    TEST_EQUAL(s, "");
+    TRY(w = 1.25f);  TRY(s = w.call_or<int>(f3));    TEST_EQUAL(s, "");
+    TRY(w = 1.25f);  TRY(s = w.call_or<float>(f4));  TEST_EQUAL(s, "125");
+
+    TRY(v = 42);     TRY(s = v.call_or<int>(f3, "z"s));    TEST_EQUAL(s, "42");
+    TRY(v = 42);     TRY(s = v.call_or<float>(f4, "z"s));  TEST_EQUAL(s, "z");
+    TRY(v = 1.25f);  TRY(s = v.call_or<int>(f3, "z"s));    TEST_EQUAL(s, "z");
+    TRY(v = 1.25f);  TRY(s = v.call_or<float>(f4, "z"s));  TEST_EQUAL(s, "125");
+    TRY(w = {});     TRY(s = w.call_or<int>(f3, "z"s));    TEST_EQUAL(s, "z");
+    TRY(w = 42);     TRY(s = w.call_or<int>(f3, "z"s));    TEST_EQUAL(s, "42");
+    TRY(w = 42);     TRY(s = w.call_or<float>(f4, "z"s));  TEST_EQUAL(s, "z");
+    TRY(w = {});     TRY(s = w.call_or<int>(f3, "z"s));    TEST_EQUAL(s, "z");
+    TRY(w = 1.25f);  TRY(s = w.call_or<int>(f3, "z"s));    TEST_EQUAL(s, "z");
+    TRY(w = 1.25f);  TRY(s = w.call_or<float>(f4, "z"s));  TEST_EQUAL(s, "125");
+
+}
+
 void test_core_variant_comparison() {
 
     VT v1{XA(10)}, v2{XA(20)}, v3{XB(5)}, v4{XB(5)};

@@ -225,6 +225,7 @@ extern void test_core_topological_order_reverse();
 extern void test_core_uuid_class();
 extern void test_core_variant_types();
 extern void test_core_variant_behaviour();
+extern void test_core_variant_function_call();
 extern void test_core_variant_comparison();
 extern void test_core_vector_integer();
 extern void test_core_vector_floating();
@@ -468,6 +469,7 @@ int main() {
         { "core/uuid/class", test_core_uuid_class },
         { "core/variant/types", test_core_variant_types },
         { "core/variant/behaviour", test_core_variant_behaviour },
+        { "core/variant/function-call", test_core_variant_function_call },
         { "core/variant/comparison", test_core_variant_comparison },
         { "core/vector/integer", test_core_vector_integer },
         { "core/vector/floating", test_core_vector_floating },

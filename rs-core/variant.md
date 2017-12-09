@@ -81,6 +81,17 @@ index does not match the current branch: the `as()/at()` versions will throw
 `ref_as()/ref_at()` versions do not check the current branch type, and
 behaviour is undefined if it does not match.
 
+* `template <typename T, typename F> void Variant::`**`call_if`**`(F f)`
+* `template <typename T, typename F> void Variant::`**`call_if`**`(F f) const`
+* `template <typename T, typename F> [return type of F] Variant::`**`call_or`**`(F f) const`
+* `template <typename T, typename F, typename RT> RT Variant::`**`call_or`**`(F f, const RT& def) const`
+
+Call a function on the variant's current value, if the current branch matches
+the specified type. All of these expect `F` to be a unary function that takes
+a `T&` (first version) or `const T&` (other versions). In the first version of
+`call_or()`, the return type of `F` must be default constructible; in the
+second version, it must be implicitly convertible to `RT`.
+
 * `bool Variant::`**`empty`**`() const noexcept`
 
 True if the current branch is `Nil`. If `is_nullable` is false, `empty()` will

@@ -187,6 +187,10 @@ namespace RS {
         template <typename T> const T& ref_as() const noexcept;
         template <int Index> TypeAt<typelist, Index>& ref_at() noexcept;
         template <int Index> const TypeAt<typelist, Index>& ref_at() const noexcept;
+        template <typename T, typename F> void call_if(F f);
+        template <typename T, typename F> void call_if(F f) const;
+        template <typename T, typename F> std::decay_t<decltype(std::declval<F>()(std::declval<T>()))> call_or(F f) const;
+        template <typename T, typename F, typename RT> RT call_or(F f, const RT& def) const;
         bool empty() const noexcept { return is_nullable && which == 0; }
         size_t hash() const noexcept;
         int index() const noexcept { return which; }
@@ -396,6 +400,38 @@ namespace RS {
         static_check_variant_index<Variant, Index>();
         using T = TypeAt<typelist, Index>;
         return reinterpret_cast<const T&>(data);
+    }
+
+    template <typename... TS>
+    template <typename T, typename F>
+    void Variant<TS...>::call_if(F f) {
+        if (is<T>())
+            f(ref_as<T>());
+    }
+
+    template <typename... TS>
+    template <typename T, typename F>
+    void Variant<TS...>::call_if(F f) const {
+        if (is<T>())
+            f(ref_as<T>());
+    }
+
+    template <typename... TS>
+    template <typename T, typename F>
+    std::decay_t<decltype(std::declval<F>()(std::declval<T>()))> Variant<TS...>::call_or(F f) const {
+        if (is<T>())
+            return f(ref_as<T>());
+        else
+            return {};
+    }
+
+    template <typename... TS>
+    template <typename T, typename F, typename RT>
+    RT Variant<TS...>::call_or(F f, const RT& def) const {
+        if (is<T>())
+            return f(ref_as<T>());
+        else
+            return def;
     }
 
     template <typename... TS>

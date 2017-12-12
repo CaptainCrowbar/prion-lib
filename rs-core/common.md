@@ -795,7 +795,8 @@ Hash function for a tuple.
     * `T& Resource::`**`get`**`() noexcept`
     * `T Resource::`**`get`**`() const noexcept`
     * `T Resource::`**`release`**`() noexcept`
-    * `void Resource::`**`set`**`(T t) noexcept`
+    * `void Resource::`**`reset`**`() noexcept`
+    * `void Resource::`**`reset`**`(T t) noexcept`
     * `static T Resource::`**`def`**`() noexcept`
 * `template <typename T, typename Del> Resource<T>` **`make_resource`**`(T t, Del d)`
 

@@ -2023,7 +2023,7 @@ void test_core_common_scope_guards() {
     {
         Resource<int*> r;
         TEST(! r);
-        TRY(r.set(&n));
+        TRY(r.reset(&n));
         TEST(r);
         TEST_EQUAL(r.get(), &n);
     }
@@ -2031,7 +2031,7 @@ void test_core_common_scope_guards() {
     {
         Resource<void*> r;
         TEST(! r);
-        TRY(r.set(&n));
+        TRY(r.reset(&n));
         TEST(r);
         TEST_EQUAL(r.get(), &n);
     }

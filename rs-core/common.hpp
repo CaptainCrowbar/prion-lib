@@ -1495,9 +1495,9 @@ namespace RS {
                 catch (...) { d(res); throw; }
             }
         Resource(Resource&& r) noexcept: res(std::exchange(r.res, def())), del(std::exchange(r.del, nullptr)) {}
-        ~Resource() noexcept { drop(); }
+        ~Resource() noexcept { reset(); }
         Resource& operator=(Resource&& r) noexcept {
-            drop();
+            reset();
             res = std::exchange(r.res, def());
             del = std::exchange(r.del, nullptr);
             return *this;
@@ -1506,14 +1506,7 @@ namespace RS {
         T& get() noexcept { return res; }
         T get() const noexcept { return res; }
         T release() noexcept { del = nullptr; return std::exchange(res, def()); }
-        void set(T t) noexcept { drop(); res = t; }
-        static T def() noexcept { return RS_Detail::ResourceDefault<T, Def>::get(); }
-    private:
-        T res = def();
-        delete_function del;
-        Resource(const Resource&) = delete;
-        Resource& operator=(const Resource&) = delete;
-        void drop() noexcept {
+        void reset() noexcept {
             if (del && res != def()) {
                 try { del(res); }
                 catch (...) {}
@@ -1521,6 +1514,13 @@ namespace RS {
             del = nullptr;
             res = def();
         }
+        void reset(T t) noexcept { reset(); res = t; }
+        static T def() noexcept { return RS_Detail::ResourceDefault<T, Def>::get(); }
+    private:
+        T res = def();
+        delete_function del;
+        Resource(const Resource&) = delete;
+        Resource& operator=(const Resource&) = delete;
     };
 
     template <typename T>
@@ -1536,9 +1536,9 @@ namespace RS {
             catch (...) { if (res) d(res); throw; }
         }
         Resource(Resource&& r) noexcept: res(std::exchange(r.res, nullptr)), del(std::exchange(r.del, nullptr)) {}
-        ~Resource() noexcept { drop(); }
+        ~Resource() noexcept { reset(); }
         Resource& operator=(Resource&& r) noexcept {
-            drop();
+            reset();
             res = std::exchange(r.res, nullptr);
             del = std::exchange(r.del, nullptr);
             return *this;
@@ -1550,14 +1550,7 @@ namespace RS {
         T*& get() noexcept { return res; }
         T* get() const noexcept { return res; }
         T* release() noexcept { del = nullptr; return std::exchange(res, nullptr); }
-        void set(T* t) noexcept { drop(); res = t; }
-        static T* def() noexcept { return nullptr; }
-    private:
-        T* res = nullptr;
-        delete_function del = nullptr;
-        Resource(const Resource&) = delete;
-        Resource& operator=(const Resource&) = delete;
-        void drop() noexcept {
+        void reset() noexcept {
             if (del && res) {
                 try { del(res); }
                 catch (...) {}
@@ -1565,6 +1558,13 @@ namespace RS {
             del = nullptr;
             res = nullptr;
         }
+        void reset(T* t) noexcept { reset(); res = t; }
+        static T* def() noexcept { return nullptr; }
+    private:
+        T* res = nullptr;
+        delete_function del = nullptr;
+        Resource(const Resource&) = delete;
+        Resource& operator=(const Resource&) = delete;
     };
 
     template <>
@@ -1580,9 +1580,9 @@ namespace RS {
             catch (...) { if (res) d(res); throw; }
         }
         Resource(Resource&& r) noexcept: res(std::exchange(r.res, def())), del(std::exchange(r.del, nullptr)) {}
-        ~Resource() noexcept { drop(); }
+        ~Resource() noexcept { reset(); }
         Resource& operator=(Resource&& r) noexcept {
-            drop();
+            reset();
             res = std::exchange(r.res, nullptr);
             del = std::exchange(r.del, nullptr);
             return *this;
@@ -1591,14 +1591,7 @@ namespace RS {
         void*& get() noexcept { return res; }
         void* get() const noexcept { return res; }
         void* release() noexcept { del = nullptr; return std::exchange(res, nullptr); }
-        void set(void* t) noexcept { drop(); res = t; }
-        static void* def() noexcept { return nullptr; }
-    private:
-        void* res = nullptr;
-        delete_function del = nullptr;
-        Resource(const Resource&) = delete;
-        Resource& operator=(const Resource&) = delete;
-        void drop() noexcept {
+        void reset() noexcept {
             if (del && res) {
                 try { del(res); }
                 catch (...) {}
@@ -1606,6 +1599,13 @@ namespace RS {
             del = nullptr;
             res = nullptr;
         }
+        void reset(void* t) noexcept { reset(); res = t; }
+        static void* def() noexcept { return nullptr; }
+    private:
+        void* res = nullptr;
+        delete_function del = nullptr;
+        Resource(const Resource&) = delete;
+        Resource& operator=(const Resource&) = delete;
     };
 
     template <typename T, typename Del>

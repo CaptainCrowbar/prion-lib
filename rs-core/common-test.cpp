@@ -2023,7 +2023,7 @@ void test_core_common_scope_guards() {
     {
         Resource<int*> r;
         TEST(! r);
-        TRY(r = &n);
+        TRY(r.set(&n));
         TEST(r);
         TEST_EQUAL(r.get(), &n);
     }
@@ -2031,171 +2031,71 @@ void test_core_common_scope_guards() {
     {
         Resource<void*> r;
         TEST(! r);
-        TRY(r = &n);
+        TRY(r.set(&n));
         TEST(r);
         TEST_EQUAL(r.get(), &n);
     }
 
+    n = 0;
     {
         n = 1;
-        ScopeExit x([&] { n = 2; });
+        auto x = scope_exit([&] { n = 2; });
         TEST_EQUAL(n, 1);
     }
     TEST_EQUAL(n, 2);
 
+    n = 0;
     try {
         n = 1;
-        ScopeExit x([&] { n = 2; });
+        auto x = scope_exit([&] { n = 2; });
         TEST_EQUAL(n, 1);
         throw std::runtime_error("fail");
     }
     catch (...) {}
     TEST_EQUAL(n, 2);
 
+    n = 0;
     {
         n = 1;
-        ScopeSuccess x([&] { n = 2; });
+        auto x = scope_success([&] { n = 2; });
         TEST_EQUAL(n, 1);
     }
     TEST_EQUAL(n, 2);
 
+    n = 0;
     try {
         n = 1;
-        ScopeSuccess x([&] { n = 2; });
+        auto x = scope_success([&] { n = 2; });
         TEST_EQUAL(n, 1);
         throw std::runtime_error("fail");
     }
     catch (...) {}
     TEST_EQUAL(n, 1);
 
+    n = 0;
     {
         n = 1;
-        ScopeFailure x([&] { n = 2; });
+        auto x = scope_fail([&] { n = 2; });
         TEST_EQUAL(n, 1);
     }
     TEST_EQUAL(n, 1);
 
+    n = 0;
     try {
         n = 1;
-        ScopeFailure x([&] { n = 2; });
+        auto x = scope_fail([&] { n = 2; });
         TEST_EQUAL(n, 1);
         throw std::runtime_error("fail");
     }
     catch (...) {}
     TEST_EQUAL(n, 2);
-
-    {
-        ScopeExit x(nullptr);
-    }
-
-    try {
-        ScopeExit x(nullptr);
-        throw std::runtime_error("fail");
-    }
-    catch (...) {}
-
-    {
-        ScopeSuccess x(nullptr);
-    }
-
-    try {
-        ScopeSuccess x(nullptr);
-        throw std::runtime_error("fail");
-    }
-    catch (...) {}
-
-    {
-        ScopeFailure x(nullptr);
-    }
-
-    try {
-        ScopeFailure x(nullptr);
-        throw std::runtime_error("fail");
-    }
-    catch (...) {}
-
-    s = "hello";
-    {
-        SizeGuard g(s);
-        s += " world";
-        TEST_EQUAL(s, "hello world");
-    }
-    TEST_EQUAL(s, "hello world");
-
-    s = "hello";
-    try {
-        SizeGuard g(s);
-        s += " world";
-        TEST_EQUAL(s, "hello world");
-        throw std::runtime_error("fail");
-    }
-    catch (...) {}
-    TEST_EQUAL(s, "hello");
-
-    s = "hello";
-    {
-        SizeGuard g(s);
-        s += " world";
-        TEST_EQUAL(s, "hello world");
-        TRY(g.release());
-    }
-    TEST_EQUAL(s, "hello world");
-
-    s = "hello";
-    try {
-        SizeGuard g(s);
-        s += " world";
-        TEST_EQUAL(s, "hello world");
-        TRY(g.release());
-        throw std::runtime_error("fail");
-    }
-    catch (...) {}
-    TEST_EQUAL(s, "hello world");
-
-    s = "hello";
-    {
-        ValueGuard g(s);
-        s = "goodbye";
-        TEST_EQUAL(s, "goodbye");
-    }
-    TEST_EQUAL(s, "goodbye");
-
-    s = "hello";
-    try {
-        ValueGuard g(s);
-        s = "goodbye";
-        TEST_EQUAL(s, "goodbye");
-        throw std::runtime_error("fail");
-    }
-    catch (...) {}
-    TEST_EQUAL(s, "hello");
-
-    s = "hello";
-    {
-        ValueGuard g(s);
-        s = "goodbye";
-        TEST_EQUAL(s, "goodbye");
-        TRY(g.release());
-    }
-    TEST_EQUAL(s, "goodbye");
-
-    s = "hello";
-    try {
-        ValueGuard g(s);
-        s = "goodbye";
-        TEST_EQUAL(s, "goodbye");
-        TRY(g.release());
-        throw std::runtime_error("fail");
-    }
-    catch (...) {}
-    TEST_EQUAL(s, "goodbye");
 
     s.clear();
     {
         ScopedTransaction t;
-        TRY(t.call([&] { s += 'a'; }, [&] { s += 'z'; }));
-        TRY(t.call([&] { s += 'b'; }, [&] { s += 'y'; }));
-        TRY(t.call([&] { s += 'c'; }, [&] { s += 'x'; }));
+        TRY(t([&] { s += 'a'; }, [&] { s += 'z'; }));
+        TRY(t([&] { s += 'b'; }, [&] { s += 'y'; }));
+        TRY(t([&] { s += 'c'; }, [&] { s += 'x'; }));
         TEST_EQUAL(s, "abc");
     }
     TEST_EQUAL(s, "abcxyz");
@@ -2203,9 +2103,9 @@ void test_core_common_scope_guards() {
     s.clear();
     {
         ScopedTransaction t;
-        TRY(t.call([&] { s += 'a'; }, [&] { s += 'z'; }));
-        TRY(t.call([&] { s += 'b'; }, [&] { s += 'y'; }));
-        TRY(t.call([&] { s += 'c'; }, [&] { s += 'x'; }));
+        TRY(t([&] { s += 'a'; }, [&] { s += 'z'; }));
+        TRY(t([&] { s += 'b'; }, [&] { s += 'y'; }));
+        TRY(t([&] { s += 'c'; }, [&] { s += 'x'; }));
         TEST_EQUAL(s, "abc");
         TRY(t.rollback());
         TEST_EQUAL(s, "abcxyz");
@@ -2215,9 +2115,9 @@ void test_core_common_scope_guards() {
     s.clear();
     {
         ScopedTransaction t;
-        TRY(t.call([&] { s += 'a'; }, [&] { s += 'z'; }));
-        TRY(t.call([&] { s += 'b'; }, [&] { s += 'y'; }));
-        TRY(t.call([&] { s += 'c'; }, [&] { s += 'x'; }));
+        TRY(t([&] { s += 'a'; }, [&] { s += 'z'; }));
+        TRY(t([&] { s += 'b'; }, [&] { s += 'y'; }));
+        TRY(t([&] { s += 'c'; }, [&] { s += 'x'; }));
         TEST_EQUAL(s, "abc");
         TRY(t.commit());
         TEST_EQUAL(s, "abc");

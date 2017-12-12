@@ -1018,9 +1018,6 @@ the element type's <code>std::hash</code>.</p>
 <li><code>Resource::</code><strong><code>Resource</code></strong><code>(Resource&amp;&amp; r) noexcept</code></li>
 <li><code>Resource::</code><strong><code>~Resource</code></strong><code>() noexcept</code></li>
 <li><code>Resource&amp; Resource::</code><strong><code>operator=</code></strong><code>(Resource&amp;&amp; r) noexcept</code></li>
-<li><code>Resource&amp; Resource::</code><strong><code>operator=</code></strong><code>(T t) noexcept</code></li>
-<li><code>Resource::</code><strong><code>operator T&amp;</code></strong><code>() noexcept</code></li>
-<li><code>Resource::</code><strong><code>operator T</code></strong><code>() const noexcept</code></li>
 <li><code>explicit Resource::</code><strong><code>operator bool</code></strong><code>() const noexcept</code></li>
 <li><code>value_type&amp; Resource::</code><strong><code>operator*</code></strong><code>() noexcept</code> <em>[only if T is a non-void pointer]</em></li>
 <li><code>const value_type&amp; Resource::</code><strong><code>operator*</code></strong><code>() const noexcept</code> <em>[only if T is a non-void pointer]</em></li>
@@ -1028,6 +1025,7 @@ the element type's <code>std::hash</code>.</p>
 <li><code>T&amp; Resource::</code><strong><code>get</code></strong><code>() noexcept</code></li>
 <li><code>T Resource::</code><strong><code>get</code></strong><code>() const noexcept</code></li>
 <li><code>T Resource::</code><strong><code>release</code></strong><code>() noexcept</code></li>
+<li><code>void Resource::</code><strong><code>set</code></strong><code>(T t) noexcept</code></li>
 <li><code>static T Resource::</code><strong><code>def</code></strong><code>() noexcept</code></li>
 </ul>
 </li>
@@ -1036,52 +1034,42 @@ the element type's <code>std::hash</code>.</p>
 <p>This holds a resource of some kind, a deleter function that will be called on
 destruction (similar to a <code>unique_ptr</code>), and optionally a default value (only
 usable if <code>T</code> is constructible from an <code>int</code>). <code>T</code> is assumed to be copyable
-and movable without throwing.</p>
+and movable without throwing; normally it will be a primitive object such as a
+pointer or integer.</p>
 <p>The deleter function passed to the constructor is expected to take a single
 argument of type <code>T</code>; it defaults to a null function. The destructor will call
 <code>d(t)</code>, unless the resource value is equal to the default or the deleter is
 null. The constructor will call <code>d(t)</code> if anything goes wrong, with the same
-constraints (in practise this can only happen if copying <code>D</code> throws).</p>
+constraints (this can only happen if copying <code>D</code> throws).</p>
 <p>The <code>def()</code> function returns the default value of <code>T</code>, which is <code>T(Def)</code> if
 <code>T</code> is constructible from an <code>int</code>, otherwise <code>T()</code>. The boolean conversion
 operator returns true if the stored value is not equal to the default (note
 that this may give a different result from <code>bool(T)</code>).</p>
-<p>The template is specialized for pointer types; if <code>T</code> is a pointer, the
-deleter will never be called if the resource pointer is null.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>class</code> <strong><code>ScopeExit</code></strong><ul>
-<li><code>using ScopeExit::</code><strong><code>callback</code></strong> <code>= function&lt;void()&gt;</code></li>
-<li><code>explicit ScopeExit::</code><strong><code>ScopeExit</code></strong><code>(callback f)</code></li>
-<li><code>ScopeExit::</code><strong><code>~ScopeExit</code></strong><code>() noexcept</code></li>
-<li><code>void ScopeExit::</code><strong><code>release</code></strong><code>() noexcept</code></li>
+<li><code>class</code> <strong><code>[scope guard]</code></strong><ul>
+<li><code>[scope guard]::</code><strong><code>[scope guard]</code></strong><code>(F&amp;&amp; f)</code></li>
+<li><code>[scope guard]::</code><strong><code>[scope guard]</code></strong><code>([scope guard]&amp;&amp;) noexcept</code></li>
+<li><code>[scope guard]::</code><strong><code>~[scope guard]</code></strong><code>() noexcept</code></li>
+<li><code>void [scope guard]::</code><strong><code>release</code></strong><code>() noexcept</code></li>
 </ul>
 </li>
-<li><code>class</code> <strong><code>ScopeSuccess</code></strong><ul>
-<li><code>using ScopeSuccess::</code><strong><code>callback</code></strong> <code>= function&lt;void()&gt;</code></li>
-<li><code>explicit ScopeSuccess::</code><strong><code>ScopeSuccess</code></strong><code>(callback f)</code></li>
-<li><code>ScopeSuccess::</code><strong><code>~ScopeSuccess</code></strong><code>() noexcept</code></li>
-<li><code>void ScopeSuccess::</code><strong><code>release</code></strong><code>() noexcept</code></li>
+<li><code>template &lt;typename F&gt; inline [scope guard]</code> <strong><code>scope_exit</code></strong><code>(F&amp;&amp; f)</code></li>
+<li><code>template &lt;typename F&gt; inline [scope guard]</code> <strong><code>scope_fail</code></strong><code>(F&amp;&amp; f)</code></li>
+<li><code>template &lt;typename F&gt; inline [scope guard]</code> <strong><code>scope_success</code></strong><code>(F&amp;&amp; f)</code></li>
 </ul>
-</li>
-<li><code>class</code> <strong><code>ScopeFailure</code></strong><ul>
-<li><code>using ScopeFailure::</code><strong><code>callback</code></strong> <code>= function&lt;void()&gt;</code></li>
-<li><code>explicit ScopeFailure::</code><strong><code>ScopeFailure</code></strong><code>(callback f)</code></li>
-<li><code>ScopeFailure::</code><strong><code>~ScopeFailure</code></strong><code>() noexcept</code></li>
-<li><code>void ScopeFailure::</code><strong><code>release</code></strong><code>() noexcept</code></li>
-</ul>
-</li>
-</ul>
-<p>These store a function object, to be called when the guard is destroyed
-(passing <code>nullptr</code> will just do nothing). <code>ScopeExit</code> calls the function
-unconditionally, <code>ScopeSuccess</code> calls it only on normal exit (not when
-unwinding due to an exception), and <code>ScopeFailure</code> calls it only when an
-exception causes stack unwinding (not on normal exit). If the constructor
-throws an exception (this is only possible if the function object's copy
-constructor or assignment operator throws), <code>ScopeExit</code> and <code>ScopeFailure</code>
-will call the function before propagating the exception, while <code>ScopeSuccess</code>
-will not. Any exceptions thrown by the function call in the destructor are
+<p>The anonymous scope guard class stores a function object, to be called when
+the guard is destroyed. The three functions create scope guards with different
+execution conditions.</p>
+<p>The <code>scope_exit()</code> guard calls the function unconditionally; <code>scope_success()</code>
+calls it only on normal exit (not when unwinding due to an exception);
+<code>scope_fail()</code> calls it only when an exception causes stack unwinding (not on
+normal exit). If the creation function throws an exception (this is only
+possible if the function object's copy or move constructor or assignment
+operator throws), <code>scope_exit()</code> and <code>scope_fail()</code> will call the function
+before propagating the exception, while <code>scope_success()</code> will not. Any
+exceptions thrown by the function call in the scope guard's destructor are
 silently ignored (normally the function should be written so as not to throw
 anything).</p>
 <p>The <code>release()</code> function discards the saved function; after it is called, the
@@ -1089,39 +1077,18 @@ scope guard object will do nothing on destruction.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>class</code> <strong><code>SizeGuard</code></strong><code>: public ScopeFailure</code><ul>
-<li><code>template &lt;typename T&gt; explicit SizeGuard::</code><strong><code>SizeGuard</code></strong><code>(T&amp; t)</code></li>
-</ul>
-</li>
-</ul>
-<p>Saves the current size of a container, and restores it if an exception unwinds
-the stack. <code>T</code> must be a container type with <code>size()</code> and <code>resize()</code>
-functions.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>class</code> <strong><code>ValueGuard</code></strong><code>: public ScopeFailure</code><ul>
-<li><code>template &lt;typename T&gt; explicit ValueGuard::</code><strong><code>ValueGuard</code></strong><code>(T&amp; t)</code></li>
-</ul>
-</li>
-</ul>
-<p>Saves the current value of a variable, and restores it if an exception unwinds
-the stack.</p>
-</div>
-<div class="defns">
-<ul>
 <li><code>class</code> <strong><code>ScopedTransaction</code></strong><ul>
 <li><code>using ScopedTransaction::</code><strong><code>callback</code></strong> <code>= function&lt;void()&gt;</code></li>
 <li><code>ScopedTransaction::</code><strong><code>ScopedTransaction</code></strong><code>() noexcept</code></li>
 <li><code>ScopedTransaction::</code><strong><code>~ScopedTransaction</code></strong><code>() noexcept</code></li>
-<li><code>void ScopedTransaction::</code><strong><code>call</code></strong><code>(callback func, callback undo)</code></li>
+<li><code>void ScopedTransaction::</code><strong><code>operator()</code></strong><code>(callback func, callback undo)</code></li>
 <li><code>void ScopedTransaction::</code><strong><code>commit</code></strong><code>() noexcept</code></li>
 <li><code>void ScopedTransaction::</code><strong><code>rollback</code></strong><code>() noexcept</code></li>
 </ul>
 </li>
 </ul>
 <p>This holds a stack of "undo" operations, to be carried out if anything goes
-wrong during a sequence of operations. The <code>call()</code> function accepts two
+wrong during a sequence of operations. The function call operator accepts two
 function objects; <code>func()</code> is called immediately, while <code>undo()</code> is saved on
 the stack. If <code>func()</code> throws an exception, its <code>undo()</code> is not called, but
 any pre-existing undo stack is invoked. Either function can be a null pointer
@@ -1130,7 +1097,7 @@ if no action is required.</p>
 in reverse order of insertion, silently ignoring any exceptions (normally the
 undo functions should be written so as not to throw anything). The destructor
 will perform a rollback if neither <code>commit()</code> nor <code>rollback()</code> have been
-called since the last <code>call()</code>.</p>
+called since the last new call.</p>
 <p>A single <code>ScopedTransaction</code> object can be used for multiple transactions.
 Once <code>commit()</code> or <code>rollback()</code> is called, the undo stack is discarded, and
 any newly added function pairs become part of a new cycle, equivalent to a
@@ -1138,7 +1105,7 @@ newly constructed <code>ScopedTransaction</code>.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; auto</code> <strong><code>make_lock</code></strong><code>(T&amp; t) { return std::unique_lock&lt;T&gt;(t); }</code></li>
+<li><code>template &lt;typename T&gt; std::unique_lock&lt;T&gt;</code> <strong><code>make_lock</code></strong><code>(T&amp; t)</code></li>
 </ul>
 <p>Simple wrapper function to create a mutex lock.</p>
 </div>

@@ -14,7 +14,7 @@ void test_core_io_cstdio() {
     Strings vec;
     ptrdiff_t offset = 0;
     size_t n = 0;
-    ScopeExit cleanup([=] { file.remove(); });
+    auto cleanup = scope_exit([=] { file.remove(); });
 
     file.remove();
     TEST(! file.exists());
@@ -96,7 +96,7 @@ void test_core_io_fdio() {
     Strings vec;
     ptrdiff_t offset = 0;
     size_t n = 0;
-    ScopeExit cleanup([=] { file.remove(); });
+    auto cleanup = scope_exit([=] { file.remove(); });
 
     file.remove();
     TEST(! file.exists());
@@ -188,7 +188,7 @@ void test_core_io_winio() {
         Strings vec;
         ptrdiff_t offset = 0;
         size_t n = 0;
-        ScopeExit cleanup([=] { file.remove(); });
+        auto cleanup = scope_exit([=] { file.remove(); });
 
         file.remove();
         TEST(! file.exists());

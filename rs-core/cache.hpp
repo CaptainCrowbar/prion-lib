@@ -40,7 +40,7 @@ namespace RS {
             auto map_iter = map.find(tup);
             bool insert = map_iter == map.end();
             log.push_back(nullptr);
-            ScopeFailure guard([&] { log.pop_back(); });
+            auto guard = scope_fail([&] { log.pop_back(); });
             if (insert)
                 map_iter = map.insert({tup, {tuple_invoke(fun, tup), {}}}).first;
             log.back() = &map_iter->first;

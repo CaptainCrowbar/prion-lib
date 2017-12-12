@@ -788,9 +788,6 @@ Hash function for a tuple.
     * `Resource::`**`Resource`**`(Resource&& r) noexcept`
     * `Resource::`**`~Resource`**`() noexcept`
     * `Resource& Resource::`**`operator=`**`(Resource&& r) noexcept`
-    * `Resource& Resource::`**`operator=`**`(T t) noexcept`
-    * `Resource::`**`operator T&`**`() noexcept`
-    * `Resource::`**`operator T`**`() const noexcept`
     * `explicit Resource::`**`operator bool`**`() const noexcept`
     * `value_type& Resource::`**`operator*`**`() noexcept` _[only if T is a non-void pointer]_
     * `const value_type& Resource::`**`operator*`**`() const noexcept` _[only if T is a non-void pointer]_
@@ -798,82 +795,64 @@ Hash function for a tuple.
     * `T& Resource::`**`get`**`() noexcept`
     * `T Resource::`**`get`**`() const noexcept`
     * `T Resource::`**`release`**`() noexcept`
+    * `void Resource::`**`set`**`(T t) noexcept`
     * `static T Resource::`**`def`**`() noexcept`
 * `template <typename T, typename Del> Resource<T>` **`make_resource`**`(T t, Del d)`
 
 This holds a resource of some kind, a deleter function that will be called on
 destruction (similar to a `unique_ptr`), and optionally a default value (only
 usable if `T` is constructible from an `int`). `T` is assumed to be copyable
-and movable without throwing.
+and movable without throwing; normally it will be a primitive object such as a
+pointer or integer.
 
 The deleter function passed to the constructor is expected to take a single
 argument of type `T`; it defaults to a null function. The destructor will call
 `d(t)`, unless the resource value is equal to the default or the deleter is
 null. The constructor will call `d(t)` if anything goes wrong, with the same
-constraints (in practise this can only happen if copying `D` throws).
+constraints (this can only happen if copying `D` throws).
 
 The `def()` function returns the default value of `T`, which is `T(Def)` if
 `T` is constructible from an `int`, otherwise `T()`. The boolean conversion
 operator returns true if the stored value is not equal to the default (note
 that this may give a different result from `bool(T)`).
 
-The template is specialized for pointer types; if `T` is a pointer, the
-deleter will never be called if the resource pointer is null.
+* `class` **`[scope guard]`**
+    * `[scope guard]::`**`[scope guard]`**`(F&& f)`
+    * `[scope guard]::`**`[scope guard]`**`([scope guard]&&) noexcept`
+    * `[scope guard]::`**`~[scope guard]`**`() noexcept`
+    * `void [scope guard]::`**`release`**`() noexcept`
+* `template <typename F> inline [scope guard]` **`scope_exit`**`(F&& f)`
+* `template <typename F> inline [scope guard]` **`scope_fail`**`(F&& f)`
+* `template <typename F> inline [scope guard]` **`scope_success`**`(F&& f)`
 
-* `class` **`ScopeExit`**
-    * `using ScopeExit::`**`callback`** `= function<void()>`
-    * `explicit ScopeExit::`**`ScopeExit`**`(callback f)`
-    * `ScopeExit::`**`~ScopeExit`**`() noexcept`
-    * `void ScopeExit::`**`release`**`() noexcept`
-* `class` **`ScopeSuccess`**
-    * `using ScopeSuccess::`**`callback`** `= function<void()>`
-    * `explicit ScopeSuccess::`**`ScopeSuccess`**`(callback f)`
-    * `ScopeSuccess::`**`~ScopeSuccess`**`() noexcept`
-    * `void ScopeSuccess::`**`release`**`() noexcept`
-* `class` **`ScopeFailure`**
-    * `using ScopeFailure::`**`callback`** `= function<void()>`
-    * `explicit ScopeFailure::`**`ScopeFailure`**`(callback f)`
-    * `ScopeFailure::`**`~ScopeFailure`**`() noexcept`
-    * `void ScopeFailure::`**`release`**`() noexcept`
+The anonymous scope guard class stores a function object, to be called when
+the guard is destroyed. The three functions create scope guards with different
+execution conditions.
 
-These store a function object, to be called when the guard is destroyed
-(passing `nullptr` will just do nothing). `ScopeExit` calls the function
-unconditionally, `ScopeSuccess` calls it only on normal exit (not when
-unwinding due to an exception), and `ScopeFailure` calls it only when an
-exception causes stack unwinding (not on normal exit). If the constructor
-throws an exception (this is only possible if the function object's copy
-constructor or assignment operator throws), `ScopeExit` and `ScopeFailure`
-will call the function before propagating the exception, while `ScopeSuccess`
-will not. Any exceptions thrown by the function call in the destructor are
+The `scope_exit()` guard calls the function unconditionally; `scope_success()`
+calls it only on normal exit (not when unwinding due to an exception);
+`scope_fail()` calls it only when an exception causes stack unwinding (not on
+normal exit). If the creation function throws an exception (this is only
+possible if the function object's copy or move constructor or assignment
+operator throws), `scope_exit()` and `scope_fail()` will call the function
+before propagating the exception, while `scope_success()` will not. Any
+exceptions thrown by the function call in the scope guard's destructor are
 silently ignored (normally the function should be written so as not to throw
 anything).
 
 The `release()` function discards the saved function; after it is called, the
 scope guard object will do nothing on destruction.
 
-* `class` **`SizeGuard`**`: public ScopeFailure`
-    * `template <typename T> explicit SizeGuard::`**`SizeGuard`**`(T& t)`
-
-Saves the current size of a container, and restores it if an exception unwinds
-the stack. `T` must be a container type with `size()` and `resize()`
-functions.
-
-* `class` **`ValueGuard`**`: public ScopeFailure`
-    * `template <typename T> explicit ValueGuard::`**`ValueGuard`**`(T& t)`
-
-Saves the current value of a variable, and restores it if an exception unwinds
-the stack.
-
 * `class` **`ScopedTransaction`**
     * `using ScopedTransaction::`**`callback`** `= function<void()>`
     * `ScopedTransaction::`**`ScopedTransaction`**`() noexcept`
     * `ScopedTransaction::`**`~ScopedTransaction`**`() noexcept`
-    * `void ScopedTransaction::`**`call`**`(callback func, callback undo)`
+    * `void ScopedTransaction::`**`operator()`**`(callback func, callback undo)`
     * `void ScopedTransaction::`**`commit`**`() noexcept`
     * `void ScopedTransaction::`**`rollback`**`() noexcept`
 
 This holds a stack of "undo" operations, to be carried out if anything goes
-wrong during a sequence of operations. The `call()` function accepts two
+wrong during a sequence of operations. The function call operator accepts two
 function objects; `func()` is called immediately, while `undo()` is saved on
 the stack. If `func()` throws an exception, its `undo()` is not called, but
 any pre-existing undo stack is invoked. Either function can be a null pointer
@@ -883,14 +862,14 @@ Calling `commit()` discards the saved undo functions; `rollback()` calls them
 in reverse order of insertion, silently ignoring any exceptions (normally the
 undo functions should be written so as not to throw anything). The destructor
 will perform a rollback if neither `commit()` nor `rollback()` have been
-called since the last `call()`.
+called since the last new call.
 
 A single `ScopedTransaction` object can be used for multiple transactions.
 Once `commit()` or `rollback()` is called, the undo stack is discarded, and
 any newly added function pairs become part of a new cycle, equivalent to a
 newly constructed `ScopedTransaction`.
 
-* `template <typename T> auto` **`make_lock`**`(T& t) { return std::unique_lock<T>(t); }`
+* `template <typename T> std::unique_lock<T>` **`make_lock`**`(T& t)`
 
 Simple wrapper function to create a mutex lock.
 

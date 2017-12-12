@@ -1485,12 +1485,13 @@ namespace RS {
     template <typename T, int Def = 0>
     class Resource {
     public:
+        using delete_function = std::function<void(T&)>;
         using resource_type = T;
         Resource() = default;
         explicit Resource(T t): res(t), del() {}
         template <typename Del> Resource(T t, Del d):
             res(t), del() {
-                try { del = deleter(d); }
+                try { del = delete_function(d); }
                 catch (...) { d(res); throw; }
             }
         Resource(Resource&& r) noexcept: res(std::exchange(r.res, def())), del(std::exchange(r.del, nullptr)) {}
@@ -1501,19 +1502,15 @@ namespace RS {
             del = std::exchange(r.del, nullptr);
             return *this;
         }
-        Resource& operator=(T t) noexcept { drop(); res = t; return *this; }
-        operator T&() noexcept { return res; }
-        operator T() const noexcept { return res; }
         explicit operator bool() const noexcept { return res != def(); }
-        bool operator!() const noexcept { return ! bool(*this); }
         T& get() noexcept { return res; }
         T get() const noexcept { return res; }
         T release() noexcept { del = nullptr; return std::exchange(res, def()); }
+        void set(T t) noexcept { drop(); res = t; }
         static T def() noexcept { return RS_Detail::ResourceDefault<T, Def>::get(); }
     private:
-        using deleter = std::function<void(T&)>;
         T res = def();
-        deleter del;
+        delete_function del;
         Resource(const Resource&) = delete;
         Resource& operator=(const Resource&) = delete;
         void drop() noexcept {
@@ -1529,12 +1526,13 @@ namespace RS {
     template <typename T>
     class Resource<T*> {
     public:
+        using delete_function = std::function<void(T*)>;
         using resource_type = T*;
         using value_type = T;
         Resource() = default;
         explicit Resource(T* t): res(t), del() {}
         template <typename Del> Resource(T* t, Del d): res(t), del() {
-            try { del = deleter(d); }
+            try { del = delete_function(d); }
             catch (...) { if (res) d(res); throw; }
         }
         Resource(Resource&& r) noexcept: res(std::exchange(r.res, nullptr)), del(std::exchange(r.del, nullptr)) {}
@@ -1545,22 +1543,18 @@ namespace RS {
             del = std::exchange(r.del, nullptr);
             return *this;
         }
-        Resource& operator=(T* t) noexcept { drop(); res = t; return *this; }
-        operator T*&() noexcept { return res; }
-        operator T*() const noexcept { return res; }
         explicit operator bool() const noexcept { return res != nullptr; }
-        bool operator!() const noexcept { return ! bool(*this); }
         T& operator*() noexcept { return *res; }
         const T& operator*() const noexcept { return *res; }
         T* operator->() const noexcept { return res; }
         T*& get() noexcept { return res; }
         T* get() const noexcept { return res; }
         T* release() noexcept { del = nullptr; return std::exchange(res, nullptr); }
+        void set(T* t) noexcept { drop(); res = t; }
         static T* def() noexcept { return nullptr; }
     private:
-        using deleter = std::function<void(T*)>;
         T* res = nullptr;
-        deleter del = nullptr;
+        delete_function del = nullptr;
         Resource(const Resource&) = delete;
         Resource& operator=(const Resource&) = delete;
         void drop() noexcept {
@@ -1576,12 +1570,13 @@ namespace RS {
     template <>
     class Resource<void*> {
     public:
+        using delete_function = std::function<void(void*)>;
         using resource_type = void*;
         using value_type = void;
         Resource() = default;
         explicit Resource(void* t): res(t), del() {}
         template <typename Del> Resource(void* t, const Del& d): res(t) {
-            try { del = deleter(d); }
+            try { del = delete_function(d); }
             catch (...) { if (res) d(res); throw; }
         }
         Resource(Resource&& r) noexcept: res(std::exchange(r.res, def())), del(std::exchange(r.del, nullptr)) {}
@@ -1592,17 +1587,15 @@ namespace RS {
             del = std::exchange(r.del, nullptr);
             return *this;
         }
-        Resource& operator=(void* t) noexcept { drop(); res = t; return *this; }
-        operator void*&() noexcept { return res; }
-        operator void*() const noexcept { return res; }
+        explicit operator bool() const noexcept { return res != nullptr; }
         void*& get() noexcept { return res; }
         void* get() const noexcept { return res; }
         void* release() noexcept { del = nullptr; return std::exchange(res, nullptr); }
+        void set(void* t) noexcept { drop(); res = t; }
         static void* def() noexcept { return nullptr; }
     private:
-        using deleter = std::function<void(void*)>;
         void* res = nullptr;
-        deleter del = nullptr;
+        delete_function del = nullptr;
         Resource(const Resource&) = delete;
         Resource& operator=(const Resource&) = delete;
         void drop() noexcept {
@@ -1620,64 +1613,34 @@ namespace RS {
         return {t, d};
     }
 
-    // Based on ideas from Evgeny Panasyuk (https://github.com/panaseleus/stack_unwinding)
-    // and Andrei Alexandrescu (https://isocpp.org/files/papers/N4152.pdf)
-
-    namespace RS_Detail {
-
-        template <int Mode, bool Conditional = Mode >= 0>
-        struct ScopeExitBase {
-            bool should_run() const noexcept { return true; }
-        };
-
-        template <int Mode>
-        struct ScopeExitBase<Mode, true> {
-            int exceptions;
-            ScopeExitBase(): exceptions(std::uncaught_exceptions()) {}
-            bool should_run() const noexcept { return (exceptions == std::uncaught_exceptions()) == (Mode > 0); }
-        };
-
-        template <int Mode>
-        class ConditionalScopeExit:
-        private ScopeExitBase<Mode> {
-        public:
-            RS_NO_COPY_MOVE(ConditionalScopeExit)
-            using callback = std::function<void()>;
-            explicit ConditionalScopeExit(callback f) {
-                if (Mode > 0) {
-                    func = f;
-                } else {
-                    try { func = f; }
-                    catch (...) { silent_call(f); throw; }
-                }
-            }
-            ~ConditionalScopeExit() noexcept {
-                if (ScopeExitBase<Mode>::should_run())
-                    silent_call(func);
-            }
-            void release() noexcept { func = nullptr; }
-        private:
-            std::function<void()> func;
-            static void silent_call(callback& f) noexcept { if (f) { try { f(); } catch (...) {} } }
-        };
-
-    }
-
-    using ScopeExit = RS_Detail::ConditionalScopeExit<-1>;
-    using ScopeSuccess = RS_Detail::ConditionalScopeExit<1>;
-    using ScopeFailure = RS_Detail::ConditionalScopeExit<0>;
-
-    class SizeGuard:
-    public ScopeFailure {
+    template <typename F, char Mode>
+    class BasicScopeGuard {
     public:
-        template <typename T> explicit SizeGuard(T& t): ScopeFailure([&t,n=t.size()] { t.resize(n); }) {}
+        BasicScopeGuard(F&& f) try:
+            func(std::forward<F>(f)), inflight(std::uncaught_exceptions()) {}
+            catch (...) {
+                if (Mode != 's')
+                    try { f(); } catch (...) {}
+                throw;
+            }
+        BasicScopeGuard(BasicScopeGuard&& sg) noexcept:
+            func(std::move(sg.func)), inflight(std::exchange(sg.inflight, -1)) {}
+        ~BasicScopeGuard() noexcept {
+            if (inflight >= 0 && (Mode == 'e' || (Mode == 'f') == (std::uncaught_exceptions() > inflight)))
+                try { func(); } catch (...) {}
+        }
+        BasicScopeGuard(const BasicScopeGuard&) = delete;
+        BasicScopeGuard& operator=(const BasicScopeGuard&) = delete;
+        BasicScopeGuard& operator=(BasicScopeGuard&&) = delete;
+        void release() noexcept { inflight = -1; }
+    private:
+        F func;
+        int inflight;
     };
 
-    class ValueGuard:
-    public ScopeFailure {
-    public:
-        template <typename T> explicit ValueGuard(T& t): ScopeFailure([&t,v=t] { t = std::move(v); }) {}
-    };
+    template <typename F> inline BasicScopeGuard<F, 'e'> scope_exit(F&& f) { return BasicScopeGuard<F, 'e'>(std::forward<F>(f)); }
+    template <typename F> inline BasicScopeGuard<F, 'f'> scope_fail(F&& f) { return BasicScopeGuard<F, 'f'>(std::forward<F>(f)); }
+    template <typename F> inline BasicScopeGuard<F, 's'> scope_success(F&& f) { return BasicScopeGuard<F, 's'>(std::forward<F>(f)); }
 
     class ScopedTransaction {
     public:
@@ -1685,7 +1648,7 @@ namespace RS {
         using callback = std::function<void()>;
         ScopedTransaction() noexcept {}
         ~ScopedTransaction() noexcept { rollback(); }
-        void call(callback func, callback undo) {
+        void operator()(callback func, callback undo) {
             stack.push_back(nullptr);
             if (func)
                 func();

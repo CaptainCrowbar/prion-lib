@@ -262,7 +262,7 @@ namespace RS {
         inline void PersistState::clear_autosave() {
             if (autosave_channel) {
                 autosave_channel->close();
-                ScopeExit cleanup([&] {
+                auto cleanup = scope_exit([&] {
                     autosave_channel.reset();
                     autosave_thread = {};
                 });
@@ -282,13 +282,13 @@ namespace RS {
                 File old_archive = archive_name("old");
                 new_archive.remove();
                 old_archive.remove();
-                ScopeExit cleanup([&] {
+                auto cleanup = scope_exit([&] {
                     new_archive.remove();
                     old_archive.remove();
                 });
                 new_archive.save(content);
                 archive.move_to(old_archive);
-                ScopeFailure rollback([&] { old_archive.move_to(archive); });
+                auto rollback = scope_fail([&] { old_archive.move_to(archive); });
                 new_archive.move_to(archive);
             } else {
                 archive.parent().mkdir(File::recurse);

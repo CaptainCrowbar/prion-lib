@@ -185,7 +185,7 @@ namespace RS {
 
         inline size_t StreamChannel::read_to(std::string& dst) {
             size_t pos = dst.size(), n = 0;
-            ScopeExit guard([&] { dst.resize(pos + n); });
+            auto guard = scope_exit([&] { dst.resize(pos + n); });
             dst.resize(pos + bytes);
             n = read(&dst[0] + pos, bytes);
             return n;
@@ -701,7 +701,7 @@ namespace RS {
             result_type rc;
             if (tasks.empty())
                 return rc;
-            ScopeExit guard([&] { if (rc.channel) drop(*rc.channel); });
+            auto guard = scope_exit([&] { if (rc.channel) drop(*rc.channel); });
             for (;;) {
                 int calls = 0;
                 for (auto& t: tasks) {

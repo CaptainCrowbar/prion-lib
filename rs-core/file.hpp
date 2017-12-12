@@ -194,7 +194,7 @@ namespace RS {
     inline std::string File::load(size_t limit, uint32_t flags) const {
         static constexpr size_t block = 16384;
         FILE* in = stdin;
-        ScopeExit guard([&] { if (in && in != stdin) ::fclose(in); });
+        auto guard = scope_exit([&] { if (in && in != stdin) ::fclose(in); });
         if (! path.empty() && path != "-") {
             errno = 0;
             in = ::fopen(path.data(), "rb");
@@ -224,7 +224,7 @@ namespace RS {
 
     inline void File::save(const void* ptr, size_t len, uint32_t flags) const {
         FILE* out = stdout;
-        ScopeExit guard([&] { if (out && out != stdout) ::fclose(out); });
+        auto guard = scope_exit([&] { if (out && out != stdout) ::fclose(out); });
         if (! path.empty() && path != "-") {
             errno = 0;
             out = ::fopen(path.data(), flags & append ? "ab" : "wb");
@@ -297,7 +297,7 @@ namespace RS {
             auto dirptr = opendir(path.data());
             if (! dirptr)
                 return {};
-            ScopeExit guard([&] { closedir(dirptr); });
+            auto guard = scope_exit([&] { closedir(dirptr); });
             std::vector<File> files;
             std::string leaf;
             File f;
@@ -515,7 +515,7 @@ namespace RS {
             auto handle = FindFirstFileW(glob.data(), &info);
             if (! handle)
                 return {};
-            ScopeExit guard([&] { FindClose(handle); });
+            auto guard = scope_exit([&] { FindClose(handle); });
             std::vector<File> files;
             std::wstring wleaf;
             File f;

@@ -201,7 +201,7 @@ void test_core_file_system_update() {
     const File f1 = "__test__/alpha";
     const File f2 = "__test__/bravo";
 
-    ScopeExit guard([=] {
+    auto guard = scope_exit([=] {
         ::remove(f1.c_name());
         ::remove(f2.c_name());
         ::remove(d3.c_name());
@@ -266,7 +266,7 @@ void test_core_file_io() {
     const File nofile = "__no_such_file__";
 
     std::string s;
-    ScopeExit guard([=] { ::remove(testfile.c_name()); });
+    auto guard = scope_exit([=] { ::remove(testfile.c_name()); });
 
     TRY(s = makefile.load());
     TEST_EQUAL(s.substr(0, 25), "# Grand Unified Makefile\n");

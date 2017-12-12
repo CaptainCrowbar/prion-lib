@@ -36,7 +36,7 @@ void test_core_zlib_io() {
     Strings vec;
     ptrdiff_t offset = 0;
     size_t n = 0;
-    ScopeExit cleanup([=] { file.remove(); });
+    auto cleanup = scope_exit([=] { file.remove(); });
 
     file.remove();
     TEST(! file.exists());

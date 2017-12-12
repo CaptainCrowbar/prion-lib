@@ -159,10 +159,10 @@ namespace RS {
     template <typename T>
     void IndexTable<T>::insert(const T& t) {
         ScopedTransaction txn;
-        txn.call([&] { list.push_back(t); }, [&] { list.pop_back(); });
+        txn([&] { list.push_back(t); }, [&] { list.pop_back(); });
         iterator i = std::prev(end());
         for (auto& pair: indices)
-            txn.call([&] { pair.second->insert(i); }, [&] { pair.second->erase(i); });
+            txn([&] { pair.second->insert(i); }, [&] { pair.second->erase(i); });
         txn.commit();
     }
 

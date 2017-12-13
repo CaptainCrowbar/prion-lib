@@ -553,7 +553,7 @@ namespace RS {
                 return {};
             auto res = make_resource(fh, CloseHandle);
             FILETIME ft;
-            if (GetFileTime(res, nullptr, &ft, nullptr))
+            if (GetFileTime(res.get(), nullptr, &ft, nullptr))
                 return filetime_to_timepoint(ft);
             else
                 return {};
@@ -566,7 +566,7 @@ namespace RS {
                 return {};
             auto res = make_resource(fh, CloseHandle);
             FILETIME ft;
-            if (GetFileTime(res, nullptr, nullptr, &ft))
+            if (GetFileTime(res.get(), nullptr, nullptr, &ft))
                 return filetime_to_timepoint(ft);
             else
                 return {};
@@ -581,7 +581,7 @@ namespace RS {
                 throw std::system_error(err, std::system_category(), path);
             auto res = make_resource(fh, CloseHandle);
             auto ft = timepoint_to_filetime(t);
-            auto rc = SetFileTime(res, nullptr, &ft, nullptr);
+            auto rc = SetFileTime(res.get(), nullptr, &ft, nullptr);
             err = GetLastError();
             if (! rc)
                 throw std::system_error(err, std::system_category(), path);
@@ -596,7 +596,7 @@ namespace RS {
                 throw std::system_error(err, std::system_category(), path);
             auto res = make_resource(fh, CloseHandle);
             auto ft = timepoint_to_filetime(t);
-            auto rc = SetFileTime(res, nullptr, nullptr, &ft);
+            auto rc = SetFileTime(res.get(), nullptr, nullptr, &ft);
             err = GetLastError();
             if (! rc)
                 throw std::system_error(err, std::system_category(), path);

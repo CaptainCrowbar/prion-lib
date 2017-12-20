@@ -122,7 +122,7 @@ ifeq ($(cross_target),cygwin)
 endif
 
 ifeq ($(cross_target),darwin)
-	LIBTAG := mac
+	LIBTAG := apple
 	CXX := clang++
 	cc_defines += -D_DARWIN_C_SOURCE=1 -D_REENTRANT=1 -D_XOPEN_SOURCE=700
 	cxx_specific_flags += -std=c++1z -stdlib=libc++

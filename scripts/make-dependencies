@@ -134,7 +134,10 @@ for src in sorted(sources):
     print(text, file=out)
 
 def gcc_lib(name):
-    return '-l' + name
+    if name.startswith('framework:'):
+        return '-framework ' + name.partition(':')[2]
+    else:
+        return '-l' + name
 
 def msvc_lib(name):
     if name == 'z':

@@ -32,6 +32,7 @@
 <li><a href="#concrete-channel-classes">Concrete channel classes</a><ul>
 <li><a href="#trivial-channels">Trivial channels</a></li>
 <li><a href="#class-timerchannel">Class TimerChannel</a></li>
+<li><a href="#class-throttlechannel">Class ThrottleChannel</a></li>
 <li><a href="#class-generatorchannel">Class GeneratorChannel</a></li>
 <li><a href="#class-queuechannel">Class QueueChannel</a></li>
 <li><a href="#class-valuechannel">Class ValueChannel</a></li>
@@ -51,6 +52,7 @@
 <li><code>class</code> <strong><code>TrueChannel</code></strong><code>: public EventChannel</code></li>
 <li><code>class</code> <strong><code>FalseChannel</code></strong><code>: public EventChannel</code></li>
 <li><code>class</code> <strong><code>TimerChannel</code></strong><code>: public EventChannel, public IntervalBase</code></li>
+<li><code>class</code> <strong><code>ThrottleChannel</code></strong><code>: public EventChannel, public IntervalBase</code></li>
 </ul>
 </li>
 <li><code>[abstract] template &lt;typename T&gt; class</code> <strong><code>MessageChannel</code></strong><code>: public Channel</code><ul>
@@ -258,6 +260,22 @@ immediately) if multiple intervals have elapsed since the last check.</p>
 <p>The <code>next()</code> function returns the time of the next tick (this may be in the
 past if multiple ticks are pending); <code>flush()</code> discards any pending ticks.
 These are async safe and can be called from any thread.</p>
+</div>
+<h3 id="class-throttlechannel">Class ThrottleChannel</h3>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>ThrottleChannel</code></strong><code>: public EventChannel, public IntervalBase</code><ul>
+<li><code>template &lt;typename R, typename P&gt; explicit ThrottleChannel::</code><strong><code>ThrottleChannel</code></strong><code>(std::chrono::duration&lt;R, P&gt; t) noexcept</code></li>
+<li><code>virtual bool ThrottleChannel::</code><strong><code>is_shared</code></strong><code>() const noexcept</code> <em>= true</em></li>
+</ul>
+</li>
+</ul>
+<p>An event channel that throttles events to a maximum rate. The channel will
+block if the minimum interval has not yet elapsed since the last event;
+otherwise, or if this is the first event, it will succeed immediately. Unlike
+a <code>TimerChannel</code>, this will not queue pending events; no extra events are
+created if there is a long interval between calls. If the interval is zero or
+negative, this is equivalent to <code>TrueChannel</code>.</p>
 </div>
 <h3 id="class-generatorchannel">Class GeneratorChannel</h3>
 <div class="defns">

@@ -15,6 +15,7 @@ By Ross Smith
         * `class` **`TrueChannel`**`: public EventChannel`
         * `class` **`FalseChannel`**`: public EventChannel`
         * `class` **`TimerChannel`**`: public EventChannel, public IntervalBase`
+        * `class` **`ThrottleChannel`**`: public EventChannel, public IntervalBase`
     * `[abstract] template <typename T> class` **`MessageChannel`**`: public Channel`
         * `template <typename T> class` **`GeneratorChannel`**`: public MessageChannel<T>`
         * `template <typename T> class` **`QueueChannel`**`: public MessageChannel<T>`
@@ -195,6 +196,19 @@ immediately) if multiple intervals have elapsed since the last check.
 The `next()` function returns the time of the next tick (this may be in the
 past if multiple ticks are pending); `flush()` discards any pending ticks.
 These are async safe and can be called from any thread.
+
+### Class ThrottleChannel ###
+
+* `class` **`ThrottleChannel`**`: public EventChannel, public IntervalBase`
+    * `template <typename R, typename P> explicit ThrottleChannel::`**`ThrottleChannel`**`(std::chrono::duration<R, P> t) noexcept`
+    * `virtual bool ThrottleChannel::`**`is_shared`**`() const noexcept` _= true_
+
+An event channel that throttles events to a maximum rate. The channel will
+block if the minimum interval has not yet elapsed since the last event;
+otherwise, or if this is the first event, it will succeed immediately. Unlike
+a `TimerChannel`, this will not queue pending events; no extra events are
+created if there is a long interval between calls. If the interval is zero or
+negative, this is equivalent to `TrueChannel`.
 
 ### Class GeneratorChannel ###
 

@@ -34,6 +34,7 @@ namespace RS {
     class Polled;
     template <typename T> class QueueChannel;
     class StreamChannel;
+    class ThrottleChannel;
     class TimerChannel;
     class TrueChannel;
     template <typename T> class ValueChannel;
@@ -302,6 +303,60 @@ namespace RS {
             if (! open)
                 return state::closed;
             next_tick += interval();
+            return state::ready;
+        }
+
+    class ThrottleChannel:
+    public EventChannel,
+    public IntervalBase {
+    public:
+        RS_NO_COPY_MOVE(ThrottleChannel);
+        template <typename R, typename P> explicit ThrottleChannel(std::chrono::duration<R, P> t) noexcept;
+        virtual void close() noexcept;
+        virtual bool is_shared() const noexcept { return true; }
+    protected:
+        virtual state do_wait_for(IntervalBase::time_unit t);
+    private:
+        using clock_type = ReliableClock;
+        using time_point = clock_type::time_point;
+        mutable std::mutex mutex;
+        std::condition_variable cv;
+        time_point next = time_point::min();
+        bool open = true;
+    };
+
+        template <typename R, typename P>
+        ThrottleChannel::ThrottleChannel(std::chrono::duration<R, P> t) noexcept {
+            set_interval(t);
+        }
+
+        inline void ThrottleChannel::close() noexcept {
+            auto lock = make_lock(mutex);
+            open = false;
+            cv.notify_all();
+        }
+
+        inline Channel::state ThrottleChannel::do_wait_for(IntervalBase::time_unit t) {
+            using namespace std::chrono;
+            auto lock = make_lock(mutex);
+            if (! open)
+                return state::closed;
+            auto now = clock_type::now();
+            if (next <= now) {
+                next = now + interval();
+                return state::ready;
+            }
+            if (t <= IntervalBase::time_unit())
+                return state::waiting;
+            auto remaining = duration_cast<IntervalBase::time_unit>(next - now);
+            if (t < remaining) {
+                cv.wait_for(lock, t, [&] { return ! open; });
+                return open ? state::waiting : state::closed;
+            }
+            cv.wait_for(lock, remaining, [&] { return ! open; });
+            if (! open)
+                return state::closed;
+            next = clock_type::now() + interval();
             return state::ready;
         }
 

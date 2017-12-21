@@ -287,6 +287,37 @@ void test_core_channel_timer() {
 
 }
 
+void test_core_channel_throttle() {
+
+    ThrottleChannel chan(25ms);
+    Channel::state cs = Channel::state::closed;
+
+    TRY(cs = chan.wait_for(1ms));
+    TEST_EQUAL(cs, Channel::state::ready);
+    TRY(cs = chan.wait_for(1ms));
+    TEST_EQUAL(cs, Channel::state::waiting);
+
+    TRY(std::this_thread::sleep_for(150ms));
+    TRY(cs = chan.wait_for(1ms));
+    TEST_EQUAL(cs, Channel::state::ready);
+    TRY(cs = chan.wait_for(1ms));
+    TEST_EQUAL(cs, Channel::state::waiting);
+
+    auto t1 = ReliableClock::now();
+    for (int i = 0; i < 10; ++i) {
+        TRY(cs = chan.wait_for(250ms));
+        TEST_EQUAL(cs, Channel::state::ready);
+    }
+    auto t2 = ReliableClock::now();
+    auto ms = duration_cast<milliseconds>(t2 - t1);
+    TEST_NEAR_EPSILON(ms.count(), 250, 10);
+
+    TRY(chan.close());
+    TRY(cs = chan.wait_for(10ms));
+    TEST_EQUAL(cs, Channel::state::closed);
+
+}
+
 void test_core_channel_polled() {
 
     TestPoll chan;

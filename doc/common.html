@@ -200,11 +200,13 @@ function gives the same result as the underlying integer type's hash.</p>
 <div class="defns">
 <ul>
 <li><code>using</code> <strong><code>U8string</code></strong> <code>= std::string</code></li>
+<li><code>using</code> <strong><code>U8view</code></strong> <code>= std::string_view</code></li>
 </ul>
-<p>Use <code>U8string</code> for strings that are expected to be in UTF-8 (or ASCII, since
-any ASCII string is also valid UTF-8), while plain <code>std::string</code> is used where
-the string is expected to be in some non-Unicode encoding, or where the string
-is being used simply as an array of bytes rather than encoded text.</p>
+<p>Use <code>U8string</code> or <code>U8view</code> for strings that are expected to be in UTF-8 (or
+ASCII, since any ASCII string is also valid UTF-8), while plain <code>std::string</code>
+or <code>std::string_view</code> is used where the string is expected to be in some non-
+Unicode encoding, or where the string is being used simply as an array of
+bytes rather than encoded text.</p>
 </div>
 <div class="defns">
 <ul>

@@ -129,11 +129,13 @@ function gives the same result as the underlying integer type's hash.
 ### String and character types ###
 
 * `using` **`U8string`** `= std::string`
+* `using` **`U8view`** `= std::string_view`
 
-Use `U8string` for strings that are expected to be in UTF-8 (or ASCII, since
-any ASCII string is also valid UTF-8), while plain `std::string` is used where
-the string is expected to be in some non-Unicode encoding, or where the string
-is being used simply as an array of bytes rather than encoded text.
+Use `U8string` or `U8view` for strings that are expected to be in UTF-8 (or
+ASCII, since any ASCII string is also valid UTF-8), while plain `std::string`
+or `std::string_view` is used where the string is expected to be in some non-
+Unicode encoding, or where the string is being used simply as an array of
+bytes rather than encoded text.
 
 * `using` **`Strings`** `= std::vector<std::string>`
 

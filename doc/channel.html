@@ -17,16 +17,12 @@
 <li><a href="#message-dispatch">Message Dispatch</a><ul>
 <li><a href="#contents">Contents</a></li>
 <li><a href="#class-hierarchy">Class hierarchy</a></li>
-<li><a href="#support-classes">Support classes</a><ul>
-<li><a href="#class-intervalbase">Class IntervalBase</a></li>
-<li><a href="#class-polled">Class Polled</a></li>
-</ul>
-</li>
 <li><a href="#channel-base-classes">Channel base classes</a><ul>
 <li><a href="#class-channel">Class Channel</a></li>
 <li><a href="#class-eventchannel">Class EventChannel</a></li>
 <li><a href="#class-messagechannel">Class MessageChannel</a></li>
 <li><a href="#class-streamchannel">Class StreamChannel</a></li>
+<li><a href="#class-polled">Class Polled</a></li>
 </ul>
 </li>
 <li><a href="#concrete-channel-classes">Concrete channel classes</a><ul>
@@ -51,8 +47,8 @@
 <li><code>[abstract] class</code> <strong><code>EventChannel</code></strong><code>: public Channel</code><ul>
 <li><code>class</code> <strong><code>TrueChannel</code></strong><code>: public EventChannel</code></li>
 <li><code>class</code> <strong><code>FalseChannel</code></strong><code>: public EventChannel</code></li>
-<li><code>class</code> <strong><code>TimerChannel</code></strong><code>: public EventChannel, public IntervalBase</code></li>
-<li><code>class</code> <strong><code>ThrottleChannel</code></strong><code>: public EventChannel, public IntervalBase</code></li>
+<li><code>class</code> <strong><code>TimerChannel</code></strong><code>: public EventChannel</code></li>
+<li><code>class</code> <strong><code>ThrottleChannel</code></strong><code>: public EventChannel</code></li>
 </ul>
 </li>
 <li><code>[abstract] template &lt;typename T&gt; class</code> <strong><code>MessageChannel</code></strong><code>: public Channel</code><ul>
@@ -67,51 +63,16 @@
 </li>
 </ul>
 </li>
-<li><code>[abstract] class</code> <strong><code>IntervalBase</code></strong><ul>
-<li><code>class</code> <strong><code>Dispatch</code></strong><code>: public IntervalBase</code></li>
-<li><code>[abstract] class</code> <strong><code>Polled</code></strong><code>: public IntervalBase</code></li>
+<li><code>class</code> <strong><code>Dispatch</code></strong></li>
+<li><code>[abstract] class</code> <strong><code>Polled</code></strong></li>
 </ul>
-</li>
-</ul>
-</div>
-<h2 id="support-classes">Support classes</h2>
-<h3 id="class-intervalbase">Class IntervalBase</h3>
-<div class="defns">
-<ul>
-<li><code>class</code> <strong><code>IntervalBase</code></strong><ul>
-<li><code>using IntervalBase::</code><strong><code>time_unit</code></strong> <code>= std::chrono::microseconds</code></li>
-<li><code>time_unit IntervalBase::</code><strong><code>interval</code></strong><code>() const noexcept</code></li>
-<li><code>template &lt;typename R, typename P&gt; void IntervalBase::</code><strong><code>set_interval</code></strong><code>(std::chrono::duration&lt;R, P&gt; t) noexcept</code></li>
-</ul>
-</li>
-</ul>
-<p>This is a general purpose mixin class for anything that uses a time interval.
-It also provides the definition of the time unit used internally by all of the
-message dispatch classes. The <code>set_interval()</code> function clamps the argument to
-a minimum of zero.</p>
-</div>
-<h3 id="class-polled">Class Polled</h3>
-<div class="defns">
-<ul>
-<li><code>class</code> <strong><code>Polled</code></strong><code>: public IntervalBase</code><ul>
-<li><code>static constexpr auto Polled::</code><strong><code>default_interval</code></strong> <code>= 10ms</code></li>
-<li><code>virtual Polled::</code><strong><code>~Polled</code></strong><code>()</code></li>
-<li><code>virtual Channel::state Polled::</code><strong><code>poll</code></strong><code>() = 0</code></li>
-</ul>
-</li>
-</ul>
-<p>Mixin class for channels for which no easy timed wait operation exists,
-requiring a polled implementation. Polled channel classes should derive from
-both <code>Channel</code> and <code>Polled</code>, implementing <code>close()</code>, <code>poll()</code>, and
-<code>do_wait_for()</code>. The <code>poll()</code> function should immediately return <code>ready</code>,
-<code>waiting</code>, or <code>closed</code>; the <code>do_wait_for()</code> function should just call
-<code>polled_wait()</code>.</p>
 </div>
 <h2 id="channel-base-classes">Channel base classes</h2>
 <h3 id="class-channel">Class Channel</h3>
 <div class="defns">
 <ul>
 <li><code>class</code> <strong><code>Channel</code></strong><ul>
+<li><code>using Channel::</code><strong><code>time_unit</code></strong> <code>= std::chrono::microseconds</code></li>
 <li><code>enum class Channel::</code><strong><code>state</code></strong><ul>
 <li><code>Channel::state::</code><strong><code>ready</code></strong></li>
 <li><code>Channel::state::</code><strong><code>waiting</code></strong></li>
@@ -128,7 +89,7 @@ both <code>Channel</code> and <code>Polled</code>, implementing <code>close()</c
 <li><code>virtual state Channel::</code><strong><code>wait</code></strong><code>()</code></li>
 <li><code>template &lt;typename R, typename P&gt; Channel::state Channel::</code><strong><code>wait_for</code></strong><code>(std::chrono::duration&lt;R, P&gt; t)</code></li>
 <li><code>template &lt;typename C, typename D&gt; Channel::state Channel::</code><strong><code>wait_until</code></strong><code>(std::chrono::time_point&lt;C, D&gt; t)</code></li>
-<li><code>protected virtual Channel::state Channel::</code><strong><code>do_wait_for</code></strong><code>(IntervalBase::time_unit t) = 0</code></li>
+<li><code>protected virtual Channel::state Channel::</code><strong><code>do_wait_for</code></strong><code>(time_unit t) = 0</code></li>
 </ul>
 </li>
 </ul>
@@ -224,6 +185,26 @@ returns the new data as a string; <code>read_to()</code> calls <code>read()</cod
 data to the string. The buffer size functions control the internal read limit
 for <code>read_all/str/to()</code>.</p>
 </div>
+<h3 id="class-polled">Class Polled</h3>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>Polled</code></strong><ul>
+<li><code>static constexpr Channel::time_unit Polled::</code><strong><code>default_interval</code></strong> <code>= 10ms</code></li>
+<li><code>virtual Polled::</code><strong><code>~Polled</code></strong><code>()</code></li>
+<li><code>virtual Channel::state Polled::</code><strong><code>poll</code></strong><code>() = 0</code></li>
+<li><code>Channel::time_unit Polled::</code><strong><code>interval</code></strong><code>() const noexcept</code></li>
+<li><code>template &lt;typename R, typename P&gt; void Polled::</code><strong><code>set_interval</code></strong><code>(std::chrono::duration&lt;R, P&gt; t) noexcept</code></li>
+</ul>
+</li>
+</ul>
+<p>Mixin class for channels for which no easy timed wait operation exists,
+requiring a polled implementation. The <code>set_interval()</code> function clamps the
+argument to a minimum of zero.</p>
+<p>Polled channel classes should derive from both <code>Channel</code> and <code>Polled</code>,
+implementing <code>close()</code>, <code>poll()</code>, and <code>do_wait_for()</code>. The <code>poll()</code> function
+should immediately return <code>ready</code>, <code>waiting</code>, or <code>closed</code>; the <code>do_wait_for()</code>
+function should just call <code>polled_wait()</code>.</p>
+</div>
 <h2 id="concrete-channel-classes">Concrete channel classes</h2>
 <p>Member functions inherited from the channel base classes are not documented
 again here unless they have significantly different semantics.</p>
@@ -245,11 +226,12 @@ again here unless they have significantly different semantics.</p>
 <h3 id="class-timerchannel">Class TimerChannel</h3>
 <div class="defns">
 <ul>
-<li><code>class</code> <strong><code>TimerChannel</code></strong><code>: public EventChannel, public IntervalBase</code><ul>
+<li><code>class</code> <strong><code>TimerChannel</code></strong><code>: public EventChannel</code><ul>
 <li><code>template &lt;typename R, typename P&gt; explicit TimerChannel::</code><strong><code>TimerChannel</code></strong><code>(std::chrono::duration&lt;R, P&gt; t) noexcept</code></li>
 <li><code>virtual bool TimerChannel::</code><strong><code>is_shared</code></strong><code>() const noexcept</code> <em>= true</em></li>
 <li><code>void TimerChannel::</code><strong><code>flush</code></strong><code>() noexcept</code></li>
-<li><code>IntervalBase::time_unit TimerChannel::</code><strong><code>next</code></strong><code>() const noexcept</code></li>
+<li><code>time_unit TimerChannel::</code><strong><code>interval</code></strong><code>() const noexcept</code></li>
+<li><code>time_unit TimerChannel::</code><strong><code>next</code></strong><code>() const noexcept</code></li>
 </ul>
 </li>
 </ul>
@@ -264,9 +246,10 @@ These are async safe and can be called from any thread.</p>
 <h3 id="class-throttlechannel">Class ThrottleChannel</h3>
 <div class="defns">
 <ul>
-<li><code>class</code> <strong><code>ThrottleChannel</code></strong><code>: public EventChannel, public IntervalBase</code><ul>
+<li><code>class</code> <strong><code>ThrottleChannel</code></strong><code>: public EventChannel</code><ul>
 <li><code>template &lt;typename R, typename P&gt; explicit ThrottleChannel::</code><strong><code>ThrottleChannel</code></strong><code>(std::chrono::duration&lt;R, P&gt; t) noexcept</code></li>
 <li><code>virtual bool ThrottleChannel::</code><strong><code>is_shared</code></strong><code>() const noexcept</code> <em>= true</em></li>
+<li><code>time_unit ThrottleChannel::</code><strong><code>interval</code></strong><code>() const noexcept</code></li>
 </ul>
 </li>
 </ul>
@@ -342,7 +325,7 @@ whether it was written as a single block or multiple smaller blocks.</p>
 <h2 id="dispatch-control-class">Dispatch control class</h2>
 <div class="defns">
 <ul>
-<li><code>class</code> <strong><code>Dispatch</code></strong><code>: public IntervalBase</code><ul>
+<li><code>class</code> <strong><code>Dispatch</code></strong><ul>
 <li><code>enum class Dispatch::</code><strong><code>mode</code></strong><ul>
 <li><code>Dispatch::mode::</code><strong><code>sync</code></strong></li>
 <li><code>Dispatch::mode::</code><strong><code>async</code></strong></li>
@@ -361,7 +344,7 @@ whether it was written as a single block or multiple smaller blocks.</p>
 <li><code>Dispatch::reason result_type::</code><strong><code>why</code></strong><code>() const noexcept</code></li>
 </ul>
 </li>
-<li><code>static constexpr auto Dispatch::</code><strong><code>default_interval</code></strong> <code>= 1ms</code></li>
+<li><code>static constexpr Channel::time_unit Dispatch::</code><strong><code>default_interval</code></strong> <code>= 1ms</code></li>
 <li><code>Dispatch::</code><strong><code>Dispatch</code></strong><code>() noexcept</code></li>
 <li><code>Dispatch::</code><strong><code>~Dispatch</code></strong><code>() noexcept</code></li>
 <li><code>template &lt;typename F&gt; void Dispatch::</code><strong><code>add</code></strong><code>(EventChannel&amp; chan, mode m, F func)</code></li>
@@ -369,6 +352,7 @@ whether it was written as a single block or multiple smaller blocks.</p>
 <li><code>template &lt;typename F&gt; void Dispatch::</code><strong><code>add</code></strong><code>(StreamChannel&amp; chan, mode m, F func)</code></li>
 <li><code>void Dispatch::</code><strong><code>drop</code></strong><code>(Channel&amp; chan) noexcept</code></li>
 <li><code>bool Dispatch::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
+<li><code>Channel::time_unit Dispatch::</code><strong><code>interval</code></strong><code>() const noexcept</code></li>
 <li><code>result_type Dispatch::</code><strong><code>run</code></strong><code>() noexcept</code></li>
 <li><code>void Dispatch::</code><strong><code>stop</code></strong><code>() noexcept</code></li>
 </ul>

@@ -47,7 +47,7 @@ namespace {
             queue.push_back(n);
         }
     protected:
-        virtual state do_wait_for(IntervalBase::time_unit t) {
+        virtual state do_wait_for(time_unit t) {
             return polled_wait(t);
         }
     private:

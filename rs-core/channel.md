@@ -14,51 +14,23 @@ By Ross Smith
     * `[abstract] class` **`EventChannel`**`: public Channel`
         * `class` **`TrueChannel`**`: public EventChannel`
         * `class` **`FalseChannel`**`: public EventChannel`
-        * `class` **`TimerChannel`**`: public EventChannel, public IntervalBase`
-        * `class` **`ThrottleChannel`**`: public EventChannel, public IntervalBase`
+        * `class` **`TimerChannel`**`: public EventChannel`
+        * `class` **`ThrottleChannel`**`: public EventChannel`
     * `[abstract] template <typename T> class` **`MessageChannel`**`: public Channel`
         * `template <typename T> class` **`GeneratorChannel`**`: public MessageChannel<T>`
         * `template <typename T> class` **`QueueChannel`**`: public MessageChannel<T>`
         * `template <typename T> class` **`ValueChannel`**`: public MessageChannel<T>`
     * `[abstract] class` **`StreamChannel`**`: public Channel`
         * `class` **`BufferChannel`**`: public StreamChannel`
-* `[abstract] class` **`IntervalBase`**
-    * `class` **`Dispatch`**`: public IntervalBase`
-    * `[abstract] class` **`Polled`**`: public IntervalBase`
-
-## Support classes ##
-
-### Class IntervalBase ###
-
-* `class` **`IntervalBase`**
-    * `using IntervalBase::`**`time_unit`** `= std::chrono::microseconds`
-    * `time_unit IntervalBase::`**`interval`**`() const noexcept`
-    * `template <typename R, typename P> void IntervalBase::`**`set_interval`**`(std::chrono::duration<R, P> t) noexcept`
-
-This is a general purpose mixin class for anything that uses a time interval.
-It also provides the definition of the time unit used internally by all of the
-message dispatch classes. The `set_interval()` function clamps the argument to
-a minimum of zero.
-
-### Class Polled ###
-
-* `class` **`Polled`**`: public IntervalBase`
-    * `static constexpr auto Polled::`**`default_interval`** `= 10ms`
-    * `virtual Polled::`**`~Polled`**`()`
-    * `virtual Channel::state Polled::`**`poll`**`() = 0`
-
-Mixin class for channels for which no easy timed wait operation exists,
-requiring a polled implementation. Polled channel classes should derive from
-both `Channel` and `Polled`, implementing `close()`, `poll()`, and
-`do_wait_for()`. The `poll()` function should immediately return `ready`,
-`waiting`, or `closed`; the `do_wait_for()` function should just call
-`polled_wait()`.
+* `class` **`Dispatch`**
+* `[abstract] class` **`Polled`**
 
 ## Channel base classes ##
 
 ### Class Channel ###
 
 * `class` **`Channel`**
+    * `using Channel::`**`time_unit`** `= std::chrono::microseconds`
     * `enum class Channel::`**`state`**
         * `Channel::state::`**`ready`**
         * `Channel::state::`**`waiting`**
@@ -73,7 +45,7 @@ both `Channel` and `Polled`, implementing `close()`, `poll()`, and
     * `virtual state Channel::`**`wait`**`()`
     * `template <typename R, typename P> Channel::state Channel::`**`wait_for`**`(std::chrono::duration<R, P> t)`
     * `template <typename C, typename D> Channel::state Channel::`**`wait_until`**`(std::chrono::time_point<C, D> t)`
-    * `protected virtual Channel::state Channel::`**`do_wait_for`**`(IntervalBase::time_unit t) = 0`
+    * `protected virtual Channel::state Channel::`**`do_wait_for`**`(time_unit t) = 0`
 
 The base class for all readable message channels. All concrete channel classes
 must derive from one of the three intermediate classes below, not directly
@@ -165,6 +137,24 @@ returns the new data as a string; `read_to()` calls `read()` and appends the
 data to the string. The buffer size functions control the internal read limit
 for `read_all/str/to()`.
 
+### Class Polled ###
+
+* `class` **`Polled`**
+    * `static constexpr Channel::time_unit Polled::`**`default_interval`** `= 10ms`
+    * `virtual Polled::`**`~Polled`**`()`
+    * `virtual Channel::state Polled::`**`poll`**`() = 0`
+    * `Channel::time_unit Polled::`**`interval`**`() const noexcept`
+    * `template <typename R, typename P> void Polled::`**`set_interval`**`(std::chrono::duration<R, P> t) noexcept`
+
+Mixin class for channels for which no easy timed wait operation exists,
+requiring a polled implementation. The `set_interval()` function clamps the
+argument to a minimum of zero.
+
+Polled channel classes should derive from both `Channel` and `Polled`,
+implementing `close()`, `poll()`, and `do_wait_for()`. The `poll()` function
+should immediately return `ready`, `waiting`, or `closed`; the `do_wait_for()`
+function should just call `polled_wait()`.
+
 ## Concrete channel classes ##
 
 Member functions inherited from the channel base classes are not documented
@@ -182,11 +172,12 @@ Trivial event channels whose wait functions always succeed immediately
 
 ### Class TimerChannel ###
 
-* `class` **`TimerChannel`**`: public EventChannel, public IntervalBase`
+* `class` **`TimerChannel`**`: public EventChannel`
     * `template <typename R, typename P> explicit TimerChannel::`**`TimerChannel`**`(std::chrono::duration<R, P> t) noexcept`
     * `virtual bool TimerChannel::`**`is_shared`**`() const noexcept` _= true_
     * `void TimerChannel::`**`flush`**`() noexcept`
-    * `IntervalBase::time_unit TimerChannel::`**`next`**`() const noexcept`
+    * `time_unit TimerChannel::`**`interval`**`() const noexcept`
+    * `time_unit TimerChannel::`**`next`**`() const noexcept`
 
 An event channel that delivers one tick every interval, starting at one
 interval after the time of construction. Multiple ticks may be delivered at
@@ -199,9 +190,10 @@ These are async safe and can be called from any thread.
 
 ### Class ThrottleChannel ###
 
-* `class` **`ThrottleChannel`**`: public EventChannel, public IntervalBase`
+* `class` **`ThrottleChannel`**`: public EventChannel`
     * `template <typename R, typename P> explicit ThrottleChannel::`**`ThrottleChannel`**`(std::chrono::duration<R, P> t) noexcept`
     * `virtual bool ThrottleChannel::`**`is_shared`**`() const noexcept` _= true_
+    * `time_unit ThrottleChannel::`**`interval`**`() const noexcept`
 
 An event channel that throttles events to a maximum rate. The channel will
 block if the minimum interval has not yet elapsed since the last event;
@@ -262,7 +254,7 @@ whether it was written as a single block or multiple smaller blocks.
 
 ## Dispatch control class ##
 
-* `class` **`Dispatch`**`: public IntervalBase`
+* `class` **`Dispatch`**
     * `enum class Dispatch::`**`mode`**
         * `Dispatch::mode::`**`sync`**
         * `Dispatch::mode::`**`async`**
@@ -275,7 +267,7 @@ whether it was written as a single block or multiple smaller blocks.
         * `std::exception_ptr result_type::`**`error`** `= nullptr`
         * `void result_type::`**`rethrow`**`() const`
         * `Dispatch::reason result_type::`**`why`**`() const noexcept`
-    * `static constexpr auto Dispatch::`**`default_interval`** `= 1ms`
+    * `static constexpr Channel::time_unit Dispatch::`**`default_interval`** `= 1ms`
     * `Dispatch::`**`Dispatch`**`() noexcept`
     * `Dispatch::`**`~Dispatch`**`() noexcept`
     * `template <typename F> void Dispatch::`**`add`**`(EventChannel& chan, mode m, F func)`
@@ -283,6 +275,7 @@ whether it was written as a single block or multiple smaller blocks.
     * `template <typename F> void Dispatch::`**`add`**`(StreamChannel& chan, mode m, F func)`
     * `void Dispatch::`**`drop`**`(Channel& chan) noexcept`
     * `bool Dispatch::`**`empty`**`() const noexcept`
+    * `Channel::time_unit Dispatch::`**`interval`**`() const noexcept`
     * `result_type Dispatch::`**`run`**`() noexcept`
     * `void Dispatch::`**`stop`**`() noexcept`
 

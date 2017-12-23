@@ -158,7 +158,7 @@
     } \
     inline RS_ATTR_UNUSED std::vector<EnumType> RS_enum_values(EnumType) { \
         IntType n = IntType(EnumType::RS_enum_sentinel) - IntType(first_value); \
-        std::vector<EnumType> v(n); \
+        std::vector<EnumType> v(size_t(n), {}); \
         for (IntType i = 0; i < n; ++i) \
             v[i] = EnumType(first_value + i); \
         return v; \
@@ -367,7 +367,7 @@ namespace RS {
                 names += strspn(names, " ,");
             }
             out << prefix;
-            out.write(names, strcspn(names, " ,"));
+            out.write(names, ptrdiff_t(strcspn(names, " ,")));
         }
 
     }
@@ -1265,7 +1265,7 @@ namespace RS {
             static_assert(std::is_integral<T>::value);
             int tbits = 8 * sizeof(T);
             int nbits = n % tbits;
-            return nbits ? (t << nbits) | (t >> (tbits - nbits)) : t;
+            return nbits ? T(t << nbits) | T(t >> (tbits - nbits)) : t;
         }
 
         template <typename T>
@@ -1273,7 +1273,7 @@ namespace RS {
             static_assert(std::is_integral<T>::value);
             int tbits = 8 * sizeof(T);
             int nbits = n % tbits;
-            return nbits ? (t >> nbits) | (t << (tbits - nbits)) : t;
+            return nbits ? T(t >> nbits) | T(t << (tbits - nbits)) : t;
         }
 
     }

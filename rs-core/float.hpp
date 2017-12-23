@@ -296,7 +296,7 @@ namespace RS {
         template <typename T>
         T default_epsilon() noexcept {
             static_assert(std::is_floating_point<T>::value);
-            return std::pow(T(10), - std::min(int(sizeof(T)), 8));
+            return T(std::pow(T(10), - std::min(int(sizeof(T)), 8)));
         }
 
     }

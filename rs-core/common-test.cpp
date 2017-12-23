@@ -65,7 +65,7 @@ namespace {
     MAKE_STR_FOR_CONTAINER(set)
     MAKE_STR_FOR_CONTAINER(vector)
 
-    U8string f1(int n) { return U8string(n, '*'); }
+    U8string f1(int n) { return U8string(size_t(n), '*'); }
     U8string f1(U8string s) { return '[' + s + ']'; }
     U8string f2() { return "Hello"; }
     U8string f2(U8string s) { return '[' + s + ']'; }

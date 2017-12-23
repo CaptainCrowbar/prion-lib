@@ -51,14 +51,14 @@ namespace RS {
             static const auto table = [] {
                 std::array<uint32_t, 256> data;
                 for (uint32_t i = 0; i < 256; i++) {
-                    uint32_t c = i;
+                    uint32_t x = i;
                     for (int k = 0; k < 8; k++) {
-                        if (c & 1)
-                            c = 0xedb88320 ^ (c >> 1);
+                        if (x & 1)
+                            x = 0xedb88320 ^ (x >> 1);
                         else
-                            c >>= 1;
+                            x >>= 1;
                     }
-                    data[i] = c;
+                    data[i] = x;
                 }
                 return data;
             }();
@@ -173,7 +173,7 @@ namespace RS {
                 static constexpr size_t result_size = bytes; \
                 DigestClass() noexcept { RS_CRYPTO_API(x_tag##_Init)(&c); } \
                 ~DigestClass() noexcept {} \
-                DigestClass& operator()(const void* ptr, size_t n) noexcept { RS_CRYPTO_API(x_tag##_Update)(&c, ptr, n); return *this; } \
+                DigestClass& operator()(const void* ptr, size_t n) noexcept { RS_CRYPTO_API(x_tag##_Update)(&c, ptr, uint32_t(n)); return *this; } \
                 operator result_type() noexcept { result_type r; RS_CRYPTO_API(x_tag##_Final)(r.data(), &c); return r; } \
             private: \
                 RS_CRYPTO_API(x_tag##_CTX) c; \

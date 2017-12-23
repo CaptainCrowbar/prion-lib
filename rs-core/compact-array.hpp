@@ -88,10 +88,10 @@ namespace RS {
         iterator end() noexcept { return begin() + num; }
         const_iterator end() const noexcept { return begin() + num; }
         const_iterator cend() const noexcept { return cbegin() + num; }
-        T* data() noexcept { return reinterpret_cast<T*>(local ? mem : pc.ptr); }
+        T* data() noexcept { return reinterpret_cast<T*>(local ? un.mem : un.pc.ptr); }
         const T* data() const noexcept { return cdata(); }
-        const T* cdata() const noexcept { return reinterpret_cast<const T*>(local ? mem : pc.ptr); }
-        size_t capacity() const noexcept { return local ? N : pc.cap; }
+        const T* cdata() const noexcept { return reinterpret_cast<const T*>(local ? un.mem : un.pc.ptr); }
+        size_t capacity() const noexcept { return local ? N : un.pc.cap; }
         void clear() noexcept;
         bool empty() const noexcept { return num == 0; }
         bool is_compact() const noexcept { return local; }
@@ -126,7 +126,7 @@ namespace RS {
                 raw_memory* ptr;
                 size_t cap;
             } pc;
-        };
+        } un;
         size_t num = 0;
         bool local = true;
         void check_index(size_t i) const { if (i >= num) throw std::out_of_range("Compact array index out of bounds"); }
@@ -203,7 +203,7 @@ namespace RS {
         using namespace RS_Detail;
         destroy(begin(), end());
         if (! local)
-            delete[] pc.ptr;
+            delete[] un.pc.ptr;
         num = 0;
         local = true;
     }
@@ -226,9 +226,9 @@ namespace RS {
         uninitialized_move(begin(), end(), new_t_ptr);
         destroy(begin(), end());
         if (! local)
-            delete[] pc.ptr;
-        pc.ptr = new_ptr;
-        pc.cap = new_cap;
+            delete[] un.pc.ptr;
+        un.pc.ptr = new_ptr;
+        un.pc.cap = new_cap;
         local = false;
     }
 
@@ -247,7 +247,7 @@ namespace RS {
         if (local) {
             // Already at minimum capacity, nothing to do
         } else if (num <= N) {
-            auto old_ptr = pc.ptr;
+            auto old_ptr = un.pc.ptr;
             auto old_t_ptr = reinterpret_cast<T*>(old_ptr);
             local = true;
             uninitialized_move(old_t_ptr, old_t_ptr + num, begin());
@@ -258,9 +258,9 @@ namespace RS {
             auto new_t_ptr = reinterpret_cast<T*>(new_ptr);
             uninitialized_move(begin(), end(), new_t_ptr);
             destroy(begin(), end());
-            delete[] pc.ptr;
-            pc.ptr = new_ptr;
-            pc.cap = num;
+            delete[] un.pc.ptr;
+            un.pc.ptr = new_ptr;
+            un.pc.cap = num;
         }
     }
 
@@ -455,20 +455,20 @@ namespace RS {
             }
             std::swap(num, ca.num);
         } else if (local) {
-            auto p = ca.pc.ptr;
-            auto c = ca.pc.cap;
-            auto ca_ptr = reinterpret_cast<T*>(ca.mem);
+            auto p = ca.un.pc.ptr;
+            auto c = ca.un.pc.cap;
+            auto ca_ptr = reinterpret_cast<T*>(ca.un.mem);
             uninitialized_move(begin(), end(), ca_ptr);
             destroy(begin(), end());
             std::swap(num, ca.num);
             std::swap(local, ca.local);
-            pc.ptr = p;
-            pc.cap = c;
+            un.pc.ptr = p;
+            un.pc.cap = c;
         } else if (ca.local) {
             ca.swap(*this);
         } else {
-            std::swap(pc.ptr, ca.pc.ptr);
-            std::swap(pc.cap, ca.pc.cap);
+            std::swap(un.pc.ptr, ca.un.pc.ptr);
+            std::swap(un.pc.cap, ca.un.pc.cap);
             std::swap(num, ca.num);
         }
     }

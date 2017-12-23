@@ -106,7 +106,7 @@ namespace RS {
         #ifdef _MSC_VER
             using socket_iosize = int;
         #else
-            using socket_iosize = size_t;
+            using socket_iosize = socklen_t;
         #endif
 
         template <typename T>
@@ -199,7 +199,7 @@ namespace RS {
             U8string s(16, '\0');
             for (;;) {
                 clear_error();
-                auto rc = net_call(inet_ntop(AF_INET, vbytes, &s[0], s.size()));
+                auto rc = net_call(inet_ntop(AF_INET, vbytes, &s[0], socklen_t(s.size())));
                 if (rc.res)
                     break;
                 else if (rc.err != ENOSPC)
@@ -268,7 +268,7 @@ namespace RS {
             U8string s(40, '\0');
             for (;;) {
                 clear_error();
-                auto rc = net_call(inet_ntop(AF_INET6, vbytes, &s[0], s.size()));
+                auto rc = net_call(inet_ntop(AF_INET6, vbytes, &s[0], socklen_t(s.size())));
                 if (rc.res)
                     break;
                 else if (rc.err != ENOSPC)
@@ -406,7 +406,7 @@ namespace RS {
         inline void SocketAddress::set_family(uint16_t f) {
             if (current_size < sizeof(sockaddr))
                 current_size = sizeof(sockaddr);
-            sa_union.base.sa_family = f;
+            sa_union.base.sa_family = sa_family_t(f);
         }
 
         inline void SocketAddress::set_size(size_t n) {
@@ -458,7 +458,7 @@ namespace RS {
         #ifdef _MSC_VER
             using name_size = uint32_t;
         #else
-            using name_size = size_t;
+            using name_size = socklen_t;
         #endif
         class addrinfo_error_category:
         public std::error_category {

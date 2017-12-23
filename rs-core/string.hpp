@@ -685,7 +685,14 @@ namespace RS {
         auto x = double(t);
         int rc = 0;
         for (;;) {
+            #ifdef __GNUC__
+                #pragma GCC diagnostic push
+                #pragma GCC diagnostic ignored "-Wformat-nonliteral"
+            #endif
             rc = snprintf(&buf[0], buf.size(), fmt.data(), prec, x);
+            #ifdef __GNUC__
+                #pragma GCC diagnostic pop
+            #endif
             if (rc < 0)
                 throw std::system_error(errno, std::generic_category(), "snprintf()");
             if (size_t(rc) < buf.size())
@@ -939,7 +946,7 @@ namespace RS {
         if (ascii_isspace(*endp))
             ++endp;
         char c = *endp;
-        if (x && ascii_isalpha(c)) {
+        if (x != 0 && ascii_isalpha(c)) {
             if (c == 'K')
                 c = 'k';
             auto pp = strchr(prefixes, c);

@@ -269,7 +269,7 @@
 
 namespace RS {
 
-    template <typename T>
+    template <typename T, bool Copy = true>
     class Accountable {
     public:
         Accountable(): value() { ++number(); }
@@ -287,14 +287,47 @@ namespace RS {
         static int& number() noexcept { static int n = 0; return n; }
     };
 
+    template <typename T>
+    class Accountable<T, false> {
+    public:
+        Accountable(): value() { ++number(); }
+        Accountable(const T& t): value(t) { ++number(); }
+        Accountable(const Accountable& a) = delete;
+        Accountable(Accountable&& a) noexcept: value(std::exchange(a.value, T())) { ++number(); }
+        ~Accountable() noexcept { --number(); }
+        Accountable& operator=(const Accountable& a) = delete;
+        Accountable& operator=(Accountable&& a) noexcept { if (&a != this) value = std::exchange(a.value, T()); return *this; }
+        const T& get() const noexcept { return value; }
+        static int count() noexcept { return number(); }
+        static void reset() noexcept { number() = 0; }
+    private:
+        T value;
+        static int& number() noexcept { static int n = 0; return n; }
+    };
+
     template <>
-    class Accountable<void> {
+    class Accountable<void, true> {
     public:
         Accountable() noexcept { ++number(); }
         Accountable(const Accountable&) noexcept { ++number(); }
         Accountable(Accountable&&) noexcept { ++number(); }
         ~Accountable() noexcept { --number(); }
         Accountable& operator=(const Accountable&) noexcept { return *this; }
+        Accountable& operator=(Accountable&&) noexcept { return *this; }
+        static int count() noexcept { return number(); }
+        static void reset() noexcept { number() = 0; }
+    private:
+        static int& number() noexcept { static int n = 0; return n; }
+    };
+
+    template <>
+    class Accountable<void, false> {
+    public:
+        Accountable() noexcept { ++number(); }
+        Accountable(const Accountable&) = delete;
+        Accountable(Accountable&&) noexcept { ++number(); }
+        ~Accountable() noexcept { --number(); }
+        Accountable& operator=(const Accountable&) = delete;
         Accountable& operator=(Accountable&&) noexcept { return *this; }
         static int count() noexcept { return number(); }
         static void reset() noexcept { number() = 0; }

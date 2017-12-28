@@ -106,13 +106,13 @@ an exception is thrown.
 
 ## Utility classes ##
 
-* `template <typename T> class` **`Accountable`**
+* `template <typename T, bool Copy = true> class` **`Accountable`**
     * `Accountable::`**`Accountable`**`()`
     * `Accountable::`**`Accountable`**`(const T& t)` _[not defined if T is void]_
-    * `Accountable::`**`Accountable`**`(const Accountable& a)`
+    * `Accountable::`**`Accountable`**`(const Accountable& a)` _[deleted if Copy is false]_
     * `Accountable::`**`Accountable`**`(Accountable&& a) noexcept`
     * `Accountable::`**`~Accountable`**`() noexcept`
-    * `Accountable& Accountable::`**`operator=`**`(const Accountable& a)`
+    * `Accountable& Accountable::`**`operator=`**`(const Accountable& a)` _[deleted if Copy is false]_
     * `Accountable& Accountable::`**`operator=`**`(Accountable&& a) noexcept`
     * `const T& Accountable::`**`get`**`() const noexcept` _[not defined if T is void]_
     * `static int Accountable::`**`count`**`() noexcept`
@@ -122,6 +122,6 @@ A class that keeps track of how many instances exist. This is useful for
 testing for object leaks, double destruction, and similar object accounting
 errors. A separate count is kept for each value type `T`; `count()` returns
 the current count, `reset()` sets it to zero (to simplify continued testing
-even if a leak is detected). `T` must be default constructible, copyable, and
-movable; the value of a moved-from object is reset to the default value. `T`
-can be `void` if no embedded value is required.
+even if a leak is detected). `T` must be default constructible and movable,
+and copyable if `Copy` is true; the value of a moved-from object is reset to
+the default value. `T` can be `void` if no embedded value is required.

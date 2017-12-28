@@ -142,6 +142,76 @@ namespace {
 
 }
 
+void test_core_common_accountable() {
+
+    using A = Accountable<uint64_t>;
+    using B = Accountable<uint64_t, false>;
+    using C = Accountable<void>;
+    using D = Accountable<void, false>;
+
+    TEST_EQUAL(A::count(), 0);
+    TEST_EQUAL(B::count(), 0);
+    TEST_EQUAL(C::count(), 0);
+    TEST_EQUAL(D::count(), 0);
+
+    A a1, a2;
+    B b1, b2;
+    C c1, c2;
+    D d1, d2;
+
+    TEST_EQUAL(A::count(), 2);
+    TEST_EQUAL(B::count(), 2);
+    TEST_EQUAL(C::count(), 2);
+    TEST_EQUAL(D::count(), 2);
+
+    TEST_EQUAL(a1.get(), 0);
+    TEST_EQUAL(a2.get(), 0);
+    TEST_EQUAL(b1.get(), 0);
+    TEST_EQUAL(b2.get(), 0);
+
+    TRY(a1 = 42);
+    TRY(b1 = 42);
+
+    TEST_EQUAL(a1.get(), 42);
+    TEST_EQUAL(a2.get(), 0);
+    TEST_EQUAL(b1.get(), 42);
+    TEST_EQUAL(b2.get(), 0);
+
+    TRY(a2 = a1);
+    TRY(c2 = c1);
+
+    TEST_EQUAL(a1.get(), 42);
+    TEST_EQUAL(a2.get(), 42);
+    TEST_EQUAL(b1.get(), 42);
+    TEST_EQUAL(b2.get(), 0);
+
+    TRY(a2 = std::move(a1));
+    TRY(b2 = std::move(b1));
+    TRY(c2 = std::move(c1));
+    TRY(d2 = std::move(d1));
+
+    TEST_EQUAL(a1.get(), 0);
+    TEST_EQUAL(a2.get(), 42);
+    TEST_EQUAL(b1.get(), 0);
+    TEST_EQUAL(b2.get(), 42);
+
+    TEST_EQUAL(A::count(), 2);
+    TEST_EQUAL(B::count(), 2);
+    TEST_EQUAL(C::count(), 2);
+    TEST_EQUAL(D::count(), 2);
+
+    TRY(A::reset());
+    TRY(B::reset());
+    TRY(C::reset());
+    TRY(D::reset());
+
+    TEST_EQUAL(A::count(), 0);
+    TEST_EQUAL(B::count(), 0);
+    TEST_EQUAL(C::count(), 0);
+    TEST_EQUAL(D::count(), 0);
+
+}
+
 void test_core_common_preprocessor_macros() {
 
     std::vector<int> iv = {1, 2, 3, 4, 5}, iv2 = {2, 3, 5, 7, 11};

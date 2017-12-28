@@ -1,5 +1,6 @@
 #include "rs-core/unit-test.hpp"
 
+extern void test_core_common_accountable();
 extern void test_core_common_preprocessor_macros();
 extern void test_core_common_integer_types();
 extern void test_core_common_string_types();
@@ -245,6 +246,7 @@ int main() {
 
     static const RS::UnitTest::test_index index = {
 
+        { "core/common/accountable", test_core_common_accountable },
         { "core/common/preprocessor-macros", test_core_common_preprocessor_macros },
         { "core/common/integer-types", test_core_common_integer_types },
         { "core/common/string-types", test_core_common_string_types },

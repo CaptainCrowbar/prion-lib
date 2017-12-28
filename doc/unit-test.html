@@ -135,13 +135,13 @@ an exception is thrown.</p>
 <h2 id="utility-classes">Utility classes</h2>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; class</code> <strong><code>Accountable</code></strong><ul>
+<li><code>template &lt;typename T, bool Copy = true&gt; class</code> <strong><code>Accountable</code></strong><ul>
 <li><code>Accountable::</code><strong><code>Accountable</code></strong><code>()</code></li>
 <li><code>Accountable::</code><strong><code>Accountable</code></strong><code>(const T&amp; t)</code> <em>[not defined if T is void]</em></li>
-<li><code>Accountable::</code><strong><code>Accountable</code></strong><code>(const Accountable&amp; a)</code></li>
+<li><code>Accountable::</code><strong><code>Accountable</code></strong><code>(const Accountable&amp; a)</code> <em>[deleted if Copy is false]</em></li>
 <li><code>Accountable::</code><strong><code>Accountable</code></strong><code>(Accountable&amp;&amp; a) noexcept</code></li>
 <li><code>Accountable::</code><strong><code>~Accountable</code></strong><code>() noexcept</code></li>
-<li><code>Accountable&amp; Accountable::</code><strong><code>operator=</code></strong><code>(const Accountable&amp; a)</code></li>
+<li><code>Accountable&amp; Accountable::</code><strong><code>operator=</code></strong><code>(const Accountable&amp; a)</code> <em>[deleted if Copy is false]</em></li>
 <li><code>Accountable&amp; Accountable::</code><strong><code>operator=</code></strong><code>(Accountable&amp;&amp; a) noexcept</code></li>
 <li><code>const T&amp; Accountable::</code><strong><code>get</code></strong><code>() const noexcept</code> <em>[not defined if T is void]</em></li>
 <li><code>static int Accountable::</code><strong><code>count</code></strong><code>() noexcept</code></li>
@@ -153,7 +153,7 @@ an exception is thrown.</p>
 testing for object leaks, double destruction, and similar object accounting
 errors. A separate count is kept for each value type <code>T</code>; <code>count()</code> returns
 the current count, <code>reset()</code> sets it to zero (to simplify continued testing
-even if a leak is detected). <code>T</code> must be default constructible, copyable, and
-movable; the value of a moved-from object is reset to the default value. <code>T</code>
-can be <code>void</code> if no embedded value is required.</p></body>
+even if a leak is detected). <code>T</code> must be default constructible and movable,
+and copyable if <code>Copy</code> is true; the value of a moved-from object is reset to
+the default value. <code>T</code> can be <code>void</code> if no embedded value is required.</p></body>
 </html>

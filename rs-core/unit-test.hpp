@@ -284,7 +284,7 @@ namespace RS {
         static void reset() noexcept { number() = 0; }
     private:
         T value;
-        static int& number() noexcept { static int n = 0; return n; }
+        static std::atomic<int>& number() noexcept { static std::atomic<int> n(0); return n; }
     };
 
     template <typename T>
@@ -302,7 +302,7 @@ namespace RS {
         static void reset() noexcept { number() = 0; }
     private:
         T value;
-        static int& number() noexcept { static int n = 0; return n; }
+        static std::atomic<int>& number() noexcept { static std::atomic<int> n(0); return n; }
     };
 
     template <>
@@ -317,7 +317,7 @@ namespace RS {
         static int count() noexcept { return number(); }
         static void reset() noexcept { number() = 0; }
     private:
-        static int& number() noexcept { static int n = 0; return n; }
+        static std::atomic<int>& number() noexcept { static std::atomic<int> n(0); return n; }
     };
 
     template <>
@@ -332,7 +332,7 @@ namespace RS {
         static int count() noexcept { return number(); }
         static void reset() noexcept { number() = 0; }
     private:
-        static int& number() noexcept { static int n = 0; return n; }
+        static std::atomic<int>& number() noexcept { static std::atomic<int> n(0); return n; }
     };
 
     struct UnitTest {

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Ring Buffer</title>
+<link type="text/css" rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<h1 id="ring-buffer">Ring Buffer</h1>
+<p>By Ross Smith</p>
+<ul>
+<li><code>#include "rs-core/ring-buffer.hpp"</code></li>
+</ul>
+<h2 id="contents">Contents</h2>
+<div class="toc">
+<ul>
+<li><a href="#ring-buffer">Ring Buffer</a><ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#ring-buffer-class">Ring buffer class</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="ring-buffer-class">Ring buffer class</h2>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>RingBuffer</code></strong></li>
+</ul>
+<p>A ring buffer whose capacity is fixed at construction. The only requirement on
+the value type <code>T</code> is that it must be at least either movable or copyable.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>class RingBuffer::</code><strong><code>iterator</code></strong></li>
+<li><code>using RingBuffer::</code><strong><code>value_type</code></strong> <code>= T</code></li>
+</ul>
+<p>Member types. The iterator is a random access iterator that dereferences to a
+<code>const T&amp;</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>RingBuffer::</code><strong><code>RingBuffer</code></strong><code>()</code></li>
+<li><code>explicit RingBuffer::</code><strong><code>RingBuffer</code></strong><code>(size_t n)</code></li>
+<li><code>RingBuffer::</code><strong><code>RingBuffer</code></strong><code>(const RingBuffer&amp; r)</code></li>
+<li><code>RingBuffer::</code><strong><code>RingBuffer</code></strong><code>(RingBuffer&amp;&amp; r) noexcept</code></li>
+<li><code>RingBuffer::</code><strong><code>~RingBuffer</code></strong><code>() noexcept</code></li>
+<li><code>RingBuffer&amp; RingBuffer::</code><strong><code>operator=</code></strong><code>(const RingBuffer&amp; r)</code></li>
+<li><code>RingBuffer&amp; RingBuffer::</code><strong><code>operator=</code></strong><code>(RingBuffer&amp;&amp; r) noexcept</code></li>
+</ul>
+<p>Life cycle operations. A default constructed ring buffer has zero capacity.
+The second constructor creates an empty ring buffer with a fixed capacity. A
+moved-from ring buffer is empty, but differs from a default constructed one in
+that it retains its capacity.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>const T&amp; RingBuffer::</code><strong><code>operator[]</code></strong><code>(size_t i) const noexcept</code></li>
+<li><code>RingBuffer::</code><strong><code>iterator</code></strong><code>RingBuffer::</code><strong><code>begin</code></strong><code>() const noexcept</code></li>
+<li><code>RingBuffer::</code><strong><code>iterator</code></strong><code>RingBuffer::</code><strong><code>end</code></strong><code>() const noexcept</code></li>
+<li><code>const T&amp; RingBuffer::</code><strong><code>front</code></strong><code>() const noexcept</code></li>
+<li><code>const T&amp; RingBuffer::</code><strong><code>back</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>Element access functions. The <code>begin()</code> or <code>front()</code> end of the ring buffer is
+the read end (the end that <code>pop()</code> extracts from); the <code>end()</code> or <code>back()</code> end
+is the write end (the end that <code>push()</code> inserts into). Indexing starts at the
+read end; <code>buffer[0]</code> is equivalent to <code>front()</code>. Behaviour is undefined if
+the argument to <code>operator[]</code> is out of range, or if <code>front()</code> or <code>back()</code> are
+called on an empty buffer.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>size_t RingBuffer::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>Returns the current number of elements in the buffer.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>size_t RingBuffer::</code><strong><code>capacity</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>Returns the maximum number of elements in the buffer.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool RingBuffer::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
+<li><code>bool RingBuffer::</code><strong><code>full</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>A buffer is empty if <code>size()=0</code>, full if <code>size()=capacity()</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void RingBuffer::</code><strong><code>push</code></strong><code>(T&amp;&amp; t)</code></li>
+</ul>
+<p>Inserts a new element at the back of the buffer. This will delete the element
+at the front if the buffer is already full. This does not invalidate any
+iterators or element pointers, except ones that were pointing to the deleted
+element, if any. Behaviour is undefined if this is called on a buffer with
+zero capacity.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>T RingBuffer::</code><strong><code>pop</code></strong><code>() noexcept</code></li>
+</ul>
+<p>Extracts and returns the element at the front of the buffer. Behaviour is
+undefined if the buffer is empty. This invalidates only iterators or element
+pointers that were pointing to the deleted element.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void RingBuffer::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
+</ul>
+<p>Deletes all elements from the buffer. The capacity remains unchanged. All
+iterators and element pointers are invalidated.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void RingBuffer::</code><strong><code>swap</code></strong><code>(RingBuffer&amp; r) noexcept</code></li>
+<li><code>void</code> <strong><code>swap</code></strong><code>(RingBuffer&amp; r1, RingBuffer&amp; r2) noexcept</code></li>
+</ul>
+<p>Swap two buffers. Iterators and element pointers remain valid, pointing to
+their element's new position in the other buffer.</p></body>
+</html>

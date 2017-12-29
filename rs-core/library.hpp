@@ -23,6 +23,7 @@
 #include "rs-core/process.hpp"
 #include "rs-core/random.hpp"
 #include "rs-core/rational.hpp"
+#include "rs-core/ring-buffer.hpp"
 #include "rs-core/scale-map.hpp"
 #include "rs-core/serial.hpp"
 #include "rs-core/signal.hpp"

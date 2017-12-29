@@ -21,6 +21,7 @@ $(BUILD)/optional-test.o: rs-core/optional-test.cpp rs-core/common.hpp rs-core/o
 $(BUILD)/process-test.o: rs-core/process-test.cpp rs-core/channel.hpp rs-core/common.hpp rs-core/file.hpp rs-core/io.hpp rs-core/optional.hpp rs-core/process.hpp rs-core/string.hpp rs-core/time.hpp rs-core/unit-test.hpp
 $(BUILD)/random-test.o: rs-core/random-test.cpp rs-core/common.hpp rs-core/float.hpp rs-core/random.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp
 $(BUILD)/rational-test.o: rs-core/rational-test.cpp rs-core/common.hpp rs-core/rational.hpp rs-core/string.hpp rs-core/unit-test.hpp
+$(BUILD)/ring-buffer-test.o: rs-core/ring-buffer-test.cpp rs-core/common.hpp rs-core/ring-buffer.hpp rs-core/string.hpp rs-core/unit-test.hpp
 $(BUILD)/scale-map-test.o: rs-core/scale-map-test.cpp rs-core/common.hpp rs-core/float.hpp rs-core/scale-map.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp
 $(BUILD)/serial-test.o: rs-core/serial-test.cpp rs-core/blob.hpp rs-core/channel.hpp rs-core/common.hpp rs-core/compact-array.hpp rs-core/digest.hpp rs-core/encoding.hpp rs-core/file.hpp rs-core/float.hpp rs-core/ipc.hpp rs-core/meta.hpp rs-core/mp-integer.hpp rs-core/optional.hpp rs-core/random.hpp rs-core/rational.hpp rs-core/serial.hpp rs-core/string.hpp rs-core/time.hpp rs-core/unit-test.hpp rs-core/uuid.hpp rs-core/vector.hpp
 $(BUILD)/signal-test.o: rs-core/signal-test.cpp rs-core/channel.hpp rs-core/common.hpp rs-core/optional.hpp rs-core/signal.hpp rs-core/string.hpp rs-core/time.hpp rs-core/unit-test.hpp

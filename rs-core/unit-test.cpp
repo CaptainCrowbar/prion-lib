@@ -184,6 +184,9 @@ extern void test_core_rational_properties();
 extern void test_core_rational_comparison();
 extern void test_core_rational_mixed();
 extern void test_core_rational_parsing();
+extern void test_skeleton_ring_buffer_basics();
+extern void test_skeleton_ring_buffer_accounting_with_copy();
+extern void test_skeleton_ring_buffer_accounting_with_move();
 extern void test_core_scale_map_class();
 extern void test_core_serial_standard_types();
 extern void test_core_serial_std_chrono();
@@ -430,6 +433,9 @@ int main() {
         { "core/rational/comparison", test_core_rational_comparison },
         { "core/rational/mixed", test_core_rational_mixed },
         { "core/rational/parsing", test_core_rational_parsing },
+        { "skeleton/ring-buffer/basics", test_skeleton_ring_buffer_basics },
+        { "skeleton/ring-buffer/accounting-with-copy", test_skeleton_ring_buffer_accounting_with_copy },
+        { "skeleton/ring-buffer/accounting-with-move", test_skeleton_ring_buffer_accounting_with_move },
         { "core/scale-map/class", test_core_scale_map_class },
         { "core/serial/standard-types", test_core_serial_standard_types },
         { "core/serial/std-chrono", test_core_serial_std_chrono },

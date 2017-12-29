@@ -20,6 +20,7 @@
     * [`"rs-core/compact-array.hpp"`](compact-array.html) - Compact array
     * [`"rs-core/grid.hpp"`](grid.html) - Multidimensional array
     * [`"rs-core/index-table.hpp"`](index-table.html) - Multi-index map
+    * [`"rs-core/ring-buffer.hpp"`](ring-buffer.html) - Ring buffer
     * [`"rs-core/scale-map.hpp"`](scale-map.html) - Interpolating associative array
     * [`"rs-core/stack.hpp"`](stack.html) - Deterministic stack
     * [`"rs-core/topological-order.hpp"`](topological-order.html) - Topological order

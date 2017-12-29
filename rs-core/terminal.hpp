@@ -5,6 +5,7 @@
 #include "rs-core/io.hpp"
 #include "rs-core/string.hpp"
 #include "rs-core/time.hpp"
+#include "rs-core/vector.hpp"
 #include <algorithm>
 #include <chrono>
 #include <cstdlib>
@@ -71,7 +72,9 @@ namespace RS {
     inline std::string xt_move_right(int n) { return "\x1b[" + RS_Detail::decfmt(n) + 'C'; }                                                    // Cursor right n spaces
     inline std::string xt_move_left(int n) { return "\x1b[" + RS_Detail::decfmt(n) + 'D'; }                                                     // Cursor left n spaces
     inline std::string xt_colour(int r, int g, int b) { return "\x1b[38;5;" + RS_Detail::decfmt(RS_Detail::xt_encode_rgb(r, g, b)) + 'm'; }     // Set fg colour to an RGB value (0-5)
+    inline std::string xt_colour(Int3 rgb) { return xt_colour(rgb.x(), rgb.y(), rgb.z()); }                                                     // Set fg colour to an RGB value (0-5)
     inline std::string xt_colour_bg(int r, int g, int b) { return "\x1b[48;5;" + RS_Detail::decfmt(RS_Detail::xt_encode_rgb(r, g, b)) + 'm'; }  // Set bg colour to an RGB value (0-5)
+    inline std::string xt_colour_bg(Int3 rgb) { return xt_colour_bg(rgb.x(), rgb.y(), rgb.z()); }                                               // Set fg colour to an RGB value (0-5)
     inline std::string xt_grey(int grey) { return "\x1b[38;5;" + RS_Detail::decfmt(RS_Detail::xt_encode_grey(grey)) + 'm'; }                    // Set fg colour to a grey level (1-24)
     inline std::string xt_grey_bg(int grey) { return "\x1b[48;5;" + RS_Detail::decfmt(RS_Detail::xt_encode_grey(grey)) + 'm'; }                 // Set bg colour to a grey level (1-24)
 

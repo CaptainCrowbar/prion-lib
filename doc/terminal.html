@@ -100,7 +100,9 @@ on Windows.</p>
 <li><code>string</code> <strong><code>xt_move_right</code></strong><code>(int n)               = &lt;esc&gt; [&lt;n&gt;C             = Cursor right n spaces</code></li>
 <li><code>string</code> <strong><code>xt_move_left</code></strong><code>(int n)                = &lt;esc&gt; [&lt;n&gt;D             = Cursor left n spaces</code></li>
 <li><code>string</code> <strong><code>xt_colour</code></strong><code>(int r, int g, int b)     = &lt;esc&gt; [38;5;&lt;16-231&gt;m   = Set foreground colour to an RGB value</code></li>
+<li><code>string</code> <strong><code>xt_colour</code></strong><code>(Int3 rgb)                = &lt;esc&gt; [38;5;&lt;16-231&gt;m   = Set foreground colour to an RGB value</code></li>
 <li><code>string</code> <strong><code>xt_colour_bg</code></strong><code>(int r, int g, int b)  = &lt;esc&gt; [48;5;&lt;16-231&gt;m   = Set background colour to an RGB value</code></li>
+<li><code>string</code> <strong><code>xt_colour_bg</code></strong><code>(Int3 rgb)             = &lt;esc&gt; [38;5;&lt;16-231&gt;m   = Set foreground colour to an RGB value</code></li>
 <li><code>string</code> <strong><code>xt_grey</code></strong><code>(int grey)                  = &lt;esc&gt; [38;5;&lt;232-255&gt;m  = Set foreground colour to a grey level</code></li>
 <li><code>string</code> <strong><code>xt_grey_bg</code></strong><code>(int grey)               = &lt;esc&gt; [48;5;&lt;232-255&gt;m  = Set background colour to a grey level</code></li>
 </ul>

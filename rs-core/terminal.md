@@ -80,7 +80,9 @@ Xterm cursor movement and output formatting codes.
 * `string` **`xt_move_right`**`(int n)               = <esc> [<n>C             = Cursor right n spaces`
 * `string` **`xt_move_left`**`(int n)                = <esc> [<n>D             = Cursor left n spaces`
 * `string` **`xt_colour`**`(int r, int g, int b)     = <esc> [38;5;<16-231>m   = Set foreground colour to an RGB value`
+* `string` **`xt_colour`**`(Int3 rgb)                = <esc> [38;5;<16-231>m   = Set foreground colour to an RGB value`
 * `string` **`xt_colour_bg`**`(int r, int g, int b)  = <esc> [48;5;<16-231>m   = Set background colour to an RGB value`
+* `string` **`xt_colour_bg`**`(Int3 rgb)             = <esc> [38;5;<16-231>m   = Set foreground colour to an RGB value`
 * `string` **`xt_grey`**`(int grey)                  = <esc> [38;5;<232-255>m  = Set foreground colour to a grey level`
 * `string` **`xt_grey_bg`**`(int grey)               = <esc> [48;5;<232-255>m  = Set background colour to a grey level`
 

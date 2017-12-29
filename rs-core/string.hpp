@@ -512,6 +512,20 @@ namespace RS {
         return result;
     }
 
+    inline std::string pad_left(const std::string& str, size_t len, char pad = ' ') {
+        auto s = str;
+        if (len > s.size())
+            s.insert(0, len - s.size(), pad);
+        return s;
+    }
+
+    inline std::string pad_right(const std::string& str, size_t len, char pad = ' ') {
+        auto s = str;
+        if (len > s.size())
+            s.append(len - s.size(), pad);
+        return s;
+    }
+
     inline std::pair<std::string, std::string> partition_at(const std::string& str, const std::string& delim) {
         if (delim.empty())
             return {str, {}};

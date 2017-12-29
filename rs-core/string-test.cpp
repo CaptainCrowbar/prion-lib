@@ -587,6 +587,24 @@ void test_core_string_manipulation() {
     ws = L"Hello world"s;   TEST_EQUAL(null_term_str(ws), L"Hello world");
     ws = L"Hello\0world"s;  TEST_EQUAL(null_term_str(ws), L"Hello");
 
+    s1 = "";       TRY(s2 = pad_left(s1, 3));       TEST_EQUAL(s2, "   ");
+    s1 = "Hello";  TRY(s2 = pad_left(s1, 3));       TEST_EQUAL(s2, "Hello");
+    s1 = "Hello";  TRY(s2 = pad_left(s1, 5));       TEST_EQUAL(s2, "Hello");
+    s1 = "Hello";  TRY(s2 = pad_left(s1, 7));       TEST_EQUAL(s2, "  Hello");
+    s1 = "";       TRY(s2 = pad_left(s1, 3, '*'));  TEST_EQUAL(s2, "***");
+    s1 = "Hello";  TRY(s2 = pad_left(s1, 3, '*'));  TEST_EQUAL(s2, "Hello");
+    s1 = "Hello";  TRY(s2 = pad_left(s1, 5, '*'));  TEST_EQUAL(s2, "Hello");
+    s1 = "Hello";  TRY(s2 = pad_left(s1, 7, '*'));  TEST_EQUAL(s2, "**Hello");
+
+    s1 = "";       TRY(s2 = pad_right(s1, 3));       TEST_EQUAL(s2, "   ");
+    s1 = "Hello";  TRY(s2 = pad_right(s1, 3));       TEST_EQUAL(s2, "Hello");
+    s1 = "Hello";  TRY(s2 = pad_right(s1, 5));       TEST_EQUAL(s2, "Hello");
+    s1 = "Hello";  TRY(s2 = pad_right(s1, 7));       TEST_EQUAL(s2, "Hello  ");
+    s1 = "";       TRY(s2 = pad_right(s1, 3, '*'));  TEST_EQUAL(s2, "***");
+    s1 = "Hello";  TRY(s2 = pad_right(s1, 3, '*'));  TEST_EQUAL(s2, "Hello");
+    s1 = "Hello";  TRY(s2 = pad_right(s1, 5, '*'));  TEST_EQUAL(s2, "Hello");
+    s1 = "Hello";  TRY(s2 = pad_right(s1, 7, '*'));  TEST_EQUAL(s2, "Hello**");
+
     s = "";                                   TRY(std::tie(s1, s2) = partition_at(s, ""));    TEST_EQUAL(s1, "");             TEST_EQUAL(s2, "");
     s = "";                                   TRY(std::tie(s1, s2) = partition_at(s, ";;"));  TEST_EQUAL(s1, "");             TEST_EQUAL(s2, "");
     s = "Hello world";                        TRY(std::tie(s1, s2) = partition_at(s, ""));    TEST_EQUAL(s1, "Hello world");  TEST_EQUAL(s2, "");

@@ -199,6 +199,15 @@ used as an output buffer by some C APIs).</p>
 </div>
 <div class="defns">
 <ul>
+<li><code>std::string</code> <strong><code>pad_left</code></strong><code>(const std::string&amp; str, size_t len, char pad = ' ')</code></li>
+<li><code>std::string</code> <strong><code>pad_right</code></strong><code>(const std::string&amp; str, size_t len, char pad = ' ')</code></li>
+</ul>
+<p>Pad a string on the right or left, using the supplied character, to the given
+length (in bytes). The string will be returned unchanged if it is already at
+least <code>len</code> bytes long.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>std::pair&lt;std::string, std::string&gt;</code> <strong><code>partition_at</code></strong><code>(const std::string&amp; str, const std::string&amp; delim)</code></li>
 <li><code>std::pair&lt;std::string, std::string&gt;</code> <strong><code>partition_by</code></strong><code>(const std::string&amp; str, const std::string&amp; delims = ascii_whitespace)</code></li>
 </ul>

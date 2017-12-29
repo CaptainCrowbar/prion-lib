@@ -152,6 +152,13 @@ characters.
 Cut off a string at the first null character (useful after the string has been
 used as an output buffer by some C APIs).
 
+* `std::string` **`pad_left`**`(const std::string& str, size_t len, char pad = ' ')`
+* `std::string` **`pad_right`**`(const std::string& str, size_t len, char pad = ' ')`
+
+Pad a string on the right or left, using the supplied character, to the given
+length (in bytes). The string will be returned unchanged if it is already at
+least `len` bytes long.
+
 * `std::pair<std::string, std::string>` **`partition_at`**`(const std::string& str, const std::string& delim)`
 * `std::pair<std::string, std::string>` **`partition_by`**`(const std::string& str, const std::string& delims = ascii_whitespace)`
 

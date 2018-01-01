@@ -673,7 +673,6 @@ namespace RS {
             void rethrow() const { if (error) std::rethrow_exception(error); }
             reason why() const noexcept { return error ? reason::error : channel ? reason::closed : reason::empty; }
         };
-        static constexpr Channel::time_unit default_interval = std::chrono::milliseconds(1);
         Dispatch() = default;
         ~Dispatch() noexcept { stop(); }
         template <typename F> void add(EventChannel& chan, mode m, F func);
@@ -681,7 +680,6 @@ namespace RS {
         template <typename F> void add(StreamChannel& chan, mode m, F func);
         void drop(Channel& chan) noexcept;
         bool empty() const noexcept { return tasks.empty(); }
-        Channel::time_unit interval() const noexcept { return delta; }
         result_type run() noexcept;
         void stop() noexcept;
     private:
@@ -694,7 +692,6 @@ namespace RS {
             std::exception_ptr error;
         };
         std::map<Channel*, task_info> tasks;
-        Channel::time_unit delta = default_interval;
         void add_task(Channel& chan, mode m, callback call);
         template <typename C, typename F> static typename C::callback make_callback(C& /*chan*/, const F& func) { return func; }
     };
@@ -755,10 +752,16 @@ namespace RS {
         }
 
         inline Dispatch::result_type Dispatch::run() noexcept {
+            using namespace std::chrono;
+            using namespace std::literals;
+            static constexpr Channel::time_unit min_interval = 1us;
+            static constexpr Channel::time_unit max_interval = 1ms;
             result_type rc;
             if (tasks.empty())
                 return rc;
             auto guard = scope_exit([&] { if (rc.channel) drop(*rc.channel); });
+            int waits = 0;
+            auto interval = min_interval;
             for (;;) {
                 int calls = 0;
                 for (auto& t: tasks) {
@@ -782,10 +785,16 @@ namespace RS {
                         return rc;
                     }
                 }
-                if (calls == 0)
-                    std::this_thread::sleep_for(delta);
-                else
+                if (calls == 0) {
+                    if (++waits == 1)
+                        interval = min_interval;
+                    else
+                        interval = std::min(2 * interval, max_interval);
+                    std::this_thread::sleep_for(interval);
+                } else {
+                    waits = 0;
                     std::this_thread::yield();
+                }
             }
         }
 

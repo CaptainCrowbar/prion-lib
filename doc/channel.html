@@ -344,7 +344,6 @@ whether it was written as a single block or multiple smaller blocks.</p>
 <li><code>Dispatch::reason result_type::</code><strong><code>why</code></strong><code>() const noexcept</code></li>
 </ul>
 </li>
-<li><code>static constexpr Channel::time_unit Dispatch::</code><strong><code>default_interval</code></strong> <code>= 1ms</code></li>
 <li><code>Dispatch::</code><strong><code>Dispatch</code></strong><code>() noexcept</code></li>
 <li><code>Dispatch::</code><strong><code>~Dispatch</code></strong><code>() noexcept</code></li>
 <li><code>template &lt;typename F&gt; void Dispatch::</code><strong><code>add</code></strong><code>(EventChannel&amp; chan, mode m, F func)</code></li>
@@ -352,7 +351,6 @@ whether it was written as a single block or multiple smaller blocks.</p>
 <li><code>template &lt;typename F&gt; void Dispatch::</code><strong><code>add</code></strong><code>(StreamChannel&amp; chan, mode m, F func)</code></li>
 <li><code>void Dispatch::</code><strong><code>drop</code></strong><code>(Channel&amp; chan) noexcept</code></li>
 <li><code>bool Dispatch::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
-<li><code>Channel::time_unit Dispatch::</code><strong><code>interval</code></strong><code>() const noexcept</code></li>
 <li><code>result_type Dispatch::</code><strong><code>run</code></strong><code>() noexcept</code></li>
 <li><code>void Dispatch::</code><strong><code>stop</code></strong><code>() noexcept</code></li>
 </ul>
@@ -387,6 +385,6 @@ ending the run and the exception it threw, if any; both members will be null
 if the dispatch set is empty. The result type's <code>rethrow()</code> function will
 rethrow the exception if it is not null, otherwise do nothing. The <code>why()</code>
 function returns a flag summarizing the reason for the run to stop.</p>
-<p>The <code>stop()</code> function closes all channels and waits for them to finish (the
-destructor calls this).</p></body>
+<p>The <code>stop()</code> function closes all channels and waits for them to finish; the
+destructor calls this.</p></body>
 </html>

@@ -267,7 +267,6 @@ whether it was written as a single block or multiple smaller blocks.
         * `std::exception_ptr result_type::`**`error`** `= nullptr`
         * `void result_type::`**`rethrow`**`() const`
         * `Dispatch::reason result_type::`**`why`**`() const noexcept`
-    * `static constexpr Channel::time_unit Dispatch::`**`default_interval`** `= 1ms`
     * `Dispatch::`**`Dispatch`**`() noexcept`
     * `Dispatch::`**`~Dispatch`**`() noexcept`
     * `template <typename F> void Dispatch::`**`add`**`(EventChannel& chan, mode m, F func)`
@@ -275,7 +274,6 @@ whether it was written as a single block or multiple smaller blocks.
     * `template <typename F> void Dispatch::`**`add`**`(StreamChannel& chan, mode m, F func)`
     * `void Dispatch::`**`drop`**`(Channel& chan) noexcept`
     * `bool Dispatch::`**`empty`**`() const noexcept`
-    * `Channel::time_unit Dispatch::`**`interval`**`() const noexcept`
     * `result_type Dispatch::`**`run`**`() noexcept`
     * `void Dispatch::`**`stop`**`() noexcept`
 
@@ -313,5 +311,5 @@ if the dispatch set is empty. The result type's `rethrow()` function will
 rethrow the exception if it is not null, otherwise do nothing. The `why()`
 function returns a flag summarizing the reason for the run to stop.
 
-The `stop()` function closes all channels and waits for them to finish (the
-destructor calls this).
+The `stop()` function closes all channels and waits for them to finish; the
+destructor calls this.

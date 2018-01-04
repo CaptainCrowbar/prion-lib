@@ -152,6 +152,7 @@ extern void test_core_mp_integer_rational_parsing();
 extern void test_core_net_ipv4();
 extern void test_core_net_ipv6();
 extern void test_core_net_socket_address();
+extern void test_core_net_ip_literals();
 extern void test_core_net_dns_query();
 extern void test_core_net_tcp_client_server();
 extern void test_core_net_socket_set();
@@ -401,6 +402,7 @@ int main() {
         { "core/net/ipv4", test_core_net_ipv4 },
         { "core/net/ipv6", test_core_net_ipv6 },
         { "core/net/socket-address", test_core_net_socket_address },
+        { "core/net/ip-literals", test_core_net_ip_literals },
         { "core/net/dns-query", test_core_net_dns_query },
         { "core/net/tcp-client-server", test_core_net_tcp_client_server },
         { "core/net/socket-set", test_core_net_socket_set },

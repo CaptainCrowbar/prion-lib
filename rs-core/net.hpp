@@ -325,6 +325,7 @@ namespace RS {
         void set_family(uint16_t f);
         void set_size(size_t n);
         size_t size() const noexcept { return current_size; }
+        U8string str() const;
     };
 
         inline SocketAddress::SocketAddress(IPv4 ip, uint16_t port) noexcept:
@@ -423,18 +424,45 @@ namespace RS {
         inline bool operator>(const SocketAddress& lhs, const SocketAddress& rhs) noexcept { return rhs < lhs; }
         inline bool operator<=(const SocketAddress& lhs, const SocketAddress& rhs) noexcept { return ! (rhs < lhs); }
         inline bool operator>=(const SocketAddress& lhs, const SocketAddress& rhs) noexcept { return ! (lhs < rhs); }
+        inline std::ostream& operator<<(std::ostream& out, const SocketAddress& s) { return out << s.str(); }
 
-        inline std::ostream& operator<<(std::ostream& out, const SocketAddress& s) {
-            if (s == SocketAddress())
-                out << "null";
-            else if (s.family() == AF_INET)
-                out << s.ipv4() << ":" << s.port();
-            else if (s.family() == AF_INET6)
-                out << "[" << s.ipv6() << "]:" << s.port();
+        inline U8string SocketAddress::str() const {
+            if (*this == SocketAddress())
+                return "null";
+            else if (family() == AF_INET)
+                return ipv4().str() + ':' + dec(port());
+            else if (family() == AF_INET6)
+                return '[' + ipv6().str() + "]:" + dec(port());
             else
-                out << hexdump(s.native(), s.size());
-            return out;
+                return hexdump(native(), size());
         }
+
+    // IP address literals
+
+    namespace Literals {
+
+        inline IPv4 operator""_ip4(const char* p, size_t n) {
+            if (! p || ! n)
+                return {};
+            std::string s(p, n);
+            return IPv4(s);
+        }
+
+        inline IPv6 operator""_ip6(const char* p, size_t n) {
+            if (! p || ! n)
+                return {};
+            std::string s(p, n);
+            return IPv6(s);
+        }
+
+        inline SocketAddress operator""_sa(const char* p, size_t n) {
+            if (! p || ! n)
+                return {};
+            std::string s(p, n);
+            return SocketAddress(s);
+        }
+
+    }
 
     // DNS query functions
 

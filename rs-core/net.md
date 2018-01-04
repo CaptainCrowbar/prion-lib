@@ -137,6 +137,7 @@ semantics based on the corresponding function in the `IPv4` class.
     * `void SocketAddress::`**`set_family`**`(uint16_t f)`
     * `void SocketAddress::`**`set_size`**`(size_t n)`
     * `size_t SocketAddress::`**`size`**`() const noexcept`
+    * `U8string SocketAddress::`**`str`**`() const`
 * `bool` **`operator==`**`(const SocketAddress& lhs, const SocketAddress& rhs) noexcept`
 * `bool` **`operator!=`**`(const SocketAddress& lhs, const SocketAddress& rhs) noexcept`
 * `bool` **`operator<`**`(const SocketAddress& lhs, const SocketAddress& rhs) noexcept`
@@ -159,6 +160,17 @@ The `ipv4()`, `ipv6()`, `port()`, `flow()`, and `scope()` functions will
 return zero or a default constructed value if the address is not of the
 appropriate type. The conversion to bool returns false if the address contains
 all zero bytes; for known formats (IPv4 and IPv6), padding bytes are ignored.
+
+### Address literals ###
+
+All of these are in `namespace RS::Literals`.
+
+* `IPv4` **`operator""_ip4`**`(const char* p, size_t n)`
+* `IPv6` **`operator""_ip6`**`(const char* p, size_t n)`
+* `SocketAddress` **`operator""_sa`**`(const char* p, size_t n)`
+
+Literals for IPv4/6 addresses and endpoints. These call the constructor of the
+relevant type that takes a string.
 
 ## DNS query functions ##
 

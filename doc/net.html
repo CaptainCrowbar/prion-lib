@@ -21,6 +21,7 @@
 <li><a href="#class-ipv4">Class IPv4</a></li>
 <li><a href="#class-ipv6">Class IPv6</a></li>
 <li><a href="#class-socketaddress">Class SocketAddress</a></li>
+<li><a href="#address-literals">Address literals</a></li>
 </ul>
 </li>
 <li><a href="#dns-query-functions">DNS query functions</a></li>
@@ -176,6 +177,7 @@ semantics based on the corresponding function in the <code>IPv4</code> class.</p
 <li><code>void SocketAddress::</code><strong><code>set_family</code></strong><code>(uint16_t f)</code></li>
 <li><code>void SocketAddress::</code><strong><code>set_size</code></strong><code>(size_t n)</code></li>
 <li><code>size_t SocketAddress::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
+<li><code>U8string SocketAddress::</code><strong><code>str</code></strong><code>() const</code></li>
 </ul>
 </li>
 <li><code>bool</code> <strong><code>operator==</code></strong><code>(const SocketAddress&amp; lhs, const SocketAddress&amp; rhs) noexcept</code></li>
@@ -199,6 +201,17 @@ invalid).</p>
 return zero or a default constructed value if the address is not of the
 appropriate type. The conversion to bool returns false if the address contains
 all zero bytes; for known formats (IPv4 and IPv6), padding bytes are ignored.</p>
+</div>
+<h3 id="address-literals">Address literals</h3>
+<p>All of these are in <code>namespace RS::Literals</code>.</p>
+<div class="defns">
+<ul>
+<li><code>IPv4</code> <strong><code>operator""_ip4</code></strong><code>(const char* p, size_t n)</code></li>
+<li><code>IPv6</code> <strong><code>operator""_ip6</code></strong><code>(const char* p, size_t n)</code></li>
+<li><code>SocketAddress</code> <strong><code>operator""_sa</code></strong><code>(const char* p, size_t n)</code></li>
+</ul>
+<p>Literals for IPv4/6 addresses and endpoints. These call the constructor of the
+relevant type that takes a string.</p>
 </div>
 <h2 id="dns-query-functions">DNS query functions</h2>
 <div class="defns">

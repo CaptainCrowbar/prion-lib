@@ -172,53 +172,81 @@ void test_core_net_socket_address() {
     TEST_EQUAL(sa.ipv6(), IPv6());
     TEST_EQUAL(sa.port(), 0);
     TEST_EQUAL(sa.size(), 0);
-    TEST_EQUAL(to_str(sa), "null");
+    TEST_EQUAL(sa.str(), "null");
 
     TRY((sa = {IPv4::localhost(), 12345}));
     TEST_EQUAL(sa.family(), AF_INET);
     TEST_EQUAL(sa.ipv4(), IPv4::localhost());
     TEST_EQUAL(sa.port(), 12345);
     TEST_EQUAL(sa.size(), 16);
-    TEST_EQUAL(to_str(sa), "127.0.0.1:12345");
+    TEST_EQUAL(sa.str(), "127.0.0.1:12345");
 
     TRY(sa = SocketAddress("12.34.56.78"));
     TEST_EQUAL(sa.family(), AF_INET);
     TEST_EQUAL(sa.ipv4().value(), 0x0c22384e);
     TEST_EQUAL(sa.port(), 0);
     TEST_EQUAL(sa.size(), 16);
-    TEST_EQUAL(to_str(sa), "12.34.56.78:0");
+    TEST_EQUAL(sa.str(), "12.34.56.78:0");
 
     TRY(sa = SocketAddress("12.34.56.78:90"));
     TEST_EQUAL(sa.family(), AF_INET);
     TEST_EQUAL(sa.ipv4().value(), 0x0c22384e);
     TEST_EQUAL(sa.port(), 90);
     TEST_EQUAL(sa.size(), 16);
-    TEST_EQUAL(to_str(sa), "12.34.56.78:90");
+    TEST_EQUAL(sa.str(), "12.34.56.78:90");
 
     TRY((sa = {IPv6::localhost(), 12345}));
     TEST_EQUAL(sa.family(), AF_INET6);
     TEST_EQUAL(sa.ipv6(), IPv6::localhost());
     TEST_EQUAL(sa.port(), 12345);
     TEST_EQUAL(sa.size(), 28);
-    TEST_EQUAL(to_str(sa), "[::1]:12345");
+    TEST_EQUAL(sa.str(), "[::1]:12345");
 
     TRY(sa = SocketAddress("1234:5678:9abc:def1:2345:6789:abcd:efff"));
     TEST_EQUAL(sa.family(), AF_INET6);
-    TEST_EQUAL(to_str(sa), "[1234:5678:9abc:def1:2345:6789:abcd:efff]:0");
+    TEST_EQUAL(sa.str(), "[1234:5678:9abc:def1:2345:6789:abcd:efff]:0");
     TEST_EQUAL(sa.port(), 0);
     TEST_EQUAL(sa.size(), 28);
 
     TRY(sa = SocketAddress("[1234:5678:9abc:def1:2345:6789:abcd:efff]"));
     TEST_EQUAL(sa.family(), AF_INET6);
-    TEST_EQUAL(to_str(sa), "[1234:5678:9abc:def1:2345:6789:abcd:efff]:0");
+    TEST_EQUAL(sa.str(), "[1234:5678:9abc:def1:2345:6789:abcd:efff]:0");
     TEST_EQUAL(sa.port(), 0);
     TEST_EQUAL(sa.size(), 28);
 
     TRY(sa = SocketAddress("[1234:5678:9abc:def1:2345:6789:abcd:efff]:12345"));
     TEST_EQUAL(sa.family(), AF_INET6);
-    TEST_EQUAL(to_str(sa), "[1234:5678:9abc:def1:2345:6789:abcd:efff]:12345");
+    TEST_EQUAL(sa.str(), "[1234:5678:9abc:def1:2345:6789:abcd:efff]:12345");
     TEST_EQUAL(sa.port(), 12345);
     TEST_EQUAL(sa.size(), 28);
+
+}
+
+void test_core_net_ip_literals() {
+
+    using namespace RS::Literals;
+
+    IPv4 ip4;
+    IPv6 ip6;
+    SocketAddress sa;
+
+    TRY(ip4 = ""_ip4);             TEST_EQUAL(ip4.str(), "0.0.0.0");
+    TRY(ip4 = "12.34.56.78"_ip4);  TEST_EQUAL(ip4.str(), "12.34.56.78");
+    TRY(ip4 = "127.0.0.1"_ip4);    TEST_EQUAL(ip4.str(), "127.0.0.1");
+
+    TRY(ip6 = ""_ip6);                                         TEST_EQUAL(ip6.str(), "::");
+    TRY(ip6 = "::1"_ip6);                                      TEST_EQUAL(ip6.str(), "::1");
+    TRY(ip6 = "1234::abcd"_ip6);                               TEST_EQUAL(ip6.str(), "1234::abcd");
+    TRY(ip6 = "1234:5678:9abc:def1:2345:6789:abcd:efff"_ip6);  TEST_EQUAL(ip6.str(), "1234:5678:9abc:def1:2345:6789:abcd:efff");
+
+    TRY(sa = ""_sa);                                                 TEST_EQUAL(sa.str(), "null");
+    TRY(sa = "127.0.0.1:12345"_sa);                                  TEST_EQUAL(sa.str(), "127.0.0.1:12345");
+    TRY(sa = "12.34.56.78"_sa);                                      TEST_EQUAL(sa.str(), "12.34.56.78:0");
+    TRY(sa = "12.34.56.78:90"_sa);                                   TEST_EQUAL(sa.str(), "12.34.56.78:90");
+    TRY(sa = "[::1]:12345"_sa);                                      TEST_EQUAL(sa.str(), "[::1]:12345");
+    TRY(sa = "1234:5678:9abc:def1:2345:6789:abcd:efff"_sa);          TEST_EQUAL(sa.str(), "[1234:5678:9abc:def1:2345:6789:abcd:efff]:0");
+    TRY(sa = "[1234:5678:9abc:def1:2345:6789:abcd:efff]"_sa);        TEST_EQUAL(sa.str(), "[1234:5678:9abc:def1:2345:6789:abcd:efff]:0");
+    TRY(sa = "[1234:5678:9abc:def1:2345:6789:abcd:efff]:12345"_sa);  TEST_EQUAL(sa.str(), "[1234:5678:9abc:def1:2345:6789:abcd:efff]:12345");
 
 }
 

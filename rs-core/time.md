@@ -70,8 +70,8 @@ arguments are invalid follows the same rules as `mktime()`. This will throw
 
 ### Time and date formatting ###
 
-* `U8string` **`format_date`**`(system_clock::time_point tp, int prec = 0, uint32_t flags = utc_zone)`
-* `U8string` **`format_date`**`(system_clock::time_point tp, const U8string& format, uint32_t flags = utc_zone)`
+* `Ustring` **`format_date`**`(system_clock::time_point tp, int prec = 0, uint32_t flags = utc_zone)`
+* `Ustring` **`format_date`**`(system_clock::time_point tp, const Ustring& format, uint32_t flags = utc_zone)`
 
 These convert a time point into a broken down date and format it. The first
 version writes the date in ISO 8601 format (`"yyyy-mm-dd hh:mm:ss"`). If
@@ -104,14 +104,14 @@ For reference, the portable subset of the `strftime()` formatting codes are:
 | `%M`  | Minute (`00-59`)                     | `%Z`    | Time zone name                       |
 | `%S`  | Second (`00-60`)                     | `%z`    | Time zone offset                     |
 
-* `template <typename R, typename P> U8string` **`format_time`**`(const duration<R, P>& time, int prec = 0)`
+* `template <typename R, typename P> Ustring` **`format_time`**`(const duration<R, P>& time, int prec = 0)`
 
 Formats a time duration in days, hours, minutes, seconds, and (if `prec>0`)
 fractions of a second.
 
 ### Time and date parsing ###
 
-* `system_clock::time_point` **`parse_date`**`(const U8string& str, uint32_t flags = utc_zone | ymd_order)`
+* `system_clock::time_point` **`parse_date`**`(const Ustring& str, uint32_t flags = utc_zone | ymd_order)`
 
 Parse a date expressed in broken down format (e.g. `"2017-11-04 11:53:00"`).
 Year, month, and day are required, in the order specified by the `flags`
@@ -125,8 +125,8 @@ invalid combination of flags is supplied; behaviour is unspecified if the
 format is correct but the string does not represent a valid date; behaviour is
 undefined if the date is outside the representable range of the system clock.
 
-* `template <typename R, typename P> void` **`parse_time`**`(const U8string& str, duration<R, P>& t)`
-* `template <typename D> D` **`parse_time`**`(const U8string& str)`
+* `template <typename R, typename P> void` **`parse_time`**`(const Ustring& str, duration<R, P>& t)`
+* `template <typename D> D` **`parse_time`**`(const Ustring& str)`
 
 Parse a time expressed in Julian years, days, hours, minutes, and seconds
 (e.g. `"12y 345d 12h 34m 56s"`). Spaces are ignored; a leading sign is
@@ -143,7 +143,7 @@ time cannot be represented by the duration type, or if the second version of
 ## Timing utilities ##
 
 * `class` **`Stopwatch`**
-    * `explicit Stopwatch::`**`Stopwatch`**`(const U8string& name, int precision = 3) noexcept`
+    * `explicit Stopwatch::`**`Stopwatch`**`(const Ustring& name, int precision = 3) noexcept`
     * `explicit Stopwatch::`**`Stopwatch`**`(const char* name, int precision = 3) noexcept`
     * `Stopwatch::`**`~Stopwatch`**`() noexcept`
 

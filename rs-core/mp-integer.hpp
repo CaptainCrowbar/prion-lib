@@ -21,7 +21,7 @@ namespace RS {
     public:
         Nat() = default;
         Nat(uint64_t x);
-        explicit Nat(const U8string& s, int base = 0) { init(s.data(), base); }
+        explicit Nat(const Ustring& s, int base = 0) { init(s.data(), base); }
         template <typename T> explicit operator T() const;
         explicit operator bool() const noexcept { return ! rep.empty(); }
         bool operator!() const noexcept { return ! bool(*this); }
@@ -53,7 +53,7 @@ namespace RS {
         bool is_odd() const noexcept { return ! is_even(); }
         Nat pow(const Nat& n) const;
         int sign() const noexcept { return int(bool(*this)); }
-        U8string str(int base = 10, size_t digits = 1) const;
+        Ustring str(int base = 10, size_t digits = 1) const;
         void write_be(void* ptr, size_t n) const noexcept;
         void write_le(void* ptr, size_t n) const noexcept;
         static Nat from_double(double x);
@@ -298,12 +298,12 @@ namespace RS {
         return z;
     }
 
-    inline U8string Nat::str(int base, size_t digits) const {
+    inline Ustring Nat::str(int base, size_t digits) const {
         if (base < 2 || base > 36)
             throw std::invalid_argument("Invalid base: " + RS::dec(base));
         if (rep.empty())
-            return U8string(digits, '0');
-        U8string s;
+            return Ustring(digits, '0');
+        Ustring s;
         if (base == 2) {
             s = RS::bin(rep.back(), 1);
             for (size_t i = rep.size() - 2; i != npos; --i)
@@ -483,9 +483,9 @@ namespace RS {
     inline int sign_of(const Nat& x) noexcept { return x.sign(); }
     inline Nat quo(const Nat& lhs, const Nat& rhs) { return lhs / rhs; }
     inline Nat rem(const Nat& lhs, const Nat& rhs) { return lhs % rhs; }
-    inline U8string bin(const Nat& x, size_t digits = 1) { return x.str(2, digits); }
-    inline U8string dec(const Nat& x, size_t digits = 1) { return x.str(10, digits); }
-    inline U8string hex(const Nat& x, size_t digits = 1) { return x.str(16, digits); }
+    inline Ustring bin(const Nat& x, size_t digits = 1) { return x.str(2, digits); }
+    inline Ustring dec(const Nat& x, size_t digits = 1) { return x.str(10, digits); }
+    inline Ustring hex(const Nat& x, size_t digits = 1) { return x.str(16, digits); }
 
     // Signed integers
 
@@ -495,7 +495,7 @@ namespace RS {
         Int() = default;
         Int(int64_t x): mag(uint64_t(std::abs(x))), neg(x < 0) {}
         Int(const Nat& x): mag(x), neg(false) {}
-        explicit Int(const U8string& s, int base = 0) { init(s.data(), base); }
+        explicit Int(const Ustring& s, int base = 0) { init(s.data(), base); }
         template <typename T> explicit operator T() const;
         explicit operator Nat() const { return mag; }
         explicit operator bool() const noexcept { return bool(mag); }
@@ -517,7 +517,7 @@ namespace RS {
         bool is_odd() const noexcept { return mag.is_odd(); }
         Int pow(const Int& n) const;
         int sign() const noexcept { return neg ? -1 : mag.sign(); }
-        U8string str(int base = 10, size_t digits = 1, bool sign = false) const;
+        Ustring str(int base = 10, size_t digits = 1, bool sign = false) const;
         static Int from_double(double x);
         template <typename RNG> static Int random(RNG& rng, const Int& n) { return Int(Nat::random(rng, n.mag)); }
         friend Int operator*(const Int& lhs, const Int& rhs) { Int z; Int::do_multiply(lhs, rhs, z); return z; }
@@ -587,8 +587,8 @@ namespace RS {
         return z;
     }
 
-    inline U8string Int::str(int base, size_t digits, bool sign) const {
-        U8string s = mag.str(base, digits);
+    inline Ustring Int::str(int base, size_t digits, bool sign) const {
+        Ustring s = mag.str(base, digits);
         if (neg)
             s.insert(s.begin(), '-');
         else if (sign)
@@ -639,16 +639,16 @@ namespace RS {
     inline int sign_of(const Int& x) noexcept{ return x.sign(); }
     inline Int quo(const Int& lhs, const Int& rhs) { return lhs / rhs; }
     inline Int rem(const Int& lhs, const Int& rhs) { return lhs % rhs; }
-    inline U8string bin(const Int& x, size_t digits = 1) { return x.str(2, digits); }
-    inline U8string dec(const Int& x, size_t digits = 1) { return x.str(10, digits); }
-    inline U8string hex(const Int& x, size_t digits = 1) { return x.str(16, digits); }
+    inline Ustring bin(const Int& x, size_t digits = 1) { return x.str(2, digits); }
+    inline Ustring dec(const Int& x, size_t digits = 1) { return x.str(10, digits); }
+    inline Ustring hex(const Int& x, size_t digits = 1) { return x.str(16, digits); }
 
     // Related types
 
     namespace RS_Detail {
 
-        template <> struct IntegerParser<Nat> { Nat operator()(const U8string& s) const noexcept { return Nat(s); } };
-        template <> struct IntegerParser<Int> { Int operator()(const U8string& s) const noexcept { return Int(s); } };
+        template <> struct IntegerParser<Nat> { Nat operator()(const Ustring& s) const noexcept { return Nat(s); } };
+        template <> struct IntegerParser<Int> { Int operator()(const Ustring& s) const noexcept { return Int(s); } };
 
     }
 

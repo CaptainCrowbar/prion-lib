@@ -7,7 +7,7 @@ using namespace RS;
 void test_skeleton_ring_buffer_basics() {
 
     RingBuffer<int> r(5);
-    U8string s;
+    Ustring s;
     int i = 0;
 
     TEST_EQUAL(r.capacity(), 5);

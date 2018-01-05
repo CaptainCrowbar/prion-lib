@@ -181,7 +181,7 @@ Comparison operators. These perform simple lexicographical comparison on the
 vector elements.
 
 * `std::ostream&` **`operator<<`**`(std::ostream& out, const Vector& v)`
-* `U8string` **`to_str`**`(const Vector& v)`
+* `Ustring` **`to_str`**`(const Vector& v)`
 
 Simple string formatting; this simply writes the vector's elements in their
 default format, enclosed in square brackets.
@@ -359,7 +359,7 @@ Return the identity or zero matrix.
 Comparison operators.
 
 * `std::ostream&` **`operator<<`**`(std::ostream& out, const Matrix& m)`
-* `U8string` **`to_str`**`(const Matrix& m)`
+* `Ustring` **`to_str`**`(const Matrix& m)`
 
 Simple string formatting; this writes the matrix by row in nested array form.
 
@@ -477,7 +477,7 @@ the quaternion is zero.
 Component-wise conversions between a quaternion and a 4-vector,
 
 * `std::ostream&` **`operator<<`**`(std::ostream& out, const Quaternion& q)`
-* `U8string` **`to_str`**`(const Quaternion& q)`
+* `Ustring` **`to_str`**`(const Quaternion& q)`
 
 Simple string formatting; this simply writes the quaternion in the same format
 as a 4-vector.

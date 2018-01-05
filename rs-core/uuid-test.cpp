@@ -8,7 +8,7 @@ using namespace RS;
 void test_core_uuid_class() {
 
     Uuid u;
-    U8string s;
+    Ustring s;
 
     TEST_EQUAL(u.str(), "00000000-0000-0000-0000-000000000000");
     TEST_EQUAL(to_str(u), "00000000-0000-0000-0000-000000000000");

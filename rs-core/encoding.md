@@ -12,12 +12,12 @@ By Ross Smith
 
 * `class` **`Encoding`**
     * `virtual Encoding::`**`~Encoding`**`() noexcept`
-    * `virtual void Encoding::`**`encode_bytes`**`(const void* src, size_t len, U8string& dst, size_t width = npos) const = 0`
+    * `virtual void Encoding::`**`encode_bytes`**`(const void* src, size_t len, Ustring& dst, size_t width = npos) const = 0`
     * `virtual size_t Encoding::`**`decode_bytes`**`(const char* src, size_t len, string& dst) const = 0`
-    * `void Encoding::`**`encode`**`(const string& src, U8string& dst, size_t width = npos) const`
-    * `U8string Encoding::`**`encode`**`(const string& src, size_t width = npos) const`
-    * `size_t Encoding::`**`decode`**`(const U8string& src, string& dst) const`
-    * `string Encoding::`**`decode`**`(const U8string& src) const`
+    * `void Encoding::`**`encode`**`(const string& src, Ustring& dst, size_t width = npos) const`
+    * `Ustring Encoding::`**`encode`**`(const string& src, size_t width = npos) const`
+    * `size_t Encoding::`**`decode`**`(const Ustring& src, string& dst) const`
+    * `string Encoding::`**`decode`**`(const Ustring& src) const`
 
 Common abstract base class for binary-to-text encodings. The `encode_bytes()`
 and `decode_bytes()` virtual functions contain the actual transformation code;

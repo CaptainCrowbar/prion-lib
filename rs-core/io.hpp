@@ -59,10 +59,10 @@ namespace RS {
         virtual ptrdiff_t tell() noexcept = 0;
         virtual size_t write(const void* ptr, size_t len) = 0;
         virtual void write_n(size_t n, char c);
-        void check(const U8string& detail = "") const;
+        void check(const Ustring& detail = "") const;
         void clear_error() noexcept { set_error(0); }
         std::error_code error() const noexcept { return status; }
-        template <typename... Args> void format(const U8string& pattern, const Args&... args) { write_str(fmt(pattern, args...)); }
+        template <typename... Args> void format(const Ustring& pattern, const Args&... args) { write_str(fmt(pattern, args...)); }
         Irange<line_iterator> lines() { return {line_iterator(*this), {}}; }
         bool ok() const noexcept { return ! status && is_open(); }
         template <typename... Args> void print(const Args&... args);
@@ -110,7 +110,7 @@ namespace RS {
                 write(buf.data(), qr.second);
         }
 
-        inline void IO::check(const U8string& detail) const {
+        inline void IO::check(const Ustring& detail) const {
             if (status) {
                 if (detail.empty())
                     throw std::system_error(status);
@@ -121,7 +121,7 @@ namespace RS {
 
         template <typename... Args>
         void IO::print(const Args&... args) {
-            std::vector<U8string> vec{to_str(args)...};
+            std::vector<Ustring> vec{to_str(args)...};
             write_line(join(vec, " "));
         }
 
@@ -189,7 +189,7 @@ namespace RS {
         Cstdio() = default;
         explicit Cstdio(FILE* f, bool owner = true) noexcept;
         explicit Cstdio(const File& f, mode m = mode::read_only);
-        Cstdio(const File& f, const U8string& iomode);
+        Cstdio(const File& f, const Ustring& iomode);
         virtual void close() noexcept override;
         virtual void flush() noexcept override;
         virtual int getc() noexcept override;
@@ -236,12 +236,12 @@ namespace RS {
                 // and if that fails, try "wb+" (open for R/W regardless,
                 // destroying any existing file). There is a race condition
                 // here but I don't think there is any way around it.
-                U8string iomode = "rb+";
+                Ustring iomode = "rb+";
                 *this = Cstdio(f, "rb+");
                 if (! fp)
                     *this = Cstdio(f, "wb+");
             } else {
-                U8string cmode;
+                Ustring cmode;
                 switch (m) {
                     case mode::read_only:      cmode = "rb"; break;
                     case mode::write_only:     cmode = "wb"; break;
@@ -254,7 +254,7 @@ namespace RS {
             }
         }
 
-        inline Cstdio::Cstdio(const File& f, const U8string& iomode) {
+        inline Cstdio::Cstdio(const File& f, const Ustring& iomode) {
             #ifdef _XOPEN_SOURCE
                 errno = 0;
                 auto rc = ::fopen(f.c_name(), iomode.data());

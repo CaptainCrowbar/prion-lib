@@ -70,7 +70,7 @@ first rule, `'-'` for subsequent ones.
 If this is set, any cell identical to the one immediately above it will be
 replaced with `"''"`.
 
-* `U8string` **`to_str`**`(cons Table& tab)`
+* `Ustring` **`to_str`**`(cons Table& tab)`
 * `std::ostream&` **`operator<<`**`(std::ostream& out, const Table& tab)`
 
 Format the table as text. Two spaces will be inserted between columns; empty

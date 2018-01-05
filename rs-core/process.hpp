@@ -22,7 +22,7 @@ namespace RS {
     public StreamChannel {
     public:
         RS_NO_COPY_MOVE(StreamProcess);
-        explicit StreamProcess(const U8string& cmd);
+        explicit StreamProcess(const Ustring& cmd);
         virtual ~StreamProcess() noexcept { do_close(); }
         virtual void close() noexcept { do_close(); }
         virtual size_t read(void* dst, size_t maxlen);
@@ -35,7 +35,7 @@ namespace RS {
         void do_close() noexcept;
     };
 
-        inline StreamProcess::StreamProcess(const U8string& cmd) {
+        inline StreamProcess::StreamProcess(const Ustring& cmd) {
             #ifdef _XOPEN_SOURCE
                 errno = 0;
                 fp = ::popen(cmd.data(), "r");
@@ -115,19 +115,19 @@ namespace RS {
         }
 
     class TextProcess:
-    public MessageChannel<U8string> {
+    public MessageChannel<Ustring> {
     public:
         RS_NO_COPY_MOVE(TextProcess);
-        explicit TextProcess(const U8string& cmd): ps(cmd), buf() {}
+        explicit TextProcess(const Ustring& cmd): ps(cmd), buf() {}
         virtual void close() noexcept;
-        virtual bool read(U8string& t);
+        virtual bool read(Ustring& t);
         std::string read_all() { return buf + ps.read_all(); }
         int status() const noexcept { return ps.status(); }
     protected:
         virtual state do_wait_for(time_unit t);
     private:
         StreamProcess ps;
-        U8string buf;
+        Ustring buf;
     };
 
         inline void TextProcess::close() noexcept {
@@ -135,7 +135,7 @@ namespace RS {
             buf.clear();
         }
 
-        inline bool TextProcess::read(U8string& t) {
+        inline bool TextProcess::read(Ustring& t) {
             if (buf.empty())
                 return false;
             size_t lf = buf.find('\n');
@@ -173,7 +173,7 @@ namespace RS {
 
     // Shell commands
 
-    inline std::string shell(const U8string& cmd) {
+    inline std::string shell(const Ustring& cmd) {
         StreamProcess proc(cmd);
         return proc.read_all();
     }

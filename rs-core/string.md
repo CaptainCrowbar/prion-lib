@@ -24,7 +24,7 @@ Examples:
     "abc, def, ghi"_csv => {"abc", "def", "ghi"}
     " jkl mno pqr "_qw => {"jkl", "mno", "pqr"}
 
-* `U8string` **`operator""_doc`**`(const char* p, size_t n)`
+* `Ustring` **`operator""_doc`**`(const char* p, size_t n)`
 
 The `""_doc` literal removes a leading line feed if present, adds a trailing
 one if not present, and removes any common leading indentation from all non-
@@ -124,18 +124,18 @@ unchanged. The sentence case function capitalizes the first letter of every
 sentence (delimited by a full stop or two consecutive line breaks), leaving
 everything else alone.
 
-* `U8string` **`dent`**`(size_t depth)`
+* `Ustring` **`dent`**`(size_t depth)`
 
 Returns a string containing `4*depth` spaces, for indentation.
 
-* `U8string` **`indent`**`(const U8string& str, size_t depth)`
+* `Ustring` **`indent`**`(const Ustring& str, size_t depth)`
 
 Inserts `4*depth` spaces of indentation on every non-empty line.
 
 * `template <typename InputRange> std::string` **`join`**`(const InputRange& range, const std::string& delim = "", bool term = false)`
 
 Join strings into a single string, using the given delimiter. The value type
-of the input range must be assignment compatible with `U8string`. If the
+of the input range must be assignment compatible with `Ustring`. If the
 `term` argument is set, an extra delimiter will be added after the last
 element (useful when joining lines to form a text that would be expected to
 end with a line break).
@@ -169,8 +169,8 @@ string. The `partition_at()` function breaks the string at the first
 occurrence of the delimiter substring; `partition_by()` breaks it at the first
 contiguous group of one or more bytes from the delimiter list.
 
-* `U8string` **`quote`**`(const std::string& str)`
-* `U8string` **`bquote`**`(const std::string& str)`
+* `Ustring` **`quote`**`(const std::string& str)`
+* `Ustring` **`bquote`**`(const std::string& str)`
 
 Return a quoted string; internal quotes, backslashes, and control characters
 are escaped. The `bquote()` function always escapes all non-ASCII bytes;
@@ -196,7 +196,7 @@ contiguous subsequence of delimiter characters will be treated as a break
 point. If the input string is empty, the output list will always be empty;
 otherwise, if the delimiter list is empty, the output will consist of a single
 string matching the input. The value type of the output iterator in `split()`
-must be assignment compatible with `U8string`; the `splitv()` version returns
+must be assignment compatible with `Ustring`; the `splitv()` version returns
 a vector of strings instead of writing to an existing receiver.
 
 * `template <typename OutputIterator> void` **`split_lines`**`(const std::string& src, OutputIterator dst)`
@@ -220,15 +220,15 @@ characters are found.
 
 ## String formatting functions ##
 
-* `template <typename T> U8string` **`bin`**`(T x, size_t digits = 8 * sizeof(T))`
-* `template <typename T> U8string` **`dec`**`(T x, size_t digits = 1)`
-* `template <typename T> U8string` **`hex`**`(T x, size_t digits = 2 * sizeof(T))`
+* `template <typename T> Ustring` **`bin`**`(T x, size_t digits = 8 * sizeof(T))`
+* `template <typename T> Ustring` **`dec`**`(T x, size_t digits = 1)`
+* `template <typename T> Ustring` **`hex`**`(T x, size_t digits = 2 * sizeof(T))`
 
 Simple number formatting functions. These convert an integer to a binary,
 decimal, or hexadecimal string, generating at least the specified number of
 digits.
 
-* `template <typename... Args> U8string` **`fmt`**`(const U8string& pattern, const Args&... args)`
+* `template <typename... Args> Ustring` **`fmt`**`(const Ustring& pattern, const Args&... args)`
 
 This performs string interpolation, inserting the variadic arguments
 (formatted with `to_str()`, below) in place of each occurrence of `"$n"` or
@@ -238,7 +238,7 @@ be replaced with an empty string. If a dollar sign is not followed by a bare
 or braced number, the dollar sign is discarded and the next character is
 copied unchanged (so `"$$"` will produce a literal dollar sign).
 
-* `template <typename T> U8string` **`fp_format`**`(T t, char mode = 'g', int prec = 6)`
+* `template <typename T> Ustring` **`fp_format`**`(T t, char mode = 'g', int prec = 6)`
 
 Simple floating point formatting, by calling `snprintf()`. `T` must be an
 arithmetic type; it will be converted to `double` internally. The additional
@@ -247,24 +247,24 @@ stripped. This will throw `std::invalid_argument` if the mode is not one of
 `[EFGZefgz]`; it may throw `std::system_error` under implementation defined
 circumstances.
 
-* `U8string` **`roman`**`(int n)`
+* `Ustring` **`roman`**`(int n)`
 
 Formats a number as a Roman numeral. Numbers greater than 1000 will be written
 with an arbitrarily long sequence of `"M"`. This will return an empty string
 if the argument is less than 1.
 
-* `U8string` **`hexdump`**`(const void* ptr, size_t n, size_t block = 0)`
-* `U8string` **`hexdump`**`(const std::string& str, size_t block = 0)`
+* `Ustring` **`hexdump`**`(const void* ptr, size_t n, size_t block = 0)`
+* `Ustring` **`hexdump`**`(const std::string& str, size_t block = 0)`
 
 Converts a block of raw data into hexadecimal bytes. If `block` is not zero, a
 line feed is inserted after each block.
 
-* `U8string` **`tf`**`(bool b)`
-* `U8string` **`yn`**`(bool b)`
+* `Ustring` **`tf`**`(bool b)`
+* `Ustring` **`yn`**`(bool b)`
 
 Convert a boolean to `"true/false"` or `"yes/no"`.
 
-* `template <typename T> U8string` **`to_str`**`(const T& t)`
+* `template <typename T> Ustring` **`to_str`**`(const T& t)`
 
 Formats an object as a string. This uses the following rules for formatting
 various types:
@@ -297,8 +297,8 @@ contain a valid number. Results that are out of range will be clamped to the
 nearest end of the return type's range (for `fpnum()` this will normally be
 positive or negative infinity).
 
-* `int64_t` **`si_to_int`**`(const U8string& s)`
-* `double` **`si_to_float`**`(const U8string& s)`
+* `int64_t` **`si_to_int`**`(const Ustring& s)`
+* `double` **`si_to_float`**`(const Ustring& s)`
 
 These parse a number from a string representation tagged with an SI multiplier
 abbreviation (e.g. `"123k"`). For the integer version, only tags representing

@@ -742,17 +742,17 @@ void test_core_vector_matrix_inversion() {
     TRY(x = r4.det());  TEST_EQUAL(x, 880);
     TRY(x = c4.det());  TEST_EQUAL(x, 880);
 
-    U8string id_str_2 = to_str(Double2x2r::identity());
-    U8string id_str_3 = to_str(Double3x3r::identity());
-    U8string id_str_4 = to_str(Double4x4r::identity());
-    U8string inv_str_2 =
+    Ustring id_str_2 = to_str(Double2x2r::identity());
+    Ustring id_str_3 = to_str(Double3x3r::identity());
+    Ustring id_str_4 = to_str(Double4x4r::identity());
+    Ustring inv_str_2 =
         "[[-7,3],"
         "[5,-2]]";
-    U8string inv_str_3 =
+    Ustring inv_str_3 =
         "[[-0.0769231,-0.333333,0.205128],"
         "[-0.769231,0.5,-0.115385],"
         "[0.692308,-0.166667,-0.0128205]]";
-    U8string inv_str_4 =
+    Ustring inv_str_4 =
         "[[0.272727,-0.218182,-0.2,0.181818],"
         "[-0.454545,-0.0363636,0.3,-0.136364],"
         "[-0.590909,0.697727,-0.1,-0.102273],"

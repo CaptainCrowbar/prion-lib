@@ -17,9 +17,9 @@ namespace RS {
     public std::error_category {
     public:
         virtual const char* name() const noexcept { return "Zlib"; }
-        virtual U8string message(int value) const {
+        virtual Ustring message(int value) const {
             #define RS_ZLIB_ERROR(Z) if (value == Z) msg += " " #Z
-            U8string msg = "Zlib error";
+            Ustring msg = "Zlib error";
             RS_ZLIB_ERROR(Z_OK);
             RS_ZLIB_ERROR(Z_STREAM_END);
             RS_ZLIB_ERROR(Z_NEED_DICT);
@@ -100,7 +100,7 @@ namespace RS {
         using handle_type = gzFile;
         Gzio() = default;
         explicit Gzio(const File& f, mode m = mode::read_only);
-        Gzio(const File& f, const U8string& iomode);
+        Gzio(const File& f, const Ustring& iomode);
         virtual void close() noexcept override;
         virtual void flush() noexcept override;
         virtual int getc() noexcept override;
@@ -120,7 +120,7 @@ namespace RS {
     };
 
         inline Gzio::Gzio(const File& f, mode m) {
-            U8string gzmode;
+            Ustring gzmode;
             switch (m) {
                 case IO::mode::read_only:   gzmode = "rb"; break;
                 case IO::mode::write_only:  gzmode = "wb"; break;
@@ -130,7 +130,7 @@ namespace RS {
             *this = Gzio(f, gzmode);
         }
 
-        inline Gzio::Gzio(const File& f, const U8string& iomode) {
+        inline Gzio::Gzio(const File& f, const Ustring& iomode) {
             errno = 0;
             auto rc = gzopen(f.c_name(), iomode.data());
             int err = errno;

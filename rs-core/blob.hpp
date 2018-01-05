@@ -40,7 +40,7 @@ namespace RS {
         bool empty() const noexcept { return len == 0; }
         void fill(uint8_t x) noexcept { memset(ptr, x, len); }
         size_t hash() const noexcept { return djb2a(ptr, len); }
-        U8string hex(size_t block = 0) const { return hexdump(ptr, len, block); }
+        Ustring hex(size_t block = 0) const { return hexdump(ptr, len, block); }
         void reset(size_t n) { Blob b(n); swap(b); }
         void reset(size_t n, uint8_t x) { Blob b(n, x); swap(b); }
         void reset(void* p, size_t n) { Blob b(p, n); swap(b); }
@@ -48,7 +48,7 @@ namespace RS {
         size_t size() const noexcept { return len; }
         std::string str() const { return empty() ? std::string() : std::string(c_data(), len); }
         void swap(Blob& b) noexcept { std::swap(ptr, b.ptr); std::swap(len, b.len); del.swap(b.del); }
-        static Blob from_hex(const U8string& s);
+        static Blob from_hex(const Ustring& s);
     private:
         void* ptr = nullptr;
         size_t len = 0;
@@ -57,7 +57,7 @@ namespace RS {
         void init(const void* p, size_t n);
     };
 
-    inline Blob Blob::from_hex(const U8string& s) {
+    inline Blob Blob::from_hex(const Ustring& s) {
         std::string buf;
         buf.reserve(s.size() / 2);
         auto i = s.begin(), end = s.end();

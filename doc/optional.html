@@ -111,9 +111,9 @@ call <code>std::hash&lt;T&gt;</code>.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>U8string Optional::</code><strong><code>str</code></strong><code>() const</code></li>
+<li><code>Ustring Optional::</code><strong><code>str</code></strong><code>() const</code></li>
 <li><code>template &lt;typename T&gt; std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const Optional&amp; opt)</code></li>
-<li><code>template &lt;typename T&gt; U8string</code> <strong><code>to_str</code></strong><code>(const Optional&amp; opt)</code></li>
+<li><code>template &lt;typename T&gt; Ustring</code> <strong><code>to_str</code></strong><code>(const Optional&amp; opt)</code></li>
 </ul>
 <p>Convert the object to a string (all of these produce the same string). These
 will return <code>"null"</code> if the object is empty, otherwise they will call

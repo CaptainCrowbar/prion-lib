@@ -10,7 +10,7 @@ void test_core_io_cstdio() {
 
     Cstdio io;
     File file = "__cstdio_test__", no_file = "__no_such_file__";
-    U8string text;
+    Ustring text;
     Strings vec;
     ptrdiff_t offset = 0;
     size_t n = 0;
@@ -92,7 +92,7 @@ void test_core_io_fdio() {
 
     Fdio io;
     File file = "__fdio_test__", no_file = "__no_such_file__";
-    U8string text;
+    Ustring text;
     Strings vec;
     ptrdiff_t offset = 0;
     size_t n = 0;
@@ -168,7 +168,7 @@ void test_core_io_fdio() {
 void test_core_io_pipe() {
 
     std::pair<Fdio, Fdio> pipe;
-    U8string text;
+    Ustring text;
 
     TRY(pipe = Fdio::pipe());
     TRY(pipe.second.write_str("Hello world\n"));
@@ -184,7 +184,7 @@ void test_core_io_winio() {
 
         Winio io;
         File file = "__winio_test__", no_file = "__no_such_file__";
-        U8string text;
+        Ustring text;
         Strings vec;
         ptrdiff_t offset = 0;
         size_t n = 0;
@@ -266,7 +266,7 @@ void test_core_io_winio() {
 
 void test_core_io_null_device() {
 
-    U8string text;
+    Ustring text;
 
     {
         Cstdio io;
@@ -333,7 +333,7 @@ void test_core_io_null_device() {
 void test_core_io_external_buffer() {
 
     StringBuffer buf;
-    U8string s, t;
+    Ustring s, t;
     Strings vec;
 
     TRY(buf = StringBuffer(s));
@@ -411,7 +411,7 @@ void test_core_io_external_buffer() {
 void test_core_io_internal_buffer() {
 
     StringBuffer buf;
-    U8string t;
+    Ustring t;
     Strings vec;
 
     TEST(buf.empty());
@@ -461,7 +461,7 @@ void test_core_io_internal_buffer() {
 void test_core_io_print_formatting() {
 
     StringBuffer buf;
-    U8string s;
+    Ustring s;
 
     TRY(buf.print());
     TRY(s = buf.str());

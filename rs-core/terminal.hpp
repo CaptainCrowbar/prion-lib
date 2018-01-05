@@ -83,7 +83,7 @@ namespace RS {
     class ProgressBar {
     public:
         RS_NO_COPY_MOVE(ProgressBar);
-        explicit ProgressBar(const U8string& label, size_t length = 0, std::ostream& out = std::cout);
+        explicit ProgressBar(const Ustring& label, size_t length = 0, std::ostream& out = std::cout);
         ~ProgressBar() noexcept;
         void operator()(double x);
     private:
@@ -95,7 +95,7 @@ namespace RS {
         std::chrono::system_clock::time_point start_time;
     };
 
-    inline ProgressBar::ProgressBar(const U8string& label, size_t length, std::ostream& out):
+    inline ProgressBar::ProgressBar(const Ustring& label, size_t length, std::ostream& out):
     bar_length(length), current_pos(0), bar_offset(label.empty() ? 1 : label.size() + 1), out_ptr(&out) {
         using namespace std::chrono;
         if (bar_length == 0) {
@@ -108,7 +108,7 @@ namespace RS {
         }
         if (! label.empty())
             *out_ptr << xt_yellow << label << " ";
-        *out_ptr << U8string(xt_cyan) << "[" << xt_blue << U8string(bar_length, '-') << xt_cyan << "] " << U8string(tail_length, ' ') << xt_reset << std::flush;
+        *out_ptr << Ustring(xt_cyan) << "[" << xt_blue << Ustring(bar_length, '-') << xt_cyan << "] " << Ustring(tail_length, ' ') << xt_reset << std::flush;
         start_time = system_clock::now();
     }
 
@@ -120,7 +120,7 @@ namespace RS {
     inline void ProgressBar::operator()(double x) {
         using namespace std::chrono;
         x = clamp(x, 0, 1);
-        U8string message;
+        Ustring message;
         auto now = system_clock::now();
         if (x > 0 && x < 1 && now > start_time) {
             auto elapsed = duration_cast<Dseconds>(now - start_time);
@@ -144,7 +144,7 @@ namespace RS {
         size_t n_left = bar_length - current_pos + tail_length + 2;
         size_t n_advance = new_pos - current_pos;
         size_t n_right = bar_length - new_pos + 2;
-        *out_ptr << xt_move_left(int(n_left)) << xt_green << U8string(n_advance, '+') << xt_move_right(int(n_right)) << xt_yellow << message << xt_reset << std::flush;
+        *out_ptr << xt_move_left(int(n_left)) << xt_green << Ustring(n_advance, '+') << xt_move_right(int(n_right)) << xt_yellow << message << xt_reset << std::flush;
         current_pos = new_pos;
     }
 

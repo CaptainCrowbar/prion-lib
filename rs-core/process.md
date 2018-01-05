@@ -10,7 +10,7 @@ By Ross Smith
 
 ## Shell commands ##
 
-* `std::string` **`shell`**`(const U8string& cmd)`
+* `std::string` **`shell`**`(const Ustring& cmd)`
 
 Runs a shell command synchronously (via `popen()` or the equivalent),
 capturing standard output. No error indication is returned; standard error
@@ -26,7 +26,7 @@ channel calls `pclose()`.
 ### Class StreamProcess ###
 
 * `class` **`StreamProcess`**`: public StreamChannel`
-    * `explicit StreamProcess::`**`StreamProcess`**`(const U8string& cmd)`
+    * `explicit StreamProcess::`**`StreamProcess`**`(const Ustring& cmd)`
     * `virtual StreamProcess::`**`~StreamProcess`**`() noexcept`
     * `int StreamProcess::`**`status`**`() const noexcept`
 
@@ -36,8 +36,8 @@ if the process has not been closed yet.
 
 ### Class TextProcess ###
 
-* `class` **`TextProcess`**`: public MessageChannel<U8string>`
-    * `explicit TextProcess::`**`TextProcess`**`(const U8string& cmd)`
+* `class` **`TextProcess`**`: public MessageChannel<Ustring>`
+    * `explicit TextProcess::`**`TextProcess`**`(const Ustring& cmd)`
     * `virtual TextProcess::`**`~TextProcess`**`() noexcept`
     * `std::string TextProcess::`**`read_all`**`()`
     * `int TextProcess::`**`status`**`() const noexcept`

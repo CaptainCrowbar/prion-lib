@@ -6,7 +6,7 @@ using namespace RS;
 void test_core_table_class() {
 
     Table tab;
-    U8string s;
+    Ustring s;
 
     TEST(tab.empty());
     TRY(s = to_str(tab));

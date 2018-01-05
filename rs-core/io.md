@@ -87,7 +87,7 @@ all streams (it is not usually possible to seek on standard input or output).
 * `void IO::`**`write_line`**`()`
 * `void IO::`**`write_line`**`(const std::string& str)`
 * `size_t IO::`**`write_str`**`(const std::string& str)`
-* `template <typename... Args> void IO::`**`format`**`(const U8string& pattern, const Args&... args)`
+* `template <typename... Args> void IO::`**`format`**`(const Ustring& pattern, const Args&... args)`
 * `template <typename... Args> void IO::`**`print`**`(const Args&... args)`
 
 Output functions. The `write()` function attempts to write the given block of
@@ -105,7 +105,7 @@ the resulting string to the output stream. The `print()` function formats each
 argument using `to_str()`, writing them to the output stream with a space
 between each pair of arguments, followed by a line feed.
 
-* `void IO::`**`check`**`(const U8string& detail = "") const`
+* `void IO::`**`check`**`(const Ustring& detail = "") const`
 * `void IO::`**`clear_error`**`() noexcept`
 * `std::error_code IO::`**`error`**`() const noexcept`
 
@@ -138,7 +138,7 @@ The native file handle type.
 
 * `explicit Cstdio::`**`Cstdio`**`(FILE* f, bool owner = true) noexcept`
 * `explicit Cstdio::`**`Cstdio`**`(const File& f, mode m = mode::read_only)`
-* `Cstdio::`**`Cstdio`**`(const File& f, const U8string& iomode)`
+* `Cstdio::`**`Cstdio`**`(const File& f, const Ustring& iomode)`
 
 The first constructor wraps a `Cstdio` object around an existing file pointer;
 if `owner` is true, the destructor will close the file. The second constructor

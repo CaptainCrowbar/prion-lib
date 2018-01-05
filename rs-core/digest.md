@@ -94,6 +94,6 @@ TODO - Not fully implemented yet, multiple calls to operator() will not work
 
 Convenience wrappers for message digest classes.
 
-* `template <size_t N> U8string` **`hex`**`(const std::array<uint8_t, N>& bytes)`
+* `template <size_t N> Ustring` **`hex`**`(const std::array<uint8_t, N>& bytes)`
 
 Convenience function to convert an array of bytes into a hexadecimal string.

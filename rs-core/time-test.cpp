@@ -101,7 +101,7 @@ void test_core_time_format_date() {
 
     system_clock::time_point tp = {};
     system_clock::duration d = {};
-    U8string str;
+    Ustring str;
 
     TRY(tp = make_date(2000, 1, 2, 3, 4, 5));
     TRY(str = format_date(tp));
@@ -132,7 +132,7 @@ void test_core_time_format_date() {
 
 void test_core_time_format_time() {
 
-    U8string str;
+    Ustring str;
 
     TRY(str = format_time(Dseconds(0)));              TEST_EQUAL(str, "0s");
     TRY(str = format_time(Dseconds(0), 3));           TEST_EQUAL(str, "0.000s");
@@ -180,7 +180,7 @@ void test_core_time_format_time() {
 void test_core_time_parse_date() {
 
     system_clock::time_point date = {};
-    U8string str;
+    Ustring str;
 
     TRY(date = parse_date("2017-11-04"));                     TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 00:00:00.000");
     TRY(date = parse_date("2017 Nov 4"));                     TRY(str = format_date(date, 3));  TEST_EQUAL(str, "2017-11-04 00:00:00.000");

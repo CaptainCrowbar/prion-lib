@@ -46,7 +46,7 @@ the string into words delimited by whitespace.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>U8string</code> <strong><code>operator""_doc</code></strong><code>(const char* p, size_t n)</code></li>
+<li><code>Ustring</code> <strong><code>operator""_doc</code></strong><code>(const char* p, size_t n)</code></li>
 </ul>
 <p>The <code>""_doc</code> literal removes a leading line feed if present, adds a trailing
 one if not present, and removes any common leading indentation from all non-
@@ -161,13 +161,13 @@ everything else alone.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>U8string</code> <strong><code>dent</code></strong><code>(size_t depth)</code></li>
+<li><code>Ustring</code> <strong><code>dent</code></strong><code>(size_t depth)</code></li>
 </ul>
 <p>Returns a string containing <code>4*depth</code> spaces, for indentation.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>U8string</code> <strong><code>indent</code></strong><code>(const U8string&amp; str, size_t depth)</code></li>
+<li><code>Ustring</code> <strong><code>indent</code></strong><code>(const Ustring&amp; str, size_t depth)</code></li>
 </ul>
 <p>Inserts <code>4*depth</code> spaces of indentation on every non-empty line.</p>
 </div>
@@ -176,7 +176,7 @@ everything else alone.</p>
 <li><code>template &lt;typename InputRange&gt; std::string</code> <strong><code>join</code></strong><code>(const InputRange&amp; range, const std::string&amp; delim = "", bool term = false)</code></li>
 </ul>
 <p>Join strings into a single string, using the given delimiter. The value type
-of the input range must be assignment compatible with <code>U8string</code>. If the
+of the input range must be assignment compatible with <code>Ustring</code>. If the
 <code>term</code> argument is set, an extra delimiter will be added after the last
 element (useful when joining lines to form a text that would be expected to
 end with a line break).</p>
@@ -220,8 +220,8 @@ contiguous group of one or more bytes from the delimiter list.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>U8string</code> <strong><code>quote</code></strong><code>(const std::string&amp; str)</code></li>
-<li><code>U8string</code> <strong><code>bquote</code></strong><code>(const std::string&amp; str)</code></li>
+<li><code>Ustring</code> <strong><code>quote</code></strong><code>(const std::string&amp; str)</code></li>
+<li><code>Ustring</code> <strong><code>bquote</code></strong><code>(const std::string&amp; str)</code></li>
 </ul>
 <p>Return a quoted string; internal quotes, backslashes, and control characters
 are escaped. The <code>bquote()</code> function always escapes all non-ASCII bytes;
@@ -253,7 +253,7 @@ contiguous subsequence of delimiter characters will be treated as a break
 point. If the input string is empty, the output list will always be empty;
 otherwise, if the delimiter list is empty, the output will consist of a single
 string matching the input. The value type of the output iterator in <code>split()</code>
-must be assignment compatible with <code>U8string</code>; the <code>splitv()</code> version returns
+must be assignment compatible with <code>Ustring</code>; the <code>splitv()</code> version returns
 a vector of strings instead of writing to an existing receiver.</p>
 </div>
 <div class="defns">
@@ -284,9 +284,9 @@ characters are found.</p>
 <h2 id="string-formatting-functions">String formatting functions</h2>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; U8string</code> <strong><code>bin</code></strong><code>(T x, size_t digits = 8 * sizeof(T))</code></li>
-<li><code>template &lt;typename T&gt; U8string</code> <strong><code>dec</code></strong><code>(T x, size_t digits = 1)</code></li>
-<li><code>template &lt;typename T&gt; U8string</code> <strong><code>hex</code></strong><code>(T x, size_t digits = 2 * sizeof(T))</code></li>
+<li><code>template &lt;typename T&gt; Ustring</code> <strong><code>bin</code></strong><code>(T x, size_t digits = 8 * sizeof(T))</code></li>
+<li><code>template &lt;typename T&gt; Ustring</code> <strong><code>dec</code></strong><code>(T x, size_t digits = 1)</code></li>
+<li><code>template &lt;typename T&gt; Ustring</code> <strong><code>hex</code></strong><code>(T x, size_t digits = 2 * sizeof(T))</code></li>
 </ul>
 <p>Simple number formatting functions. These convert an integer to a binary,
 decimal, or hexadecimal string, generating at least the specified number of
@@ -294,7 +294,7 @@ digits.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename... Args&gt; U8string</code> <strong><code>fmt</code></strong><code>(const U8string&amp; pattern, const Args&amp;... args)</code></li>
+<li><code>template &lt;typename... Args&gt; Ustring</code> <strong><code>fmt</code></strong><code>(const Ustring&amp; pattern, const Args&amp;... args)</code></li>
 </ul>
 <p>This performs string interpolation, inserting the variadic arguments
 (formatted with <code>to_str()</code>, below) in place of each occurrence of <code>"$n"</code> or
@@ -306,7 +306,7 @@ copied unchanged (so <code>"$$"</code> will produce a literal dollar sign).</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; U8string</code> <strong><code>fp_format</code></strong><code>(T t, char mode = 'g', int prec = 6)</code></li>
+<li><code>template &lt;typename T&gt; Ustring</code> <strong><code>fp_format</code></strong><code>(T t, char mode = 'g', int prec = 6)</code></li>
 </ul>
 <p>Simple floating point formatting, by calling <code>snprintf()</code>. <code>T</code> must be an
 arithmetic type; it will be converted to <code>double</code> internally. The additional
@@ -317,7 +317,7 @@ circumstances.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>U8string</code> <strong><code>roman</code></strong><code>(int n)</code></li>
+<li><code>Ustring</code> <strong><code>roman</code></strong><code>(int n)</code></li>
 </ul>
 <p>Formats a number as a Roman numeral. Numbers greater than 1000 will be written
 with an arbitrarily long sequence of <code>"M"</code>. This will return an empty string
@@ -325,22 +325,22 @@ if the argument is less than 1.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>U8string</code> <strong><code>hexdump</code></strong><code>(const void* ptr, size_t n, size_t block = 0)</code></li>
-<li><code>U8string</code> <strong><code>hexdump</code></strong><code>(const std::string&amp; str, size_t block = 0)</code></li>
+<li><code>Ustring</code> <strong><code>hexdump</code></strong><code>(const void* ptr, size_t n, size_t block = 0)</code></li>
+<li><code>Ustring</code> <strong><code>hexdump</code></strong><code>(const std::string&amp; str, size_t block = 0)</code></li>
 </ul>
 <p>Converts a block of raw data into hexadecimal bytes. If <code>block</code> is not zero, a
 line feed is inserted after each block.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>U8string</code> <strong><code>tf</code></strong><code>(bool b)</code></li>
-<li><code>U8string</code> <strong><code>yn</code></strong><code>(bool b)</code></li>
+<li><code>Ustring</code> <strong><code>tf</code></strong><code>(bool b)</code></li>
+<li><code>Ustring</code> <strong><code>yn</code></strong><code>(bool b)</code></li>
 </ul>
 <p>Convert a boolean to <code>"true/false"</code> or <code>"yes/no"</code>.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; U8string</code> <strong><code>to_str</code></strong><code>(const T&amp; t)</code></li>
+<li><code>template &lt;typename T&gt; Ustring</code> <strong><code>to_str</code></strong><code>(const T&amp; t)</code></li>
 </ul>
 <p>Formats an object as a string. This uses the following rules for formatting
 various types:</p>
@@ -377,8 +377,8 @@ positive or negative infinity).</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>int64_t</code> <strong><code>si_to_int</code></strong><code>(const U8string&amp; s)</code></li>
-<li><code>double</code> <strong><code>si_to_float</code></strong><code>(const U8string&amp; s)</code></li>
+<li><code>int64_t</code> <strong><code>si_to_int</code></strong><code>(const Ustring&amp; s)</code></li>
+<li><code>double</code> <strong><code>si_to_float</code></strong><code>(const Ustring&amp; s)</code></li>
 </ul>
 <p>These parse a number from a string representation tagged with an SI multiplier
 abbreviation (e.g. <code>"123k"</code>). For the integer version, only tags representing

@@ -252,10 +252,10 @@ void test_core_net_ip_literals() {
 
 void test_core_net_dns_query() {
 
-    static const U8string good_name = "en.cppreference.com";
-    static const U8string bad_name = "no-such-host.xyz";
+    static const Ustring good_name = "en.cppreference.com";
+    static const Ustring bad_name = "no-such-host.xyz";
 
-    U8string name;
+    Ustring name;
     SocketAddress addr;
     std::vector<SocketAddress> addrs;
 

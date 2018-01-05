@@ -128,10 +128,10 @@ function gives the same result as the underlying integer type's hash.
 
 ### String and character types ###
 
-* `using` **`U8string`** `= std::string`
-* `using` **`U8view`** `= std::string_view`
+* `using` **`Ustring`** `= std::string`
+* `using` **`Uview`** `= std::string_view`
 
-Use `U8string` or `U8view` for strings that are expected to be in UTF-8 (or
+Use `Ustring` or `Uview` for strings that are expected to be in UTF-8 (or
 ASCII, since any ASCII string is also valid UTF-8), while plain `std::string`
 or `std::string_view` is used where the string is expected to be in some non-
 Unicode encoding, or where the string is being used simply as an array of
@@ -313,7 +313,7 @@ conversion.
     * `using Version::`**`value_type`** `= unsigned`
     * `Version::`**`Version`**`() noexcept`
     * `template <typename... Args> Version::`**`Version`**`(unsigned n, Args... args)`
-    * `explicit Version::`**`Version`**`(const U8string& s)`
+    * `explicit Version::`**`Version`**`(const Ustring& s)`
     * `Version::`**`Version`**`(const Version& v)`
     * `Version::`**`Version`**`(Version&& v) noexcept`
     * `Version::`**`~Version`**`() noexcept`
@@ -880,7 +880,7 @@ Simple wrapper function to create a mutex lock.
 
 ### Logging ###
 
-* `void` **`logx`**`(const U8string& msg) noexcept`
+* `void` **`logx`**`(const Ustring& msg) noexcept`
 * `void` **`logx`**`(const char* msg) noexcept`
 * `template <typename... Args> void` **`logx`**`(Args... args) noexcept`
 

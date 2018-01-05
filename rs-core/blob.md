@@ -36,7 +36,7 @@ By Ross Smith
     * `bool Blob::`**`empty`**`() const noexcept`
     * `void Blob::`**`fill`**`(uint8_t x) noexcept`
     * `size_t Blob::`**`hash`**`() const noexcept`
-    * `U8string Blob::`**`hex`**`(size_t block = 0) const`
+    * `Ustring Blob::`**`hex`**`(size_t block = 0) const`
     * `void Blob::`**`reset`**`(size_t n)`
     * `void Blob::`**`reset`**`(size_t n, uint8_t x)`
     * `void Blob::`**`reset`**`(void* p, size_t n)`
@@ -44,7 +44,7 @@ By Ross Smith
     * `size_t Blob::`**`size`**`() const noexcept`
     * `string Blob::`**`str`**`() const`
     * `void Blob::`**`swap`**`(Blob& b) noexcept`
-    * `static Blob Blob::`**`from_hex`**`(const U8string& s)`
+    * `static Blob Blob::`**`from_hex`**`(const Ustring& s)`
 * `bool` **`operator==`**`(const Blob& lhs, const Blob& rhs) noexcept`
 * `bool` **`operator!=`**`(const Blob& lhs, const Blob& rhs) noexcept`
 * `bool` **`operator<`**`(const Blob& lhs, const Blob& rhs) noexcept`

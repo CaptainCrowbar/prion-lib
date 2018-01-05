@@ -8,7 +8,7 @@ using namespace std::literals;
 
 void test_core_optional_basic_operations() {
 
-    Optional<U8string> a, b;
+    Optional<Ustring> a, b;
 
     TEST(! a.has_value());
     TEST(! b.has_value());
@@ -63,10 +63,10 @@ void test_core_optional_basic_operations() {
 
 void test_core_optional_object_accounting() {
 
-    using account = Accountable<U8string>;
+    using account = Accountable<Ustring>;
 
     Optional<account> a, b;
-    U8string s;
+    Ustring s;
 
     account::reset();
 
@@ -152,7 +152,7 @@ void test_core_optional_object_accounting() {
 
 void test_core_optional_comparison_operators() {
 
-    Optional<U8string> a, b;
+    Optional<Ustring> a, b;
 
     TRY(a = "Hello"s);    TRY(b = "Hello"s);    TEST(a == b);  TEST(a <= b);  TEST(a >= b);
     TRY(a = "Hello"s);    TRY(b = "Goodbye"s);  TEST(a > b);   TEST(a >= b);  TEST(a != b);
@@ -176,7 +176,7 @@ void test_core_optional_comparison_operators() {
 
 void test_core_optional_coalescing_operators() {
 
-    Optional<U8string> a = "Hello"s, b = "Goodbye"s, c, d, e;
+    Optional<Ustring> a = "Hello"s, b = "Goodbye"s, c, d, e;
 
     TRY(c = a & b);         TEST_EQUAL(to_str(c), "Goodbye");
     TRY(c = b & a);         TEST_EQUAL(to_str(c), "Hello");
@@ -225,12 +225,12 @@ void test_core_optional_coalescing_operators() {
 
 void test_core_optional_function_calls() {
 
-    Optional<U8string> sx;
+    Optional<Ustring> sx;
     Optional<size_t> nx;
 
-    auto fix_size = [] (U8string& s) { s.resize(10, '*'); };
-    auto get_size = [] (const U8string& s) { return s.size(); };
-    auto set_size = [] (U8string& s, size_t n, char c) { s.resize(n, c); };
+    auto fix_size = [] (Ustring& s) { s.resize(10, '*'); };
+    auto get_size = [] (const Ustring& s) { return s.size(); };
+    auto set_size = [] (Ustring& s, size_t n, char c) { s.resize(n, c); };
 
     TRY(opt_call(fix_size, sx));
     TEST(! sx);

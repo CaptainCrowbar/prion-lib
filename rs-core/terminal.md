@@ -11,7 +11,7 @@ By Ross Smith
 ## Progress bar ##
 
 * `class` **`ProgressBar`**
-    * `explicit ProgressBar::`**`ProgressBar`**`(const U8string& label, size_t length = 0, std::ostream& out = std::cout)`
+    * `explicit ProgressBar::`**`ProgressBar`**`(const Ustring& label, size_t length = 0, std::ostream& out = std::cout)`
     * `ProgressBar::`**`~ProgressBar`**`() noexcept`
     * `void ProgressBar::`**`operator()`**`(double x)`
 

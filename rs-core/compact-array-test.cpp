@@ -14,7 +14,7 @@ void test_core_compact_array_construction() {
     using ICA = CompactArray<int, 5>;
 
     ICA a;
-    U8string s;
+    Ustring s;
 
     TEST(a.empty());
     TEST(a.is_compact());
@@ -180,7 +180,7 @@ void test_core_compact_array_capacity() {
     using ICA = CompactArray<int, 5>;
 
     ICA a;
-    U8string s;
+    Ustring s;
 
     TRY(a.resize(5, 42));
     TEST(! a.empty());
@@ -237,13 +237,13 @@ void test_core_compact_array_capacity() {
 void test_core_compact_array_insertion() {
 
     using ICA = CompactArray<int, 5>;
-    using SCA = CompactArray<U8string, 5>;
+    using SCA = CompactArray<Ustring, 5>;
 
     ICA a;
     SCA b;
     ICA::iterator ai;
     SCA::iterator bi;
-    U8string s;
+    Ustring s;
     std::vector<int> v;
 
     for (size_t i = 1; i <= 16; ++i) {
@@ -499,13 +499,13 @@ void test_core_compact_array_accounting() {
 void test_core_compact_array_keys() {
 
     using ICA = CompactArray<int, 5>;
-    using Omap = std::map<ICA, U8string>;
-    using Umap = std::unordered_map<ICA, U8string>;
+    using Omap = std::map<ICA, Ustring>;
+    using Umap = std::unordered_map<ICA, Ustring>;
 
     ICA a;
     Omap omap;
     Umap umap;
-    U8string s;
+    Ustring s;
 
     TRY(s = to_str(omap));  TEST_EQUAL(s, "{}");
     TRY(s = to_str(umap));  TEST_EQUAL(s, "{}");

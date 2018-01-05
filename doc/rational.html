@@ -58,7 +58,7 @@ overflow the integer type's range.</p>
 <li><code>Rational::</code><strong><code>Rational</code></strong><code>()</code></li>
 <li><code>template &lt;typename T2&gt; Rational::</code><strong><code>Rational</code></strong><code>(T2 t)</code></li>
 <li><code>template &lt;typename T2, typename T3&gt; Rational::</code><strong><code>Rational</code></strong><code>(T2 n, T3 d)</code></li>
-<li><code>explicit Rational::</code><strong><code>Rational</code></strong><code>(const U8string&amp; s)</code></li>
+<li><code>explicit Rational::</code><strong><code>Rational</code></strong><code>(const Ustring&amp; s)</code></li>
 <li><code>explicit Rational::</code><strong><code>Rational</code></strong><code>(const char* s)</code></li>
 <li><code>Rational::</code><strong><code>~Rational() noexcept</code></strong></li>
 <li><code>Rational::</code><strong><code>Rational</code></strong><code>(const Rational&amp; r)</code></li>
@@ -167,9 +167,9 @@ original number if it is not an exact integer.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>U8string Rational::</code><strong><code>str</code></strong><code>() const</code></li>
-<li><code>U8string Rational::</code><strong><code>mixed</code></strong><code>() const</code></li>
-<li><code>U8string Rational::</code><strong><code>simple</code></strong><code>() const</code></li>
+<li><code>Ustring Rational::</code><strong><code>str</code></strong><code>() const</code></li>
+<li><code>Ustring Rational::</code><strong><code>mixed</code></strong><code>() const</code></li>
+<li><code>Ustring Rational::</code><strong><code>simple</code></strong><code>() const</code></li>
 <li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; o, const Rational&amp; r)</code></li>
 </ul>
 <p>Convert a rational number to a string. The <code>mixed()</code> format expresses the

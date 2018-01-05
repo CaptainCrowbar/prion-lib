@@ -47,7 +47,7 @@ namespace RS {
         bool has_value() const noexcept { return state; }
         size_t hash() const noexcept { return state ? std::hash<T>()(val) : 0; }
         void reset() noexcept;
-        U8string str() const { return state ? to_str(val) : "null"; }
+        Ustring str() const { return state ? to_str(val) : "null"; }
         void swap(Optional& opt) noexcept;
         T& value() { check(); return val; }
         const T& value() const { check(); return val; }
@@ -200,7 +200,7 @@ namespace RS {
     template <typename T> std::ostream& operator<<(std::ostream& out, const Optional<T>& opt) { return out << opt.str(); }
     template <typename T> Optional<T> make_optional(T&& t) { return Optional<T>(std::forward<T>(t)); }
     template <typename T> void swap(Optional<T>& lhs, Optional<T>& rhs) noexcept { lhs.swap(rhs); }
-    template <typename T> U8string to_str(const Optional<T>& opt) { return opt.str(); }
+    template <typename T> Ustring to_str(const Optional<T>& opt) { return opt.str(); }
 
     namespace RS_Detail {
 

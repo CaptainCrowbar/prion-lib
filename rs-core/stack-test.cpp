@@ -10,14 +10,14 @@ namespace {
     class TopTail {
     public:
         TopTail(): sp(nullptr), ch() {}
-        TopTail(U8string& s, char c): sp(&s), ch(c) { s += '+'; s += c; }
+        TopTail(Ustring& s, char c): sp(&s), ch(c) { s += '+'; s += c; }
         ~TopTail() { term(); }
         TopTail(TopTail&& t): sp(t.sp), ch(t.ch) { t.sp = nullptr; }
         TopTail& operator=(TopTail&& t) { if (&t != this) { term(); sp = t.sp; ch = t.ch; t.sp = nullptr; } return *this; }
         char get() const noexcept { return ch; }
         friend std::ostream& operator<<(std::ostream& out, const TopTail& t) { return out << t.ch; }
     private:
-        U8string* sp;
+        Ustring* sp;
         char ch;
         TopTail(const TopTail&) = delete;
         TopTail& operator=(const TopTail&) = delete;
@@ -29,7 +29,7 @@ namespace {
 void test_core_stack_class() {
 
     Stack<TopTail> st;
-    U8string s;
+    Ustring s;
 
     TEST(st.empty());
     TEST_EQUAL(to_str(st), "[]");

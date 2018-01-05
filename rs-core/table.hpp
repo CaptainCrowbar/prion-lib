@@ -16,14 +16,14 @@ namespace RS {
         bool empty() const noexcept { return cells.size() == 1 && cells.back().empty(); }
         void rule(char c = '\0');
         void show_repeats(bool flag = true) noexcept { repeats = flag; }
-        friend U8string to_str(const Table& tab);
+        friend Ustring to_str(const Table& tab);
         friend std::ostream& operator<<(std::ostream& out, const Table& tab) { return out << to_str(tab); }
     private:
         std::vector<Strings> cells;
         std::vector<size_t> widths;
         bool repeats = false;
         char rules = '=';
-        void add(U8string s);
+        void add(Ustring s);
     };
 
     inline void Table::clear() noexcept {
@@ -38,13 +38,13 @@ namespace RS {
             c = rules;
         if (! cells.back().empty())
             cells.push_back({});
-        cells.back().push_back(U8string{'\0', c});
+        cells.back().push_back(Ustring{'\0', c});
         cells.push_back({});
         rules = '-';
     }
 
-    inline U8string to_str(const Table& tab) {
-        U8string text;
+    inline Ustring to_str(const Table& tab) {
+        Ustring text;
         size_t columns = tab.widths.size(), rows = tab.cells.size(), width = 0;
         if (tab.cells.back().empty())
             --rows;
@@ -75,7 +75,7 @@ namespace RS {
         return text;
     }
 
-    inline void Table::add(U8string s) {
+    inline void Table::add(Ustring s) {
         if (s == "\n") {
             cells.push_back({});
             return;

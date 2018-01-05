@@ -72,19 +72,19 @@ introduce rounding errors.</p>
 <div class="defns">
 <ul>
 <li><code>class</code> <strong><code>PersistState</code></strong><ul>
-<li><code>explicit PersistState::</code><strong><code>PersistState</code></strong><code>(const U8string&amp; id)</code></li>
+<li><code>explicit PersistState::</code><strong><code>PersistState</code></strong><code>(const Ustring&amp; id)</code></li>
 <li><code>template &lt;typename... Args&gt; explicit PersistState::</code><strong><code>PersistState</code></strong><code>(Args... id)</code></li>
 <li><code>PersistState::</code><strong><code>~PersistState</code></strong><code>() noexcept</code></li>
-<li><code>U8string PersistState::</code><strong><code>id</code></strong><code>() const</code></li>
+<li><code>Ustring PersistState::</code><strong><code>id</code></strong><code>() const</code></li>
 <li><code>File PersistState::</code><strong><code>file</code></strong><code>() const</code></li>
 <li><code>void PersistState::</code><strong><code>load</code></strong><code>()</code></li>
 <li><code>void PersistState::</code><strong><code>save</code></strong><code>()</code></li>
 <li><code>template &lt;typename R, typename P&gt; void PersistState::</code><strong><code>autosave</code></strong><code>(std::chrono::duration&lt;R, P&gt; t)</code></li>
 <li><code>void PersistState::</code><strong><code>autosave_off</code></strong><code>()</code></li>
-<li><code>void PersistState::</code><strong><code>create</code></strong><code>(const U8string&amp; key, const json&amp; value)</code></li>
-<li><code>bool PersistState::</code><strong><code>read</code></strong><code>(const U8string&amp; key, json&amp; value)</code></li>
-<li><code>void PersistState::</code><strong><code>update</code></strong><code>(const U8string&amp; key, const json&amp; value)</code></li>
-<li><code>void PersistState::</code><strong><code>erase</code></strong><code>(const U8string&amp; key)</code></li>
+<li><code>void PersistState::</code><strong><code>create</code></strong><code>(const Ustring&amp; key, const json&amp; value)</code></li>
+<li><code>bool PersistState::</code><strong><code>read</code></strong><code>(const Ustring&amp; key, json&amp; value)</code></li>
+<li><code>void PersistState::</code><strong><code>update</code></strong><code>(const Ustring&amp; key, const json&amp; value)</code></li>
+<li><code>void PersistState::</code><strong><code>erase</code></strong><code>(const Ustring&amp; key)</code></li>
 </ul>
 </li>
 </ul>
@@ -133,13 +133,13 @@ be called explicitly.</p>
 <ul>
 <li><code>template &lt;typename T&gt; class</code> <strong><code>Persist</code></strong><ul>
 <li><code>Persist::</code><strong><code>Persist</code></strong><code>() noexcept</code></li>
-<li><code>Persist::</code><strong><code>Persist</code></strong><code>(PersistState&amp; store, const U8string&amp; key, const T&amp; init = {})</code></li>
+<li><code>Persist::</code><strong><code>Persist</code></strong><code>(PersistState&amp; store, const Ustring&amp; key, const T&amp; init = {})</code></li>
 <li><code>Persist::</code><strong><code>~Persist</code></strong><code>() noexcept</code></li>
 <li><code>Persist::</code><strong><code>Persist</code></strong><code>(Persist&amp;&amp; p) noexcept</code></li>
 <li><code>Persist&amp; Persist::</code><strong><code>operator=</code></strong><code>(Persist&amp;&amp; p) noexcept</code></li>
 <li><code>Persist&amp; Persist::</code><strong><code>operator=</code></strong><code>(const T&amp; t)</code></li>
 <li><code>Persist::</code><strong><code>operator T</code></strong><code>() const</code></li>
-<li><code>U8string Persist::</code><strong><code>key</code></strong><code>() const</code></li>
+<li><code>Ustring Persist::</code><strong><code>key</code></strong><code>() const</code></li>
 <li><code>T Persist::</code><strong><code>get</code></strong><code>() const</code></li>
 <li><code>void Persist::</code><strong><code>set</code></strong><code>(const T&amp; t)</code></li>
 <li><code>void Persist::</code><strong><code>erase</code></strong><code>()</code></li>

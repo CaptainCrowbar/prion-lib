@@ -40,7 +40,7 @@ with a `ZlibCategory` error category.
     * `using Gzio::`**`handle_type`** `= gzFile`
     * `Gzio::`**`Gzio`**`()`
     * `explicit Gzio::`**`Gzio`**`(const File& f, IO::mode m = IO::mode::read_only)`
-    * `Gzio::`**`Gzio`**`(const File& f, const U8string& iomode)`
+    * `Gzio::`**`Gzio`**`(const File& f, const Ustring& iomode)`
     * `virtual Gzio::`**`~Gzio`**`()`
     * `Gzio::`**`Gzio`**`(Gzio&& io)`
     * `Gzio& Gzio::`**`operator=`**`(Gzio&& io)`

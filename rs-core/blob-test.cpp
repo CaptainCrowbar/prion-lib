@@ -12,7 +12,7 @@ void test_core_blob_class() {
     TEST_EQUAL(b.size(), 0);
     TEST_EQUAL(b.hex(), "");
     TEST_EQUAL(b.str(), "");
-    TEST_EQUAL(U8string(b.chars().begin(), b.chars().end()), "");
+    TEST_EQUAL(Ustring(b.chars().begin(), b.chars().end()), "");
 
     TRY(b = Blob(nullptr, 1));
     TEST(b.empty());
@@ -23,7 +23,7 @@ void test_core_blob_class() {
     TEST_EQUAL(b.size(), 5);
     TEST_EQUAL(b.hex(), "61 61 61 61 61");
     TEST_EQUAL(b.str(), "aaaaa");
-    TEST_EQUAL(U8string(b.chars().begin(), b.chars().end()), "aaaaa");
+    TEST_EQUAL(Ustring(b.chars().begin(), b.chars().end()), "aaaaa");
 
     TRY(b.fill('z'));
     TEST_EQUAL(b.size(), 5);
@@ -47,7 +47,7 @@ void test_core_blob_class() {
     TEST_EQUAL(b.hex(), "68 65 6c 6c 6f");
     TEST_EQUAL(b.str(), "hello");
 
-    U8string s, h = "hello", w = "world";
+    Ustring s, h = "hello", w = "world";
 
     TRY(b.clear());
     TRY(b.reset(&h[0], 5, [&] (void*) { s += "a"; }));

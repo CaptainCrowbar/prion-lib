@@ -39,7 +39,7 @@ static) before doing anything else.
     * `IPv4::`**`IPv4`**`() noexcept`
     * `explicit IPv4::`**`IPv4`**`(uint32_t addr) noexcept`
     * `IPv4::`**`IPv4`**`(uint8_t a, uint8_t b, uint8_t c, uint8_t d) noexcept`
-    * `explicit IPv4::`**`IPv4`**`(const U8string& s)`
+    * `explicit IPv4::`**`IPv4`**`(const Ustring& s)`
     * `IPv4::`**`~IPv4`**`() noexcept`
     * `IPv4::`**`IPv4`**`(const IPv4&) noexcept`
     * `IPv4::`**`IPv4`**`(IPv4&&) noexcept`
@@ -51,7 +51,7 @@ static) before doing anything else.
     * `size_t IPv4::`**`hash`**`() const noexcept`
     * `uint32_t IPv4::`**`net`**`() const noexcept`
     * `uint32_t& IPv4::`**`net`**`() noexcept`
-    * `U8string IPv4::`**`str`**`() const`
+    * `Ustring IPv4::`**`str`**`() const`
     * `uint32_t IPv4::`**`value`**`() const noexcept`
     * `static IPv4 IPv4::`**`any`**`() noexcept` _= 0.0.0.0_
     * `static IPv4 IPv4::`**`broadcast`**`() noexcept` _= 255.255.255.255_
@@ -82,7 +82,7 @@ structure (which is assumed to contain an IPv4 address).
     * `static constexpr size_t IPv6::`**`size`** `= 16`
     * `IPv6::`**`IPv6`**`() noexcept`
     * `IPv6::`**`IPv6`**`(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint8_t e, uint8_t f, uint8_t g, uint8_t h, uint8_t i, uint8_t j, uint8_t k, uint8_t l, uint8_t m, uint8_t n, uint8_t o, uint8_t p) noexcept`
-    * `explicit IPv6::`**`IPv6`**`(const U8string& s)`
+    * `explicit IPv6::`**`IPv6`**`(const Ustring& s)`
     * `IPv6::`**`~IPv6`**`() noexcept`
     * `IPv6::`**`IPv6`**`(const IPv6&) noexcept`
     * `IPv6::`**`IPv6`**`(IPv6&&) noexcept`
@@ -92,7 +92,7 @@ structure (which is assumed to contain an IPv4 address).
     * `uint8_t* IPv6::`**`data`**`() noexcept`
     * `const uint8_t* IPv6::`**`data`**`() const noexcept`
     * `size_t IPv6::`**`hash`**`() const noexcept`
-    * `U8string IPv6::`**`str`**`() const`
+    * `Ustring IPv6::`**`str`**`() const`
     * `static IPv6 IPv6::`**`any`**`() noexcept` _= [::0]_
     * `static IPv6 IPv6::`**`localhost`**`() noexcept` _= [::1]_
     * `static IPv6 IPv6::`**`from_sin`**`(const void* ptr) noexcept`
@@ -116,7 +116,7 @@ semantics based on the corresponding function in the `IPv4` class.
     * `SocketAddress::`**`SocketAddress`**`(IPv4 ip, uint16_t port = 0) noexcept`
     * `SocketAddress::`**`SocketAddress`**`(IPv6 ip, uint16_t port = 0, uint32_t flow = 0, uint32_t scope = 0) noexcept`
     * `SocketAddress::`**`SocketAddress`**`(const void* ptr, size_t n) noexcept`
-    * `explicit SocketAddress::`**`SocketAddress`**`(const U8string& s)`
+    * `explicit SocketAddress::`**`SocketAddress`**`(const Ustring& s)`
     * `SocketAddress::`**`~SocketAddress`**`() noexcept`
     * `SocketAddress::`**`SocketAddress`**`(const SocketAddress&) noexcept`
     * `SocketAddress::`**`SocketAddress`**`(SocketAddress&&) noexcept`
@@ -137,7 +137,7 @@ semantics based on the corresponding function in the `IPv4` class.
     * `void SocketAddress::`**`set_family`**`(uint16_t f)`
     * `void SocketAddress::`**`set_size`**`(size_t n)`
     * `size_t SocketAddress::`**`size`**`() const noexcept`
-    * `U8string SocketAddress::`**`str`**`() const`
+    * `Ustring SocketAddress::`**`str`**`() const`
 * `bool` **`operator==`**`(const SocketAddress& lhs, const SocketAddress& rhs) noexcept`
 * `bool` **`operator!=`**`(const SocketAddress& lhs, const SocketAddress& rhs) noexcept`
 * `bool` **`operator<`**`(const SocketAddress& lhs, const SocketAddress& rhs) noexcept`
@@ -175,9 +175,9 @@ relevant type that takes a string.
 ## DNS query functions ##
 
 * `class` **`Dns`**
-    * `static SocketAddress Dns::`**`host_to_ip`**`(const U8string& name, int family = 0)`
-    * `static std::vector<SocketAddress> Dns::`**`host_to_ips`**`(const U8string& name, int family = 0)`
-    * `static U8string Dns::`**`ip_to_host`**`(const SocketAddress& addr)`
+    * `static SocketAddress Dns::`**`host_to_ip`**`(const Ustring& name, int family = 0)`
+    * `static std::vector<SocketAddress> Dns::`**`host_to_ips`**`(const Ustring& name, int family = 0)`
+    * `static Ustring Dns::`**`ip_to_host`**`(const SocketAddress& addr)`
 
 The `Dns` class only exists to act as a wrapper for the DNS resolution
 functions.

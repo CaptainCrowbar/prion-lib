@@ -53,19 +53,19 @@ Specializations of `to_json()` and `from_json()` are provided for:
 ## Persistent storage ##
 
 * `class` **`PersistState`**
-    * `explicit PersistState::`**`PersistState`**`(const U8string& id)`
+    * `explicit PersistState::`**`PersistState`**`(const Ustring& id)`
     * `template <typename... Args> explicit PersistState::`**`PersistState`**`(Args... id)`
     * `PersistState::`**`~PersistState`**`() noexcept`
-    * `U8string PersistState::`**`id`**`() const`
+    * `Ustring PersistState::`**`id`**`() const`
     * `File PersistState::`**`file`**`() const`
     * `void PersistState::`**`load`**`()`
     * `void PersistState::`**`save`**`()`
     * `template <typename R, typename P> void PersistState::`**`autosave`**`(std::chrono::duration<R, P> t)`
     * `void PersistState::`**`autosave_off`**`()`
-    * `void PersistState::`**`create`**`(const U8string& key, const json& value)`
-    * `bool PersistState::`**`read`**`(const U8string& key, json& value)`
-    * `void PersistState::`**`update`**`(const U8string& key, const json& value)`
-    * `void PersistState::`**`erase`**`(const U8string& key)`
+    * `void PersistState::`**`create`**`(const Ustring& key, const json& value)`
+    * `bool PersistState::`**`read`**`(const Ustring& key, json& value)`
+    * `void PersistState::`**`update`**`(const Ustring& key, const json& value)`
+    * `void PersistState::`**`erase`**`(const Ustring& key)`
 
 Common storage for state that needs to persist between runs of a program.
 Normally only one of these will be constructed for a given program.
@@ -114,13 +114,13 @@ be called explicitly.
 
 * `template <typename T> class` **`Persist`**
     * `Persist::`**`Persist`**`() noexcept`
-    * `Persist::`**`Persist`**`(PersistState& store, const U8string& key, const T& init = {})`
+    * `Persist::`**`Persist`**`(PersistState& store, const Ustring& key, const T& init = {})`
     * `Persist::`**`~Persist`**`() noexcept`
     * `Persist::`**`Persist`**`(Persist&& p) noexcept`
     * `Persist& Persist::`**`operator=`**`(Persist&& p) noexcept`
     * `Persist& Persist::`**`operator=`**`(const T& t)`
     * `Persist::`**`operator T`**`() const`
-    * `U8string Persist::`**`key`**`() const`
+    * `Ustring Persist::`**`key`**`() const`
     * `T Persist::`**`get`**`() const`
     * `void Persist::`**`set`**`(const T& t)`
     * `void Persist::`**`erase`**`()`

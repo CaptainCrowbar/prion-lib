@@ -10,12 +10,12 @@ namespace RS {
     class Encoding {
     public:
         virtual ~Encoding() = default;
-        virtual void encode_bytes(const void* src, size_t len, U8string& dst, size_t width = npos) const = 0;
+        virtual void encode_bytes(const void* src, size_t len, Ustring& dst, size_t width = npos) const = 0;
         virtual size_t decode_bytes(const char* src, size_t len, std::string& dst) const = 0;
-        void encode(const std::string& src, U8string& dst, size_t width = npos) const { encode_bytes(src.data(), src.size(), dst, width); }
-        U8string encode(const std::string& src, size_t width = npos) const { U8string dst; encode_bytes(src.data(), src.size(), dst, width); return dst; }
-        size_t decode(const U8string& src, std::string& dst) const { return decode_bytes(src.data(), src.size(), dst); }
-        std::string decode(const U8string& src) const { std::string dst; decode_bytes(src.data(), src.size(), dst); return dst; }
+        void encode(const std::string& src, Ustring& dst, size_t width = npos) const { encode_bytes(src.data(), src.size(), dst, width); }
+        Ustring encode(const std::string& src, size_t width = npos) const { Ustring dst; encode_bytes(src.data(), src.size(), dst, width); return dst; }
+        size_t decode(const Ustring& src, std::string& dst) const { return decode_bytes(src.data(), src.size(), dst); }
+        std::string decode(const Ustring& src) const { std::string dst; decode_bytes(src.data(), src.size(), dst); return dst; }
     protected:
         Encoding() = default;
     };
@@ -25,7 +25,7 @@ namespace RS {
         class EscapeQuoteBase:
         public Encoding {
         protected:
-            static void do_encode(const void* src, size_t len, U8string& dst, size_t width, bool quote) {
+            static void do_encode(const void* src, size_t len, Ustring& dst, size_t width, bool quote) {
                 if (quote)
                     dst += '\"';
                 auto begin = static_cast<const char*>(src), end = begin + len, i = begin;
@@ -87,7 +87,7 @@ namespace RS {
                             case '\\':  dst += '\\'; i += 2; break;
                             case 'x':
                                 if (end - i >= 3 && ascii_isxdigit(i[2])) {
-                                    dst += char(hexnum(U8string(i + 2, 2)));
+                                    dst += char(hexnum(Ustring(i + 2, 2)));
                                     i += 3;
                                     if (ascii_isxdigit(*i))
                                         ++i;
@@ -115,21 +115,21 @@ namespace RS {
     class EscapeEncoding:
     public RS_Detail::EscapeQuoteBase {
     public:
-        virtual void encode_bytes(const void* src, size_t len, U8string& dst, size_t width = npos) const { do_encode(src, len, dst, width, false); }
+        virtual void encode_bytes(const void* src, size_t len, Ustring& dst, size_t width = npos) const { do_encode(src, len, dst, width, false); }
         virtual size_t decode_bytes(const char* src, size_t len, std::string& dst) const { return do_decode(src, len, dst, false); }
     };
 
     class QuoteEncoding:
     public RS_Detail::EscapeQuoteBase {
     public:
-        virtual void encode_bytes(const void* src, size_t len, U8string& dst, size_t width = npos) const { do_encode(src, len, dst, width, true); }
+        virtual void encode_bytes(const void* src, size_t len, Ustring& dst, size_t width = npos) const { do_encode(src, len, dst, width, true); }
         virtual size_t decode_bytes(const char* src, size_t len, std::string& dst) const { return do_decode(src, len, dst, true); }
     };
 
     class HexEncoding:
     public Encoding {
     public:
-        virtual void encode_bytes(const void* src, size_t len, U8string& dst, size_t width = npos) const {
+        virtual void encode_bytes(const void* src, size_t len, Ustring& dst, size_t width = npos) const {
             static constexpr const char* digits = "0123456789abcdef";
             auto bp = static_cast<const uint8_t*>(src);
             size_t col = 0;
@@ -171,7 +171,7 @@ namespace RS {
     class Base32Encoding:
     public Encoding {
     public:
-        virtual void encode_bytes(const void* src, size_t len, U8string& dst, size_t width = npos) const {
+        virtual void encode_bytes(const void* src, size_t len, Ustring& dst, size_t width = npos) const {
             auto bytes = static_cast<const uint8_t*>(src);
             size_t column = 0, i = 0, j = 0;
             uint64_t group = 0;
@@ -229,7 +229,7 @@ namespace RS {
     class Base64Encoding:
     public Encoding {
     public:
-        virtual void encode_bytes(const void* src, size_t len, U8string& dst, size_t width = npos) const {
+        virtual void encode_bytes(const void* src, size_t len, Ustring& dst, size_t width = npos) const {
             static constexpr const char* n2c_base64_table =
                 "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 "abcdefghijklmnopqrstuvwxyz"
@@ -314,7 +314,7 @@ namespace RS {
         protected:
             using n2c_function = char (*)(uint32_t);
             using c2n_function = uint32_t (*)(char);
-            static void do_encode(const void* src, size_t len, U8string& dst, size_t width, n2c_function n2c, bool y) {
+            static void do_encode(const void* src, size_t len, Ustring& dst, size_t width, n2c_function n2c, bool y) {
                 auto bp = static_cast<const uint8_t*>(src);
                 uint32_t group = 0;
                 size_t col = 2, dcol = 0, ngroup = 0;
@@ -401,7 +401,7 @@ namespace RS {
     class Ascii85Encoding:
     public RS_Detail::Base85EncodingBase {
     public:
-        virtual void encode_bytes(const void* src, size_t len, U8string& dst, size_t width = npos) const { do_encode(src, len, dst, width, n2c_ascii85, true); }
+        virtual void encode_bytes(const void* src, size_t len, Ustring& dst, size_t width = npos) const { do_encode(src, len, dst, width, n2c_ascii85, true); }
         virtual size_t decode_bytes(const char* src, size_t len, std::string& dst) const { return do_decode(src, len, dst, c2n_ascii85); }
     private:
         static constexpr char n2c_ascii85(uint32_t n) noexcept { return char(n + 33); }
@@ -411,7 +411,7 @@ namespace RS {
     class Z85Encoding:
     public RS_Detail::Base85EncodingBase {
     public:
-        virtual void encode_bytes(const void* src, size_t len, U8string& dst, size_t width = npos) const { do_encode(src, len, dst, width, n2c_z85, false); }
+        virtual void encode_bytes(const void* src, size_t len, Ustring& dst, size_t width = npos) const { do_encode(src, len, dst, width, n2c_z85, false); }
         virtual size_t decode_bytes(const char* src, size_t len, std::string& dst) const { return do_decode(src, len, dst, c2n_z85); }
     private:
         static char n2c_z85(uint32_t n) noexcept {

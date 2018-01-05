@@ -77,9 +77,9 @@ call `std::hash<T>`.
 
 Makes the object empty.
 
-* `U8string Optional::`**`str`**`() const`
+* `Ustring Optional::`**`str`**`() const`
 * `template <typename T> std::ostream&` **`operator<<`**`(std::ostream& out, const Optional& opt)`
-* `template <typename T> U8string` **`to_str`**`(const Optional& opt)`
+* `template <typename T> Ustring` **`to_str`**`(const Optional& opt)`
 
 Convert the object to a string (all of these produce the same string). These
 will return `"null"` if the object is empty, otherwise they will call

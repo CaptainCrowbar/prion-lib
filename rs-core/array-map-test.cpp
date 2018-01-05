@@ -6,9 +6,9 @@ using namespace RS;
 
 void test_core_array_map_class() {
 
-    ArrayMap<int, U8string> map;
-    ArrayMap<int, U8string>::iterator i;
-    U8string s;
+    ArrayMap<int, Ustring> map;
+    ArrayMap<int, Ustring>::iterator i;
+    Ustring s;
 
     TEST(map.empty());
     TEST_EQUAL(map.size(), 0);
@@ -75,9 +75,9 @@ void test_core_array_map_class() {
 
 void test_core_array_map_set() {
 
-    ArraySet<U8string> set;
-    ArraySet<U8string>::iterator i;
-    U8string s;
+    ArraySet<Ustring> set;
+    ArraySet<Ustring>::iterator i;
+    Ustring s;
 
     TEST(set.empty());
     TEST_EQUAL(set.size(), 0);

@@ -41,7 +41,7 @@ namespace RS {
     // Serialization for core library types
 
     inline void to_json(json& j, const Blob& x) {
-        U8string s;
+        Ustring s;
         Base64Encoding().encode_bytes(x.data(), x.size(), s);
         j = s;
     }
@@ -57,10 +57,10 @@ namespace RS {
     template <typename T, ByteOrder B> void from_json(const json& j, Endian<T, B>& x) { x = j.get<T>(); }
 
     inline void to_json(json& j, const File& x) { j = x.name(); }
-    inline void from_json(const json& j, File& x) { x = File(j.get<U8string>()); }
+    inline void from_json(const json& j, File& x) { x = File(j.get<Ustring>()); }
 
     inline void to_json(json& j, const Int& x) { j = x.str(); }
-    inline void from_json(const json& j, Int& x) { x = Int(j.get<U8string>()); }
+    inline void from_json(const json& j, Int& x) { x = Int(j.get<Ustring>()); }
 
     template <typename T, size_t N, MatrixLayout L>
     void to_json(json& j, const Matrix<T, N, L>& x) {
@@ -77,7 +77,7 @@ namespace RS {
     }
 
     inline void to_json(json& j, const Nat& x) { j = x.str(); }
-    inline void from_json(const json& j, Nat& x) { x = Nat(j.get<U8string>()); }
+    inline void from_json(const json& j, Nat& x) { x = Nat(j.get<Ustring>()); }
 
     template <typename T> void to_json(json& j, const Optional<T>& x) { j = x ? json(*x) : json(); }
     template <typename T> void from_json(const json& j, Optional<T>& x) { x = j.is_null() ? Optional<T>() : j.get<T>(); }
@@ -107,7 +107,7 @@ namespace RS {
     }
 
     inline void to_json(json& j, const Uuid& x) { j = x.str(); }
-    inline void from_json(const json& j, Uuid& x) { x = Uuid(j.get<U8string>()); }
+    inline void from_json(const json& j, Uuid& x) { x = Uuid(j.get<Ustring>()); }
 
     template <typename T, size_t N>
     void to_json(json& j, const Vector<T, N>& x) {
@@ -122,41 +122,41 @@ namespace RS {
     }
 
     inline void to_json(json& j, const Version& x) { j = x.str(); }
-    inline void from_json(const json& j, Version& x) { x = Version(j.get<U8string>()); }
+    inline void from_json(const json& j, Version& x) { x = Version(j.get<Ustring>()); }
 
     // Persistent storage
 
     class PersistState {
     public:
         RS_NO_COPY_MOVE(PersistState);
-        explicit PersistState(const U8string& id);
+        explicit PersistState(const Ustring& id);
         template <typename... Args> explicit PersistState(Args... id): PersistState(join(Strings{id...}, "/")) {}
         ~PersistState() noexcept;
         File file() const { return archive_name(); }
-        U8string id() const { return state_id; }
+        Ustring id() const { return state_id; }
         void load();
         void save() { save_state(true); }
         template <typename R, typename P> void autosave(std::chrono::duration<R, P> t);
         void autosave_off();
-        void create(const U8string& key, const json& value);
-        bool read(const U8string& key, json& value);
-        void update(const U8string& key, const json& value);
-        void erase(const U8string& key);
+        void create(const Ustring& key, const json& value);
+        bool read(const Ustring& key, json& value);
+        void update(const Ustring& key, const json& value);
+        void erase(const Ustring& key);
     private:
         std::unique_ptr<TimerChannel> autosave_channel;
         std::future<void> autosave_thread;
         std::unique_ptr<NamedMutex> global_mutex;
         std::mutex local_mutex;
-        U8string state_id;
+        Ustring state_id;
         json state_table;
         bool change_flag = false;
-        File archive_name(const U8string& tag = {}) const;
+        File archive_name(const Ustring& tag = {}) const;
         void autosave_loop();
         void clear_autosave();
         void save_state(bool always);
     };
 
-        inline PersistState::PersistState(const U8string& id) {
+        inline PersistState::PersistState(const Ustring& id) {
             Strings breakdown = splitv(id, "/");
             if (breakdown.empty())
                 throw std::invalid_argument("Invalid persistent storage key: " + quote(id));
@@ -188,7 +188,7 @@ namespace RS {
             if (! archive.exists() && old_archive.exists())
                 old_archive.move_to(archive);
             json j = json::object();
-            U8string content = archive.load();
+            Ustring content = archive.load();
             if (! content.empty())
                 j = json::parse(content);
             if (j.is_object())
@@ -214,14 +214,14 @@ namespace RS {
             clear_autosave();
         }
 
-        inline void PersistState::create(const U8string& key, const json& value) {
+        inline void PersistState::create(const Ustring& key, const json& value) {
             auto local_lock = make_lock(local_mutex);
             if (state_table.find(key) == state_table.end())
                 state_table[key] = value;
             change_flag = true;
         }
 
-        inline bool PersistState::read(const U8string& key, json& value) {
+        inline bool PersistState::read(const Ustring& key, json& value) {
             auto local_lock = make_lock(local_mutex);
             auto it = state_table.find(key);
             if (it == state_table.end())
@@ -230,19 +230,19 @@ namespace RS {
             return true;
         }
 
-        inline void PersistState::update(const U8string& key, const json& value) {
+        inline void PersistState::update(const Ustring& key, const json& value) {
             auto local_lock = make_lock(local_mutex);
             state_table[key] = value;
             change_flag = true;
         }
 
-        inline void PersistState::erase(const U8string& key) {
+        inline void PersistState::erase(const Ustring& key) {
             auto local_lock = make_lock(local_mutex);
             state_table.erase(key);
             change_flag = true;
         }
 
-        inline File PersistState::archive_name(const U8string& tag) const {
+        inline File PersistState::archive_name(const Ustring& tag) const {
             auto path = state_id;
             if (! tag.empty())
                 path += '.' + tag;
@@ -276,7 +276,7 @@ namespace RS {
                 return;
             auto global_lock = make_lock(*global_mutex);
             File archive = archive_name();
-            U8string content = state_table.dump(4) + '\n';
+            Ustring content = state_table.dump(4) + '\n';
             if (archive.exists()) {
                 File new_archive = archive_name("new");
                 File old_archive = archive_name("old");
@@ -304,21 +304,21 @@ namespace RS {
     public:
         RS_MOVE_ONLY(Persist);
         Persist() = default;
-        Persist(PersistState& store, const U8string& key, const T& init = {});
+        Persist(PersistState& store, const Ustring& key, const T& init = {});
         ~Persist() = default;
         Persist& operator=(const T& t) { set(t); return *this; }
         operator T() const { return get(); }
-        U8string key() const { return db_key; }
+        Ustring key() const { return db_key; }
         T get() const;
         void set(const T& t);
         void erase() { db_ptr->erase(db_key); }
     private:
         PersistState* db_ptr = nullptr;
-        U8string db_key;
+        Ustring db_key;
     };
 
         template <typename T>
-        Persist<T>::Persist(PersistState& store, const U8string& key, const T& init):
+        Persist<T>::Persist(PersistState& store, const Ustring& key, const T& init):
         db_ptr(&store), db_key(key) {
             if (key.empty() || ! uvalid(key))
                 throw std::invalid_argument("Invalid persistent storage key: " + quote(key));

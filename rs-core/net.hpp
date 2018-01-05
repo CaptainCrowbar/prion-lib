@@ -138,7 +138,7 @@ namespace RS {
             net_call(::setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &mode, sizeof(mode))).fail_if(-1, "setsockopt()");
         }
 
-        inline uint16_t parse_port(const U8string& s) {
+        inline uint16_t parse_port(const Ustring& s) {
             if (s.empty() || ! ascii_isdigit(s[0]))
                 throw std::invalid_argument("Invalid port number: " + quote(s));
             auto n = decnum(s);
@@ -159,14 +159,14 @@ namespace RS {
         IPv4() noexcept { udata = 0; }
         explicit IPv4(uint32_t addr) noexcept: udata(addr) {}
         IPv4(uint8_t a, uint8_t b, uint8_t c, uint8_t d) noexcept: bytes{a,b,c,d} {}
-        explicit IPv4(const U8string& s);
+        explicit IPv4(const Ustring& s);
         uint8_t operator[](unsigned i) const noexcept { return i < size ? bytes[i] : 0; }
         uint8_t* data() noexcept { return bytes; }
         const uint8_t* data() const noexcept { return bytes; }
         size_t hash() const noexcept { return std::hash<uint32_t>()(value()); }
         uint32_t net() const noexcept { return udata.rep(); }
         uint32_t& net() noexcept { return udata.rep(); }
-        U8string str() const;
+        Ustring str() const;
         uint32_t value() const noexcept { return udata; }
         static IPv4 any() noexcept { return {}; }
         static IPv4 broadcast() noexcept { return IPv4(0xffffffff); }
@@ -181,7 +181,7 @@ namespace RS {
 
         static_assert(sizeof(IPv4) == IPv4::size, "Unexpected size for IPv4 class");
 
-        inline IPv4::IPv4(const U8string& s) {
+        inline IPv4::IPv4(const Ustring& s) {
             using namespace RS_Detail;
             static const NetBase init;
             (void)init;
@@ -191,12 +191,12 @@ namespace RS {
                 throw std::invalid_argument("Invalid IPv4 address: " + quote(s));
         }
 
-        inline U8string IPv4::str() const {
+        inline Ustring IPv4::str() const {
             using namespace RS_Detail;
             static const NetBase init;
             (void)init;
             auto vbytes = const_cast<uint8_t*>(bytes); // Windows brain damage
-            U8string s(16, '\0');
+            Ustring s(16, '\0');
             for (;;) {
                 clear_error();
                 auto rc = net_call(inet_ntop(AF_INET, vbytes, &s[0], socklen_t(s.size())));
@@ -232,12 +232,12 @@ namespace RS {
         IPv6(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint8_t e, uint8_t f, uint8_t g, uint8_t h,
             uint8_t i, uint8_t j, uint8_t k, uint8_t l, uint8_t m, uint8_t n, uint8_t o, uint8_t p) noexcept:
             bytes{a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p} {}
-        explicit IPv6(const U8string& s);
+        explicit IPv6(const Ustring& s);
         uint8_t operator[](unsigned i) const noexcept { return i < size ? reinterpret_cast<const uint8_t*>(this)[i] : 0; }
         uint8_t* data() noexcept { return bytes; }
         const uint8_t* data() const noexcept { return bytes; }
         size_t hash() const noexcept { return djb2a(bytes, size); }
-        U8string str() const;
+        Ustring str() const;
         static IPv6 any() noexcept { return {}; }
         static IPv6 localhost() noexcept { return IPv6(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1); }
         static IPv6 from_sin(const void* ptr) noexcept;
@@ -250,7 +250,7 @@ namespace RS {
 
         static_assert(sizeof(IPv6) == IPv6::size, "Unexpected size for IPv6 class");
 
-        inline IPv6::IPv6(const U8string& s) {
+        inline IPv6::IPv6(const Ustring& s) {
             using namespace RS_Detail;
             static const NetBase init;
             (void)init;
@@ -260,12 +260,12 @@ namespace RS {
                 throw std::invalid_argument("Invalid IPv6 address: " + quote(s));
         }
 
-        inline U8string IPv6::str() const {
+        inline Ustring IPv6::str() const {
             using namespace RS_Detail;
             static const NetBase init;
             (void)init;
             auto vbytes = const_cast<uint8_t*>(bytes); // Windows brain damage
-            U8string s(40, '\0');
+            Ustring s(40, '\0');
             for (;;) {
                 clear_error();
                 auto rc = net_call(inet_ntop(AF_INET6, vbytes, &s[0], socklen_t(s.size())));
@@ -309,7 +309,7 @@ namespace RS {
         SocketAddress(IPv4 ip, uint16_t port = 0) noexcept;
         SocketAddress(IPv6 ip, uint16_t port = 0, uint32_t flow = 0, uint32_t scope = 0) noexcept;
         SocketAddress(const void* ptr, size_t n) noexcept;
-        explicit SocketAddress(const U8string& s);
+        explicit SocketAddress(const Ustring& s);
         explicit operator bool() const noexcept;
         uint8_t* data() noexcept { return reinterpret_cast<uint8_t*>(&sa_union); }
         const uint8_t* data() const noexcept { return reinterpret_cast<const uint8_t*>(&sa_union); }
@@ -325,7 +325,7 @@ namespace RS {
         void set_family(uint16_t f);
         void set_size(size_t n);
         size_t size() const noexcept { return current_size; }
-        U8string str() const;
+        Ustring str() const;
     };
 
         inline SocketAddress::SocketAddress(IPv4 ip, uint16_t port) noexcept:
@@ -353,7 +353,7 @@ namespace RS {
             memcpy(&sa_union, ptr, current_size);
         }
 
-        inline SocketAddress::SocketAddress(const U8string& s):
+        inline SocketAddress::SocketAddress(const Ustring& s):
         SocketAddress() {
             using namespace RS_Detail;
             if (ascii_isdigit(s[0])) {
@@ -426,7 +426,7 @@ namespace RS {
         inline bool operator>=(const SocketAddress& lhs, const SocketAddress& rhs) noexcept { return ! (lhs < rhs); }
         inline std::ostream& operator<<(std::ostream& out, const SocketAddress& s) { return out << s.str(); }
 
-        inline U8string SocketAddress::str() const {
+        inline Ustring SocketAddress::str() const {
             if (*this == SocketAddress())
                 return "null";
             else if (family() == AF_INET)
@@ -468,9 +468,9 @@ namespace RS {
 
     class Dns {
     public:
-        static SocketAddress host_to_ip(const U8string& name, int family = 0);
-        static std::vector<SocketAddress> host_to_ips(const U8string& name, int family = 0);
-        static U8string ip_to_host(const SocketAddress& addr);
+        static SocketAddress host_to_ip(const Ustring& name, int family = 0);
+        static std::vector<SocketAddress> host_to_ips(const Ustring& name, int family = 0);
+        static Ustring ip_to_host(const SocketAddress& addr);
     private:
         #ifdef _XOPEN_SOURCE
             static constexpr int eai_again = EAI_AGAIN;
@@ -492,13 +492,13 @@ namespace RS {
         public std::error_category {
         public:
             addrinfo_error_category() {}
-            virtual U8string message(int ev) const { return uconv<U8string>(cstr(gai_strerror(ev))); }
+            virtual Ustring message(int ev) const { return uconv<Ustring>(cstr(gai_strerror(ev))); }
             virtual const char* name() const noexcept { return "Addrinfo"; }
         };
         static const std::error_category& addrinfo_category() noexcept;
     };
 
-        inline SocketAddress Dns::host_to_ip(const U8string& name, int family) {
+        inline SocketAddress Dns::host_to_ip(const Ustring& name, int family) {
             using namespace RS_Detail;
             static NetBase init;
             (void)init;
@@ -519,7 +519,7 @@ namespace RS {
             }
         }
 
-        inline std::vector<SocketAddress> Dns::host_to_ips(const U8string& name, int family) {
+        inline std::vector<SocketAddress> Dns::host_to_ips(const Ustring& name, int family) {
             using namespace RS_Detail;
             static NetBase init;
             (void)init;
@@ -548,11 +548,11 @@ namespace RS {
             return addrs;
         }
 
-        inline U8string Dns::ip_to_host(const SocketAddress& addr) {
+        inline Ustring Dns::ip_to_host(const SocketAddress& addr) {
             using namespace RS_Detail;
             static NetBase init;
             (void)init;
-            U8string name(100, '\0');
+            Ustring name(100, '\0');
             for (;;) {
                 clear_error();
                 int rc = getnameinfo(addr.native(), socklen_t(addr.size()), &name[0], name_size(name.size()), nullptr, 0, 0);

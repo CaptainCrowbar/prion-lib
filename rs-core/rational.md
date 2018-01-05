@@ -37,7 +37,7 @@ Member types.
 * `Rational::`**`Rational`**`()`
 * `template <typename T2> Rational::`**`Rational`**`(T2 t)`
 * `template <typename T2, typename T3> Rational::`**`Rational`**`(T2 n, T3 d)`
-* `explicit Rational::`**`Rational`**`(const U8string& s)`
+* `explicit Rational::`**`Rational`**`(const Ustring& s)`
 * `explicit Rational::`**`Rational`**`(const char* s)`
 * `Rational::`**`~Rational() noexcept`**
 * `Rational::`**`Rational`**`(const Rational& r)`
@@ -125,9 +125,9 @@ Return the whole and fractional parts of a rational number. The whole part is
 truncated toward zero; the fractional part will have the same sign as the
 original number if it is not an exact integer.
 
-* `U8string Rational::`**`str`**`() const`
-* `U8string Rational::`**`mixed`**`() const`
-* `U8string Rational::`**`simple`**`() const`
+* `Ustring Rational::`**`str`**`() const`
+* `Ustring Rational::`**`mixed`**`() const`
+* `Ustring Rational::`**`simple`**`() const`
 * `std::ostream&` **`operator<<`**`(std::ostream& o, const Rational& r)`
 
 Convert a rational number to a string. The `mixed()` format expresses the

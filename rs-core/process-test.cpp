@@ -18,8 +18,8 @@ namespace {
 
 void test_core_process_shell_commands() {
 
-    U8string s;
-    std::set<U8string> ss;
+    Ustring s;
+    std::set<Ustring> ss;
 
     #ifdef _XOPEN_SOURCE
         TRY(s = shell("ls"));
@@ -38,7 +38,7 @@ void test_core_process_shell_commands() {
 void test_core_process_stream() {
 
     std::unique_ptr<StreamProcess> chan;
-    U8string s;
+    Ustring s;
     Strings v;
     auto cs = Channel::state::closed;
     int st = -1;
@@ -78,7 +78,7 @@ void test_core_process_stream() {
 void test_core_process_text() {
 
     std::unique_ptr<TextProcess> chan;
-    U8string s;
+    Ustring s;
     Strings v;
     auto cs = Channel::state::closed;
     int st = -1;

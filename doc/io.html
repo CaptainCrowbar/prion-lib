@@ -128,7 +128,7 @@ all streams (it is not usually possible to seek on standard input or output).</p
 <li><code>void IO::</code><strong><code>write_line</code></strong><code>()</code></li>
 <li><code>void IO::</code><strong><code>write_line</code></strong><code>(const std::string&amp; str)</code></li>
 <li><code>size_t IO::</code><strong><code>write_str</code></strong><code>(const std::string&amp; str)</code></li>
-<li><code>template &lt;typename... Args&gt; void IO::</code><strong><code>format</code></strong><code>(const U8string&amp; pattern, const Args&amp;... args)</code></li>
+<li><code>template &lt;typename... Args&gt; void IO::</code><strong><code>format</code></strong><code>(const Ustring&amp; pattern, const Args&amp;... args)</code></li>
 <li><code>template &lt;typename... Args&gt; void IO::</code><strong><code>print</code></strong><code>(const Args&amp;... args)</code></li>
 </ul>
 <p>Output functions. The <code>write()</code> function attempts to write the given block of
@@ -147,7 +147,7 @@ between each pair of arguments, followed by a line feed.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>void IO::</code><strong><code>check</code></strong><code>(const U8string&amp; detail = "") const</code></li>
+<li><code>void IO::</code><strong><code>check</code></strong><code>(const Ustring&amp; detail = "") const</code></li>
 <li><code>void IO::</code><strong><code>clear_error</code></strong><code>() noexcept</code></li>
 <li><code>std::error_code IO::</code><strong><code>error</code></strong><code>() const noexcept</code></li>
 </ul>
@@ -189,7 +189,7 @@ API in <code>&lt;cstdio&gt;</code> or <code>&lt;stdio.h&gt;</code></p>
 <ul>
 <li><code>explicit Cstdio::</code><strong><code>Cstdio</code></strong><code>(FILE* f, bool owner = true) noexcept</code></li>
 <li><code>explicit Cstdio::</code><strong><code>Cstdio</code></strong><code>(const File&amp; f, mode m = mode::read_only)</code></li>
-<li><code>Cstdio::</code><strong><code>Cstdio</code></strong><code>(const File&amp; f, const U8string&amp; iomode)</code></li>
+<li><code>Cstdio::</code><strong><code>Cstdio</code></strong><code>(const File&amp; f, const Ustring&amp; iomode)</code></li>
 </ul>
 <p>The first constructor wraps a <code>Cstdio</code> object around an existing file pointer;
 if <code>owner</code> is true, the destructor will close the file. The second constructor

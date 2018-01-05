@@ -36,7 +36,7 @@ could be.</p>
 <li><code>class</code> <strong><code>Nat</code></strong><ul>
 <li><code>Nat::</code><strong><code>Nat</code></strong><code>()</code></li>
 <li><code>Nat::</code><strong><code>Nat</code></strong><code>(uint64_t x)</code></li>
-<li><code>explicit Nat::</code><strong><code>Nat</code></strong><code>(const U8string&amp; s, int base = 0)</code></li>
+<li><code>explicit Nat::</code><strong><code>Nat</code></strong><code>(const Ustring&amp; s, int base = 0)</code></li>
 <li><code>Nat::</code><strong><code>~Nat</code></strong><code>() noexcept</code></li>
 <li><code>Nat::</code><strong><code>Nat</code></strong><code>(const Nat&amp; n)</code></li>
 <li><code>Nat::</code><strong><code>Nat</code></strong><code>(Nat&amp;&amp; n) noexcept</code></li>
@@ -73,7 +73,7 @@ could be.</p>
 <li><code>bool Nat::</code><strong><code>is_odd</code></strong><code>() const noexcept</code></li>
 <li><code>Nat Nat::</code><strong><code>pow</code></strong><code>(const Nat&amp; n) const</code></li>
 <li><code>int Nat::</code><strong><code>sign</code></strong><code>() const noexcept</code></li>
-<li><code>U8string Nat::</code><strong><code>str</code></strong><code>(int base = 10, size_t digits = 1) const</code></li>
+<li><code>Ustring Nat::</code><strong><code>str</code></strong><code>(int base = 10, size_t digits = 1) const</code></li>
 <li><code>void Nat::</code><strong><code>write_be</code></strong><code>(void* ptr, size_t n) const noexcept</code></li>
 <li><code>void Nat::</code><strong><code>write_le</code></strong><code>(void* ptr, size_t n) const noexcept</code></li>
 <li><code>static Nat Nat::</code><strong><code>from_double</code></strong><code>(double x)</code></li>
@@ -104,9 +104,9 @@ could be.</p>
 <li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const Nat&amp; x)</code></li>
 <li><code>Nat</code> <strong><code>abs</code></strong><code>(const Nat&amp; x)</code></li>
 <li><code>int</code> <strong><code>sign_of</code></strong><code>(const Nat&amp; x) noexcept</code></li>
-<li><code>U8string</code> <strong><code>bin</code></strong><code>(const Nat&amp; x, size_t digits = 1)</code></li>
-<li><code>U8string</code> <strong><code>dec</code></strong><code>(const Nat&amp; x, size_t digits = 1)</code></li>
-<li><code>U8string</code> <strong><code>hex</code></strong><code>(const Nat&amp; x, size_t digits = 1)</code></li>
+<li><code>Ustring</code> <strong><code>bin</code></strong><code>(const Nat&amp; x, size_t digits = 1)</code></li>
+<li><code>Ustring</code> <strong><code>dec</code></strong><code>(const Nat&amp; x, size_t digits = 1)</code></li>
+<li><code>Ustring</code> <strong><code>hex</code></strong><code>(const Nat&amp; x, size_t digits = 1)</code></li>
 </ul>
 <p>An arbitrary precision unsigned integer (natural number). Most of its methods
 are conventional arithmetic operations with their natural behaviour.</p>
@@ -144,7 +144,7 @@ is undefined if <code>n&lt;1</code>.</p>
 <li><code>Int::</code><strong><code>Int</code></strong><code>()</code></li>
 <li><code>Int::</code><strong><code>Int</code></strong><code>(int64_t x)</code></li>
 <li><code>Int::</code><strong><code>Int</code></strong><code>(const Nat&amp; x)</code></li>
-<li><code>explicit Int::</code><strong><code>Int</code></strong><code>(const U8string&amp; s, int base = 0)</code></li>
+<li><code>explicit Int::</code><strong><code>Int</code></strong><code>(const Ustring&amp; s, int base = 0)</code></li>
 <li><code>Int::</code><strong><code>~Int</code></strong><code>() noexcept</code></li>
 <li><code>Int::</code><strong><code>Int</code></strong><code>(const Int&amp; n)</code></li>
 <li><code>Int::</code><strong><code>Int</code></strong><code>(Int&amp;&amp; n) noexcept</code></li>
@@ -171,7 +171,7 @@ is undefined if <code>n&lt;1</code>.</p>
 <li><code>bool Int::</code><strong><code>is_odd</code></strong><code>() const noexcept</code></li>
 <li><code>Int Int::</code><strong><code>pow</code></strong><code>(const Int&amp; n) const</code></li>
 <li><code>int Int::</code><strong><code>sign</code></strong><code>() const noexcept</code></li>
-<li><code>U8string Int::</code><strong><code>str</code></strong><code>(int base = 10, size_t digits = 1, bool sign = false) const</code></li>
+<li><code>Ustring Int::</code><strong><code>str</code></strong><code>(int base = 10, size_t digits = 1, bool sign = false) const</code></li>
 <li><code>static Int Int::</code><strong><code>from_double</code></strong><code>(double x)</code></li>
 <li><code>template &lt;typename RNG&gt; static Int Int::</code><strong><code>random</code></strong><code>(RNG&amp; rng, const Int&amp; n)</code></li>
 </ul>
@@ -193,9 +193,9 @@ is undefined if <code>n&lt;1</code>.</p>
 <li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const Int&amp; x)</code></li>
 <li><code>Int</code> <strong><code>abs</code></strong><code>(const Int&amp; x)</code></li>
 <li><code>int</code> <strong><code>sign_of</code></strong><code>(const Int&amp; x) noexcept</code></li>
-<li><code>U8string</code> <strong><code>bin</code></strong><code>(const Int&amp; x, size_t digits = 1)</code></li>
-<li><code>U8string</code> <strong><code>dec</code></strong><code>(const Int&amp; x, size_t digits = 1)</code></li>
-<li><code>U8string</code> <strong><code>hex</code></strong><code>(const Int&amp; x, size_t digits = 1)</code></li>
+<li><code>Ustring</code> <strong><code>bin</code></strong><code>(const Int&amp; x, size_t digits = 1)</code></li>
+<li><code>Ustring</code> <strong><code>dec</code></strong><code>(const Int&amp; x, size_t digits = 1)</code></li>
+<li><code>Ustring</code> <strong><code>hex</code></strong><code>(const Int&amp; x, size_t digits = 1)</code></li>
 </ul>
 <p>An arbitrary precision signed integer. Most of its operations do the same
 thing as the corresponding functions on <code>Nat</code> or plain <code>int</code>.</p>

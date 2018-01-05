@@ -827,7 +827,7 @@ namespace RS {
     namespace RS_Detail {
 
         struct LoremGenerator {
-            void operator()(Xoroshiro& rng, U8string& dst, size_t bytes, bool paras) const {
+            void operator()(Xoroshiro& rng, Ustring& dst, size_t bytes, bool paras) const {
                 static constexpr const char* classic[] = {
                     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
                     "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ",
@@ -862,10 +862,10 @@ namespace RS {
 
     }
 
-    inline U8string lorem_ipsum(uint64_t seed, size_t bytes, bool paras = true) {
+    inline Ustring lorem_ipsum(uint64_t seed, size_t bytes, bool paras = true) {
         RS_Detail::LoremGenerator gen;
         Xoroshiro rng(seed, 0x05b6b84c03ae03d2ull);
-        U8string text;
+        Ustring text;
         gen(rng, text, bytes, paras);
         return text;
     }

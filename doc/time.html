@@ -104,8 +104,8 @@ arguments are invalid follows the same rules as <code>mktime()</code>. This will
 <h3 id="time-and-date-formatting">Time and date formatting</h3>
 <div class="defns">
 <ul>
-<li><code>U8string</code> <strong><code>format_date</code></strong><code>(system_clock::time_point tp, int prec = 0, uint32_t flags = utc_zone)</code></li>
-<li><code>U8string</code> <strong><code>format_date</code></strong><code>(system_clock::time_point tp, const U8string&amp; format, uint32_t flags = utc_zone)</code></li>
+<li><code>Ustring</code> <strong><code>format_date</code></strong><code>(system_clock::time_point tp, int prec = 0, uint32_t flags = utc_zone)</code></li>
+<li><code>Ustring</code> <strong><code>format_date</code></strong><code>(system_clock::time_point tp, const Ustring&amp; format, uint32_t flags = utc_zone)</code></li>
 </ul>
 <p>These convert a time point into a broken down date and format it. The first
 version writes the date in ISO 8601 format (<code>"yyyy-mm-dd hh:mm:ss"</code>). If
@@ -211,7 +211,7 @@ flags is passed.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename R, typename P&gt; U8string</code> <strong><code>format_time</code></strong><code>(const duration&lt;R, P&gt;&amp; time, int prec = 0)</code></li>
+<li><code>template &lt;typename R, typename P&gt; Ustring</code> <strong><code>format_time</code></strong><code>(const duration&lt;R, P&gt;&amp; time, int prec = 0)</code></li>
 </ul>
 <p>Formats a time duration in days, hours, minutes, seconds, and (if <code>prec&gt;0</code>)
 fractions of a second.</p>
@@ -219,7 +219,7 @@ fractions of a second.</p>
 <h3 id="time-and-date-parsing">Time and date parsing</h3>
 <div class="defns">
 <ul>
-<li><code>system_clock::time_point</code> <strong><code>parse_date</code></strong><code>(const U8string&amp; str, uint32_t flags = utc_zone | ymd_order)</code></li>
+<li><code>system_clock::time_point</code> <strong><code>parse_date</code></strong><code>(const Ustring&amp; str, uint32_t flags = utc_zone | ymd_order)</code></li>
 </ul>
 <p>Parse a date expressed in broken down format (e.g. <code>"2017-11-04 11:53:00"</code>).
 Year, month, and day are required, in the order specified by the <code>flags</code>
@@ -235,8 +235,8 @@ undefined if the date is outside the representable range of the system clock.</p
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename R, typename P&gt; void</code> <strong><code>parse_time</code></strong><code>(const U8string&amp; str, duration&lt;R, P&gt;&amp; t)</code></li>
-<li><code>template &lt;typename D&gt; D</code> <strong><code>parse_time</code></strong><code>(const U8string&amp; str)</code></li>
+<li><code>template &lt;typename R, typename P&gt; void</code> <strong><code>parse_time</code></strong><code>(const Ustring&amp; str, duration&lt;R, P&gt;&amp; t)</code></li>
+<li><code>template &lt;typename D&gt; D</code> <strong><code>parse_time</code></strong><code>(const Ustring&amp; str)</code></li>
 </ul>
 <p>Parse a time expressed in Julian years, days, hours, minutes, and seconds
 (e.g. <code>"12y 345d 12h 34m 56s"</code>). Spaces are ignored; a leading sign is
@@ -254,7 +254,7 @@ time cannot be represented by the duration type, or if the second version of
 <div class="defns">
 <ul>
 <li><code>class</code> <strong><code>Stopwatch</code></strong><ul>
-<li><code>explicit Stopwatch::</code><strong><code>Stopwatch</code></strong><code>(const U8string&amp; name, int precision = 3) noexcept</code></li>
+<li><code>explicit Stopwatch::</code><strong><code>Stopwatch</code></strong><code>(const Ustring&amp; name, int precision = 3) noexcept</code></li>
 <li><code>explicit Stopwatch::</code><strong><code>Stopwatch</code></strong><code>(const char* name, int precision = 3) noexcept</code></li>
 <li><code>Stopwatch::</code><strong><code>~Stopwatch</code></strong><code>() noexcept</code></li>
 </ul>

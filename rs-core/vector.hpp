@@ -805,8 +805,8 @@ namespace RS {
     }
 
     template <typename T, size_t N, MatrixLayout L>
-    U8string to_str(const Matrix<T, N, L>& m) {
-        U8string s;
+    Ustring to_str(const Matrix<T, N, L>& m) {
+        Ustring s;
         for (size_t r = 0; r < N; ++r) {
             s += r ? ',' : '[';
             for (size_t c = 0; c < N; ++c) {

@@ -346,9 +346,9 @@ namespace RS {
 
     namespace RS_Detail {
 
-        inline U8string quote_string(const std::string& str, bool check_utf8) {
+        inline Ustring quote_string(const std::string& str, bool check_utf8) {
             bool allow_8bit = check_utf8 && uvalid(str);
-            U8string result = "\"";
+            Ustring result = "\"";
             for (auto c: str) {
                 switch (c) {
                     case 0:     result += "\\0"; break;
@@ -450,10 +450,10 @@ namespace RS {
         return r;
     }
 
-    inline U8string dent(size_t depth) { return U8string(4 * depth, ' '); }
+    inline Ustring dent(size_t depth) { return Ustring(4 * depth, ' '); }
 
-    inline U8string indent(const U8string& str, size_t depth) {
-        U8string result;
+    inline Ustring indent(const Ustring& str, size_t depth) {
+        Ustring result;
         size_t i = 0, j = 0, size = str.size();
         while (i < size) {
             j = str.find('\n', i);
@@ -549,8 +549,8 @@ namespace RS {
             return {str.substr(0, p), str.substr(q, npos)};
     }
 
-    inline U8string quote(const std::string& str) { return RS_Detail::quote_string(str, true); }
-    inline U8string bquote(const std::string& str) { return RS_Detail::quote_string(str, false); }
+    inline Ustring quote(const std::string& str) { return RS_Detail::quote_string(str, true); }
+    inline Ustring bquote(const std::string& str) { return RS_Detail::quote_string(str, false); }
 
     inline std::string repeat(const std::string& s, size_t n, const std::string& delim = {}) {
         if (n == 0)
@@ -671,26 +671,26 @@ namespace RS {
 
     // String formatting functions
 
-    template <typename T> U8string bin(T x, size_t digits = 8 * sizeof(T)) { return RS_Detail::int_to_string(x, 2, digits); }
-    template <typename T> U8string dec(T x, size_t digits = 1) { return RS_Detail::int_to_string(x, 10, digits); }
-    template <typename T> U8string hex(T x, size_t digits = 2 * sizeof(T)) { return RS_Detail::int_to_string(x, 16, digits); }
+    template <typename T> Ustring bin(T x, size_t digits = 8 * sizeof(T)) { return RS_Detail::int_to_string(x, 2, digits); }
+    template <typename T> Ustring dec(T x, size_t digits = 1) { return RS_Detail::int_to_string(x, 10, digits); }
+    template <typename T> Ustring hex(T x, size_t digits = 2 * sizeof(T)) { return RS_Detail::int_to_string(x, 16, digits); }
 
     template <typename T>
-    U8string fp_format(T t, char mode = 'g', int prec = 6) {
+    Ustring fp_format(T t, char mode = 'g', int prec = 6) {
         using namespace std::literals;
-        static const U8string modes = "EFGZefgz";
+        static const Ustring modes = "EFGZefgz";
         if (modes.find(mode) == npos)
-            throw std::invalid_argument("Invalid floating point mode: " + quote(U8string{mode}));
+            throw std::invalid_argument("Invalid floating point mode: " + quote(Ustring{mode}));
         if (t == 0) {
             switch (mode) {
-                case 'E': case 'e':  return prec < 1 ? "0"s + mode + '0' : "0."s + U8string(prec, '0') + mode + "0";
-                case 'F': case 'f':  return prec < 1 ? "0"s : "0."s + U8string(prec, '0');
+                case 'E': case 'e':  return prec < 1 ? "0"s + mode + '0' : "0."s + Ustring(prec, '0') + mode + "0";
+                case 'F': case 'f':  return prec < 1 ? "0"s : "0."s + Ustring(prec, '0');
                 case 'G': case 'g':  return "0";
-                case 'Z': case 'z':  return prec < 2 ? "0"s : "0."s + U8string(prec - 1, '0');
+                case 'Z': case 'z':  return prec < 2 ? "0"s : "0."s + Ustring(prec - 1, '0');
                 default:             break;
             }
         }
-        U8string buf(20, '\0'), fmt;
+        Ustring buf(20, '\0'), fmt;
         switch (mode) {
             case 'Z':  fmt = "%#.*G"; break;
             case 'z':  fmt = "%#.*g"; break;
@@ -736,7 +736,7 @@ namespace RS {
         return buf;
     }
 
-    inline U8string roman(int n) {
+    inline Ustring roman(int n) {
         static constexpr std::pair<int, const char*> table[] = {
             { 900, "CM" }, { 500, "D" }, { 400, "CD" }, { 100, "C" },
             { 90, "XC" }, { 50, "L" }, { 40, "XL" }, { 10, "X" },
@@ -744,7 +744,7 @@ namespace RS {
         };
         if (n < 1)
             return {};
-        U8string s(size_t(n / 1000), 'M');
+        Ustring s(size_t(n / 1000), 'M');
         n %= 1000;
         for (auto& t: table) {
             for (int q = n / t.first; q > 0; --q)
@@ -754,10 +754,10 @@ namespace RS {
         return s;
     }
 
-    inline U8string hexdump(const void* ptr, size_t n, size_t block = 0) {
+    inline Ustring hexdump(const void* ptr, size_t n, size_t block = 0) {
         if (ptr == nullptr || n == 0)
             return {};
-        U8string result;
+        Ustring result;
         result.reserve(3 * n);
         size_t col = 0;
         auto bptr = static_cast<const uint8_t*>(ptr);
@@ -776,18 +776,18 @@ namespace RS {
         return result;
     }
 
-    inline U8string hexdump(const std::string& str, size_t block = 0) { return hexdump(str.data(), str.size(), block); }
-    inline U8string tf(bool b) { return b ? "true" : "false"; }
-    inline U8string yn(bool b) { return b ? "yes" : "no"; }
+    inline Ustring hexdump(const std::string& str, size_t block = 0) { return hexdump(str.data(), str.size(), block); }
+    inline Ustring tf(bool b) { return b ? "true" : "false"; }
+    inline Ustring yn(bool b) { return b ? "yes" : "no"; }
 
-    template <typename T> U8string to_str(const T& t);
+    template <typename T> Ustring to_str(const T& t);
 
     namespace RS_Detail {
 
         template <typename R, typename V = RangeValue<R>>
         struct RangeToString {
-            U8string operator()(const R& r) const {
-                U8string s = "[";
+            Ustring operator()(const R& r) const {
+                Ustring s = "[";
                 for (const V& v: r) {
                     s += to_str(v);
                     s += ',';
@@ -801,8 +801,8 @@ namespace RS {
 
         template <typename R, typename K, typename V>
         struct RangeToString<R, std::pair<K, V>> {
-            U8string operator()(const R& r) const {
-                U8string s = "{";
+            Ustring operator()(const R& r) const {
+                Ustring s = "{";
                 for (const auto& kv: r) {
                     s += to_str(kv.first);
                     s += ':';
@@ -818,10 +818,10 @@ namespace RS {
 
         template <typename R>
         struct RangeToString<R, char> {
-            U8string operator()(const R& r) const {
+            Ustring operator()(const R& r) const {
                 using std::begin;
                 using std::end;
-                return U8string(begin(r), end(r));
+                return Ustring(begin(r), end(r));
             }
         };
 
@@ -836,55 +836,55 @@ namespace RS {
 
         template <typename T, char C = ObjectToStringCategory<T>::value>
         struct ObjectToString {
-            U8string operator()(const T& t) const {
+            Ustring operator()(const T& t) const {
                 std::ostringstream out;
                 out << t;
                 return out.str();
             }
         };
 
-        template <> struct ObjectToString<U8string> { U8string operator()(const U8string& t) const { return t; } };
-        template <> struct ObjectToString<char*> { U8string operator()(char* t) const { return t ? U8string(t) : U8string(); } };
-        template <> struct ObjectToString<const char*> { U8string operator()(const char* t) const { return t ? U8string(t) : U8string(); } };
-        template <size_t N> struct ObjectToString<char[N], 'S'> { U8string operator()(const char* t) const { return U8string(t); } };
-        template <> struct ObjectToString<char> { U8string operator()(char t) const { return {t}; } };
+        template <> struct ObjectToString<Ustring> { Ustring operator()(const Ustring& t) const { return t; } };
+        template <> struct ObjectToString<char*> { Ustring operator()(char* t) const { return t ? Ustring(t) : Ustring(); } };
+        template <> struct ObjectToString<const char*> { Ustring operator()(const char* t) const { return t ? Ustring(t) : Ustring(); } };
+        template <size_t N> struct ObjectToString<char[N], 'S'> { Ustring operator()(const char* t) const { return Ustring(t); } };
+        template <> struct ObjectToString<char> { Ustring operator()(char t) const { return {t}; } };
 
-        template <> struct ObjectToString<std::u16string> { U8string operator()(const std::u16string& t) const { return uconv<U8string>(t); } };
-        template <> struct ObjectToString<char16_t*> { U8string operator()(char16_t* t) const { return t ? uconv<U8string>(std::u16string(t)) : U8string(); } };
-        template <> struct ObjectToString<const char16_t*> { U8string operator()(const char16_t* t) const { return t ? uconv<U8string>(std::u16string(t)) : U8string(); } };
-        template <size_t N> struct ObjectToString<char16_t[N], 'X'> { U8string operator()(const char16_t* t) const { return uconv<U8string>(std::u16string(t)); } };
-        template <> struct ObjectToString<char16_t> { U8string operator()(char16_t t) const { return uconv<U8string>(std::u16string{t}); } };
+        template <> struct ObjectToString<std::u16string> { Ustring operator()(const std::u16string& t) const { return uconv<Ustring>(t); } };
+        template <> struct ObjectToString<char16_t*> { Ustring operator()(char16_t* t) const { return t ? uconv<Ustring>(std::u16string(t)) : Ustring(); } };
+        template <> struct ObjectToString<const char16_t*> { Ustring operator()(const char16_t* t) const { return t ? uconv<Ustring>(std::u16string(t)) : Ustring(); } };
+        template <size_t N> struct ObjectToString<char16_t[N], 'X'> { Ustring operator()(const char16_t* t) const { return uconv<Ustring>(std::u16string(t)); } };
+        template <> struct ObjectToString<char16_t> { Ustring operator()(char16_t t) const { return uconv<Ustring>(std::u16string{t}); } };
 
-        template <> struct ObjectToString<std::u32string> { U8string operator()(const std::u32string& t) const { return uconv<U8string>(t); } };
-        template <> struct ObjectToString<char32_t*> { U8string operator()(char32_t* t) const { return t ? uconv<U8string>(std::u32string(t)) : U8string(); } };
-        template <> struct ObjectToString<const char32_t*> { U8string operator()(const char32_t* t) const { return t ? uconv<U8string>(std::u32string(t)) : U8string(); } };
-        template <size_t N> struct ObjectToString<char32_t[N], 'X'> { U8string operator()(const char32_t* t) const { return uconv<U8string>(std::u32string(t)); } };
-        template <> struct ObjectToString<char32_t> { U8string operator()(char32_t t) const { return uconv<U8string>(std::u32string{t}); } };
+        template <> struct ObjectToString<std::u32string> { Ustring operator()(const std::u32string& t) const { return uconv<Ustring>(t); } };
+        template <> struct ObjectToString<char32_t*> { Ustring operator()(char32_t* t) const { return t ? uconv<Ustring>(std::u32string(t)) : Ustring(); } };
+        template <> struct ObjectToString<const char32_t*> { Ustring operator()(const char32_t* t) const { return t ? uconv<Ustring>(std::u32string(t)) : Ustring(); } };
+        template <size_t N> struct ObjectToString<char32_t[N], 'X'> { Ustring operator()(const char32_t* t) const { return uconv<Ustring>(std::u32string(t)); } };
+        template <> struct ObjectToString<char32_t> { Ustring operator()(char32_t t) const { return uconv<Ustring>(std::u32string{t}); } };
 
-        template <> struct ObjectToString<std::wstring> { U8string operator()(const std::wstring& t) const { return uconv<U8string>(t); } };
-        template <> struct ObjectToString<wchar_t*> { U8string operator()(wchar_t* t) const { return t ? uconv<U8string>(std::wstring(t)) : U8string(); } };
-        template <> struct ObjectToString<const wchar_t*> { U8string operator()(const wchar_t* t) const { return t ? uconv<U8string>(std::wstring(t)) : U8string(); } };
-        template <size_t N> struct ObjectToString<wchar_t[N], 'X'> { U8string operator()(const wchar_t* t) const { return uconv<U8string>(std::wstring(t)); } };
-        template <> struct ObjectToString<wchar_t> { U8string operator()(wchar_t t) const { return uconv<U8string>(std::wstring{t}); } };
+        template <> struct ObjectToString<std::wstring> { Ustring operator()(const std::wstring& t) const { return uconv<Ustring>(t); } };
+        template <> struct ObjectToString<wchar_t*> { Ustring operator()(wchar_t* t) const { return t ? uconv<Ustring>(std::wstring(t)) : Ustring(); } };
+        template <> struct ObjectToString<const wchar_t*> { Ustring operator()(const wchar_t* t) const { return t ? uconv<Ustring>(std::wstring(t)) : Ustring(); } };
+        template <size_t N> struct ObjectToString<wchar_t[N], 'X'> { Ustring operator()(const wchar_t* t) const { return uconv<Ustring>(std::wstring(t)); } };
+        template <> struct ObjectToString<wchar_t> { Ustring operator()(wchar_t t) const { return uconv<Ustring>(std::wstring{t}); } };
 
-        template <> struct ObjectToString<bool> { U8string operator()(bool t) const { return t ? "true" : "false"; } };
-        template <> struct ObjectToString<std::nullptr_t> { U8string operator()(std::nullptr_t) const { return "null"; } };
-        template <typename T> struct ObjectToString<T, 'I'> { U8string operator()(T t) const { return dec(t); } };
-        template <typename T> struct ObjectToString<T, 'F'> { U8string operator()(T t) const { return fp_format(t); } };
-        template <typename T> struct ObjectToString<T, 'S'> { U8string operator()(T t) const { return static_cast<std::string>(*&t); } };
+        template <> struct ObjectToString<bool> { Ustring operator()(bool t) const { return t ? "true" : "false"; } };
+        template <> struct ObjectToString<std::nullptr_t> { Ustring operator()(std::nullptr_t) const { return "null"; } };
+        template <typename T> struct ObjectToString<T, 'I'> { Ustring operator()(T t) const { return dec(t); } };
+        template <typename T> struct ObjectToString<T, 'F'> { Ustring operator()(T t) const { return fp_format(t); } };
+        template <typename T> struct ObjectToString<T, 'S'> { Ustring operator()(T t) const { return static_cast<std::string>(*&t); } };
         template <typename T> struct ObjectToString<T, 'R'>: RangeToString<T> {};
-        template <typename T> struct ObjectToString<std::atomic<T>, 'X'> { U8string operator()(const std::atomic<T>& t) const { return ObjectToString<T>()(t); } };
+        template <typename T> struct ObjectToString<std::atomic<T>, 'X'> { Ustring operator()(const std::atomic<T>& t) const { return ObjectToString<T>()(t); } };
         template <typename T1, typename T2> struct ObjectToString<std::pair<T1, T2>, 'X'>
-            { U8string operator()(const std::pair<T1, T2>& t) const { return '{' + ObjectToString<T1>()(t.first) + ',' + ObjectToString<T2>()(t.second) + '}'; } };
+            { Ustring operator()(const std::pair<T1, T2>& t) const { return '{' + ObjectToString<T1>()(t.first) + ',' + ObjectToString<T2>()(t.second) + '}'; } };
 
     }
 
-    template <typename T> inline U8string to_str(const T& t) { return RS_Detail::ObjectToString<T>()(t); }
+    template <typename T> inline Ustring to_str(const T& t) { return RS_Detail::ObjectToString<T>()(t); }
 
     template <typename... Args>
-    U8string fmt(const U8string& pattern, const Args&... args) {
+    Ustring fmt(const Ustring& pattern, const Args&... args) {
         Strings argstr{to_str(args)...};
-        U8string result;
+        Ustring result;
         size_t i = 0, psize = pattern.size();
         while (i < psize) {
             size_t j = pattern.find('$', i);
@@ -922,7 +922,7 @@ namespace RS {
     inline unsigned long long hexnum(const std::string& str) noexcept { return strtoull(str.data(), nullptr, 16); }
     inline double fpnum(const std::string& str) noexcept { return strtod(str.data(), nullptr); }
 
-    inline int64_t si_to_int(const U8string& s) {
+    inline int64_t si_to_int(const Ustring& s) {
         using limits = std::numeric_limits<int64_t>;
         static constexpr const char* prefixes = "KMGTPEZY";
         char* endp = nullptr;
@@ -947,7 +947,7 @@ namespace RS {
         return n;
     }
 
-    inline double si_to_float(const U8string& s) {
+    inline double si_to_float(const Ustring& s) {
         using limits = std::numeric_limits<double>;
         static constexpr const char* prefixes = "yzafpnum kMGTPEZY";
         char* endp = nullptr;
@@ -1077,7 +1077,7 @@ namespace RS {
 
     namespace RS_Detail {
 
-        inline auto find_leading_spaces(const U8string& s, size_t limit = npos) noexcept {
+        inline auto find_leading_spaces(const Ustring& s, size_t limit = npos) noexcept {
             size_t n = 0;
             auto i = s.begin(), e = s.end();
             while (i != e && n < limit) {
@@ -1106,7 +1106,7 @@ namespace RS {
                 q = static_cast<const char*>(memchr(p, ',', end - p));
                 if (! q)
                     q = end;
-                v.push_back(trim(U8string(p, q)));
+                v.push_back(trim(Ustring(p, q)));
                 if (q == end)
                     break;
                 p = q + 1;
@@ -1118,9 +1118,9 @@ namespace RS {
             return v;
         }
 
-        inline U8string operator""_doc(const char* p, size_t n) {
+        inline Ustring operator""_doc(const char* p, size_t n) {
             using namespace RS_Detail;
-            auto lines = splitv_lines(U8string(p, n));
+            auto lines = splitv_lines(Ustring(p, n));
             for (auto& line: lines)
                 line = trim_right(line);
             if (! lines.empty() && lines.front().empty())
@@ -1146,7 +1146,7 @@ namespace RS {
         }
 
         inline Strings operator""_qw(const char* p, size_t n) {
-            return splitv(U8string(p, n));
+            return splitv(Ustring(p, n));
         }
 
     }

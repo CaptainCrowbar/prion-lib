@@ -39,10 +39,10 @@ namespace {
     using RS_Detail::decfmt;
     using RS_Detail::hexfmt;
 
-    U8string make_str(std::nullptr_t) { return "null"; }
+    Ustring make_str(std::nullptr_t) { return "null"; }
 
     template <typename T>
-    U8string make_str(const T& t) {
+    Ustring make_str(const T& t) {
         std::ostringstream out;
         out << t;
         return out.str();
@@ -50,14 +50,14 @@ namespace {
 
     #define MAKE_STR_FOR_CONTAINER(Con) \
         template <typename T> \
-        U8string make_str(const std::Con<T>& c) { \
+        Ustring make_str(const std::Con<T>& c) { \
             if (c.empty()) \
                 return "[]"; \
             std::ostringstream out; \
             out << '['; \
             for (auto& t: c) \
                 out << t << ','; \
-            U8string s = out.str(); \
+            Ustring s = out.str(); \
             s.back() = ']'; \
             return s; \
         }
@@ -65,11 +65,11 @@ namespace {
     MAKE_STR_FOR_CONTAINER(set)
     MAKE_STR_FOR_CONTAINER(vector)
 
-    U8string f1(int n) { return U8string(size_t(n), '*'); }
-    U8string f1(U8string s) { return '[' + s + ']'; }
-    U8string f2() { return "Hello"; }
-    U8string f2(U8string s) { return '[' + s + ']'; }
-    U8string f2(int x, int y) { return decfmt(x * y); }
+    Ustring f1(int n) { return Ustring(size_t(n), '*'); }
+    Ustring f1(Ustring s) { return '[' + s + ']'; }
+    Ustring f2() { return "Hello"; }
+    Ustring f2(Ustring s) { return '[' + s + ']'; }
+    Ustring f2(int x, int y) { return decfmt(x * y); }
 
     RS_ENUM(FooEnum, int16_t, 1, alpha, bravo, charlie)
     RS_ENUM_CLASS(BarEnum, int32_t, 1, alpha, bravo, charlie)
@@ -86,10 +86,10 @@ namespace {
         int a = 10;
         AutoMove<int> b;
         AutoMove<int, 20> c;
-        AutoMove<U8string> d;
+        AutoMove<Ustring> d;
         NoTransfer<int> e;
         NoTransfer<int, 30> f;
-        NoTransfer<U8string> g;
+        NoTransfer<Ustring> g;
     };
 
     class Base {
@@ -108,21 +108,21 @@ namespace {
         virtual int get() const { return 2; }
     };
 
-    U8string fa0() { return "hello"; }
-    U8string fa1(char c) { return {c}; }
-    U8string fa2(size_t n, char c) { return U8string(n, c); }
+    Ustring fa0() { return "hello"; }
+    Ustring fa1(char c) { return {c}; }
+    Ustring fa2(size_t n, char c) { return Ustring(n, c); }
 
-    U8string (*fb0)() = &fa0;
-    U8string (*fb1)(char c) = &fa1;
-    U8string (*fb2)(size_t n, char c) = &fa2;
+    Ustring (*fb0)() = &fa0;
+    Ustring (*fb1)(char c) = &fa1;
+    Ustring (*fb2)(size_t n, char c) = &fa2;
 
-    struct FC0 { U8string operator()() { return "hello"; } };
-    struct FC1 { U8string operator()(char c) { return {c}; } };
-    struct FC2 { U8string operator()(size_t n, char c) { return U8string(n, c); } };
+    struct FC0 { Ustring operator()() { return "hello"; } };
+    struct FC1 { Ustring operator()(char c) { return {c}; } };
+    struct FC2 { Ustring operator()(size_t n, char c) { return Ustring(n, c); } };
 
-    struct FD0 { U8string operator()() const { return "hello"; } };
-    struct FD1 { U8string operator()(char c) const { return {c}; } };
-    struct FD2 { U8string operator()(size_t n, char c) const { return U8string(n, c); } };
+    struct FD0 { Ustring operator()() const { return "hello"; } };
+    struct FD1 { Ustring operator()(char c) const { return {c}; } };
+    struct FD2 { Ustring operator()(size_t n, char c) const { return Ustring(n, c); } };
 
     FC0 fc0;
     FC1 fc1;
@@ -132,9 +132,9 @@ namespace {
     const FD1 fd1 = {};
     const FD2 fd2 = {};
 
-    auto fe0 = [] () -> U8string { return "hello"; };
-    auto fe1 = [] (char c) -> U8string { return {c}; };
-    auto fe2 = [] (size_t n, char c) -> U8string { return U8string(n, c); };
+    auto fe0 = [] () -> Ustring { return "hello"; };
+    auto fe1 = [] (char c) -> Ustring { return {c}; };
+    auto fe2 = [] (size_t n, char c) -> Ustring { return Ustring(n, c); };
 
     using tuple0 = std::tuple<>;
     using tuple1 = std::tuple<char>;
@@ -874,7 +874,7 @@ void test_core_common_arithmetic_literals() {
 
 void test_core_common_generic_algorithms() {
 
-    U8string s1, s2;
+    Ustring s1, s2;
     std::vector<int> v1, v2, v3, v4;
     int n = 0;
 
@@ -954,12 +954,12 @@ void test_core_common_generic_algorithms() {
     s1.clear();  TRY(for_n(2, f2));  TEST_EQUAL(s1, "0;1;");
     s1.clear();  TRY(for_n(3, f2));  TEST_EQUAL(s1, "0;1;2;");
 
-    std::map<int, U8string> m = {
+    std::map<int, Ustring> m = {
         {1, "alpha"},
         {2, "bravo"},
         {3, "charlie"},
     };
-    U8string s;
+    Ustring s;
 
     TRY(s = find_in_map(m, 1));          TEST_EQUAL(s, "alpha");
     TRY(s = find_in_map(m, 2));          TEST_EQUAL(s, "bravo");
@@ -1012,7 +1012,7 @@ void test_core_common_generic_algorithms() {
 void test_core_common_integer_sequences() {
 
     std::vector<int> v;
-    U8string s;
+    Ustring s;
 
     TRY(con_overwrite(iseq(5), v));            TRY(s = make_str(v));  TEST_EQUAL(s, "[0,1,2,3,4,5]");
     TRY(con_overwrite(iseq(-5), v));           TRY(s = make_str(v));  TEST_EQUAL(s, "[0,-1,-2,-3,-4,-5]");
@@ -1921,11 +1921,11 @@ void test_core_common_function_traits() {
     { using T = ArgumentType<FTE2, 0>; TEST_TYPE(T, size_t); }
     { using T = ArgumentType<FTE2, 1>; TEST_TYPE(T, char); }
 
-    TEST_TYPE(ReturnType<FTA0>, U8string);  TEST_TYPE(ReturnType<FTA1>, U8string);  TEST_TYPE(ReturnType<FTA2>, U8string);
-    TEST_TYPE(ReturnType<FTB0>, U8string);  TEST_TYPE(ReturnType<FTB1>, U8string);  TEST_TYPE(ReturnType<FTB2>, U8string);
-    TEST_TYPE(ReturnType<FTC0>, U8string);  TEST_TYPE(ReturnType<FTC1>, U8string);  TEST_TYPE(ReturnType<FTC2>, U8string);
-    TEST_TYPE(ReturnType<FTD0>, U8string);  TEST_TYPE(ReturnType<FTD1>, U8string);  TEST_TYPE(ReturnType<FTD2>, U8string);
-    TEST_TYPE(ReturnType<FTE0>, U8string);  TEST_TYPE(ReturnType<FTE1>, U8string);  TEST_TYPE(ReturnType<FTE2>, U8string);
+    TEST_TYPE(ReturnType<FTA0>, Ustring);  TEST_TYPE(ReturnType<FTA1>, Ustring);  TEST_TYPE(ReturnType<FTA2>, Ustring);
+    TEST_TYPE(ReturnType<FTB0>, Ustring);  TEST_TYPE(ReturnType<FTB1>, Ustring);  TEST_TYPE(ReturnType<FTB2>, Ustring);
+    TEST_TYPE(ReturnType<FTC0>, Ustring);  TEST_TYPE(ReturnType<FTC1>, Ustring);  TEST_TYPE(ReturnType<FTC2>, Ustring);
+    TEST_TYPE(ReturnType<FTD0>, Ustring);  TEST_TYPE(ReturnType<FTD1>, Ustring);  TEST_TYPE(ReturnType<FTD2>, Ustring);
+    TEST_TYPE(ReturnType<FTE0>, Ustring);  TEST_TYPE(ReturnType<FTE1>, Ustring);  TEST_TYPE(ReturnType<FTE2>, Ustring);
 
 }
 
@@ -1977,9 +1977,9 @@ void test_core_common_generic_function_objects() {
     TEST_EQUAL(account::count(), 0);
 
     int n1 = 42, n2 = 0;
-    U8string s1 = "Hello world", s2;
-    U8string& sr(s1);
-    const U8string& csr(s1);
+    Ustring s1 = "Hello world", s2;
+    Ustring& sr(s1);
+    const Ustring& csr(s1);
 
     TRY(n2 = identity(n1));              TEST_EQUAL(n2, 42);
     TRY(n2 = identity(100));             TEST_EQUAL(n2, 100);

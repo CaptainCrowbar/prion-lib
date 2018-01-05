@@ -11,7 +11,7 @@ using namespace RS;
 namespace {
 
     template <typename T, size_t N>
-    U8string grid_format_helper(const Grid<T, N>& g, Vector<ptrdiff_t, N> index, size_t current) {
+    Ustring grid_format_helper(const Grid<T, N>& g, Vector<ptrdiff_t, N> index, size_t current) {
         std::ostringstream out;
         out << "[";
         ptrdiff_t n = g.shape()[current];
@@ -31,7 +31,7 @@ namespace {
     }
 
     template <typename T, size_t N>
-    U8string grid_format(const Grid<T, N>& g) {
+    Ustring grid_format(const Grid<T, N>& g) {
         Vector<ptrdiff_t, N> index;
         std::fill(index.begin(), index.end(), 0);
         return grid_format_helper(g, index, 0);

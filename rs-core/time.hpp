@@ -111,7 +111,7 @@ namespace RS {
     // very long localized date format, but there doesn't seem to be a better
     // solution.
 
-    inline U8string format_date(std::chrono::system_clock::time_point tp, const U8string& format, uint32_t flags = utc_zone) {
+    inline Ustring format_date(std::chrono::system_clock::time_point tp, const Ustring& format, uint32_t flags = utc_zone) {
         using namespace std::chrono;
         uint32_t zone = flags & (utc_zone | local_zone);
         if (ibits(zone) > 1 || flags - zone)
@@ -120,7 +120,7 @@ namespace RS {
             return {};
         auto t = system_clock::to_time_t(tp);
         tm stm = zone == local_zone ? *localtime(&t) : *gmtime(&t);
-        U8string result(std::max(2 * format.size(), size_t(100)), '\0');
+        Ustring result(std::max(2 * format.size(), size_t(100)), '\0');
         auto rc = strftime(&result[0], result.size(), format.data(), &stm);
         if (rc == 0) {
             result.resize(10 * result.size(), '\0');
@@ -131,18 +131,18 @@ namespace RS {
         return result;
     }
 
-    inline U8string format_date(std::chrono::system_clock::time_point tp, int prec = 0, uint32_t flags = utc_zone) {
+    inline Ustring format_date(std::chrono::system_clock::time_point tp, int prec = 0, uint32_t flags = utc_zone) {
         using namespace std::chrono;
         using namespace std::literals;
         uint32_t zone = flags & (utc_zone | local_zone);
         if (ibits(zone) > 1 || flags - zone)
             throw std::invalid_argument("Invalid date flags: 0x" + hex(flags, 1));
-        U8string result = format_date(tp, "%Y-%m-%d %H:%M:%S"s, zone);
+        Ustring result = format_date(tp, "%Y-%m-%d %H:%M:%S"s, zone);
         if (prec > 0) {
             double sec = to_seconds(tp.time_since_epoch());
             double isec;
             double fsec = modf(sec, &isec);
-            U8string buf(prec + 3, '\0');
+            Ustring buf(prec + 3, '\0');
             snprintf(&buf[0], buf.size(), "%.*f", prec, fsec);
             result += buf.data() + 1;
         }
@@ -150,14 +150,14 @@ namespace RS {
     }
 
     template <typename R, typename P>
-    U8string format_time(const std::chrono::duration<R, P>& time, int prec = 0) {
+    Ustring format_time(const std::chrono::duration<R, P>& time, int prec = 0) {
         using namespace RS_Detail;
         using namespace std::chrono;
         auto whole = duration_cast<seconds>(time);
         int64_t isec = whole.count();
         auto frac = time - duration_cast<duration<R, P>>(whole);
         double fsec = duration_cast<Dseconds>(frac).count();
-        U8string result;
+        Ustring result;
         if (isec < 0 || fsec < 0)
             result += '-';
         isec = std::abs(isec);
@@ -176,7 +176,7 @@ namespace RS {
         isec -= 60 * m;
         result += decfmt(isec, d || h || m ? 2 : 1);
         if (prec > 0) {
-            U8string buf(prec + 3, '\0');
+            Ustring buf(prec + 3, '\0');
             snprintf(&buf[0], buf.size(), "%.*f", prec, fsec);
             result += buf.data() + 1;
         }
@@ -219,7 +219,7 @@ namespace RS {
                 return date_read_number(ptr, result);
             else if (! ascii_isalpha(*ptr) || ! ptr[1] || ! ptr[2])
                 return false;
-            U8string mon(ptr, 3);
+            Ustring mon(ptr, 3);
             mon = ascii_lowercase(mon);
             if (mon == "jan")       result = 1;
             else if (mon == "feb")  result = 2;
@@ -242,7 +242,7 @@ namespace RS {
 
     }
 
-    inline std::chrono::system_clock::time_point parse_date(const U8string& s, uint32_t flags = utc_zone | ymd_order) {
+    inline std::chrono::system_clock::time_point parse_date(const Ustring& s, uint32_t flags = utc_zone | ymd_order) {
         using namespace RS_Detail;
         using namespace std::chrono;
         uint32_t order = flags & (ymd_order | dmy_order | mdy_order);
@@ -270,12 +270,12 @@ namespace RS {
     }
 
     template <typename R, typename P>
-    void parse_time(const U8string& s, std::chrono::duration<R, P>& t) {
+    void parse_time(const Ustring& s, std::chrono::duration<R, P>& t) {
         using namespace std::chrono;
         using namespace std::literals;
         using duration_type = duration<R, P>;
         static constexpr double jyear = 31'557'600;
-        U8string ns = replace(s, " "s, ""s);
+        Ustring ns = replace(s, " "s, ""s);
         const char* ptr = ns.data();
         const char* end = ptr + ns.size();
         char sign = '+';
@@ -285,7 +285,7 @@ namespace RS {
             throw std::invalid_argument("Invalid time: " + quote(s));
         double count = 0, seconds = 0;
         char* next = nullptr;
-        U8string unit;
+        Ustring unit;
         while (ptr != end) {
             if (! ascii_isdigit(*ptr))
                 throw std::invalid_argument("Invalid time: " + quote(s));
@@ -325,7 +325,7 @@ namespace RS {
     }
 
     template <typename D>
-    D parse_time(const U8string& str) {
+    D parse_time(const Ustring& str) {
         D time;
         parse_time(str, time);
         return time;
@@ -336,7 +336,7 @@ namespace RS {
     class Stopwatch {
     public:
         RS_NO_COPY_MOVE(Stopwatch)
-        explicit Stopwatch(const U8string& name, int precision = 3) noexcept: Stopwatch(name.data(), precision) {}
+        explicit Stopwatch(const Ustring& name, int precision = 3) noexcept: Stopwatch(name.data(), precision) {}
         explicit Stopwatch(const char* name, int precision = 3) noexcept {
             try {
                 prefix = name;
@@ -354,7 +354,7 @@ namespace RS {
             catch (...) {}
         }
     private:
-        U8string prefix;
+        Ustring prefix;
         int prec;
         ReliableClock::time_point start;
     };

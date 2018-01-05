@@ -132,7 +132,7 @@ void test_core_channel_buffer() {
 
     BufferChannel chan;
     Channel::state cs = Channel::state::closed;
-    U8string s;
+    Ustring s;
     size_t n = 0;
 
     TRY(cs = chan.wait_for(10ms));
@@ -195,9 +195,9 @@ void test_core_channel_buffer() {
 
 void test_core_channel_queue() {
 
-    QueueChannel<U8string> chan;
+    QueueChannel<Ustring> chan;
     Channel::state cs = Channel::state::closed;
-    U8string s;
+    Ustring s;
 
     TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::waiting);
@@ -231,9 +231,9 @@ void test_core_channel_queue() {
 
 void test_core_channel_value() {
 
-    ValueChannel<U8string> chan;
+    ValueChannel<Ustring> chan;
     Channel::state cs = Channel::state::closed;
-    U8string s;
+    Ustring s;
 
     TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::waiting);
@@ -512,7 +512,7 @@ void test_core_channel_dispatcher() {
         // Stopwatch w("Test with message channel (sync)");
         Dispatch disp;
         QueueChannel<int> chan;
-        U8string s;
+        Ustring s;
         std::vector<int> v;
         for (int i = 1; i <= 10; ++i)
             TRY(chan.write(i));
@@ -535,7 +535,7 @@ void test_core_channel_dispatcher() {
         // Stopwatch w("Test with message channel (async)");
         Dispatch disp;
         QueueChannel<int> chan;
-        U8string s;
+        Ustring s;
         std::vector<int> v;
         for (int i = 1; i <= 10; ++i)
             TRY(chan.write(i));
@@ -558,7 +558,7 @@ void test_core_channel_dispatcher() {
         // Stopwatch w("Test with stream channel (sync)");
         Dispatch disp;
         BufferChannel chan;
-        U8string s;
+        Ustring s;
         TRY(chan.write_str("Hello world\n"));
         TRY(chan.set_buffer(5));
         TRY(disp.add(chan, Dispatch::mode::sync, [&] (std::string& t) {
@@ -580,7 +580,7 @@ void test_core_channel_dispatcher() {
         // Stopwatch w("Test with stream channel (async)");
         Dispatch disp;
         BufferChannel chan;
-        U8string s;
+        Ustring s;
         TRY(chan.write_str("Hello world\n"));
         TRY(chan.set_buffer(5));
         TRY(disp.add(chan, Dispatch::mode::async, [&] (std::string& t) {

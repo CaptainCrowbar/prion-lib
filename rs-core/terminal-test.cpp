@@ -25,7 +25,7 @@ void test_core_terminal_progress_bar() {
 
 void test_core_terminal_io_operations() {
 
-    U8string s;
+    Ustring s;
 
     TRY(s = xt_up);                        TEST_EQUAL(s, "\x1b[A");
     TRY(s = xt_down);                      TEST_EQUAL(s, "\x1b[B");

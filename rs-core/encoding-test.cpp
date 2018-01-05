@@ -68,7 +68,7 @@ void test_core_encoding_base32() {
     static constexpr size_t maxreg = 200;
 
     Base32Encoding code;
-    U8string s1, s2, s3;
+    Ustring s1, s2, s3;
     Xoroshiro rng(42);
 
     for (size_t n = 0; n <= limit; ++n) {

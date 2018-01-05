@@ -674,12 +674,12 @@ void test_core_random_unique_distribution() {
 void test_core_random_weighted_choice_distribution() {
 
     const int iterations = 1000000;
-    std::map<U8string, int> census;
+    std::map<Ustring, int> census;
     std::mt19937 rng(42);
-    auto freq = [&] (const U8string& s) { return double(census[s]) / double(iterations); };
+    auto freq = [&] (const Ustring& s) { return double(census[s]) / double(iterations); };
 
     {
-        WeightedChoice<U8string> choice;
+        WeightedChoice<Ustring> choice;
         TEST(choice.empty());
         TEST_EQUAL(choice(rng), "");
         TRY((choice = {
@@ -699,7 +699,7 @@ void test_core_random_weighted_choice_distribution() {
     }
 
     {
-        WeightedChoice<U8string, int> choice;
+        WeightedChoice<Ustring, int> choice;
         TEST(choice.empty());
         TEST_EQUAL(choice(rng), "");
         TRY((choice = {
@@ -752,7 +752,7 @@ void test_core_random_algorithms() {
     TEST_NEAR_EPSILON(mean, 0.5, 0.05);
     TEST_NEAR_EPSILON(sd, 0.288675, 0.05);
 
-    U8string s;
+    Ustring s;
 
     TRY(shuffle(rng, s));
     TEST_EQUAL(s, "");
@@ -776,7 +776,7 @@ void test_core_random_text_generators() {
     #endif
 
     Xoroshiro rng(42);
-    U8string s;
+    Ustring s;
     TRY(s = lorem_ipsum(rng(), 0));
     TEST(s.empty());
 

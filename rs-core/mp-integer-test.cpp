@@ -15,14 +15,14 @@ namespace {
 
     using ByteVec = std::vector<uint8_t>;
 
-    U8string hexv(const ByteVec& v) { return hexdump(v.data(), v.size()); }
+    Ustring hexv(const ByteVec& v) { return hexdump(v.data(), v.size()); }
 
 }
 
 void test_core_mp_integer_unsigned_conversion() {
 
     Nat x;
-    U8string s;
+    Ustring s;
 
     TEST_EQUAL(uint64_t(x), 0);
     TEST_EQUAL(double(x), 0);
@@ -90,7 +90,7 @@ void test_core_mp_integer_unsigned_conversion() {
 void test_core_mp_integer_unsigned_arithmetic() {
 
     Nat x, y, z, q, r;
-    U8string s;
+    Ustring s;
 
     TRY(x = 0);
     TEST_EQUAL(x.bits(), 0);
@@ -217,7 +217,7 @@ void test_core_mp_integer_unsigned_arithmetic() {
 void test_core_mp_integer_unsigned_bit_operations() {
 
     Nat x, y, z;
-    U8string s;
+    Ustring s;
 
     TEST_EQUAL(x.bits_set(), 0);
     TEST(x.is_even());
@@ -416,7 +416,7 @@ void test_core_mp_integer_unsigned_random() {
 void test_core_mp_integer_signed_conversion() {
 
     Int x;
-    U8string s;
+    Ustring s;
 
     TEST_EQUAL(x.sign(), 0);
     TEST_EQUAL(int64_t(x), 0);
@@ -530,7 +530,7 @@ void test_core_mp_integer_signed_conversion() {
 void test_core_mp_integer_signed_arithmetic() {
 
     Int a, b, c, d, q, r, x, y, z;
-    U8string s;
+    Ustring s;
 
     TRY(z = a + b);  TRY(s = to_str(z));  TEST_EQUAL(s, "0");
     TRY(z = a - b);  TRY(s = to_str(z));  TEST_EQUAL(s, "0");

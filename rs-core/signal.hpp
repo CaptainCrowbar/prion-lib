@@ -29,7 +29,7 @@ namespace RS {
         virtual void close() noexcept;
         virtual bool read(int& t);
         virtual bool is_async() const noexcept { return false; }
-        static U8string name(int s);
+        static Ustring name(int s);
     protected:
         virtual state do_wait_for(time_unit t);
     private:
@@ -168,8 +168,8 @@ namespace RS {
 
     #define RS_IMPL_SIGNAL_NAME(s) {s, #s},
 
-    inline U8string PosixSignal::name(int s) {
-        static const std::map<int, U8string> map = {
+    inline Ustring PosixSignal::name(int s) {
+        static const std::map<int, Ustring> map = {
             RS_IMPL_SIGNAL_NAME(SIGABRT)
             RS_IMPL_SIGNAL_NAME(SIGFPE)
             RS_IMPL_SIGNAL_NAME(SIGILL)

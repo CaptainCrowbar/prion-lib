@@ -118,19 +118,19 @@ void test_core_file_names() {
 
     #ifdef __CYGWIN__
 
-        U8string s;
+        Ustring s;
         std::wstring ws;
 
-        TRY(f = "");                              TRY(ws = f.native());  TRY(s = uconv<U8string>(ws));  TEST_EQUAL(s, "");
-        TRY(f = ".");                             TRY(ws = f.native());  TRY(s = uconv<U8string>(ws));  TEST_EQUAL(s, ".");
-        TRY(f = "Makefile");                      TRY(ws = f.native());  TRY(s = uconv<U8string>(ws));  TEST_EQUAL(s, "Makefile");
-        TRY(f = "/usr/bin/bash");                 TRY(ws = f.native());  TRY(s = uconv<U8string>(ws));  TEST_EQUAL(s, "C:\\cygwin64\\bin\\bash.exe");
-        TRY(f = "/cygdrive/c");                   TRY(ws = f.native());  TRY(s = uconv<U8string>(ws));  TEST_EQUAL(s, "C:\\");
-        TRY(f = "/cygdrive/c/Windows/System32");  TRY(ws = f.native());  TRY(s = uconv<U8string>(ws));  TEST_EQUAL(s, "C:\\Windows\\System32");
+        TRY(f = "");                              TRY(ws = f.native());  TRY(s = uconv<Ustring>(ws));  TEST_EQUAL(s, "");
+        TRY(f = ".");                             TRY(ws = f.native());  TRY(s = uconv<Ustring>(ws));  TEST_EQUAL(s, ".");
+        TRY(f = "Makefile");                      TRY(ws = f.native());  TRY(s = uconv<Ustring>(ws));  TEST_EQUAL(s, "Makefile");
+        TRY(f = "/usr/bin/bash");                 TRY(ws = f.native());  TRY(s = uconv<Ustring>(ws));  TEST_EQUAL(s, "C:\\cygwin64\\bin\\bash.exe");
+        TRY(f = "/cygdrive/c");                   TRY(ws = f.native());  TRY(s = uconv<Ustring>(ws));  TEST_EQUAL(s, "C:\\");
+        TRY(f = "/cygdrive/c/Windows/System32");  TRY(ws = f.native());  TRY(s = uconv<Ustring>(ws));  TEST_EQUAL(s, "C:\\Windows\\System32");
 
     #elif defined(_XOPEN_SOURCE)
 
-        U8string s;
+        Ustring s;
 
         TRY(f = "");               TRY(s = f.native());  TEST_EQUAL(s, "");
         TRY(f = ".");              TRY(s = f.native());  TEST_EQUAL(s, ".");
@@ -139,13 +139,13 @@ void test_core_file_names() {
 
     #else
 
-        U8string s;
+        Ustring s;
         std::wstring ws;
 
-        TRY(f = "");                     TRY(ws = f.native());  TRY(s = uconv<U8string>(ws));  TEST_EQUAL(s, "");
-        TRY(f = ".");                    TRY(ws = f.native());  TRY(s = uconv<U8string>(ws));  TEST_EQUAL(s, ".");
-        TRY(f = "Makefile");             TRY(ws = f.native());  TRY(s = uconv<U8string>(ws));  TEST_EQUAL(s, "Makefile");
-        TRY(f = "C:/Windows/System32");  TRY(ws = f.native());  TRY(s = uconv<U8string>(ws));  TEST_EQUAL(s, "C:\\Windows\\System32");
+        TRY(f = "");                     TRY(ws = f.native());  TRY(s = uconv<Ustring>(ws));  TEST_EQUAL(s, "");
+        TRY(f = ".");                    TRY(ws = f.native());  TRY(s = uconv<Ustring>(ws));  TEST_EQUAL(s, ".");
+        TRY(f = "Makefile");             TRY(ws = f.native());  TRY(s = uconv<Ustring>(ws));  TEST_EQUAL(s, "Makefile");
+        TRY(f = "C:/Windows/System32");  TRY(ws = f.native());  TRY(s = uconv<Ustring>(ws));  TEST_EQUAL(s, "C:\\Windows\\System32");
 
     #endif
 
@@ -155,7 +155,7 @@ void test_core_file_system_queries() {
 
     File f;
     std::vector<File> v;
-    U8string s;
+    Ustring s;
     uint64_t n = 0;
 
     TRY(f = "");              TEST(! f.exists());  TEST(! f.is_directory());

@@ -11,9 +11,9 @@ By Ross Smith
 ## Named mutex ##
 
 * `class` **`NamedMutex`**
-    * `explicit NamedMutex::`**`NamedMutex`**`(const U8string& name)`
+    * `explicit NamedMutex::`**`NamedMutex`**`(const Ustring& name)`
     * `NamedMutex::`**`~NamedMutex`**`() noexcept`
-    * `U8string NamedMutex::`**`name`**`() const`
+    * `Ustring NamedMutex::`**`name`**`() const`
     * `void NamedMutex::`**`lock`**`()`
     * `bool NamedMutex::`**`try_lock`**`()`
     * `template <typename R, typename P> bool NamedMutex::`**`try_lock_for`**`(std::chrono::duration<R, P> rel_time)`

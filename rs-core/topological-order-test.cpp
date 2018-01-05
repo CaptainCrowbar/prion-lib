@@ -10,7 +10,7 @@ void test_core_topological_order_algorithm() {
 
     TopologicalOrder<int> graph;
     std::vector<int> v;
-    U8string s;
+    Ustring s;
     int n = 0;
 
     TEST(graph.empty());
@@ -272,7 +272,7 @@ void test_core_topological_order_reverse() {
 
     TopologicalOrder<int, std::greater<>> graph;
     std::vector<int> v;
-    U8string s;
+    Ustring s;
 
     TRY(graph.insert_mn({1,2,3}, {4,5,6}));
     TEST_EQUAL(graph.size(), 6);

@@ -18,7 +18,7 @@ namespace RS {
             uint8_t i, uint8_t j, uint8_t k, uint8_t l, uint8_t m, uint8_t n, uint8_t o, uint8_t p) noexcept:
             bytes{a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p} {}
         Uuid(const void* ptr, size_t n) noexcept;
-        explicit Uuid(const U8string& s);
+        explicit Uuid(const Ustring& s);
         uint8_t& operator[](size_t i) noexcept { return bytes[i]; }
         const uint8_t& operator[](size_t i) const noexcept { return bytes[i]; }
         uint8_t* begin() noexcept { return bytes; }
@@ -27,7 +27,7 @@ namespace RS {
         const uint8_t* end() const noexcept { return bytes + 16; }
         size_t hash() const noexcept { return djb2a(bytes, 16); }
         size_t size() const noexcept { return 16; }
-        U8string str() const;
+        Ustring str() const;
         friend bool operator==(const Uuid& lhs, const Uuid& rhs) noexcept { return memcmp(lhs.bytes, rhs.bytes, 16) == 0; }
         friend bool operator<(const Uuid& lhs, const Uuid& rhs) noexcept { return memcmp(lhs.bytes, rhs.bytes, 16) == -1; }
     private:
@@ -47,7 +47,7 @@ namespace RS {
             memset(bytes + n, 0, 16 - n);
     }
 
-    inline Uuid::Uuid(const U8string& s) {
+    inline Uuid::Uuid(const Ustring& s) {
         auto begins = s.begin(), i = begins, ends = s.end();
         auto j = begin(), endu = end();
         int rc = 0;
@@ -64,8 +64,8 @@ namespace RS {
             throw std::invalid_argument("Invalid UUID: " + s);
     }
 
-    inline U8string Uuid::str() const {
-        U8string s;
+    inline Ustring Uuid::str() const {
+        Ustring s;
         s.reserve(36);
         int i = 0;
         for (; i < 4; ++i)
@@ -86,7 +86,7 @@ namespace RS {
     }
 
     inline std::ostream& operator<<(std::ostream& o, const Uuid& u) { return o << u.str(); }
-    inline U8string to_str(const Uuid& u) { return u.str(); }
+    inline Ustring to_str(const Uuid& u) { return u.str(); }
 
     struct RandomUuid {
         using result_type = Uuid;

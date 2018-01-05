@@ -73,7 +73,7 @@ static) before doing anything else.</p>
 <li><code>IPv4::</code><strong><code>IPv4</code></strong><code>() noexcept</code></li>
 <li><code>explicit IPv4::</code><strong><code>IPv4</code></strong><code>(uint32_t addr) noexcept</code></li>
 <li><code>IPv4::</code><strong><code>IPv4</code></strong><code>(uint8_t a, uint8_t b, uint8_t c, uint8_t d) noexcept</code></li>
-<li><code>explicit IPv4::</code><strong><code>IPv4</code></strong><code>(const U8string&amp; s)</code></li>
+<li><code>explicit IPv4::</code><strong><code>IPv4</code></strong><code>(const Ustring&amp; s)</code></li>
 <li><code>IPv4::</code><strong><code>~IPv4</code></strong><code>() noexcept</code></li>
 <li><code>IPv4::</code><strong><code>IPv4</code></strong><code>(const IPv4&amp;) noexcept</code></li>
 <li><code>IPv4::</code><strong><code>IPv4</code></strong><code>(IPv4&amp;&amp;) noexcept</code></li>
@@ -85,7 +85,7 @@ static) before doing anything else.</p>
 <li><code>size_t IPv4::</code><strong><code>hash</code></strong><code>() const noexcept</code></li>
 <li><code>uint32_t IPv4::</code><strong><code>net</code></strong><code>() const noexcept</code></li>
 <li><code>uint32_t&amp; IPv4::</code><strong><code>net</code></strong><code>() noexcept</code></li>
-<li><code>U8string IPv4::</code><strong><code>str</code></strong><code>() const</code></li>
+<li><code>Ustring IPv4::</code><strong><code>str</code></strong><code>() const</code></li>
 <li><code>uint32_t IPv4::</code><strong><code>value</code></strong><code>() const noexcept</code></li>
 <li><code>static IPv4 IPv4::</code><strong><code>any</code></strong><code>() noexcept</code> <em>= 0.0.0.0</em></li>
 <li><code>static IPv4 IPv4::</code><strong><code>broadcast</code></strong><code>() noexcept</code> <em>= 255.255.255.255</em></li>
@@ -119,7 +119,7 @@ structure (which is assumed to contain an IPv4 address).</p>
 <li><code>static constexpr size_t IPv6::</code><strong><code>size</code></strong> <code>= 16</code></li>
 <li><code>IPv6::</code><strong><code>IPv6</code></strong><code>() noexcept</code></li>
 <li><code>IPv6::</code><strong><code>IPv6</code></strong><code>(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint8_t e, uint8_t f, uint8_t g, uint8_t h, uint8_t i, uint8_t j, uint8_t k, uint8_t l, uint8_t m, uint8_t n, uint8_t o, uint8_t p) noexcept</code></li>
-<li><code>explicit IPv6::</code><strong><code>IPv6</code></strong><code>(const U8string&amp; s)</code></li>
+<li><code>explicit IPv6::</code><strong><code>IPv6</code></strong><code>(const Ustring&amp; s)</code></li>
 <li><code>IPv6::</code><strong><code>~IPv6</code></strong><code>() noexcept</code></li>
 <li><code>IPv6::</code><strong><code>IPv6</code></strong><code>(const IPv6&amp;) noexcept</code></li>
 <li><code>IPv6::</code><strong><code>IPv6</code></strong><code>(IPv6&amp;&amp;) noexcept</code></li>
@@ -129,7 +129,7 @@ structure (which is assumed to contain an IPv4 address).</p>
 <li><code>uint8_t* IPv6::</code><strong><code>data</code></strong><code>() noexcept</code></li>
 <li><code>const uint8_t* IPv6::</code><strong><code>data</code></strong><code>() const noexcept</code></li>
 <li><code>size_t IPv6::</code><strong><code>hash</code></strong><code>() const noexcept</code></li>
-<li><code>U8string IPv6::</code><strong><code>str</code></strong><code>() const</code></li>
+<li><code>Ustring IPv6::</code><strong><code>str</code></strong><code>() const</code></li>
 <li><code>static IPv6 IPv6::</code><strong><code>any</code></strong><code>() noexcept</code> <em>= [::0]</em></li>
 <li><code>static IPv6 IPv6::</code><strong><code>localhost</code></strong><code>() noexcept</code> <em>= [::1]</em></li>
 <li><code>static IPv6 IPv6::</code><strong><code>from_sin</code></strong><code>(const void* ptr) noexcept</code></li>
@@ -156,7 +156,7 @@ semantics based on the corresponding function in the <code>IPv4</code> class.</p
 <li><code>SocketAddress::</code><strong><code>SocketAddress</code></strong><code>(IPv4 ip, uint16_t port = 0) noexcept</code></li>
 <li><code>SocketAddress::</code><strong><code>SocketAddress</code></strong><code>(IPv6 ip, uint16_t port = 0, uint32_t flow = 0, uint32_t scope = 0) noexcept</code></li>
 <li><code>SocketAddress::</code><strong><code>SocketAddress</code></strong><code>(const void* ptr, size_t n) noexcept</code></li>
-<li><code>explicit SocketAddress::</code><strong><code>SocketAddress</code></strong><code>(const U8string&amp; s)</code></li>
+<li><code>explicit SocketAddress::</code><strong><code>SocketAddress</code></strong><code>(const Ustring&amp; s)</code></li>
 <li><code>SocketAddress::</code><strong><code>~SocketAddress</code></strong><code>() noexcept</code></li>
 <li><code>SocketAddress::</code><strong><code>SocketAddress</code></strong><code>(const SocketAddress&amp;) noexcept</code></li>
 <li><code>SocketAddress::</code><strong><code>SocketAddress</code></strong><code>(SocketAddress&amp;&amp;) noexcept</code></li>
@@ -177,7 +177,7 @@ semantics based on the corresponding function in the <code>IPv4</code> class.</p
 <li><code>void SocketAddress::</code><strong><code>set_family</code></strong><code>(uint16_t f)</code></li>
 <li><code>void SocketAddress::</code><strong><code>set_size</code></strong><code>(size_t n)</code></li>
 <li><code>size_t SocketAddress::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
-<li><code>U8string SocketAddress::</code><strong><code>str</code></strong><code>() const</code></li>
+<li><code>Ustring SocketAddress::</code><strong><code>str</code></strong><code>() const</code></li>
 </ul>
 </li>
 <li><code>bool</code> <strong><code>operator==</code></strong><code>(const SocketAddress&amp; lhs, const SocketAddress&amp; rhs) noexcept</code></li>
@@ -217,9 +217,9 @@ relevant type that takes a string.</p>
 <div class="defns">
 <ul>
 <li><code>class</code> <strong><code>Dns</code></strong><ul>
-<li><code>static SocketAddress Dns::</code><strong><code>host_to_ip</code></strong><code>(const U8string&amp; name, int family = 0)</code></li>
-<li><code>static std::vector&lt;SocketAddress&gt; Dns::</code><strong><code>host_to_ips</code></strong><code>(const U8string&amp; name, int family = 0)</code></li>
-<li><code>static U8string Dns::</code><strong><code>ip_to_host</code></strong><code>(const SocketAddress&amp; addr)</code></li>
+<li><code>static SocketAddress Dns::</code><strong><code>host_to_ip</code></strong><code>(const Ustring&amp; name, int family = 0)</code></li>
+<li><code>static std::vector&lt;SocketAddress&gt; Dns::</code><strong><code>host_to_ips</code></strong><code>(const Ustring&amp; name, int family = 0)</code></li>
+<li><code>static Ustring Dns::</code><strong><code>ip_to_host</code></strong><code>(const SocketAddress&amp; addr)</code></li>
 </ul>
 </li>
 </ul>

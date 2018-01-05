@@ -7,16 +7,16 @@ namespace {
 
     int count = 0;
 
-    U8string f1(char c) { ++count; return {c}; }
-    U8string f2(size_t n, char c) { ++count; return U8string(n, c); }
+    Ustring f1(char c) { ++count; return {c}; }
+    Ustring f2(size_t n, char c) { ++count; return Ustring(n, c); }
 
 }
 
 void test_core_cache_class() {
 
-    Cache<U8string(char)> c1;
-    Cache<U8string(size_t, char)> c2;
-    U8string s;
+    Cache<Ustring(char)> c1;
+    Cache<Ustring(size_t, char)> c2;
+    Ustring s;
 
     TRY(c1 = memoize(f1, 3));
     TRY(c2 = memoize(f2, 3));

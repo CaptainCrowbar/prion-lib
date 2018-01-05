@@ -14,7 +14,7 @@ By Ross Smith
     * `Uuid::`**`Uuid`**`() noexcept`
     * `Uuid::`**`Uuid`**`(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint8_t e, uint8_t f, uint8_t g, uint8_t h, uint8_t i, uint8_t j, uint8_t k, uint8_t l, uint8_t m, uint8_t n, uint8_t o, uint8_t p) noexcept`
     * `Uuid::`**`Uuid`**`(const void* ptr, size_t n) noexcept`
-    * `explicit Uuid::`**`Uuid`**`(const U8string& s)`
+    * `explicit Uuid::`**`Uuid`**`(const Ustring& s)`
     * `Uuid::`**`Uuid`**`(const Uuid& u) noexcept`
     * `Uuid::`**`Uuid`**`(Uuid&& u) noexcept`
     * `Uuid::`**`~Uuid`**`() noexcept`
@@ -28,7 +28,7 @@ By Ross Smith
     * `const uint8_t* Uuid::`**`end`**`() const noexcept`
     * `size_t Uuid::`**`hash`**`() const noexcept`
     * `size_t Uuid::`**`size`**`() const noexcept`
-    * `U8string Uuid::`**`str`**`() const`
+    * `Ustring Uuid::`**`str`**`() const`
 * `bool` **`operator==`**`(const Uuid& lhs, const Uuid& rhs) noexcept`
 * `bool` **`operator!=`**`(const Uuid& lhs, const Uuid& rhs) noexcept`
 * `bool` **`operator<`**`(const Uuid& lhs, const Uuid& rhs) noexcept`

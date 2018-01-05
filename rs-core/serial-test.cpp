@@ -116,7 +116,7 @@ void test_core_serial_blob() {
 
 void test_core_serial_compact_array() {
 
-    using CA = CompactArray<U8string, 2>;
+    using CA = CompactArray<Ustring, 2>;
 
     static const CA ca1 = {};
     static const CA ca2 = {"Alpha", "Bravo", "Charlie", "Delta", "Echo"};
@@ -180,7 +180,7 @@ void test_core_serial_multiprecision_integers() {
 
 void test_core_serial_optional() {
 
-    using OS = Optional<U8string>;
+    using OS = Optional<Ustring>;
 
     static const OS cos1 = {};
     static const OS cos2 = "Hello world"s;
@@ -283,7 +283,7 @@ void test_core_serial_persistent_storage() {
     static const File archive1 = File::user_settings() / "com.captaincrowbar/test-core-serial.settings";
     static const File archive2 = File::user_settings() / "com.captaincrowbar/test-core-serial.new.settings";
     static const File archive3 = File::user_settings() / "com.captaincrowbar/test-core-serial.old.settings";
-    static const U8string vendor_app = "com.captaincrowbar/test-core-serial";
+    static const Ustring vendor_app = "com.captaincrowbar/test-core-serial";
 
     TRY(archive1.remove());
     TEST(! archive1.exists());
@@ -291,7 +291,7 @@ void test_core_serial_persistent_storage() {
     {
 
         PersistState store(vendor, app);
-        U8string content, s;
+        Ustring content, s;
         Strings v;
         int n = 0;
 
@@ -299,7 +299,7 @@ void test_core_serial_persistent_storage() {
         TEST_EQUAL(store.file().name(), archive1);
 
         Persist<int> pnum;
-        Persist<U8string> pstr;
+        Persist<Ustring> pstr;
 
         TRY((pnum = {store, "number"}));
         TRY((pstr = {store, "string"}));

@@ -23,9 +23,9 @@ namespace RS {
     class NamedMutex {
     public:
         RS_NO_COPY_MOVE(NamedMutex);
-        explicit NamedMutex(const U8string& name);
+        explicit NamedMutex(const Ustring& name);
         ~NamedMutex() noexcept;
-        U8string name() const;
+        Ustring name() const;
         void lock();
         bool try_lock();
         template <typename R, typename P> bool try_lock_for(std::chrono::duration<R, P> rel_time);
@@ -33,7 +33,7 @@ namespace RS {
         void unlock() noexcept;
     private:
         #ifdef _XOPEN_SOURCE
-            U8string path;
+            Ustring path;
             sem_t* sem;
         #else
             std::wstring path;
@@ -61,7 +61,7 @@ namespace RS {
 
         #ifdef _XOPEN_SOURCE
 
-            inline NamedMutex::NamedMutex(const U8string& name) {
+            inline NamedMutex::NamedMutex(const Ustring& name) {
                 path = '/' + hex(digest<Sha256>(name));
                 #ifdef __APPLE__
                     path.resize(30);
@@ -77,7 +77,7 @@ namespace RS {
                 sem_close(sem);
             }
 
-            inline U8string NamedMutex::name() const {
+            inline Ustring NamedMutex::name() const {
                 return path.substr(1, npos);
             }
 
@@ -141,35 +141,35 @@ namespace RS {
 
         #else
 
-            inline NamedMutex::NamedMutex(const U8string& name) {
-                U8string hash = hex(digest<Sha256>(name));
+            inline NamedMutex::NamedMutex(const Ustring& name) {
+                Ustring hash = hex(digest<Sha256>(name));
                 path = L"Local\\" + uconv<std::wstring>(hash);
                 han = CreateMutexW(nullptr, false, path.data());
                 auto err = GetLastError();
                 if (! han)
-                    throw std::system_error(err, std::system_category(), uconv<U8string>(path));
+                    throw std::system_error(err, std::system_category(), uconv<Ustring>(path));
             }
 
             inline NamedMutex::~NamedMutex() noexcept {
                 CloseHandle(han);
             }
 
-            inline U8string NamedMutex::name() const {
-                return uconv<U8string>(path.substr(6, npos));
+            inline Ustring NamedMutex::name() const {
+                return uconv<Ustring>(path.substr(6, npos));
             }
 
             inline void NamedMutex::lock() {
                 auto rc = WaitForSingleObject(han, INFINITE);
                 auto err = GetLastError();
                 if (rc == WAIT_FAILED)
-                    throw std::system_error(err, std::system_category(), uconv<U8string>(path));
+                    throw std::system_error(err, std::system_category(), uconv<Ustring>(path));
             }
 
             inline bool NamedMutex::try_lock() {
                 auto rc = WaitForSingleObject(han, 0);
                 auto err = GetLastError();
                 if (rc == WAIT_FAILED)
-                    throw std::system_error(err, std::system_category(), uconv<U8string>(path));
+                    throw std::system_error(err, std::system_category(), uconv<Ustring>(path));
                 return rc != WAIT_TIMEOUT;
             }
 
@@ -184,7 +184,7 @@ namespace RS {
                 auto rc = WaitForSingleObject(han, msec32);
                 auto err = GetLastError();
                 if (rc == WAIT_FAILED)
-                    throw std::system_error(err, std::system_category(), uconv<U8string>(path));
+                    throw std::system_error(err, std::system_category(), uconv<Ustring>(path));
                 return rc != WAIT_TIMEOUT;
             }
 

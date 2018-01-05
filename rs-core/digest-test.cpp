@@ -10,9 +10,9 @@ using namespace RS;
 
 namespace {
 
-    const U8string sample1 = "";
-    const U8string sample2 = "Hello world";
-    const U8string sample3 =
+    const Ustring sample1 = "";
+    const Ustring sample2 = "Hello world";
+    const Ustring sample3 =
         "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do "
         "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad "
         "minim veniam, quis nostrud exercitation ullamco laboris nisi ut "
@@ -38,7 +38,7 @@ void test_core_digest_utility_functions() {
 
     std::array<uint8_t, 4> a = {{10,20,30,40}};
     std::array<uint8_t, 8> b = {{10,20,30,40,50,60,70,80}};
-    U8string s;
+    Ustring s;
 
     TRY(s = hex(a));  TEST_EQUAL(s, "0a141e28");
     TRY(s = hex(b));  TEST_EQUAL(s, "0a141e28323c4650");
@@ -86,7 +86,7 @@ void test_core_digest_md5() {
     using RT = Md5::result_type;
 
     RT result;
-    U8string hexstr;
+    Ustring hexstr;
 
     TRY(result = digest<Md5>(sample1));
     TRY(hexstr = hex(result));
@@ -102,7 +102,7 @@ void test_core_digest_sha1() {
     using RT = Sha1::result_type;
 
     RT result;
-    U8string hexstr;
+    Ustring hexstr;
 
     TRY(result = digest<Sha1>(sample1));
     TRY(hexstr = hex(result));
@@ -118,7 +118,7 @@ void test_core_digest_sha256() {
     using RT = Sha256::result_type;
 
     RT result;
-    U8string hexstr;
+    Ustring hexstr;
 
     TRY(result = digest<Sha256>(sample1));
     TRY(hexstr = hex(result));
@@ -134,7 +134,7 @@ void test_core_digest_sha512() {
     using RT = Sha512::result_type;
 
     RT result;
-    U8string hexstr;
+    Ustring hexstr;
 
     TRY(result = digest<Sha512>(sample1));
     TRY(hexstr = hex(result));

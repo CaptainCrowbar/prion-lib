@@ -212,8 +212,8 @@ namespace RS {
         using WcharEquivalent = char32_t;
     #endif
 
-    using U8string = std::string;
-    using U8view = std::string_view;
+    using Ustring = std::string;
+    using Uview = std::string_view;
     using Strings = std::vector<std::string>;
     using NativeString = std::basic_string<NativeCharacter>;
     using WstringEquivalent = std::basic_string<WcharEquivalent>;
@@ -335,11 +335,11 @@ namespace RS {
         template <typename T> struct SimpleAbs<T, true> { constexpr T operator()(T t) const noexcept { return t < T(0) ? - t : t; } };
 
         template <typename T>
-        U8string int_to_string(T x, int base, size_t digits) {
+        Ustring int_to_string(T x, int base, size_t digits) {
             bool neg = x < T(0);
             auto b = as_unsigned(T(base));
             auto y = as_unsigned(SimpleAbs<T>()(x));
-            U8string s;
+            Ustring s;
             do {
                 auto d = int(y % b);
                 s += char((d < 10 ? '0' : 'a' - 10) + d);
@@ -351,8 +351,8 @@ namespace RS {
             return s;
         }
 
-        template <typename T> U8string decfmt(T x, size_t digits = 1) { return RS_Detail::int_to_string(x, 10, digits); }
-        template <typename T> U8string hexfmt(T x, size_t digits = 2 * sizeof(T)) { return RS_Detail::int_to_string(x, 16, digits); }
+        template <typename T> Ustring decfmt(T x, size_t digits = 1) { return RS_Detail::int_to_string(x, 10, digits); }
+        template <typename T> Ustring hexfmt(T x, size_t digits = 2 * sizeof(T)) { return RS_Detail::int_to_string(x, 16, digits); }
 
         template <typename EnumType>
         void write_enum(std::ostream& out, EnumType t, long first_value, const char* prefix, const char* names) {
@@ -1701,11 +1701,11 @@ namespace RS {
             return dist(rng);
         }
 
-        inline void log_message(const U8string& msg) {
+        inline void log_message(const Ustring& msg) {
             using namespace std::chrono;
             static std::mutex mtx;
             auto lock = make_lock(mtx);
-            U8string text = "\x1b[38;5;";
+            Ustring text = "\x1b[38;5;";
             text += decfmt(hash_xcolour(std::this_thread::get_id()));
             text += "m# ";
             text += msg;
@@ -1715,7 +1715,7 @@ namespace RS {
         }
 
         template <typename T>
-        U8string make_str(const T& t) {
+        Ustring make_str(const T& t) {
             std::ostringstream out;
             out << t;
             return out.str();
@@ -1723,7 +1723,7 @@ namespace RS {
 
     }
 
-    inline void logx(const U8string& msg) noexcept {
+    inline void logx(const Ustring& msg) noexcept {
         try { RS_Detail::log_message(msg); }
         catch (...) {}
     }
@@ -1736,7 +1736,7 @@ namespace RS {
     template <typename... Args> inline void logx(Args... args) noexcept {
         try {
             Strings v{RS_Detail::make_str(args)...};
-            U8string msg;
+            Ustring msg;
             for (auto& s: v)
                 msg += s += ' ';
             if (! msg.empty())
@@ -1754,7 +1754,7 @@ namespace RS {
         using value_type = unsigned;
         Version() noexcept {}
         template <typename... Args> Version(unsigned n, Args... args) { append(n, args...); trim(); }
-        explicit Version(const U8string& s);
+        explicit Version(const Ustring& s);
         unsigned operator[](size_t i) const noexcept { return i < ver.size() ? ver[i] : 0; }
         const unsigned* begin() const noexcept { return ver.data(); }
         const unsigned* end() const noexcept { return ver.data() + ver.size(); }
@@ -1770,21 +1770,21 @@ namespace RS {
         friend bool operator<(const Version& lhs, const Version& rhs) noexcept { int c = compare_3way(lhs.ver, rhs.ver); return c == 0 ? lhs.suf < rhs.suf : c == -1; }
     private:
         std::vector<unsigned> ver;
-        U8string suf;
+        Ustring suf;
         template <typename... Args> void append(unsigned n, Args... args) { ver.push_back(n); append(args...); }
-        void append(const U8string& s) { suf = s; }
+        void append(const Ustring& s) { suf = s; }
         void append() {}
         void trim() { while (! ver.empty() && ver.back() == 0) ver.pop_back(); }
         static bool is_digit(char c) noexcept { return c >= '0' && c <= '9'; }
     };
 
-    inline Version::Version(const U8string& s) {
+    inline Version::Version(const Ustring& s) {
         auto i = s.begin(), end = s.end();
         while (i != end) {
             auto j = std::find_if_not(i, end, is_digit);
             if (i == j)
                 break;
-            U8string part(i, j);
+            Ustring part(i, j);
             ver.push_back(unsigned(strtoul(part.data(), nullptr, 10)));
             i = j;
             if (i == end || *i != '.')
@@ -1803,7 +1803,7 @@ namespace RS {
             out << v << '.';
         for (size_t i = ver.size(); i < min_elements; ++i)
             out << "0.";
-        U8string pre = out.str();
+        Ustring pre = out.str();
         if (! pre.empty())
             pre.pop_back();
         return pre + suf;
@@ -1828,7 +1828,7 @@ namespace RS {
         return o << v.str();
     }
 
-    inline U8string to_str(const Version& v) {
+    inline Ustring to_str(const Version& v) {
         return v.str();
     }
 

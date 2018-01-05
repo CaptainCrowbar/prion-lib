@@ -32,7 +32,7 @@ void test_core_zlib_io() {
 
     Gzio io;
     File file = "__gzio_test__", no_file = "__no_such_file__";
-    U8string text;
+    Ustring text;
     Strings vec;
     ptrdiff_t offset = 0;
     size_t n = 0;
@@ -57,7 +57,7 @@ void test_core_zlib_io() {
     #ifdef _XOPEN_SOURCE
 
         File log = "__gzio_log__";
-        U8string cmd = fmt("file $1 >$2", file, log);
+        Ustring cmd = fmt("file $1 >$2", file, log);
         TRY(std::system(cmd.data()));
         TRY(text = log.load());
         TEST_MATCH(text, "gzip compressed data");

@@ -15,7 +15,7 @@ namespace RS {
 
         template <typename T>
         struct IntegerParser {
-            T operator()(const U8string& s) const noexcept {
+            T operator()(const Ustring& s) const noexcept {
                 if (std::is_signed<T>::value)
                     return T(strtoll(s.data(), nullptr, 10));
                 else
@@ -32,7 +32,7 @@ namespace RS {
         Rational() = default;
         template <typename T2> Rational(T2 t): nm(t), dn(T(1)) {}
         template <typename T2, typename T3> Rational(T2 n, T3 d): nm(n), dn(d) { reduce(); }
-        explicit Rational(const U8string& s);
+        explicit Rational(const Ustring& s);
         explicit Rational(const char* s): Rational(cstr(s)) {}
         template <typename T2> Rational& operator=(T2 t) { nm = t; dn = T(1); return *this; }
         explicit operator bool() const noexcept { return nm != T(0); }
@@ -55,9 +55,9 @@ namespace RS {
         int sign() const noexcept { return nm > T(0) ? 1 : nm == T(0) ? 0 : -1; }
         T whole() const;
         Rational frac() const;
-        U8string str() const;
-        U8string mixed() const;
-        U8string simple() const { return to_str(nm) + '/' + to_str(dn); }
+        Ustring str() const;
+        Ustring mixed() const;
+        Ustring simple() const { return to_str(nm) + '/' + to_str(dn); }
     private:
         using ldouble = long double;
         T nm = T(0), dn = T(1);
@@ -74,11 +74,11 @@ namespace RS {
     using Urat64 = Rational<uint64_t>;
 
     template <typename T>
-    Rational<T>::Rational(const U8string& s) {
+    Rational<T>::Rational(const Ustring& s) {
         static constexpr RS_Detail::IntegerParser<T> make_integer;
         static const std::regex int_pattern("([+-]?)\\s*(\\d+)\\s*");
         static const std::regex rat_pattern("([+-]?)\\s*(?:(\\d+)\\s+)?(\\d+)\\s*/\\s*(\\d+)\\s*");
-        U8string ipart, npart, dpart;
+        Ustring ipart, npart, dpart;
         bool neg = false;
         std::smatch match;
         if (std::regex_match(s, match, int_pattern)) {
@@ -186,19 +186,19 @@ namespace RS {
     }
 
     template <typename T>
-    U8string Rational<T>::str() const {
-        U8string s = to_str(nm);
+    Ustring Rational<T>::str() const {
+        Ustring s = to_str(nm);
         if (dn > T(1))
             s += '/' + to_str(dn);
         return s;
     }
 
     template <typename T>
-    U8string Rational<T>::mixed() const {
+    Ustring Rational<T>::mixed() const {
         T w = whole();
         auto f = frac();
         bool wx = bool(w), fx = bool(f);
-        U8string s;
+        Ustring s;
         if (wx || ! fx) {
             s = to_str(w);
             f = f.abs();

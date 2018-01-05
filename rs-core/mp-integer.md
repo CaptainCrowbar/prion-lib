@@ -17,7 +17,7 @@ could be.
 * `class` **`Nat`**
     * `Nat::`**`Nat`**`()`
     * `Nat::`**`Nat`**`(uint64_t x)`
-    * `explicit Nat::`**`Nat`**`(const U8string& s, int base = 0)`
+    * `explicit Nat::`**`Nat`**`(const Ustring& s, int base = 0)`
     * `Nat::`**`~Nat`**`() noexcept`
     * `Nat::`**`Nat`**`(const Nat& n)`
     * `Nat::`**`Nat`**`(Nat&& n) noexcept`
@@ -54,7 +54,7 @@ could be.
     * `bool Nat::`**`is_odd`**`() const noexcept`
     * `Nat Nat::`**`pow`**`(const Nat& n) const`
     * `int Nat::`**`sign`**`() const noexcept`
-    * `U8string Nat::`**`str`**`(int base = 10, size_t digits = 1) const`
+    * `Ustring Nat::`**`str`**`(int base = 10, size_t digits = 1) const`
     * `void Nat::`**`write_be`**`(void* ptr, size_t n) const noexcept`
     * `void Nat::`**`write_le`**`(void* ptr, size_t n) const noexcept`
     * `static Nat Nat::`**`from_double`**`(double x)`
@@ -83,9 +83,9 @@ could be.
 * `std::ostream&` **`operator<<`**`(std::ostream& out, const Nat& x)`
 * `Nat` **`abs`**`(const Nat& x)`
 * `int` **`sign_of`**`(const Nat& x) noexcept`
-* `U8string` **`bin`**`(const Nat& x, size_t digits = 1)`
-* `U8string` **`dec`**`(const Nat& x, size_t digits = 1)`
-* `U8string` **`hex`**`(const Nat& x, size_t digits = 1)`
+* `Ustring` **`bin`**`(const Nat& x, size_t digits = 1)`
+* `Ustring` **`dec`**`(const Nat& x, size_t digits = 1)`
+* `Ustring` **`hex`**`(const Nat& x, size_t digits = 1)`
 
 An arbitrary precision unsigned integer (natural number). Most of its methods
 are conventional arithmetic operations with their natural behaviour.
@@ -132,7 +132,7 @@ is undefined if `n<1`.
     * `Int::`**`Int`**`()`
     * `Int::`**`Int`**`(int64_t x)`
     * `Int::`**`Int`**`(const Nat& x)`
-    * `explicit Int::`**`Int`**`(const U8string& s, int base = 0)`
+    * `explicit Int::`**`Int`**`(const Ustring& s, int base = 0)`
     * `Int::`**`~Int`**`() noexcept`
     * `Int::`**`Int`**`(const Int& n)`
     * `Int::`**`Int`**`(Int&& n) noexcept`
@@ -159,7 +159,7 @@ is undefined if `n<1`.
     * `bool Int::`**`is_odd`**`() const noexcept`
     * `Int Int::`**`pow`**`(const Int& n) const`
     * `int Int::`**`sign`**`() const noexcept`
-    * `U8string Int::`**`str`**`(int base = 10, size_t digits = 1, bool sign = false) const`
+    * `Ustring Int::`**`str`**`(int base = 10, size_t digits = 1, bool sign = false) const`
     * `static Int Int::`**`from_double`**`(double x)`
     * `template <typename RNG> static Int Int::`**`random`**`(RNG& rng, const Int& n)`
 * `Int` **`operator+`**`(const Int& lhs, const Int& rhs)`
@@ -179,9 +179,9 @@ is undefined if `n<1`.
 * `std::ostream&` **`operator<<`**`(std::ostream& out, const Int& x)`
 * `Int` **`abs`**`(const Int& x)`
 * `int` **`sign_of`**`(const Int& x) noexcept`
-* `U8string` **`bin`**`(const Int& x, size_t digits = 1)`
-* `U8string` **`dec`**`(const Int& x, size_t digits = 1)`
-* `U8string` **`hex`**`(const Int& x, size_t digits = 1)`
+* `Ustring` **`bin`**`(const Int& x, size_t digits = 1)`
+* `Ustring` **`dec`**`(const Int& x, size_t digits = 1)`
+* `Ustring` **`hex`**`(const Int& x, size_t digits = 1)`
 
 An arbitrary precision signed integer. Most of its operations do the same
 thing as the corresponding functions on `Nat` or plain `int`.

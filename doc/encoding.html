@@ -31,12 +31,12 @@
 <ul>
 <li><code>class</code> <strong><code>Encoding</code></strong><ul>
 <li><code>virtual Encoding::</code><strong><code>~Encoding</code></strong><code>() noexcept</code></li>
-<li><code>virtual void Encoding::</code><strong><code>encode_bytes</code></strong><code>(const void* src, size_t len, U8string&amp; dst, size_t width = npos) const = 0</code></li>
+<li><code>virtual void Encoding::</code><strong><code>encode_bytes</code></strong><code>(const void* src, size_t len, Ustring&amp; dst, size_t width = npos) const = 0</code></li>
 <li><code>virtual size_t Encoding::</code><strong><code>decode_bytes</code></strong><code>(const char* src, size_t len, string&amp; dst) const = 0</code></li>
-<li><code>void Encoding::</code><strong><code>encode</code></strong><code>(const string&amp; src, U8string&amp; dst, size_t width = npos) const</code></li>
-<li><code>U8string Encoding::</code><strong><code>encode</code></strong><code>(const string&amp; src, size_t width = npos) const</code></li>
-<li><code>size_t Encoding::</code><strong><code>decode</code></strong><code>(const U8string&amp; src, string&amp; dst) const</code></li>
-<li><code>string Encoding::</code><strong><code>decode</code></strong><code>(const U8string&amp; src) const</code></li>
+<li><code>void Encoding::</code><strong><code>encode</code></strong><code>(const string&amp; src, Ustring&amp; dst, size_t width = npos) const</code></li>
+<li><code>Ustring Encoding::</code><strong><code>encode</code></strong><code>(const string&amp; src, size_t width = npos) const</code></li>
+<li><code>size_t Encoding::</code><strong><code>decode</code></strong><code>(const Ustring&amp; src, string&amp; dst) const</code></li>
+<li><code>string Encoding::</code><strong><code>decode</code></strong><code>(const Ustring&amp; src) const</code></li>
 </ul>
 </li>
 </ul>

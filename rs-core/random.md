@@ -316,7 +316,7 @@ version with reproducible behaviour on all systems.
 
 ## Text generators ##
 
-* `U8string` **`lorem_ipsum`**`(uint64_t seed, size_t bytes, bool paras = true)`
+* `Ustring` **`lorem_ipsum`**`(uint64_t seed, size_t bytes, bool paras = true)`
 
 Generates random _Lorem Ipsum_ text with approximately the specified number of
 bytes (the length will be between `bytes` and `bytes+15` inclusive). Normally

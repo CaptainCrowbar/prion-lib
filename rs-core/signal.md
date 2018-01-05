@@ -16,7 +16,7 @@ By Ross Smith
     * `explicit PosixSignal::`**`PosixSignal`**`(const signal_list& list)`
     * `virtual PosixSignal::`**`~PosixSignal`**`() noexcept`
     * `virtual bool PosixSignal::`**`is_async`**`() const noexcept` _= false_
-    * `static U8string` **`name`**`(int s)`
+    * `static Ustring` **`name`**`(int s)`
 
 A channel that intercepts Unix signals, reporting them as channel messages. An
 attempt to listen for an unblockable signal such as `SIGKILL` will be quietly

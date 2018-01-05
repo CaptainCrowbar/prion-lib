@@ -11,9 +11,9 @@ using namespace std::literals;
 namespace {
 
     template <typename Range, typename DiffList>
-    U8string report_diff(const Range& lhs, const Range& rhs, const DiffList& delta) {
+    Ustring report_diff(const Range& lhs, const Range& rhs, const DiffList& delta) {
         auto lbegin = std::begin(lhs), rbegin = std::begin(rhs);
-        U8string s;
+        Ustring s;
         for (auto& d: delta) {
             s += "A" + dec(d.del.begin() - lbegin);
             if (d.del.begin() != d.del.end())
@@ -35,7 +35,7 @@ void test_core_algorithm_diff() {
 
     vector_type a, b;
     diff_list delta;
-    U8string s;
+    Ustring s;
 
     TRY(delta = diff(a, b));
     TRY(s = report_diff(a, b, delta));
@@ -132,7 +132,7 @@ void test_core_algorithm_find_optimum() {
 
     Strings vec;
     auto i = vec.begin();
-    auto str_size = [] (const U8string& s) { return s.size(); };
+    auto str_size = [] (const Ustring& s) { return s.size(); };
 
     TRY(i = find_optimum(vec, str_size));
     TEST(i == vec.end());
@@ -157,7 +157,7 @@ void test_core_algorithm_paired_for_each() {
     std::vector<int> iv;
     Strings sv;
     int n = 0;
-    auto f = [&n] (int i, U8string s) { n += i * int(s.size()); };
+    auto f = [&n] (int i, Ustring s) { n += i * int(s.size()); };
     TRY(paired_for_each(iv, sv, f));
     TEST_EQUAL(n, 0);
 
@@ -190,8 +190,8 @@ void test_core_algorithm_paired_transform() {
 
     std::vector<int> iv;
     Strings sv1, sv2;
-    auto f = [] (int i, U8string s) -> U8string {
-        U8string r;
+    auto f = [] (int i, Ustring s) -> Ustring {
+        Ustring r;
         for (int j = 0; j < i; ++j)
             r += s;
         return r;

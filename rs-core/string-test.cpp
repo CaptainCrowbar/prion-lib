@@ -33,7 +33,7 @@ void test_core_string_literals() {
 
     using namespace RS::Literals;
 
-    U8string s;
+    Ustring s;
     Strings v;
 
     TRY(v = ""_csv);                           TEST_EQUAL(v.size(), 0);  TRY(s = to_str(v));  TEST_EQUAL(s, "[]");
@@ -1109,7 +1109,7 @@ void test_core_string_html_xml_tags() {
 
 void test_core_string_type_names() {
 
-    U8string s;
+    Ustring s;
 
     const std::type_info& v_info = typeid(void);
     const std::type_info& i_info = typeid(int);
@@ -1155,7 +1155,7 @@ void test_core_string_unicode() {
     // 00010302  d800 df02  f0 90 8c 82
     // 0010fffd  dbff dffd  f4 8f bf bd
 
-    U8string s8, t8 = "\x4d\xd0\xb0\xe4\xba\x8c\xf0\x90\x8c\x82\xf4\x8f\xbf\xbd";
+    Ustring s8, t8 = "\x4d\xd0\xb0\xe4\xba\x8c\xf0\x90\x8c\x82\xf4\x8f\xbf\xbd";
     std::u16string s16, t16 = {0x4d,0x430,0x4e8c,0xd800,0xdf02,0xdbff,0xdffd};
     std::u32string s32, t32 = {0x4d,0x430,0x4e8c,0x10302,0x10fffd};
     std::wstring sw, tw =
@@ -1166,10 +1166,10 @@ void test_core_string_unicode() {
         #endif
     size_t n = 0;
 
-    TRY(s8 = uconv<U8string>(""s));          TEST_EQUAL(s8, ""s);
-    TRY(s8 = uconv<U8string>(u""s));         TEST_EQUAL(s8, ""s);
-    TRY(s8 = uconv<U8string>(U""s));         TEST_EQUAL(s8, ""s);
-    TRY(s8 = uconv<U8string>(L""s));         TEST_EQUAL(s8, ""s);
+    TRY(s8 = uconv<Ustring>(""s));          TEST_EQUAL(s8, ""s);
+    TRY(s8 = uconv<Ustring>(u""s));         TEST_EQUAL(s8, ""s);
+    TRY(s8 = uconv<Ustring>(U""s));         TEST_EQUAL(s8, ""s);
+    TRY(s8 = uconv<Ustring>(L""s));         TEST_EQUAL(s8, ""s);
     TRY(s16 = uconv<std::u16string>(""s));   TEST_EQUAL(s16, u""s);
     TRY(s16 = uconv<std::u16string>(u""s));  TEST_EQUAL(s16, u""s);
     TRY(s16 = uconv<std::u16string>(U""s));  TEST_EQUAL(s16, u""s);
@@ -1182,10 +1182,10 @@ void test_core_string_unicode() {
     TRY(sw = uconv<std::wstring>(u""s));     TEST_EQUAL(sw, L""s);
     TRY(sw = uconv<std::wstring>(U""s));     TEST_EQUAL(sw, L""s);
     TRY(sw = uconv<std::wstring>(L""s));     TEST_EQUAL(sw, L""s);
-    TRY(s8 = uconv<U8string>(t8));           TEST_EQUAL(s8, t8);
-    TRY(s8 = uconv<U8string>(t16));          TEST_EQUAL(s8, t8);
-    TRY(s8 = uconv<U8string>(t32));          TEST_EQUAL(s8, t8);
-    TRY(s8 = uconv<U8string>(tw));           TEST_EQUAL(s8, t8);
+    TRY(s8 = uconv<Ustring>(t8));           TEST_EQUAL(s8, t8);
+    TRY(s8 = uconv<Ustring>(t16));          TEST_EQUAL(s8, t8);
+    TRY(s8 = uconv<Ustring>(t32));          TEST_EQUAL(s8, t8);
+    TRY(s8 = uconv<Ustring>(tw));           TEST_EQUAL(s8, t8);
     TRY(s16 = uconv<std::u16string>(t8));    TEST_EQUAL(s16, t16);
     TRY(s16 = uconv<std::u16string>(t16));   TEST_EQUAL(s16, t16);
     TRY(s16 = uconv<std::u16string>(t32));   TEST_EQUAL(s16, t16);

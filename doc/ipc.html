@@ -25,9 +25,9 @@
 <div class="defns">
 <ul>
 <li><code>class</code> <strong><code>NamedMutex</code></strong><ul>
-<li><code>explicit NamedMutex::</code><strong><code>NamedMutex</code></strong><code>(const U8string&amp; name)</code></li>
+<li><code>explicit NamedMutex::</code><strong><code>NamedMutex</code></strong><code>(const Ustring&amp; name)</code></li>
 <li><code>NamedMutex::</code><strong><code>~NamedMutex</code></strong><code>() noexcept</code></li>
-<li><code>U8string NamedMutex::</code><strong><code>name</code></strong><code>() const</code></li>
+<li><code>Ustring NamedMutex::</code><strong><code>name</code></strong><code>() const</code></li>
 <li><code>void NamedMutex::</code><strong><code>lock</code></strong><code>()</code></li>
 <li><code>bool NamedMutex::</code><strong><code>try_lock</code></strong><code>()</code></li>
 <li><code>template &lt;typename R, typename P&gt; bool NamedMutex::</code><strong><code>try_lock_for</code></strong><code>(std::chrono::duration&lt;R, P&gt; rel_time)</code></li>

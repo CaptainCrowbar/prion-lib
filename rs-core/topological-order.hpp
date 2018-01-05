@@ -14,7 +14,7 @@
 
 namespace RS {
 
-    class TopologicalOrderError: public std::runtime_error { protected: explicit TopologicalOrderError(const U8string& msg): std::runtime_error("Topological order error: " + msg) {} };
+    class TopologicalOrderError: public std::runtime_error { protected: explicit TopologicalOrderError(const Ustring& msg): std::runtime_error("Topological order error: " + msg) {} };
         class TopologicalOrderCycle: public TopologicalOrderError { public: TopologicalOrderCycle(): TopologicalOrderError("Dependency cycle") {} };
         class TopologicalOrderEmpty: public TopologicalOrderError { public: TopologicalOrderEmpty(): TopologicalOrderError("Empty graph") {} };
 
@@ -49,8 +49,8 @@ namespace RS {
         T pop_back();
         std::vector<T> pop_back_set();
         size_t size() const noexcept { return graph.size(); }
-        U8string format_by_node() const; // For testing
-        U8string format_by_set() const; // For testing
+        Ustring format_by_node() const; // For testing
+        Ustring format_by_set() const; // For testing
     private:
         using set_type = std::set<T, Compare>;
         struct link_sets { set_type left, right; };
@@ -234,8 +234,8 @@ namespace RS {
     }
 
     template <typename T, typename Compare>
-    U8string TopologicalOrder<T, Compare>::format_by_node() const {
-        U8string text;
+    Ustring TopologicalOrder<T, Compare>::format_by_node() const {
+        Ustring text;
         for (auto& node: graph) {
             text += to_str(node.first);
             if (! node.second.right.empty())
@@ -246,8 +246,8 @@ namespace RS {
     }
 
     template <typename T, typename Compare>
-    U8string TopologicalOrder<T, Compare>::format_by_set() const {
-        U8string text;
+    Ustring TopologicalOrder<T, Compare>::format_by_set() const {
+        Ustring text;
         auto work = *this;
         for (int i = 1; ! work.empty(); ++i)
             text += to_str(work.pop_front_set()) + "\n";

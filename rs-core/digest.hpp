@@ -218,9 +218,9 @@ namespace RS {
     }
 
     template <size_t N>
-    U8string hex(const std::array<uint8_t, N>& bytes) {
+    Ustring hex(const std::array<uint8_t, N>& bytes) {
         using namespace RS_Detail;
-        U8string s;
+        Ustring s;
         for (auto b: bytes)
             append_hex_byte(b, s);
         return s;

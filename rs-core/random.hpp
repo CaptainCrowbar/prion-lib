@@ -165,7 +165,7 @@ namespace RS {
     }
 
     template <typename T, typename RNG>
-    T random_float(RNG& rng, T a = T(1), T b = T(0)) {
+    T random_real(RNG& rng, T a = T(1), T b = T(0)) {
         static_assert(std::is_floating_point<T>::value);
         return a + (b - a) * (T(rng() - rng.min()) / (T(rng.max() - rng.min()) + T(1)));
     }
@@ -173,8 +173,8 @@ namespace RS {
     template <typename T, typename RNG>
     T random_normal(RNG& rng) {
         static_assert(std::is_floating_point<T>::value);
-        T u1 = random_float<T>(rng);
-        T u2 = random_float<T>(rng);
+        T u1 = random_real<T>(rng);
+        T u2 = random_real<T>(rng);
         return std::sqrt(T(-2) * std::log(u1)) * std::cos(T(2) * pi_c<T> * u2);
     }
 
@@ -200,7 +200,7 @@ namespace RS {
 
     template <typename RNG>
     bool random_bool(RNG& rng, double p) {
-        return random_float<double>(rng) <= p;
+        return random_real<double>(rng) <= p;
     }
 
     template <typename RNG, typename T>
@@ -525,7 +525,7 @@ namespace RS {
             Vector<T, N> RandomVector<T, N>::operator()(RNG& rng) const {
                 Vector<T, N> v;
                 for (size_t i = 0; i < N; ++i)
-                    v[i] = random_float(rng, T(0), vec[i]);
+                    v[i] = random_real(rng, T(0), vec[i]);
                 return v;
             }
 
@@ -549,7 +549,7 @@ namespace RS {
             Vector<T, N> SymmetricRandomVector<T, N>::operator()(RNG& rng) const {
                 Vector<T, N> v;
                 for (size_t i = 0; i < N; ++i)
-                    v[i] = random_float(rng, - vec[i], vec[i]);
+                    v[i] = random_real(rng, - vec[i], vec[i]);
                 return v;
             }
 
@@ -559,7 +559,7 @@ namespace RS {
             struct RandomInSphere {
                 template <typename RNG> Vector<T, N> generate(RNG& rng) const {
                     Vector<T, N> v;
-                    do std::generate(v.begin(), v.end(), [&] { return random_float<T>(rng, -1, 1); });
+                    do std::generate(v.begin(), v.end(), [&] { return random_real<T>(rng, -1, 1); });
                         while (v.r2() > T(1));
                     return v;
                 }
@@ -572,8 +572,8 @@ namespace RS {
                     using std::cos;
                     Vector<T, 2> v;
                     do {
-                        T phi = random_float<T>(rng, 0, 2 * pi_c<T>);
-                        T r = random_float<T>(rng) + random_float<T>(rng);
+                        T phi = random_real<T>(rng, 0, 2 * pi_c<T>);
+                        T r = random_real<T>(rng) + random_real<T>(rng);
                         if (r > T(1))
                             r = T(2) - r;
                         v = {r * cos(phi), r * sin(phi)};
@@ -597,7 +597,7 @@ namespace RS {
                 template <typename RNG> Vector<T, 2> generate(RNG& rng) const {
                     using std::cos;
                     using std::sin;
-                    T phi = random_float<T>(rng, 0, 2 * pi_c<T>);
+                    T phi = random_real<T>(rng, 0, 2 * pi_c<T>);
                     return Vector<T, 2>(cos(phi), sin(phi));
                 }
             };
@@ -608,8 +608,8 @@ namespace RS {
                     using std::cos;
                     using std::sin;
                     using std::sqrt;
-                    T phi = random_float<T>(rng, 0, 2 * pi_c<T>);
-                    T z = random_float<T>(rng, -1, 1);
+                    T phi = random_real<T>(rng, 0, 2 * pi_c<T>);
+                    T z = random_real<T>(rng, -1, 1);
                     T r = sqrt(T(1) - z * z);
                     T x = r * cos(phi);
                     T y = r * sin(phi);
@@ -694,7 +694,7 @@ namespace RS {
 
         template <typename F>
         struct WeightRange<F, false> {
-            template <typename RNG> F operator()(RNG& rng, F range) const { return random_float(rng, range); }
+            template <typename RNG> F operator()(RNG& rng, F range) const { return random_real(rng, range); }
         };
 
     }

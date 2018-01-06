@@ -70,6 +70,7 @@ Vigna](http://xoroshiro.di.unimi.it).
 * `template <typename T, typename RNG> T` **`random_integer`**`(RNG& rng, T t)` _- Random integer from 0 to t-1 (always 0 if t<2)_
 * `template <typename T, typename RNG> T` **`random_integer`**`(RNG& rng, T a, T b)` _- Random integer from a to b inclusive (limits may be in either order)_
 * `template <typename T, typename RNG> T` **`random_dice`**`(RNG& rng, T n = 1, T faces = 6)` _- Roll n dice numbered from 1 to faces (0 if either argument is <1)_
+* `template <typename T, typename RNG> T` **`random_triangle_integer`**`(RNG& rng, T hi, T lo)` _- Triangular distribution with max at hi, min at lo_
 * `template <typename T, typename RNG> T` **`random_real`**`(RNG& rng, T a = 1, T b = 0)` _- Random number between a and b (limits may be in either order)_
 * `template <typename T, typename RNG> T` **`random_normal`**`(RNG& rng)` _- Normal distribution with mean 0, sd 1_
 * `template <typename T, typename RNG> T` **`random_normal`**`(RNG& rng, T m, T s)` _- Normal distribution with given mean and sd_

@@ -167,6 +167,8 @@ extern void test_core_process_text();
 extern void test_core_random_lcg();
 extern void test_core_random_xoroshiro();
 extern void test_core_random_basic_distributions();
+extern void test_core_random_sample();
+extern void test_core_random_triangular();
 extern void test_core_random_uniform_integer_distribution();
 extern void test_core_random_binomial_distribution();
 extern void test_core_random_dice_distribution();
@@ -417,6 +419,8 @@ int main() {
         { "core/random/lcg", test_core_random_lcg },
         { "core/random/xoroshiro", test_core_random_xoroshiro },
         { "core/random/basic-distributions", test_core_random_basic_distributions },
+        { "core/random/sample", test_core_random_sample },
+        { "core/random/triangular", test_core_random_triangular },
         { "core/random/uniform-integer-distribution", test_core_random_uniform_integer_distribution },
         { "core/random/binomial-distribution", test_core_random_binomial_distribution },
         { "core/random/dice-distribution", test_core_random_dice_distribution },

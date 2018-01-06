@@ -165,6 +165,17 @@ namespace RS {
     }
 
     template <typename T, typename RNG>
+    T random_triangle_integer(RNG& rng, T hi, T lo) {
+        static_assert(std::is_integral<T>::value);
+        if (hi == lo)
+            return hi;
+        T d = hi > lo ? hi - lo : lo - hi;
+        T x = random_integer(rng, (d + T(1)) * (d + T(2)) / T(2));
+        T y = (int_sqrt(T(8) * x + T(1)) - T(1)) / T(2);
+        return hi > lo ? lo + y : lo - y;
+    }
+
+    template <typename T, typename RNG>
     T random_real(RNG& rng, T a = T(1), T b = T(0)) {
         static_assert(std::is_floating_point<T>::value);
         return a + (b - a) * (T(rng() - rng.min()) / (T(rng.max() - rng.min()) + T(1)));

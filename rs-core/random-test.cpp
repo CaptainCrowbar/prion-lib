@@ -188,12 +188,19 @@ void test_core_random_basic_distributions() {
     auto rc2 = [&] { return random_choice(rng, {1,2,3,4,5,6,7,8,9,10}); };
     CHECK_RANDOM_GENERATOR(rc2, 1, 10, 5.5, 2.88661);
 
+}
+
+void test_core_random_sample() {
+
     static constexpr size_t pop_size = 100;
     static constexpr size_t sample_iterations = 100;
     const double expect_mean = double(pop_size + 1) / 2;
     const double expect_sd = sqrt(double(pop_size * pop_size - 1) / 12);
+
+    std::mt19937 rng(42);
     std::vector<int> pop(pop_size), sample;
     std::iota(pop.begin(), pop.end(), 1);
+
     for (size_t k = 0; k <= pop_size; ++k) {
         double count = 0, sum = 0, sum2 = 0;
         for (size_t i = 0; i < sample_iterations; ++i) {
@@ -216,7 +223,55 @@ void test_core_random_basic_distributions() {
             }
         }
     }
+
     TEST_THROW(random_sample(rng, pop, 101), std::length_error);
+
+}
+
+void test_core_random_triangular() {
+
+    static constexpr int iterations = 100'000;
+    const double epsilon = 1 / sqrt(double(iterations));
+
+    std::mt19937 rng(42);
+    std::map<int, double> census;
+
+    for (int i = 0; i < iterations; ++i) {
+        int x = random_triangle_integer(rng, 5, 0);
+        ++census[x];
+    }
+
+    for (auto& c: census)
+        c.second /= iterations;
+
+    TEST_NEAR_EPSILON(census[0], 0.047619, epsilon);
+    TEST_NEAR_EPSILON(census[1], 0.095238, epsilon);
+    TEST_NEAR_EPSILON(census[2], 0.142857, epsilon);
+    TEST_NEAR_EPSILON(census[3], 0.190476, epsilon);
+    TEST_NEAR_EPSILON(census[4], 0.238095, epsilon);
+    TEST_NEAR_EPSILON(census[5], 0.285714, epsilon);
+
+    census.clear();
+
+    for (int i = 0; i < iterations; ++i) {
+        int x = random_triangle_integer(rng, 5, 15);
+        ++census[x];
+    }
+
+    for (auto& c: census)
+        c.second /= iterations;
+
+    TEST_NEAR_EPSILON(census[5], 0.166667, epsilon);
+    TEST_NEAR_EPSILON(census[6], 0.151515, epsilon);
+    TEST_NEAR_EPSILON(census[7], 0.136364, epsilon);
+    TEST_NEAR_EPSILON(census[8], 0.121212, epsilon);
+    TEST_NEAR_EPSILON(census[9], 0.106061, epsilon);
+    TEST_NEAR_EPSILON(census[10], 0.090909, epsilon);
+    TEST_NEAR_EPSILON(census[11], 0.075758, epsilon);
+    TEST_NEAR_EPSILON(census[12], 0.060606, epsilon);
+    TEST_NEAR_EPSILON(census[13], 0.045455, epsilon);
+    TEST_NEAR_EPSILON(census[14], 0.030303, epsilon);
+    TEST_NEAR_EPSILON(census[15], 0.015152, epsilon);
 
 }
 

@@ -38,19 +38,16 @@ contents of <code>&lt;zlib.h&gt;</code>.</p>
 <div class="defns">
 <ul>
 <li><code>struct</code> <strong><code>Zlib</code></strong><ul>
-<li><code>static std::string</code> <strong><code>compress</code></strong><code>(const void* ptr, size_t len, int level = Z_DEFAULT_COMPRESSION)</code></li>
-<li><code>static std::string</code> <strong><code>compress</code></strong><code>(const std::string&amp; src, int level = Z_DEFAULT_COMPRESSION)</code></li>
-<li><code>static std::string</code> <strong><code>uncompress</code></strong><code>(const void* ptr, size_t len)</code></li>
-<li><code>static std::string</code> <strong><code>uncompress</code></strong><code>(const std::string&amp; src)</code></li>
+<li><code>static std::string</code> <strong><code>compress</code></strong><code>(std::string_view src, int level = Z_DEFAULT_COMPRESSION)</code></li>
+<li><code>static std::string</code> <strong><code>uncompress</code></strong><code>(std::string_view src)</code></li>
 </ul>
 </li>
 </ul>
-<p>Basic compression and uncompression functions. Passing a null pointer will
-return an empty string. Any of these may throw <code>std::system_error</code> or
-<code>std::bad_alloc</code> if anything goes wrong. For compression, <code>std::bad_alloc</code> is
-normally the only possible exception, unless there is an internal error in
-Zlib; for uncompression, a corrupt archive will trigger a <code>std::system_error</code>
-with a <code>ZlibCategory</code> error category.</p>
+<p>Basic compression and uncompression functions. Either of these may throw
+<code>std::system_error</code> or <code>std::bad_alloc</code> if anything goes wrong. For
+compression, <code>std::bad_alloc</code> is normally the only possible exception, unless
+there is an internal error in Zlib; for uncompression, a corrupt archive will
+trigger a <code>std::system_error</code> with a <code>ZlibCategory</code> error category.</p>
 </div>
 <h2 id="io-class">I/O class</h2>
 <div class="defns">
@@ -59,7 +56,7 @@ with a <code>ZlibCategory</code> error category.</p>
 <li><code>using Gzio::</code><strong><code>handle_type</code></strong> <code>= gzFile</code></li>
 <li><code>Gzio::</code><strong><code>Gzio</code></strong><code>()</code></li>
 <li><code>explicit Gzio::</code><strong><code>Gzio</code></strong><code>(const File&amp; f, IO::mode m = IO::mode::read_only)</code></li>
-<li><code>Gzio::</code><strong><code>Gzio</code></strong><code>(const File&amp; f, const Ustring&amp; iomode)</code></li>
+<li><code>Gzio::</code><strong><code>Gzio</code></strong><code>(const File&amp; f, Uview iomode)</code></li>
 <li><code>virtual Gzio::</code><strong><code>~Gzio</code></strong><code>()</code></li>
 <li><code>Gzio::</code><strong><code>Gzio</code></strong><code>(Gzio&amp;&amp; io)</code></li>
 <li><code>Gzio&amp; Gzio::</code><strong><code>operator=</code></strong><code>(Gzio&amp;&amp; io)</code></li>
@@ -71,6 +68,6 @@ with a <code>ZlibCategory</code> error category.</p>
 <p>An I/O class that reads and writes Gzip files. A compressed file can't be
 opened for reading and writing at the same time, so the <code>IO::mode</code> argument to
 the second constructor can only be <code>read_only</code>, <code>write_only</code>, or <code>append</code>;
-anything else will fail. The <code>mode</code> argument to the third constructor follows
+anything else will fail. The mode argument to the third constructor follows
 the same format as the corresponding argument to <code>gzopen()</code> in Zlib.</p></body>
 </html>

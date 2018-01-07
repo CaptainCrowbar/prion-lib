@@ -46,139 +46,155 @@ namespace RS {
     constexpr char ascii_toupper(char c) noexcept { return ascii_islower(c) ? c - 32 : c; }
     template <typename T> constexpr T char_to(char c) noexcept { return T(uint8_t(c)); }
 
+    // Construction functions
+
+    template <typename C> basic_string_view<C> make_view(const std::basic_string<C>& s) noexcept { return s; }
+    template <typename C> basic_string_view<C> make_view(std::basic_string_view<C> s) noexcept { return s; }
+    template <typename C> basic_string_view<C> make_view(const C* s) noexcept { if (s) return s; else return {}; }
+
+    template <typename S>
+    auto make_view(const S& s, size_t pos, size_t len) noexcept {
+        auto v = make_view(s);
+        using SV = decltype(v);
+        pos = std::min(pos, v.size());
+        len = std::min(len, v.size() - pos);
+        return SV(v.data() + pos, len);
+    }
+
     // Unicode functions
 
     namespace RS_Detail {
 
-        template <typename Src, typename Dst, size_t N1 = sizeof(typename Src::value_type), size_t N2 = sizeof(typename Dst::value_type)>
+        template <typename SV, typename S, size_t N1 = sizeof(typename SV::value_type), size_t N2 = sizeof(typename S::value_type)>
         struct UtfConvert {
-            Dst operator()(const Src& s) const {
-                return UtfConvert<std::u32string, Dst>()(UtfConvert<Src, std::u32string>()(s));
+            S operator()(SV sv) const {
+                auto u = UtfConvert<SV, std::u32string>()(sv);
+                return UtfConvert<std::u32string_view, S>()(u);
             }
         };
 
-        template <typename Src, typename Dst, size_t N>
-        struct UtfConvert<Src, Dst, N, N> {
-            Dst operator()(const Src& s) const {
-                using dc = typename Dst::value_type;
-                return Dst(reinterpret_cast<const dc*>(s.data()), s.size());
+        template <typename SV, typename S, size_t N>
+        struct UtfConvert<SV, S, N, N> {
+            S operator()(SV sv) const {
+                using C = typename S::value_type;
+                return S(reinterpret_cast<const C*>(sv.data()), sv.size());
             }
         };
 
-        template <typename Src, typename Dst>
-        struct UtfConvert<Src, Dst, 1, 4> {
-            Dst operator()(const Src& s) const {
-                using dc = typename Dst::value_type;
-                auto p = reinterpret_cast<const uint8_t*>(s.data());
-                auto q = p + s.size();
-                Dst d;
+        template <typename SV, typename S>
+        struct UtfConvert<SV, S, 1, 4> {
+            S operator()(SV sv) const {
+                using C = typename S::value_type;
+                auto p = reinterpret_cast<const uint8_t*>(sv.data());
+                auto q = p + sv.size();
+                S s;
                 while (p < q) {
                     if (*p <= 0x7f) {
-                        d += dc(*p++);
+                        s += C(*p++);
                     } else if (p[0] <= 0xc1 || p[0] >= 0xf5 || q - p < 2 || p[1] < 0x80 || p[1] > 0xbf
                             || (p[0] == 0xe0 && p[1] < 0xa0) || (p[0] == 0xed && p[1] > 0x9f)
                             || (p[0] == 0xf0 && p[1] < 0x90) || (p[0] == 0xf4 && p[1] > 0x8f)) {
-                        d += dc(0xfffd);
+                        s += C(0xfffd);
                         ++p;
                     } else if (p[0] <= 0xdf) {
-                        d += (dc(p[0] & 0x1f) << 6) | dc(p[1] & 0x3f);
+                        s += (C(p[0] & 0x1f) << 6) | C(p[1] & 0x3f);
                         p += 2;
                     } else if (p[0] <= 0xef) {
                         if (q - p < 3 || p[2] < 0x80 || p[2] > 0xbf) {
-                            d += dc(0xfffd);
+                            s += C(0xfffd);
                             p += 2;
                         } else {
-                            d += (dc(p[0] & 0x0f) << 12) | (dc(p[1] & 0x3f) << 6) | dc(p[2] & 0x3f);
+                            s += (C(p[0] & 0x0f) << 12) | (C(p[1] & 0x3f) << 6) | C(p[2] & 0x3f);
                             p += 3;
                         }
                     } else {
                         if (q - p < 3 || p[2] < 0x80 || p[2] > 0xbf) {
-                            d += dc(0xfffd);
+                            s += C(0xfffd);
                             p += 2;
                         } else if (q - p < 4 || p[3] < 0x80 || p[3] > 0xbf) {
-                            d += dc(0xfffd);
+                            s += C(0xfffd);
                             p += 3;
                         } else {
-                            d += (dc(p[0] & 0x07) << 18) | (dc(p[1] & 0x3f) << 12)
-                                | (dc(p[2] & 0x3f) << 6) | dc(p[3] & 0x3f);
+                            s += (C(p[0] & 0x07) << 18) | (C(p[1] & 0x3f) << 12)
+                                | (C(p[2] & 0x3f) << 6) | C(p[3] & 0x3f);
                             p += 4;
                         }
                     }
                 }
-                return d;
+                return s;
             }
         };
 
-        template <typename Src, typename Dst>
-        struct UtfConvert<Src, Dst, 2, 4> {
-            Dst operator()(const Src& s) const {
-                using dc = typename Dst::value_type;
-                auto p = reinterpret_cast<const uint16_t*>(s.data());
-                auto q = p + s.size();
-                Dst d;
+        template <typename SV, typename S>
+        struct UtfConvert<SV, S, 2, 4> {
+            S operator()(SV sv) const {
+                using C = typename S::value_type;
+                auto p = reinterpret_cast<const uint16_t*>(sv.data());
+                auto q = p + sv.size();
+                S s;
                 while (p < q) {
                     if (*p <= 0xd7ff || *p >= 0xe000) {
-                        d += dc(*p++);
+                        s += C(*p++);
                     } else if (q - p >= 2 && p[0] >= 0xd800 && p[0] <= 0xdbff && p[1] >= 0xdc00 && p[1] <= 0xdfff) {
-                        d += dc(0x10000) + ((dc(p[0]) & 0x3ff) << 10) + (dc(p[1]) & 0x3ff);
+                        s += C(0x10000) + ((C(p[0]) & 0x3ff) << 10) + (C(p[1]) & 0x3ff);
                         p += 2;
                     } else {
-                        d += dc(0xfffd);
+                        s += C(0xfffd);
                         ++p;
                     }
                 }
-                return d;
+                return s;
             }
         };
 
-        template <typename Src, typename Dst>
-        struct UtfConvert<Src, Dst, 4, 1> {
-            Dst operator()(const Src& s) const {
-                using dc = typename Dst::value_type;
-                Dst d;
-                for (auto c: s) {
+        template <typename SV, typename S>
+        struct UtfConvert<SV, S, 4, 1> {
+            S operator()(SV sv) const {
+                using C = typename S::value_type;
+                S s;
+                for (auto c: sv) {
                     auto u = uint32_t(c);
                     if (u <= 0x7f) {
-                        d += dc(u);
+                        s += C(u);
                     } else if (u <= 0x7ff) {
-                        d += dc(0xc0 | (u >> 6));
-                        d += dc(0x80 | (u & 0x3f));
+                        s += C(0xc0 | (u >> 6));
+                        s += C(0x80 | (u & 0x3f));
                     } else if (u <= 0xd7ff || (u >= 0xe000 && u <= 0xffff)) {
-                        d += dc(0xe0 | (u >> 12));
-                        d += dc(0x80 | ((u >> 6) & 0x3f));
-                        d += dc(0x80 | (u & 0x3f));
+                        s += C(0xe0 | (u >> 12));
+                        s += C(0x80 | ((u >> 6) & 0x3f));
+                        s += C(0x80 | (u & 0x3f));
                     } else if (u >= 0x10000 && u <= 0x10ffff) {
-                        d += dc(0xf0 | (u >> 18));
-                        d += dc(0x80 | ((u >> 12) & 0x3f));
-                        d += dc(0x80 | ((u >> 6) & 0x3f));
-                        d += dc(0x80 | (u & 0x3f));
+                        s += C(0xf0 | (u >> 18));
+                        s += C(0x80 | ((u >> 12) & 0x3f));
+                        s += C(0x80 | ((u >> 6) & 0x3f));
+                        s += C(0x80 | (u & 0x3f));
                     } else {
-                        d += dc(0xef);
-                        d += dc(0xbf);
-                        d += dc(0xbf);
+                        s += C(0xef);
+                        s += C(0xbf);
+                        s += C(0xbf);
                     }
                 }
-                return d;
+                return s;
             }
         };
 
-        template <typename Src, typename Dst>
-        struct UtfConvert<Src, Dst, 4, 2> {
-            Dst operator()(const Src& s) const {
-                using dc = typename Dst::value_type;
-                Dst d;
-                for (auto c: s) {
+        template <typename SV, typename S>
+        struct UtfConvert<SV, S, 4, 2> {
+            S operator()(SV sv) const {
+                using C = typename S::value_type;
+                S s;
+                for (auto c: sv) {
                     auto u = uint32_t(c);
                     if (u <= 0xd7ff || (u >= 0xe000 && u <= 0xffff)) {
-                        d += dc(u);
+                        s += C(u);
                     } else if (u >= 0x10000 && u <= 0x10ffff) {
-                        d += dc(0xd800 + ((u >> 10) - 0x40));
-                        d += dc(0xdc00 + (u & 0x3ff));
+                        s += C(0xd800 + ((u >> 10) - 0x40));
+                        s += C(0xdc00 + (u & 0x3ff));
                     } else {
-                        d += dc(0xfffd);
+                        s += C(0xfffd);
                     }
                 }
-                return d;
+                return s;
             }
         };
 
@@ -193,35 +209,14 @@ namespace RS {
             return n;
         }
 
-        template <typename C>
-        struct UtfLength {
-            size_t operator()(const std::basic_string<C>& s) const noexcept {
-                switch (sizeof(C)) {
-                    case 1:
-                        return std::count_if(s.begin(), s.end(), [] (C c) {
-                            auto b = uint8_t(c);
-                            return b <= 0x7f || (b >= 0xc2 && b <= 0xf4);
-                        });
-                    case 2:
-                        return std::count_if(s.begin(), s.end(), [] (C c) {
-                            auto u = uint16_t(c);
-                            return u <= 0xdbff || u >= 0xe000;
-                        });
-                    default: {
-                        return s.size();
-                    }
-                }
-            }
-        };
-
         template <typename C, size_t N = sizeof(C)>
         struct UtfValidate;
 
         template <typename C>
         struct UtfValidate<C, 1> {
-            size_t operator()(const std::basic_string<C>& s) const noexcept {
-                auto ptr = reinterpret_cast<const uint8_t*>(s.data());
-                size_t units = s.size(), i = 0;
+            size_t operator()(basic_string_view<C> sv) const noexcept {
+                auto ptr = reinterpret_cast<const uint8_t*>(sv.data());
+                size_t units = sv.size(), i = 0;
                 while (i < units) {
                     size_t n = 0;
                     if (ptr[i] <= 0x7f)
@@ -254,9 +249,9 @@ namespace RS {
 
         template <typename C>
         struct UtfValidate<C, 2> {
-            size_t operator()(const std::basic_string<C>& s) const noexcept {
-                auto ptr = reinterpret_cast<const uint16_t*>(s.data());
-                size_t units = s.size(), i = 0;
+            size_t operator()(basic_string_view<C> sv) const noexcept {
+                auto ptr = reinterpret_cast<const uint16_t*>(sv.data());
+                size_t units = sv.size(), i = 0;
                 while (i < units) {
                     if (ptr[i] <= 0xd7ff || ptr[i] >= 0xe000) {
                         ++i;
@@ -274,9 +269,9 @@ namespace RS {
 
         template <typename C>
         struct UtfValidate<C, 4> {
-            size_t operator()(const std::basic_string<C>& s) const noexcept {
-                auto ptr = reinterpret_cast<const uint32_t*>(s.data());
-                size_t units = s.size(), i = 0;
+            size_t operator()(basic_string_view<C> sv) const noexcept {
+                auto ptr = reinterpret_cast<const uint32_t*>(sv.data());
+                size_t units = sv.size(), i = 0;
                 for (; i < units; ++i)
                     if ((ptr[i] >= 0xd800 && ptr[i] <= 0xdfff) || ptr[i] >= 0x110000)
                         break;
@@ -286,31 +281,50 @@ namespace RS {
 
     }
 
-    template <typename Dst, typename Src>
-    Dst uconv(const Src& s) {
-        return RS_Detail::UtfConvert<Src, Dst>()(s);
+    template <typename S2, typename S>
+    S2 uconv(const S& s) {
+        auto sv = make_view(s);
+        return RS_Detail::UtfConvert<decltype(sv), S2>()(sv);
     }
 
-    template <typename C>
-    size_t ulength(const std::basic_string<C>& s) noexcept {
-        return RS_Detail::UtfLength<C>()(s);
+    template <typename S>
+    size_t ulength(const S& s) noexcept {
+        auto sv = make_view(s);
+        using C = typename decltype(sv)::value_type;
+        switch (sizeof(C)) {
+            case 1:
+                return std::count_if(sv.begin(), sv.end(), [] (C c) {
+                    auto b = uint8_t(c);
+                    return b <= 0x7f || (b >= 0xc2 && b <= 0xf4);
+                });
+            case 2:
+                return std::count_if(sv.begin(), sv.end(), [] (C c) {
+                    auto u = uint16_t(c);
+                    return u <= 0xdbff || u >= 0xe000;
+                });
+            default: {
+                return sv.size();
+            }
+        }
     }
 
-    template <typename C>
-    bool uvalid(const std::basic_string<C>& s, size_t& n) noexcept {
-        n = RS_Detail::UtfValidate<C>()(s);
-        return n == s.size();
+    template <typename S>
+    bool uvalid(const S& s, size_t& n) noexcept {
+        auto sv = make_view(s);
+        using C = typename decltype(sv)::value_type;
+        n = RS_Detail::UtfValidate<C>()(sv);
+        return n == sv.size();
     }
 
-    template <typename C>
-    bool uvalid(const std::basic_string<C>& s) noexcept {
+    template <typename S>
+    bool uvalid(const S& s) noexcept {
         size_t n = 0;
         return uvalid(s, n);
     }
 
     // String property functions
 
-    inline bool ascii_icase_equal(const std::string& lhs, const std::string& rhs) noexcept {
+    inline bool ascii_icase_equal(string_view lhs, string_view rhs) noexcept {
         if (lhs.size() != rhs.size())
             return false;
         for (size_t i = 0, n = lhs.size(); i < n; ++i)
@@ -319,7 +333,7 @@ namespace RS {
         return true;
     }
 
-    inline bool ascii_icase_less(const std::string& lhs, const std::string& rhs) noexcept {
+    inline bool ascii_icase_less(string_view lhs, string_view rhs) noexcept {
         for (size_t i = 0, n = std::min(lhs.size(), rhs.size()); i < n; ++i) {
             char a = ascii_toupper(lhs[i]), b = ascii_toupper(rhs[i]);
             if (a != b)
@@ -328,17 +342,17 @@ namespace RS {
         return lhs.size() < rhs.size();
     }
 
-    inline bool starts_with(const std::string& str, const std::string& prefix) noexcept {
+    inline bool starts_with(string_view str, string_view prefix) noexcept {
         return str.size() >= prefix.size()
             && memcmp(str.data(), prefix.data(), prefix.size()) == 0;
     }
 
-    inline bool ends_with(const std::string& str, const std::string& suffix) noexcept {
+    inline bool ends_with(string_view str, string_view suffix) noexcept {
         return str.size() >= suffix.size()
             && memcmp(str.data() + str.size() - suffix.size(), suffix.data(), suffix.size()) == 0;
     }
 
-    inline bool string_is_ascii(const std::string& str) noexcept {
+    inline bool string_is_ascii(string_view str) noexcept {
         return std::find_if(str.begin(), str.end(), [] (char c) { return c & 0x80; }) == str.end();
     }
 
@@ -346,7 +360,7 @@ namespace RS {
 
     namespace RS_Detail {
 
-        inline Ustring quote_string(const std::string& str, bool check_utf8) {
+        inline Ustring quote_string(string_view str, bool check_utf8) {
             bool allow_8bit = check_utf8 && uvalid(str);
             Ustring result = "\"";
             for (auto c: str) {
@@ -376,48 +390,50 @@ namespace RS {
 
     }
 
-    inline std::string add_prefix(const std::string& s, const std::string& prefix) {
+    inline std::string add_prefix(string_view s, string_view prefix) {
         if (starts_with(s, prefix))
-            return s;
-        else
-            return prefix + s;
+            return std::string(s);
+        std::string r(prefix);
+        r += s;
+        return r;
     }
 
-    inline std::string add_suffix(const std::string& s, const std::string& suffix) {
+    inline std::string add_suffix(string_view s, string_view suffix) {
         if (ends_with(s, suffix))
-            return s;
-        else
-            return s + suffix;
+            return std::string(s);
+        std::string r(s);
+        r += suffix;
+        return r;
     }
 
-    inline std::string drop_prefix(const std::string& s, const std::string& prefix) {
+    inline std::string drop_prefix(string_view s, string_view prefix) {
         if (starts_with(s, prefix))
-            return s.substr(prefix.size(), npos);
+            return std::string(s, prefix.size(), npos);
         else
-            return s;
+            return std::string(s);
     }
 
-    inline std::string drop_suffix(const std::string& s, const std::string& suffix) {
+    inline std::string drop_suffix(string_view s, string_view suffix) {
         if (ends_with(s, suffix))
-            return s.substr(0, s.size() - suffix.size());
+            return std::string(s, 0, s.size() - suffix.size());
         else
-            return s;
+            return std::string(s);
     }
 
-    inline std::string ascii_lowercase(const std::string& s) {
-        auto r = s;
+    inline std::string ascii_lowercase(string_view s) {
+        Ustring r(s);
         std::transform(r.begin(), r.end(), r.begin(), ascii_tolower);
         return r;
     }
 
-    inline std::string ascii_uppercase(const std::string& s) {
-        auto r = s;
+    inline std::string ascii_uppercase(string_view s) {
+        Ustring r(s);
         std::transform(r.begin(), r.end(), r.begin(), ascii_toupper);
         return r;
     }
 
-    inline std::string ascii_titlecase(const std::string& s) {
-        auto r = s;
+    inline std::string ascii_titlecase(string_view s) {
+        Ustring r(s);
         bool was_alpha = false;
         for (char& c: r) {
             if (was_alpha)
@@ -429,8 +445,8 @@ namespace RS {
         return r;
     }
 
-    inline std::string ascii_sentencecase(const std::string& s) {
-        auto r = s;
+    inline std::string ascii_sentencecase(string_view s) {
+        Ustring r(s);
         bool new_sentence = true, was_break = false;
         for (char& c: r) {
             if (c == '\n' || c == '\f' || c == '\r') {
@@ -452,7 +468,7 @@ namespace RS {
 
     inline Ustring dent(size_t depth) { return Ustring(4 * depth, ' '); }
 
-    inline Ustring indent(const Ustring& str, size_t depth) {
+    inline Ustring indent(Uview str, size_t depth) {
         Ustring result;
         size_t i = 0, j = 0, size = str.size();
         while (i < size) {
@@ -470,10 +486,10 @@ namespace RS {
     }
 
     template <typename InputRange>
-    std::string join(const InputRange& range, const std::string& delim = {}, bool term = false) {
+    std::string join(const InputRange& range, string_view delim = {}, bool term = false) {
         std::string result;
         for (auto& s: range) {
-            result += s;
+            result += make_view(s);
             result += delim;
         }
         if (! term && ! result.empty() && ! delim.empty())
@@ -481,7 +497,7 @@ namespace RS {
         return result;
     }
 
-    inline std::string linearize(const std::string& str) {
+    inline std::string linearize(string_view str) {
         std::string result;
         size_t i = 0, j = 0, size = str.size();
         while (j < size) {
@@ -505,71 +521,69 @@ namespace RS {
             str.resize(p);
     }
 
-    template <typename C>
-    std::basic_string<C> null_term_str(const std::basic_string<C>& str) {
-        auto result = str;
-        null_term(result);
-        return result;
-    }
-
-    inline std::string pad_left(const std::string& str, size_t len, char pad = ' ') {
-        auto s = str;
+    inline std::string pad_left(string_view str, size_t len, char pad = ' ') {
+        std::string s(str);
         if (len > s.size())
             s.insert(0, len - s.size(), pad);
         return s;
     }
 
-    inline std::string pad_right(const std::string& str, size_t len, char pad = ' ') {
-        auto s = str;
+    inline std::string pad_right(string_view str, size_t len, char pad = ' ') {
+        std::string s(str);
         if (len > s.size())
             s.append(len - s.size(), pad);
         return s;
     }
 
-    inline std::pair<std::string, std::string> partition_at(const std::string& str, const std::string& delim) {
+    inline std::pair<string_view, string_view> partition_at(string_view str, string_view delim) {
         if (delim.empty())
             return {str, {}};
         size_t p = str.find(delim);
         if (p == npos)
             return {str, {}};
         else
-            return {str.substr(0, p), str.substr(p + delim.size(), npos)};
+            return {make_view(str, 0, p), make_view(str, p + delim.size(), npos)};
     }
 
-    inline std::pair<std::string, std::string> partition_by(const std::string& str, const std::string& delims = ascii_whitespace) {
+    inline std::pair<string_view, string_view> partition_by(string_view str, string_view delims = ascii_whitespace) {
         if (delims.empty())
             return {str, {}};
         size_t p = str.find_first_of(delims);
         if (p == npos)
             return {str, {}};
+        string_view v1 = make_view(str, 0, p), v2;
         size_t q = str.find_first_not_of(delims, p);
-        if (q == npos)
-            return {str.substr(0, p), {}};
-        else
-            return {str.substr(0, p), str.substr(q, npos)};
+        if (q != npos)
+            v2 = make_view(str, q, npos);
+        return {v1, v2};
     }
 
-    inline Ustring quote(const std::string& str) { return RS_Detail::quote_string(str, true); }
-    inline Ustring bquote(const std::string& str) { return RS_Detail::quote_string(str, false); }
+    inline Ustring quote(string_view str) { return RS_Detail::quote_string(str, true); }
+    inline Ustring bquote(string_view str) { return RS_Detail::quote_string(str, false); }
 
-    inline std::string repeat(const std::string& s, size_t n, const std::string& delim = {}) {
+    inline std::string repeat(string_view s, size_t n, string_view delim = {}) {
         if (n == 0)
             return {};
-        else if (n == 1)
-            return s;
-        std::string r = s;
+        std::string r(s);
+        if (n == 1)
+            return r;
         r.reserve(n * s.size());
         size_t reps = 1, half = n / 2;
-        for (; reps <= half; reps *= 2)
-            r += delim + r;
-        if (reps < n)
-            r += delim + repeat(s, n - reps, delim);
+        for (; reps <= half; reps *= 2) {
+            size_t rlen = r.size();
+            r += delim;
+            r.append(r, 0, rlen);
+        }
+        if (reps < n) {
+            r += delim;
+            r += repeat(s, n - reps, delim);
+        }
         return r;
     }
 
-    inline std::string replace(const std::string& s, const std::string& target, const std::string& subst, size_t n = npos) {
+    inline std::string replace(string_view s, string_view target, string_view subst, size_t n = npos) {
         if (target.empty() || n == 0)
-            return s;
+            return std::string(s);
         std::string r;
         size_t i = 0, j = 0, slen = s.size(), tlen = target.size();
         for (size_t k = 0; k < n && i < slen; ++k) {
@@ -585,88 +599,88 @@ namespace RS {
     }
 
     template <typename OutputIterator>
-    void split(const std::string& src, OutputIterator dst, const std::string& delim = ascii_whitespace) {
+    void split(string_view src, OutputIterator dst, string_view delim = ascii_whitespace) {
         if (src.empty())
             return;
         if (delim.empty()) {
-            *dst = src;
+            *dst = std::string(src);
             return;
         }
         size_t i = 0, j = 0, size = src.size();
         while (i < size) {
             j = src.find_first_of(delim, i);
             if (j == npos) {
-                *dst = src.substr(i, npos);
+                *dst = std::string(src.substr(i, npos));
                 break;
             }
             if (j > i) {
-                *dst = src.substr(i, j - i);
+                *dst = std::string(src.substr(i, j - i));
                 ++dst;
             }
             i = src.find_first_not_of(delim, j);
         }
     }
 
-    inline Strings splitv(const std::string& src, const std::string& delim = ascii_whitespace) {
+    inline Strings splitv(string_view src, string_view delim = ascii_whitespace) {
         Strings v;
         split(src, append(v), delim);
         return v;
     }
 
     template <typename OutputIterator>
-    void split_lines(const std::string& src, OutputIterator dst) {
+    void split_lines(string_view src, OutputIterator dst) {
         if (src.empty())
             return;
         size_t i = 0, j = 0, size = src.size();
         while (i < size) {
             j = src.find('\n', i);
             if (j == npos) {
-                *dst = src.substr(i, npos);
+                *dst = std::string(src.substr(i, npos));
                 break;
             } else if (j - i > 0 && src[j - 1] == '\r') {
-                *dst = src.substr(i, j - i - 1);
+                *dst = std::string(src.substr(i, j - i - 1));
             } else {
-                *dst = src.substr(i, j - i);
+                *dst = std::string(src.substr(i, j - i));
             }
             ++dst;
             i = j + 1;
         }
     }
 
-    inline Strings splitv_lines(const std::string& src) {
+    inline Strings splitv_lines(string_view src) {
         Strings v;
         split_lines(src, append(v));
         return v;
     }
 
-    inline std::string trim(const std::string& str, const std::string& chars = ascii_whitespace) {
+    inline std::string trim(string_view str, string_view chars = ascii_whitespace) {
         size_t pos = str.find_first_not_of(chars);
         if (pos == npos)
             return {};
         else
-            return str.substr(pos, str.find_last_not_of(chars) + 1 - pos);
+            return std::string(str.substr(pos, str.find_last_not_of(chars) + 1 - pos));
     }
 
-    inline std::string trim_left(const std::string& str, const std::string& chars = ascii_whitespace) {
+    inline std::string trim_left(string_view str, string_view chars = ascii_whitespace) {
         size_t pos = str.find_first_not_of(chars);
         if (pos == npos)
             return {};
         else
-            return str.substr(pos, npos);
+            return std::string(str.substr(pos, npos));
     }
 
-    inline std::string trim_right(const std::string& str, const std::string& chars = ascii_whitespace) {
-        return str.substr(0, str.find_last_not_of(chars) + 1);
+    inline std::string trim_right(string_view str, string_view chars = ascii_whitespace) {
+        return std::string(str.substr(0, str.find_last_not_of(chars) + 1));
     }
 
-    inline std::string unqualify(const std::string& str, const std::string& delims = ".:") {
+    inline std::string unqualify(string_view str, string_view delims = ".:") {
         if (delims.empty())
-            return str;
+            return std::string(str);
         size_t pos = str.find_last_of(delims);
         if (pos == npos)
-            return str;
+            return std::string(str);
         else
-            return str.substr(pos + 1, npos);
+            return std::string(str.substr(pos + 1, npos));
     }
 
     // String formatting functions
@@ -776,7 +790,7 @@ namespace RS {
         return result;
     }
 
-    inline Ustring hexdump(const std::string& str, size_t block = 0) { return hexdump(str.data(), str.size(), block); }
+    inline Ustring hexdump(string_view str, size_t block = 0) { return hexdump(str.data(), str.size(), block); }
     inline Ustring tf(bool b) { return b ? "true" : "false"; }
     inline Ustring yn(bool b) { return b ? "yes" : "no"; }
 
@@ -844,24 +858,28 @@ namespace RS {
         };
 
         template <> struct ObjectToString<Ustring> { Ustring operator()(const Ustring& t) const { return t; } };
+        template <> struct ObjectToString<Uview> { Ustring operator()(Uview t) const { return Ustring(t); } };
         template <> struct ObjectToString<char*> { Ustring operator()(char* t) const { return t ? Ustring(t) : Ustring(); } };
         template <> struct ObjectToString<const char*> { Ustring operator()(const char* t) const { return t ? Ustring(t) : Ustring(); } };
         template <size_t N> struct ObjectToString<char[N], 'S'> { Ustring operator()(const char* t) const { return Ustring(t); } };
         template <> struct ObjectToString<char> { Ustring operator()(char t) const { return {t}; } };
 
         template <> struct ObjectToString<std::u16string> { Ustring operator()(const std::u16string& t) const { return uconv<Ustring>(t); } };
+        template <> struct ObjectToString<std::u16string_view> { Ustring operator()(std::u16string_view t) const { return uconv<Ustring>(t); } };
         template <> struct ObjectToString<char16_t*> { Ustring operator()(char16_t* t) const { return t ? uconv<Ustring>(std::u16string(t)) : Ustring(); } };
         template <> struct ObjectToString<const char16_t*> { Ustring operator()(const char16_t* t) const { return t ? uconv<Ustring>(std::u16string(t)) : Ustring(); } };
         template <size_t N> struct ObjectToString<char16_t[N], 'X'> { Ustring operator()(const char16_t* t) const { return uconv<Ustring>(std::u16string(t)); } };
         template <> struct ObjectToString<char16_t> { Ustring operator()(char16_t t) const { return uconv<Ustring>(std::u16string{t}); } };
 
         template <> struct ObjectToString<std::u32string> { Ustring operator()(const std::u32string& t) const { return uconv<Ustring>(t); } };
+        template <> struct ObjectToString<std::u32string_view> { Ustring operator()(std::u32string_view t) const { return uconv<Ustring>(t); } };
         template <> struct ObjectToString<char32_t*> { Ustring operator()(char32_t* t) const { return t ? uconv<Ustring>(std::u32string(t)) : Ustring(); } };
         template <> struct ObjectToString<const char32_t*> { Ustring operator()(const char32_t* t) const { return t ? uconv<Ustring>(std::u32string(t)) : Ustring(); } };
         template <size_t N> struct ObjectToString<char32_t[N], 'X'> { Ustring operator()(const char32_t* t) const { return uconv<Ustring>(std::u32string(t)); } };
         template <> struct ObjectToString<char32_t> { Ustring operator()(char32_t t) const { return uconv<Ustring>(std::u32string{t}); } };
 
         template <> struct ObjectToString<std::wstring> { Ustring operator()(const std::wstring& t) const { return uconv<Ustring>(t); } };
+        template <> struct ObjectToString<std::wstring_view> { Ustring operator()(std::wstring_view t) const { return uconv<Ustring>(t); } };
         template <> struct ObjectToString<wchar_t*> { Ustring operator()(wchar_t* t) const { return t ? uconv<Ustring>(std::wstring(t)) : Ustring(); } };
         template <> struct ObjectToString<const wchar_t*> { Ustring operator()(const wchar_t* t) const { return t ? uconv<Ustring>(std::wstring(t)) : Ustring(); } };
         template <size_t N> struct ObjectToString<wchar_t[N], 'X'> { Ustring operator()(const wchar_t* t) const { return uconv<Ustring>(std::wstring(t)); } };
@@ -882,7 +900,7 @@ namespace RS {
     template <typename T> inline Ustring to_str(const T& t) { return RS_Detail::ObjectToString<T>()(t); }
 
     template <typename... Args>
-    Ustring fmt(const Ustring& pattern, const Args&... args) {
+    Ustring fmt(Uview pattern, const Args&... args) {
         Strings argstr{to_str(args)...};
         Ustring result;
         size_t i = 0, psize = pattern.size();
@@ -904,7 +922,7 @@ namespace RS {
                     result += pattern[i++];
                     continue;
                 }
-                size_t a = std::stoul(pattern.substr(j, k - j));
+                size_t a = std::stoul(Ustring(pattern.substr(j, k - j)));
                 if (a > 0 && a <= argstr.size())
                     result += argstr[a - 1];
                 if (pattern[k] == '}')
@@ -917,17 +935,33 @@ namespace RS {
 
     // String parsing functions
 
-    inline unsigned long long binnum(const std::string& str) noexcept { return strtoull(str.data(), nullptr, 2); }
-    inline long long decnum(const std::string& str) noexcept { return strtoll(str.data(), nullptr, 10); }
-    inline unsigned long long hexnum(const std::string& str) noexcept { return strtoull(str.data(), nullptr, 16); }
-    inline double fpnum(const std::string& str) noexcept { return strtod(str.data(), nullptr); }
+    inline unsigned long long binnum(string_view str) noexcept {
+        std::string s(str);
+        return std::strtoull(s.data(), nullptr, 2);
+    }
 
-    inline int64_t si_to_int(const Ustring& s) {
+    inline long long decnum(string_view str) noexcept {
+        std::string s(str);
+        return std::strtoll(s.data(), nullptr, 10);
+    }
+
+    inline unsigned long long hexnum(string_view str) noexcept {
+        std::string s(str);
+        return std::strtoull(s.data(), nullptr, 16);
+    }
+
+    inline double fpnum(string_view str) noexcept {
+        std::string s(str);
+        return std::strtod(s.data(), nullptr);
+    }
+
+    inline int64_t si_to_int(Uview str) {
         using limits = std::numeric_limits<int64_t>;
         static constexpr const char* prefixes = "KMGTPEZY";
+        Ustring s(str);
         char* endp = nullptr;
         errno = 0;
-        int64_t n = strtoll(s.data(), &endp, 10);
+        int64_t n = std::strtoll(s.data(), &endp, 10);
         if (errno == ERANGE)
             throw std::range_error("Out of range: " + quote(s));
         if (errno || endp == s.data())
@@ -947,12 +981,13 @@ namespace RS {
         return n;
     }
 
-    inline double si_to_float(const Ustring& s) {
+    inline double si_to_float(Uview str) {
         using limits = std::numeric_limits<double>;
         static constexpr const char* prefixes = "yzafpnum kMGTPEZY";
+        Ustring s(str);
         char* endp = nullptr;
         errno = 0;
-        double x = strtod(s.data(), &endp);
+        double x = std::strtod(s.data(), &endp);
         if (errno == ERANGE)
             throw std::range_error("Out of range: " + quote(s));
         if (errno || endp == s.data())
@@ -980,7 +1015,7 @@ namespace RS {
     class Tag {
     public:
         Tag() = default;
-        Tag(std::ostream& out, const std::string& element) {
+        Tag(std::ostream& out, string_view element) {
             std::string content = trim_right(element, "\n");
             size_t lfs = element.size() - content.size();
             content = trim(content, "\t\n\f\r <>");
@@ -1033,13 +1068,13 @@ namespace RS {
     };
 
     template <typename T>
-    void tagged(std::ostream& out, const std::string& element, const T& t) {
+    void tagged(std::ostream& out, string_view element, const T& t) {
         Tag html(out, element);
         out << t;
     }
 
     template <typename... Args>
-    void tagged(std::ostream& out, const std::string& element, const Args&... args) {
+    void tagged(std::ostream& out, string_view element, const Args&... args) {
         Tag html(out, element);
         tagged(out, args...);
     }

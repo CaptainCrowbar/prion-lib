@@ -84,40 +84,51 @@ first passing it through `unsigned char`, to ensure that characters with the
 high bit set end up as integers in the 128-255 range, and not as negative or
 extremely high values.
 
+## Construction functions ##
+
+* `template <typename S> [string view]` **`make_view`**`(const S& s) noexcept`
+* `template <typename S> [string view]` **`make_view`**`(const S& s, size_t pos, size_t len) noexcept`
+
+Return a string view over the given string. The string argument may be an
+instantiation of `std:basic_string` or `std::basic_string_view`, or a pointer
+to a null terminated character array. Passing a null pointer will return an
+empty view. The second version returns a substring of the string argument; the
+bounds are range checked and clamped to the actual size of the string.
+
 ## String property functions ##
 
-* `bool` **`ascii_icase_equal`**`(const std::string& lhs, const std::string& rhs) noexcept`
-* `bool` **`ascii_icase_less`**`(const std::string& lhs, const std::string& rhs) noexcept`
+* `bool` **`ascii_icase_equal`**`(std::string_view lhs, std::string_view rhs) noexcept`
+* `bool` **`ascii_icase_less`**`(std::string_view lhs, std::string_view rhs) noexcept`
 
 Comparison functions that treat upper and lower case ASCII letters as
 equivalent (comparison between letters and non-letters uses the upper case
 code points).
 
-* `bool` **`starts_with`**`(const std::string& str, const std::string& prefix) noexcept`
-* `bool` **`ends_with`**`(const std::string& str, const std::string& suffix) noexcept`
+* `bool` **`starts_with`**`(std::string_view str, std::string_view prefix) noexcept`
+* `bool` **`ends_with`**`(std::string_view str, std::string_view suffix) noexcept`
 
 True if the string starts or ends with the specified substring.
 
-* `bool` **`string_is_ascii`**`(const std::string& str) noexcept`
+* `bool` **`string_is_ascii`**`(std::string_view str) noexcept`
 
 True if the string contains no 8-bit bytes.
 
 ## String manipulation functions ##
 
-* `std::string` **`add_prefix`**`(const std::string& s, const std::string& prefix)`
-* `std::string` **`add_suffix`**`(const std::string& s, const std::string& suffix)`
-* `std::string` **`drop_prefix`**`(const std::string& s, const std::string& prefix)`
-* `std::string` **`drop_suffix`**`(const std::string& s, const std::string& suffix)`
+* `std::string` **`add_prefix`**`(std::string_view s, std::string_view prefix)`
+* `std::string` **`add_suffix`**`(std::string_view s, std::string_view suffix)`
+* `std::string` **`drop_prefix`**`(std::string_view s, std::string_view prefix)`
+* `std::string` **`drop_suffix`**`(std::string_view s, std::string_view suffix)`
 
 The `add_prefix/suffix()` functions add a prefix or suffix to the string if it
 was not already there, or return the string unchanged if it was. The
 `drop_prefix/suffix()` functions remove a prefix or suffix if it was present,
 otherwise return the string unchanged.
 
-* `std::string` **`ascii_lowercase`**`(const std::string& s)`
-* `std::string` **`ascii_uppercase`**`(const std::string& s)`
-* `std::string` **`ascii_titlecase`**`(const std::string& s)`
-* `std::string` **`ascii_sentencecase`**`(const std::string& s)`
+* `std::string` **`ascii_lowercase`**`(std::string_view s)`
+* `std::string` **`ascii_uppercase`**`(std::string_view s)`
+* `std::string` **`ascii_titlecase`**`(std::string_view s)`
+* `std::string` **`ascii_sentencecase`**`(std::string_view s)`
 
 Simple ASCII-only case conversion functions. All non-ASCII characters are left
 unchanged. The sentence case function capitalizes the first letter of every
@@ -128,39 +139,38 @@ everything else alone.
 
 Returns a string containing `4*depth` spaces, for indentation.
 
-* `Ustring` **`indent`**`(const Ustring& str, size_t depth)`
+* `Ustring` **`indent`**`(Uview str, size_t depth)`
 
 Inserts `4*depth` spaces of indentation on every non-empty line.
 
-* `template <typename InputRange> std::string` **`join`**`(const InputRange& range, const std::string& delim = "", bool term = false)`
+* `template <typename InputRange> std::string` **`join`**`(const InputRange& range, std::string_view delim = "", bool term = false)`
 
 Join strings into a single string, using the given delimiter. The value type
-of the input range must be assignment compatible with `Ustring`. If the
-`term` argument is set, an extra delimiter will be added after the last
-element (useful when joining lines to form a text that would be expected to
-end with a line break).
+of the input range must be a valid argument to `make_view()`. If the `term`
+argument is set, an extra delimiter will be added after the last element
+(useful when joining lines to form a text that would be expected to end with a
+line break).
 
-* `std::string` **`linearize`**`(const std::string& str)`
+* `std::string` **`linearize`**`(std::strings str)`
 
 Replaces all whitespace in a string with a single space, and trims leading and
 trailing whitespace. All non-ASCII bytes are treated as non-whitespace
 characters.
 
 * `template <typename C> void` **`null_term`**`(std::basic_string<C>& str) noexcept`
-* `template <typename C> std::basic_string<C>` **`null_term_str`**`(const std::basic_string<C>& str)`
 
 Cut off a string at the first null character (useful after the string has been
 used as an output buffer by some C APIs).
 
-* `std::string` **`pad_left`**`(const std::string& str, size_t len, char pad = ' ')`
-* `std::string` **`pad_right`**`(const std::string& str, size_t len, char pad = ' ')`
+* `std::string` **`pad_left`**`(std::string_view str, size_t len, char pad = ' ')`
+* `std::string` **`pad_right`**`(std::string_view str, size_t len, char pad = ' ')`
 
 Pad a string on the right or left, using the supplied character, to the given
 length (in bytes). The string will be returned unchanged if it is already at
 least `len` bytes long.
 
-* `std::pair<std::string, std::string>` **`partition_at`**`(const std::string& str, const std::string& delim)`
-* `std::pair<std::string, std::string>` **`partition_by`**`(const std::string& str, const std::string& delims = ascii_whitespace)`
+* `std::pair<std::string_view, std::string_view>` **`partition_at`**`(std::string_view str, std::string_view delim)`
+* `std::pair<std::string_view, std::string_view>` **`partition_by`**`(std::string_view str, std::string_view delims = ascii_whitespace)`
 
 These break a string into two parts at the first delimiter, returning the
 parts before and after the delimiter. If the delimiter is not found, or is
@@ -169,52 +179,52 @@ string. The `partition_at()` function breaks the string at the first
 occurrence of the delimiter substring; `partition_by()` breaks it at the first
 contiguous group of one or more bytes from the delimiter list.
 
-* `Ustring` **`quote`**`(const std::string& str)`
-* `Ustring` **`bquote`**`(const std::string& str)`
+* `Ustring` **`quote`**`(std::string_view str)`
+* `Ustring` **`bquote`**`(std::string_view str)`
 
 Return a quoted string; internal quotes, backslashes, and control characters
 are escaped. The `bquote()` function always escapes all non-ASCII bytes;
 `quote()` passes valid UTF-8 unchanged, but will switch to `bquote()` mode if
 the string is not valid UTF-8.
 
-* `std::string` **`repeat`**`(const std::string& s, size_t n, const std::string& delim = "")`
+* `std::string` **`repeat`**`(std::string_view s, size_t n, std::string_view delim = "")`
 
 Returns a string containing `n` copies of `s`. If a delimiter is given, it
 will be placed between each pair of elements.
 
-* `std::string` **`replace`**`(const std::string& s, const std::string& target, const std::string& subst, size_t n = npos)`
+* `std::string` **`replace`**`(std::string_view s, std::string_view target, std::string_view subst, size_t n = npos)`
 
 Replaces the first `n` occurrences (all of them by default) of `target` in `s`
 with `subst`. This will return the string unchanged if `target` is empty or
 `n=0`.
 
-* `template <typename OutputIterator> void` **`split`**`(const std::string& src, OutputIterator dst, const std::string& delim = ascii_whitespace)`
-* `Strings` **`splitv`**`(const std::string& src, const std::string& delim = ascii_whitespace)`
+* `template <typename OutputIterator> void` **`split`**`(std::string_view src, OutputIterator dst, std::string_view delim = ascii_whitespace)`
+* `Strings` **`splitv`**`(std::string_view src, std::string_view delim = ascii_whitespace)`
 
 Split a string into substrings, discarding any delimiter characters. Any
 contiguous subsequence of delimiter characters will be treated as a break
 point. If the input string is empty, the output list will always be empty;
 otherwise, if the delimiter list is empty, the output will consist of a single
 string matching the input. The value type of the output iterator in `split()`
-must be assignment compatible with `Ustring`; the `splitv()` version returns
-a vector of strings instead of writing to an existing receiver.
+must be assignment compatible with `Ustring`; the `splitv()` version returns a
+vector of strings instead of writing to an existing receiver.
 
-* `template <typename OutputIterator> void` **`split_lines`**`(const std::string& src, OutputIterator dst)`
-* `Strings` **`splitv_lines`**`(const std::string& src)`
+* `template <typename OutputIterator> void` **`split_lines`**`(std::string_view src, OutputIterator dst)`
+* `Strings` **`splitv_lines`**`(std::string_view src)`
 
 Split a string into lines. A line ends with any LF or CRLF; these are not
 copied into the output.
 
-* `std::string` **`trim`**`(const std::string& str, const std::string& chars = ascii_whitespace)`
-* `std::string` **`trim_left`**`(const std::string& str, const std::string& chars = ascii_whitespace)`
-* `std::string` **`trim_right`**`(const std::string& str, const std::string& chars = ascii_whitespace)`
+* `std::string` **`trim`**`(std::string_view str, std::string_view chars = ascii_whitespace)`
+* `std::string` **`trim_left`**`(std::string_view str, std::string_view chars = ascii_whitespace)`
+* `std::string` **`trim_right`**`(std::string_view str, std::string_view chars = ascii_whitespace)`
 
 Trim unwanted bytes from the ends of a string.
 
-* `std::string` **`unqualify`**`(const std::string& str, const std::string& delims = ".:")`
+* `std::string` **`unqualify`**`(std::string_view str, std::string_view delims = ".:")`
 
 Strips off any prefix ending in one of the delimiter characters (e.g.
-`unqualify("RS::unqualify()")` returns `"unqualify()"`). This will return the
+`unqualify("foo::bar::zap()")` returns `"zap()"`). This will return the
 original string unchanged if the delimiter string is empty or none of its
 characters are found.
 
@@ -228,7 +238,7 @@ Simple number formatting functions. These convert an integer to a binary,
 decimal, or hexadecimal string, generating at least the specified number of
 digits.
 
-* `template <typename... Args> Ustring` **`fmt`**`(const Ustring& pattern, const Args&... args)`
+* `template <typename... Args> Ustring` **`fmt`**`(Uview pattern, const Args&... args)`
 
 This performs string interpolation, inserting the variadic arguments
 (formatted with `to_str()`, below) in place of each occurrence of `"$n"` or
@@ -247,17 +257,17 @@ stripped. This will throw `std::invalid_argument` if the mode is not one of
 `[EFGZefgz]`; it may throw `std::system_error` under implementation defined
 circumstances.
 
+* `Ustring` **`hexdump`**`(const void* ptr, size_t n, size_t block = 0)`
+* `Ustring` **`hexdump`**`(std::string_view str, size_t block = 0)`
+
+Converts a block of raw data into hexadecimal bytes. If `block` is not zero, a
+line feed is inserted after each block.
+
 * `Ustring` **`roman`**`(int n)`
 
 Formats a number as a Roman numeral. Numbers greater than 1000 will be written
 with an arbitrarily long sequence of `"M"`. This will return an empty string
 if the argument is less than 1.
-
-* `Ustring` **`hexdump`**`(const void* ptr, size_t n, size_t block = 0)`
-* `Ustring` **`hexdump`**`(const std::string& str, size_t block = 0)`
-
-Converts a block of raw data into hexadecimal bytes. If `block` is not zero, a
-line feed is inserted after each block.
 
 * `Ustring` **`tf`**`(bool b)`
 * `Ustring` **`yn`**`(bool b)`
@@ -269,10 +279,10 @@ Convert a boolean to `"true/false"` or `"yes/no"`.
 Formats an object as a string. This uses the following rules for formatting
 various types:
 
-* `std::string`, `char`, character pointers, and anything with an implicit
-conversion to `std::string` - The string content is simply copied directly
-without using an output stream; a null character pointer is treated as an
-empty string.
+* `std::string`, `std::string_view`, `char`, character pointers, and anything
+with an implicit conversion to `std::string` or `std::string_view` - The
+string content is simply copied directly without using an output stream; a
+null character pointer is treated as an empty string.
 * Unicode string and character types - Converted to UTF-8 using `uconv()`.
 * Integer types - Formatted using `dec()`.
 * Floating point types - Formatted using `fp_format()`.
@@ -284,10 +294,10 @@ type is a pair; `to_str()` is called recursively on each range element.
 
 ## String parsing functions ##
 
-* `unsigned long long` **`binnum`**`(const std::string& str) noexcept`
-* `long long` **`decnum`**`(const std::string& str) noexcept`
-* `unsigned long long` **`hexnum`**`(const std::string& str) noexcept`
-* `double` **`fpnum`**`(const std::string& str) noexcept`
+* `unsigned long long` **`binnum`**`(std::string_view str) noexcept`
+* `long long` **`decnum`**`(std::string_view str) noexcept`
+* `unsigned long long` **`hexnum`**`(std::string_view str) noexcept`
+* `double` **`fpnum`**`(std::string_view str) noexcept`
 
 The `binnum()`, `decnum()`, and `hexnum()` functions convert a binary,
 decimal, or hexadecimal string to a number; `fpnum()` converts a string to a
@@ -297,8 +307,8 @@ contain a valid number. Results that are out of range will be clamped to the
 nearest end of the return type's range (for `fpnum()` this will normally be
 positive or negative infinity).
 
-* `int64_t` **`si_to_int`**`(const Ustring& s)`
-* `double` **`si_to_float`**`(const Ustring& s)`
+* `int64_t` **`si_to_int`**`(Uview str)`
+* `double` **`si_to_float`**`(Uview str)`
 
 These parse a number from a string representation tagged with an SI multiplier
 abbreviation (e.g. `"123k"`). For the integer version, only tags representing
@@ -317,7 +327,7 @@ type.
 
 * `class` **`Tag`**
     * `Tag::`**`Tag`**`()`
-    * `Tag::`**`Tag`**`(std::ostream& out, const std::string& element)`
+    * `Tag::`**`Tag`**`(std::ostream& out, std::string_view element)`
     * `Tag::`**`~Tag`**`() noexcept`
     * `Tag::`**`Tag`**`(Tag&& t) noexcept`
     * `Tag& Tag::`**`operator=`**`(Tag&& t) noexcept`
@@ -337,8 +347,8 @@ If the opening tag is standalone, the text will simply be written as is, and
 no closing tag will be written. Standalone tags are identified by a closing
 slash; the class is not aware of HTML's list of automatic self closing tags.
 
-* `template <typename... Args> void` **`tagged`**`(std::ostream& out, const std::string& element, const Args&... args)`
-* `template <typename T> void` **`tagged`**`(std::ostream& out, const std::string& element, const T& t)`
+* `template <typename... Args> void` **`tagged`**`(std::ostream& out, std::string_view element, const Args&... args)`
+* `template <typename T> void` **`tagged`**`(std::ostream& out, std::string_view element, const T& t)`
 
 This function can be used to write a piece of literal text enclosed in one or
 more tags. The arguments are the output stream, a list of tags (using the same
@@ -369,26 +379,29 @@ dynamic type of the referenced object.
 
 ## Unicode functions ##
 
-* `template <typename S2, typename S1> S2` **`uconv`**`(const S1& s)`
+In all of these functions, the argument type `S` may be an instantiation of
+`std::basic_string` or `std::basic_string_view` on an 8, 16, or 32 bit
+character type, or a pointer to a null terminated string of one of those
+types. The input string is assumed to be in a UTF representation determined by
+the size of the character type. Behaviour is undefined if a null pointer is
+passed.
 
-Converts between UTF representations. The input and output types (`S1` and
-`S2`) must be instantiations of `std::basic_string` with 8, 16, or 32 bit
-character types. If the character types are the same size, the input string is
-copied to the output without any validity checking; otherwise, invalid UTF in
-the input is replaced with the standard Unicode replacement character
-(`U+FFFD`) in the output.
+* `template <typename S2, typename S> S2` **`uconv`**`(const S& s)`
 
-* `template <typename C> size_t` **`ulength`**`(const std::basic_string<C>& s) noexcept`
+Converts between UTF representations. If the input and output character types
+are the same size, the input string is copied to the output without any
+validity checking; otherwise, invalid UTF in the input is replaced with the
+standard Unicode replacement character (`U+FFFD`) in the output.
 
-Returns the number of characters (Unicode scalar values) in a string. The UTF
-encoding is chosen based on `sizeof(C)`; the result is unspecified if the
-string is not valid UTF.
+* `template <typename S> size_t` **`ulength`**`(const S& s) noexcept`
 
-* `template <typename C> bool` **`uvalid`**`(const std::basic_string<C>& s) noexcept`
-* `template <typename C> bool` **`uvalid`**`(const std::basic_string<C>& s, size_t& n) noexcept`
+Returns the number of characters (Unicode scalar values) in a string. The
+result is unspecified if the string is not valid UTF.
 
-Check a string for a valid UTF encoding; the encoding is deduced from the size
-of the character type. The second version reports the number of code units
-before an invalid code sequence was encountered (i.e. the size of a valid UTF
-prefix; this will be equal to `s.size()` if the function returns true). These
-will always succeed for an empty string.
+* `template <typename S> bool` **`uvalid`**`(const S& s) noexcept`
+* `template <typename S> bool` **`uvalid`**`(const S& s, size_t& n) noexcept`
+
+Check a string for valid UTF encoding. The second version reports the number
+of code units before an invalid code sequence was encountered (i.e. the size
+of a valid UTF prefix; this will be equal to the length of `s` if the function
+returns true). These will always succeed for an empty string.

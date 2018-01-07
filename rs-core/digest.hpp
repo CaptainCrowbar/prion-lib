@@ -213,7 +213,7 @@ namespace RS {
     }
 
     template <typename MD>
-    typename MD::result_type digest(const std::string& s) {
+    typename MD::result_type digest(string_view s) {
         return digest<MD>(s.data(), s.size());
     }
 

@@ -213,7 +213,7 @@ namespace RS {
     #endif
 
     using Ustring = std::string;
-    using Uview = std::string_view;
+    using Uview = string_view;
     using Strings = std::vector<std::string>;
     using NativeString = std::basic_string<NativeCharacter>;
     using WstringEquivalent = std::basic_string<WcharEquivalent>;

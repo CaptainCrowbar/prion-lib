@@ -40,19 +40,17 @@ namespace RS {
     }
 
     struct Zlib {
-        static std::string compress(const void* ptr, size_t len, int level = Z_DEFAULT_COMPRESSION);
-        static std::string compress(const std::string& src, int level = Z_DEFAULT_COMPRESSION);
-        static std::string uncompress(const void* ptr, size_t len);
-        static std::string uncompress(const std::string& src);
+        static std::string compress(string_view src, int level = Z_DEFAULT_COMPRESSION);
+        static std::string uncompress(string_view src);
     };
 
-        inline std::string Zlib::compress(const void* ptr, size_t len, int level) {
-            if (! ptr || ! len)
+        inline std::string Zlib::compress(string_view src, int level) {
+            if (src.empty())
                 return {};
-            auto dstlen = ::compressBound(uLong(len));
+            auto dstlen = ::compressBound(uLong(src.size()));
             std::string dst(size_t(dstlen), '\0');
             errno = 0;
-            int rc = ::compress2(reinterpret_cast<unsigned char*>(&dst[0]), &dstlen, static_cast<const unsigned char*>(ptr), uLong(len), level);
+            int rc = ::compress2(reinterpret_cast<unsigned char*>(&dst[0]), &dstlen, reinterpret_cast<const unsigned char*>(src.data()), uLong(src.size()), level);
             int err = errno;
             if (rc == Z_ERRNO)
                 throw std::system_error(err, std::generic_category());
@@ -62,19 +60,15 @@ namespace RS {
             return dst;
         }
 
-        inline std::string Zlib::compress(const std::string& src, int level) {
-            return compress(src.data(), src.size(), level);
-        }
-
-        inline std::string Zlib::uncompress(const void* ptr, size_t len) {
-            if (! ptr || ! len)
+        inline std::string Zlib::uncompress(string_view src) {
+            if (src.empty())
                 return {};
-            auto block = uLong(5 * len);
+            auto block = uLong(5 * src.size());
             auto dstlen = block;
             std::string dst(size_t(block), '\0');
             for (;;) {
                 errno = 0;
-                int rc = ::uncompress(reinterpret_cast<unsigned char*>(&dst[0]), &dstlen, static_cast<const unsigned char*>(ptr), uLong(len));
+                int rc = ::uncompress(reinterpret_cast<unsigned char*>(&dst[0]), &dstlen, reinterpret_cast<const unsigned char*>(src.data()), uLong(src.size()));
                 int err = errno;
                 if (rc == 0)
                     break;
@@ -89,10 +83,6 @@ namespace RS {
             return dst;
         }
 
-        inline std::string Zlib::uncompress(const std::string& src) {
-            return uncompress(src.data(), src.size());
-        }
-
     class Gzio:
     public IO {
     public:
@@ -100,7 +90,7 @@ namespace RS {
         using handle_type = gzFile;
         Gzio() = default;
         explicit Gzio(const File& f, mode m = mode::read_only);
-        Gzio(const File& f, const Ustring& iomode);
+        Gzio(const File& f, Uview iomode);
         virtual void close() noexcept override;
         virtual void flush() noexcept override;
         virtual int getc() noexcept override;
@@ -130,7 +120,7 @@ namespace RS {
             *this = Gzio(f, gzmode);
         }
 
-        inline Gzio::Gzio(const File& f, const Ustring& iomode) {
+        inline Gzio::Gzio(const File& f, Uview iomode) {
             errno = 0;
             auto rc = gzopen(f.c_name(), iomode.data());
             int err = errno;

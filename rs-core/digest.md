@@ -89,8 +89,8 @@ TODO - Not fully implemented yet, multiple calls to operator() will not work
 
 ## Utility functions ##
 
+* `template <typename MD> MD::result_type` **`digest`**`(std::string_view s)`
 * `template <typename MD> MD::result_type` **`digest`**`(const void* ptr, size_t n)`
-* `template <typename MD> MD::result_type` **`digest`**`(const std::string& s)`
 
 Convenience wrappers for message digest classes.
 

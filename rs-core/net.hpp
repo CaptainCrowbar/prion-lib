@@ -558,7 +558,7 @@ namespace RS {
                 int rc = getnameinfo(addr.native(), socklen_t(addr.size()), &name[0], name_size(name.size()), nullptr, 0, 0);
                 int err = get_error();
                 switch (rc) {
-                    case 0:             return null_term_str(name);
+                    case 0:             null_term(name); return name;
                     case eai_again:     return {};
                     case eai_noname:    return {};
                     case eai_overflow:  break;

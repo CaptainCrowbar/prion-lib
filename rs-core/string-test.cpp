@@ -580,12 +580,12 @@ void test_core_string_manipulation() {
     TRY(s = linearize("Hello world."));                      TEST_EQUAL(s, "Hello world.");
     TRY(s = linearize("\r\nHello world.\r\nGoodbye.\r\n"));  TEST_EQUAL(s, "Hello world. Goodbye.");
 
-    s = ""s;                TEST_EQUAL(null_term_str(s), "");
-    s = "Hello world"s;     TEST_EQUAL(null_term_str(s), "Hello world");
-    s = "Hello\0world"s;    TEST_EQUAL(null_term_str(s), "Hello");
-    ws = L""s;              TEST_EQUAL(null_term_str(ws), L"");
-    ws = L"Hello world"s;   TEST_EQUAL(null_term_str(ws), L"Hello world");
-    ws = L"Hello\0world"s;  TEST_EQUAL(null_term_str(ws), L"Hello");
+    s = ""s;                TRY(null_term(s));   TEST_EQUAL(s, "");
+    s = "Hello world"s;     TRY(null_term(s));   TEST_EQUAL(s, "Hello world");
+    s = "Hello\0world"s;    TRY(null_term(s));   TEST_EQUAL(s, "Hello");
+    ws = L""s;              TRY(null_term(ws));  TEST_EQUAL(ws, L"");
+    ws = L"Hello world"s;   TRY(null_term(ws));  TEST_EQUAL(ws, L"Hello world");
+    ws = L"Hello\0world"s;  TRY(null_term(ws));  TEST_EQUAL(ws, L"Hello");
 
     s1 = "";       TRY(s2 = pad_left(s1, 3));       TEST_EQUAL(s2, "   ");
     s1 = "Hello";  TRY(s2 = pad_left(s1, 3));       TEST_EQUAL(s2, "Hello");

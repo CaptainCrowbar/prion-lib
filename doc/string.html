@@ -18,6 +18,7 @@
 <li><a href="#contents">Contents</a></li>
 <li><a href="#string-literals">String literals</a></li>
 <li><a href="#character-functions">Character functions</a></li>
+<li><a href="#construction-functions">Construction functions</a></li>
 <li><a href="#string-property-functions">String property functions</a></li>
 <li><a href="#string-manipulation-functions">String manipulation functions</a></li>
 <li><a href="#string-formatting-functions">String formatting functions</a></li>
@@ -111,11 +112,23 @@ first passing it through <code>unsigned char</code>, to ensure that characters w
 high bit set end up as integers in the 128-255 range, and not as negative or
 extremely high values.</p>
 </div>
+<h2 id="construction-functions">Construction functions</h2>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename S&gt; [string view]</code> <strong><code>make_view</code></strong><code>(const S&amp; s) noexcept</code></li>
+<li><code>template &lt;typename S&gt; [string view]</code> <strong><code>make_view</code></strong><code>(const S&amp; s, size_t pos, size_t len) noexcept</code></li>
+</ul>
+<p>Return a string view over the given string. The string argument may be an
+instantiation of <code>std:basic_string</code> or <code>std::basic_string_view</code>, or a pointer
+to a null terminated character array. Passing a null pointer will return an
+empty view. The second version returns a substring of the string argument; the
+bounds are range checked and clamped to the actual size of the string.</p>
+</div>
 <h2 id="string-property-functions">String property functions</h2>
 <div class="defns">
 <ul>
-<li><code>bool</code> <strong><code>ascii_icase_equal</code></strong><code>(const std::string&amp; lhs, const std::string&amp; rhs) noexcept</code></li>
-<li><code>bool</code> <strong><code>ascii_icase_less</code></strong><code>(const std::string&amp; lhs, const std::string&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>ascii_icase_equal</code></strong><code>(std::string_view lhs, std::string_view rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>ascii_icase_less</code></strong><code>(std::string_view lhs, std::string_view rhs) noexcept</code></li>
 </ul>
 <p>Comparison functions that treat upper and lower case ASCII letters as
 equivalent (comparison between letters and non-letters uses the upper case
@@ -123,24 +136,24 @@ code points).</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>bool</code> <strong><code>starts_with</code></strong><code>(const std::string&amp; str, const std::string&amp; prefix) noexcept</code></li>
-<li><code>bool</code> <strong><code>ends_with</code></strong><code>(const std::string&amp; str, const std::string&amp; suffix) noexcept</code></li>
+<li><code>bool</code> <strong><code>starts_with</code></strong><code>(std::string_view str, std::string_view prefix) noexcept</code></li>
+<li><code>bool</code> <strong><code>ends_with</code></strong><code>(std::string_view str, std::string_view suffix) noexcept</code></li>
 </ul>
 <p>True if the string starts or ends with the specified substring.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>bool</code> <strong><code>string_is_ascii</code></strong><code>(const std::string&amp; str) noexcept</code></li>
+<li><code>bool</code> <strong><code>string_is_ascii</code></strong><code>(std::string_view str) noexcept</code></li>
 </ul>
 <p>True if the string contains no 8-bit bytes.</p>
 </div>
 <h2 id="string-manipulation-functions">String manipulation functions</h2>
 <div class="defns">
 <ul>
-<li><code>std::string</code> <strong><code>add_prefix</code></strong><code>(const std::string&amp; s, const std::string&amp; prefix)</code></li>
-<li><code>std::string</code> <strong><code>add_suffix</code></strong><code>(const std::string&amp; s, const std::string&amp; suffix)</code></li>
-<li><code>std::string</code> <strong><code>drop_prefix</code></strong><code>(const std::string&amp; s, const std::string&amp; prefix)</code></li>
-<li><code>std::string</code> <strong><code>drop_suffix</code></strong><code>(const std::string&amp; s, const std::string&amp; suffix)</code></li>
+<li><code>std::string</code> <strong><code>add_prefix</code></strong><code>(std::string_view s, std::string_view prefix)</code></li>
+<li><code>std::string</code> <strong><code>add_suffix</code></strong><code>(std::string_view s, std::string_view suffix)</code></li>
+<li><code>std::string</code> <strong><code>drop_prefix</code></strong><code>(std::string_view s, std::string_view prefix)</code></li>
+<li><code>std::string</code> <strong><code>drop_suffix</code></strong><code>(std::string_view s, std::string_view suffix)</code></li>
 </ul>
 <p>The <code>add_prefix/suffix()</code> functions add a prefix or suffix to the string if it
 was not already there, or return the string unchanged if it was. The
@@ -149,10 +162,10 @@ otherwise return the string unchanged.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>std::string</code> <strong><code>ascii_lowercase</code></strong><code>(const std::string&amp; s)</code></li>
-<li><code>std::string</code> <strong><code>ascii_uppercase</code></strong><code>(const std::string&amp; s)</code></li>
-<li><code>std::string</code> <strong><code>ascii_titlecase</code></strong><code>(const std::string&amp; s)</code></li>
-<li><code>std::string</code> <strong><code>ascii_sentencecase</code></strong><code>(const std::string&amp; s)</code></li>
+<li><code>std::string</code> <strong><code>ascii_lowercase</code></strong><code>(std::string_view s)</code></li>
+<li><code>std::string</code> <strong><code>ascii_uppercase</code></strong><code>(std::string_view s)</code></li>
+<li><code>std::string</code> <strong><code>ascii_titlecase</code></strong><code>(std::string_view s)</code></li>
+<li><code>std::string</code> <strong><code>ascii_sentencecase</code></strong><code>(std::string_view s)</code></li>
 </ul>
 <p>Simple ASCII-only case conversion functions. All non-ASCII characters are left
 unchanged. The sentence case function capitalizes the first letter of every
@@ -167,23 +180,23 @@ everything else alone.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>Ustring</code> <strong><code>indent</code></strong><code>(const Ustring&amp; str, size_t depth)</code></li>
+<li><code>Ustring</code> <strong><code>indent</code></strong><code>(Uview str, size_t depth)</code></li>
 </ul>
 <p>Inserts <code>4*depth</code> spaces of indentation on every non-empty line.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename InputRange&gt; std::string</code> <strong><code>join</code></strong><code>(const InputRange&amp; range, const std::string&amp; delim = "", bool term = false)</code></li>
+<li><code>template &lt;typename InputRange&gt; std::string</code> <strong><code>join</code></strong><code>(const InputRange&amp; range, std::string_view delim = "", bool term = false)</code></li>
 </ul>
 <p>Join strings into a single string, using the given delimiter. The value type
-of the input range must be assignment compatible with <code>Ustring</code>. If the
-<code>term</code> argument is set, an extra delimiter will be added after the last
-element (useful when joining lines to form a text that would be expected to
-end with a line break).</p>
+of the input range must be a valid argument to <code>make_view()</code>. If the <code>term</code>
+argument is set, an extra delimiter will be added after the last element
+(useful when joining lines to form a text that would be expected to end with a
+line break).</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>std::string</code> <strong><code>linearize</code></strong><code>(const std::string&amp; str)</code></li>
+<li><code>std::string</code> <strong><code>linearize</code></strong><code>(std::strings str)</code></li>
 </ul>
 <p>Replaces all whitespace in a string with a single space, and trims leading and
 trailing whitespace. All non-ASCII bytes are treated as non-whitespace
@@ -192,15 +205,14 @@ characters.</p>
 <div class="defns">
 <ul>
 <li><code>template &lt;typename C&gt; void</code> <strong><code>null_term</code></strong><code>(std::basic_string&lt;C&gt;&amp; str) noexcept</code></li>
-<li><code>template &lt;typename C&gt; std::basic_string&lt;C&gt;</code> <strong><code>null_term_str</code></strong><code>(const std::basic_string&lt;C&gt;&amp; str)</code></li>
 </ul>
 <p>Cut off a string at the first null character (useful after the string has been
 used as an output buffer by some C APIs).</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>std::string</code> <strong><code>pad_left</code></strong><code>(const std::string&amp; str, size_t len, char pad = ' ')</code></li>
-<li><code>std::string</code> <strong><code>pad_right</code></strong><code>(const std::string&amp; str, size_t len, char pad = ' ')</code></li>
+<li><code>std::string</code> <strong><code>pad_left</code></strong><code>(std::string_view str, size_t len, char pad = ' ')</code></li>
+<li><code>std::string</code> <strong><code>pad_right</code></strong><code>(std::string_view str, size_t len, char pad = ' ')</code></li>
 </ul>
 <p>Pad a string on the right or left, using the supplied character, to the given
 length (in bytes). The string will be returned unchanged if it is already at
@@ -208,8 +220,8 @@ least <code>len</code> bytes long.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>std::pair&lt;std::string, std::string&gt;</code> <strong><code>partition_at</code></strong><code>(const std::string&amp; str, const std::string&amp; delim)</code></li>
-<li><code>std::pair&lt;std::string, std::string&gt;</code> <strong><code>partition_by</code></strong><code>(const std::string&amp; str, const std::string&amp; delims = ascii_whitespace)</code></li>
+<li><code>std::pair&lt;std::string_view, std::string_view&gt;</code> <strong><code>partition_at</code></strong><code>(std::string_view str, std::string_view delim)</code></li>
+<li><code>std::pair&lt;std::string_view, std::string_view&gt;</code> <strong><code>partition_by</code></strong><code>(std::string_view str, std::string_view delims = ascii_whitespace)</code></li>
 </ul>
 <p>These break a string into two parts at the first delimiter, returning the
 parts before and after the delimiter. If the delimiter is not found, or is
@@ -220,8 +232,8 @@ contiguous group of one or more bytes from the delimiter list.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>Ustring</code> <strong><code>quote</code></strong><code>(const std::string&amp; str)</code></li>
-<li><code>Ustring</code> <strong><code>bquote</code></strong><code>(const std::string&amp; str)</code></li>
+<li><code>Ustring</code> <strong><code>quote</code></strong><code>(std::string_view str)</code></li>
+<li><code>Ustring</code> <strong><code>bquote</code></strong><code>(std::string_view str)</code></li>
 </ul>
 <p>Return a quoted string; internal quotes, backslashes, and control characters
 are escaped. The <code>bquote()</code> function always escapes all non-ASCII bytes;
@@ -230,14 +242,14 @@ the string is not valid UTF-8.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>std::string</code> <strong><code>repeat</code></strong><code>(const std::string&amp; s, size_t n, const std::string&amp; delim = "")</code></li>
+<li><code>std::string</code> <strong><code>repeat</code></strong><code>(std::string_view s, size_t n, std::string_view delim = "")</code></li>
 </ul>
 <p>Returns a string containing <code>n</code> copies of <code>s</code>. If a delimiter is given, it
 will be placed between each pair of elements.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>std::string</code> <strong><code>replace</code></strong><code>(const std::string&amp; s, const std::string&amp; target, const std::string&amp; subst, size_t n = npos)</code></li>
+<li><code>std::string</code> <strong><code>replace</code></strong><code>(std::string_view s, std::string_view target, std::string_view subst, size_t n = npos)</code></li>
 </ul>
 <p>Replaces the first <code>n</code> occurrences (all of them by default) of <code>target</code> in <code>s</code>
 with <code>subst</code>. This will return the string unchanged if <code>target</code> is empty or
@@ -245,39 +257,39 @@ with <code>subst</code>. This will return the string unchanged if <code>target</
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename OutputIterator&gt; void</code> <strong><code>split</code></strong><code>(const std::string&amp; src, OutputIterator dst, const std::string&amp; delim = ascii_whitespace)</code></li>
-<li><code>Strings</code> <strong><code>splitv</code></strong><code>(const std::string&amp; src, const std::string&amp; delim = ascii_whitespace)</code></li>
+<li><code>template &lt;typename OutputIterator&gt; void</code> <strong><code>split</code></strong><code>(std::string_view src, OutputIterator dst, std::string_view delim = ascii_whitespace)</code></li>
+<li><code>Strings</code> <strong><code>splitv</code></strong><code>(std::string_view src, std::string_view delim = ascii_whitespace)</code></li>
 </ul>
 <p>Split a string into substrings, discarding any delimiter characters. Any
 contiguous subsequence of delimiter characters will be treated as a break
 point. If the input string is empty, the output list will always be empty;
 otherwise, if the delimiter list is empty, the output will consist of a single
 string matching the input. The value type of the output iterator in <code>split()</code>
-must be assignment compatible with <code>Ustring</code>; the <code>splitv()</code> version returns
-a vector of strings instead of writing to an existing receiver.</p>
+must be assignment compatible with <code>Ustring</code>; the <code>splitv()</code> version returns a
+vector of strings instead of writing to an existing receiver.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename OutputIterator&gt; void</code> <strong><code>split_lines</code></strong><code>(const std::string&amp; src, OutputIterator dst)</code></li>
-<li><code>Strings</code> <strong><code>splitv_lines</code></strong><code>(const std::string&amp; src)</code></li>
+<li><code>template &lt;typename OutputIterator&gt; void</code> <strong><code>split_lines</code></strong><code>(std::string_view src, OutputIterator dst)</code></li>
+<li><code>Strings</code> <strong><code>splitv_lines</code></strong><code>(std::string_view src)</code></li>
 </ul>
 <p>Split a string into lines. A line ends with any LF or CRLF; these are not
 copied into the output.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>std::string</code> <strong><code>trim</code></strong><code>(const std::string&amp; str, const std::string&amp; chars = ascii_whitespace)</code></li>
-<li><code>std::string</code> <strong><code>trim_left</code></strong><code>(const std::string&amp; str, const std::string&amp; chars = ascii_whitespace)</code></li>
-<li><code>std::string</code> <strong><code>trim_right</code></strong><code>(const std::string&amp; str, const std::string&amp; chars = ascii_whitespace)</code></li>
+<li><code>std::string</code> <strong><code>trim</code></strong><code>(std::string_view str, std::string_view chars = ascii_whitespace)</code></li>
+<li><code>std::string</code> <strong><code>trim_left</code></strong><code>(std::string_view str, std::string_view chars = ascii_whitespace)</code></li>
+<li><code>std::string</code> <strong><code>trim_right</code></strong><code>(std::string_view str, std::string_view chars = ascii_whitespace)</code></li>
 </ul>
 <p>Trim unwanted bytes from the ends of a string.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>std::string</code> <strong><code>unqualify</code></strong><code>(const std::string&amp; str, const std::string&amp; delims = ".:")</code></li>
+<li><code>std::string</code> <strong><code>unqualify</code></strong><code>(std::string_view str, std::string_view delims = ".:")</code></li>
 </ul>
 <p>Strips off any prefix ending in one of the delimiter characters (e.g.
-<code>unqualify("RS::unqualify()")</code> returns <code>"unqualify()"</code>). This will return the
+<code>unqualify("foo::bar::zap()")</code> returns <code>"zap()"</code>). This will return the
 original string unchanged if the delimiter string is empty or none of its
 characters are found.</p>
 </div>
@@ -294,7 +306,7 @@ digits.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename... Args&gt; Ustring</code> <strong><code>fmt</code></strong><code>(const Ustring&amp; pattern, const Args&amp;... args)</code></li>
+<li><code>template &lt;typename... Args&gt; Ustring</code> <strong><code>fmt</code></strong><code>(Uview pattern, const Args&amp;... args)</code></li>
 </ul>
 <p>This performs string interpolation, inserting the variadic arguments
 (formatted with <code>to_str()</code>, below) in place of each occurrence of <code>"$n"</code> or
@@ -317,19 +329,19 @@ circumstances.</p>
 </div>
 <div class="defns">
 <ul>
+<li><code>Ustring</code> <strong><code>hexdump</code></strong><code>(const void* ptr, size_t n, size_t block = 0)</code></li>
+<li><code>Ustring</code> <strong><code>hexdump</code></strong><code>(std::string_view str, size_t block = 0)</code></li>
+</ul>
+<p>Converts a block of raw data into hexadecimal bytes. If <code>block</code> is not zero, a
+line feed is inserted after each block.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>Ustring</code> <strong><code>roman</code></strong><code>(int n)</code></li>
 </ul>
 <p>Formats a number as a Roman numeral. Numbers greater than 1000 will be written
 with an arbitrarily long sequence of <code>"M"</code>. This will return an empty string
 if the argument is less than 1.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>Ustring</code> <strong><code>hexdump</code></strong><code>(const void* ptr, size_t n, size_t block = 0)</code></li>
-<li><code>Ustring</code> <strong><code>hexdump</code></strong><code>(const std::string&amp; str, size_t block = 0)</code></li>
-</ul>
-<p>Converts a block of raw data into hexadecimal bytes. If <code>block</code> is not zero, a
-line feed is inserted after each block.</p>
 </div>
 <div class="defns">
 <ul>
@@ -345,10 +357,10 @@ line feed is inserted after each block.</p>
 <p>Formats an object as a string. This uses the following rules for formatting
 various types:</p>
 <ul>
-<li><code>std::string</code>, <code>char</code>, character pointers, and anything with an implicit
-conversion to <code>std::string</code> - The string content is simply copied directly
-without using an output stream; a null character pointer is treated as an
-empty string.</li>
+<li><code>std::string</code>, <code>std::string_view</code>, <code>char</code>, character pointers, and anything
+with an implicit conversion to <code>std::string</code> or <code>std::string_view</code> - The
+string content is simply copied directly without using an output stream; a
+null character pointer is treated as an empty string.</li>
 <li>Unicode string and character types - Converted to UTF-8 using <code>uconv()</code>.</li>
 <li>Integer types - Formatted using <code>dec()</code>.</li>
 <li>Floating point types - Formatted using <code>fp_format()</code>.</li>
@@ -362,10 +374,10 @@ type is a pair; <code>to_str()</code> is called recursively on each range elemen
 <h2 id="string-parsing-functions">String parsing functions</h2>
 <div class="defns">
 <ul>
-<li><code>unsigned long long</code> <strong><code>binnum</code></strong><code>(const std::string&amp; str) noexcept</code></li>
-<li><code>long long</code> <strong><code>decnum</code></strong><code>(const std::string&amp; str) noexcept</code></li>
-<li><code>unsigned long long</code> <strong><code>hexnum</code></strong><code>(const std::string&amp; str) noexcept</code></li>
-<li><code>double</code> <strong><code>fpnum</code></strong><code>(const std::string&amp; str) noexcept</code></li>
+<li><code>unsigned long long</code> <strong><code>binnum</code></strong><code>(std::string_view str) noexcept</code></li>
+<li><code>long long</code> <strong><code>decnum</code></strong><code>(std::string_view str) noexcept</code></li>
+<li><code>unsigned long long</code> <strong><code>hexnum</code></strong><code>(std::string_view str) noexcept</code></li>
+<li><code>double</code> <strong><code>fpnum</code></strong><code>(std::string_view str) noexcept</code></li>
 </ul>
 <p>The <code>binnum()</code>, <code>decnum()</code>, and <code>hexnum()</code> functions convert a binary,
 decimal, or hexadecimal string to a number; <code>fpnum()</code> converts a string to a
@@ -377,8 +389,8 @@ positive or negative infinity).</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>int64_t</code> <strong><code>si_to_int</code></strong><code>(const Ustring&amp; s)</code></li>
-<li><code>double</code> <strong><code>si_to_float</code></strong><code>(const Ustring&amp; s)</code></li>
+<li><code>int64_t</code> <strong><code>si_to_int</code></strong><code>(Uview str)</code></li>
+<li><code>double</code> <strong><code>si_to_float</code></strong><code>(Uview str)</code></li>
 </ul>
 <p>These parse a number from a string representation tagged with an SI multiplier
 abbreviation (e.g. <code>"123k"</code>). For the integer version, only tags representing
@@ -397,7 +409,7 @@ type.</p>
 <ul>
 <li><code>class</code> <strong><code>Tag</code></strong><ul>
 <li><code>Tag::</code><strong><code>Tag</code></strong><code>()</code></li>
-<li><code>Tag::</code><strong><code>Tag</code></strong><code>(std::ostream&amp; out, const std::string&amp; element)</code></li>
+<li><code>Tag::</code><strong><code>Tag</code></strong><code>(std::ostream&amp; out, std::string_view element)</code></li>
 <li><code>Tag::</code><strong><code>~Tag</code></strong><code>() noexcept</code></li>
 <li><code>Tag::</code><strong><code>Tag</code></strong><code>(Tag&amp;&amp; t) noexcept</code></li>
 <li><code>Tag&amp; Tag::</code><strong><code>operator=</code></strong><code>(Tag&amp;&amp; t) noexcept</code></li>
@@ -419,8 +431,8 @@ slash; the class is not aware of HTML's list of automatic self closing tags.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename... Args&gt; void</code> <strong><code>tagged</code></strong><code>(std::ostream&amp; out, const std::string&amp; element, const Args&amp;... args)</code></li>
-<li><code>template &lt;typename T&gt; void</code> <strong><code>tagged</code></strong><code>(std::ostream&amp; out, const std::string&amp; element, const T&amp; t)</code></li>
+<li><code>template &lt;typename... Args&gt; void</code> <strong><code>tagged</code></strong><code>(std::ostream&amp; out, std::string_view element, const Args&amp;... args)</code></li>
+<li><code>template &lt;typename T&gt; void</code> <strong><code>tagged</code></strong><code>(std::ostream&amp; out, std::string_view element, const T&amp; t)</code></li>
 </ul>
 <p>This function can be used to write a piece of literal text enclosed in one or
 more tags. The arguments are the output stream, a list of tags (using the same
@@ -449,33 +461,35 @@ is to be named (e.g. <code>type_name(42)</code>). The last version will report t
 dynamic type of the referenced object.</p>
 </div>
 <h2 id="unicode-functions">Unicode functions</h2>
+<p>In all of these functions, the argument type <code>S</code> may be an instantiation of
+<code>std::basic_string</code> or <code>std::basic_string_view</code> on an 8, 16, or 32 bit
+character type, or a pointer to a null terminated string of one of those
+types. The input string is assumed to be in a UTF representation determined by
+the size of the character type. Behaviour is undefined if a null pointer is
+passed.</p>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename S2, typename S1&gt; S2</code> <strong><code>uconv</code></strong><code>(const S1&amp; s)</code></li>
+<li><code>template &lt;typename S2, typename S&gt; S2</code> <strong><code>uconv</code></strong><code>(const S&amp; s)</code></li>
 </ul>
-<p>Converts between UTF representations. The input and output types (<code>S1</code> and
-<code>S2</code>) must be instantiations of <code>std::basic_string</code> with 8, 16, or 32 bit
-character types. If the character types are the same size, the input string is
-copied to the output without any validity checking; otherwise, invalid UTF in
-the input is replaced with the standard Unicode replacement character
-(<code>U+FFFD</code>) in the output.</p>
+<p>Converts between UTF representations. If the input and output character types
+are the same size, the input string is copied to the output without any
+validity checking; otherwise, invalid UTF in the input is replaced with the
+standard Unicode replacement character (<code>U+FFFD</code>) in the output.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename C&gt; size_t</code> <strong><code>ulength</code></strong><code>(const std::basic_string&lt;C&gt;&amp; s) noexcept</code></li>
+<li><code>template &lt;typename S&gt; size_t</code> <strong><code>ulength</code></strong><code>(const S&amp; s) noexcept</code></li>
 </ul>
-<p>Returns the number of characters (Unicode scalar values) in a string. The UTF
-encoding is chosen based on <code>sizeof(C)</code>; the result is unspecified if the
-string is not valid UTF.</p>
+<p>Returns the number of characters (Unicode scalar values) in a string. The
+result is unspecified if the string is not valid UTF.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename C&gt; bool</code> <strong><code>uvalid</code></strong><code>(const std::basic_string&lt;C&gt;&amp; s) noexcept</code></li>
-<li><code>template &lt;typename C&gt; bool</code> <strong><code>uvalid</code></strong><code>(const std::basic_string&lt;C&gt;&amp; s, size_t&amp; n) noexcept</code></li>
+<li><code>template &lt;typename S&gt; bool</code> <strong><code>uvalid</code></strong><code>(const S&amp; s) noexcept</code></li>
+<li><code>template &lt;typename S&gt; bool</code> <strong><code>uvalid</code></strong><code>(const S&amp; s, size_t&amp; n) noexcept</code></li>
 </ul>
-<p>Check a string for a valid UTF encoding; the encoding is deduced from the size
-of the character type. The second version reports the number of code units
-before an invalid code sequence was encountered (i.e. the size of a valid UTF
-prefix; this will be equal to <code>s.size()</code> if the function returns true). These
-will always succeed for an empty string.</p></body>
+<p>Check a string for valid UTF encoding. The second version reports the number
+of code units before an invalid code sequence was encountered (i.e. the size
+of a valid UTF prefix; this will be equal to the length of <code>s</code> if the function
+returns true). These will always succeed for an empty string.</p></body>
 </html>

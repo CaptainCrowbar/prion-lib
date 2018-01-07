@@ -34,17 +34,20 @@ these.)
 Default constructor. This sets the file name to an empty string.
 
 * `File::`**`File`**`(const std::string& name)`
+* `File::`**`File`**`(std::string_view name)`
 * `File::`**`File`**`(const char* name)`
 * `File::`**`File`**`(const std::wstring& name)` _- Windows only_
-* `File::`**`File`**`(const wchar_t* name)` _- Windows only_
+* `File::`**`File`**`(std::wstring_view name)` _- Windows only_
+* `File::`**`File`**`(const char* name)` _- Windows only_
 
 Constructors from a file name. On Unix, any string will be accepted as a file
 name with no validity checking. On Windows, backslashes are replaced with
 slashes; if the name is supplied as a wide string, it will be converted to
 UTF-8, with the standard replacement character (`U+FFFD`) replacing any
-invalid Unicode. (File names on Windows in their native form are nominally
+invalid Unicode (file names on Windows in their native form are nominally
 UTF-16 but can contain invalid encoding; no attempt is made to support such
-names in this class.)
+names in this class). Passing an empty string or null pointer is equivalent to
+the default constructor.
 
 * `File::`**`~File`**`() noexcept`
 * `File::`**`File`**`(const File& f)`
@@ -76,8 +79,8 @@ absolute" (e.g. `"\foo"`) and "drive relative" (e.g. `"C:foo"`) paths.
 Split the file name at the last slash, into a parent directory and a leaf name (the last part of the name, local to the directory).
 For example, `"/foo/bar/hello.txt"` will be split into `"/foo/bar"` and `"hello.txt"`.
 
-* `std::string File::`**`base`**`() const`
-* `std::string File::`**`ext`**`() const`
+* `std::string_view File::`**`base`**`() const`
+* `std::string_view File::`**`ext`**`() const`
 
 Split the file's leaf name at the last dot, into base and extension parts; the
 parent directory path is discarded. The extension includes the delimiting dot;
@@ -86,7 +89,7 @@ extension is empty. For example, `"/foo/bar/hello.txt"` will be split into
 `"hello"` and `".txt"`. A leading dot is not counted as an extension
 delimiter.
 
-* `File File::`**`change_ext`**`(const std::string& new_ext) const`
+* `File File::`**`change_ext`**`(std::string_view new_ext) const`
 
 Return a copy of the file name but with a new extension replacing the old one.
 If the original file had no extension, the new one will simply be appended to
@@ -185,8 +188,8 @@ specified. By default, if the file does not exist or cannot be read (e.g. a
 directory), this will simply return an empty string; if the `File::require`
 flag is set, it will throw `std::system_error` if anything goes wrong.
 
+* `void File::`**`save`**`(std::string_view content, uint32_t flags = 0) const`
 * `void File::`**`save`**`(const void* ptr, size_t len, uint32_t flags = 0) const`
-* `void File::`**`save`**`(const std::string& content, uint32_t flags = 0) const`
 
 Write the contents of a string or a block of memory to a file. By default,
 this will overwrite any existing file with the same name, if possible; if the

@@ -138,8 +138,8 @@ void test_core_channel_buffer() {
     TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::waiting);
 
-    TEST(chan.write_str("Hello"));
-    TEST(chan.write_str("World"));
+    TEST(chan.write("Hello"));
+    TEST(chan.write("World"));
     TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::ready);
     TRY(n = chan.read_to(s));
@@ -149,7 +149,7 @@ void test_core_channel_buffer() {
     TEST_EQUAL(cs, Channel::state::waiting);
 
     s.clear();
-    TEST(chan.write_str("Hello"));
+    TEST(chan.write("Hello"));
     TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::ready);
     TRY(n = chan.read_to(s));
@@ -159,7 +159,7 @@ void test_core_channel_buffer() {
     TEST_EQUAL(cs, Channel::state::waiting);
 
     s.clear();
-    TEST(chan.write_str("Hello"));
+    TEST(chan.write("Hello"));
     TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::ready);
     TRY(n = chan.read_to(s));
@@ -167,7 +167,7 @@ void test_core_channel_buffer() {
     TEST_EQUAL(s, "Hello");
     TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::waiting);
-    TEST(chan.write_str("World"));
+    TEST(chan.write("World"));
     TRY(cs = chan.wait_for(10ms));
     TEST_EQUAL(cs, Channel::state::ready);
     TRY(n = chan.read_to(s));
@@ -559,7 +559,7 @@ void test_core_channel_dispatcher() {
         Dispatch disp;
         BufferChannel chan;
         Ustring s;
-        TRY(chan.write_str("Hello world\n"));
+        TRY(chan.write("Hello world\n"));
         TRY(chan.set_buffer(5));
         TRY(disp.add(chan, Dispatch::mode::sync, [&] (std::string& t) {
             s += t;
@@ -581,7 +581,7 @@ void test_core_channel_dispatcher() {
         Dispatch disp;
         BufferChannel chan;
         Ustring s;
-        TRY(chan.write_str("Hello world\n"));
+        TRY(chan.write("Hello world\n"));
         TRY(chan.set_buffer(5));
         TRY(disp.add(chan, Dispatch::mode::async, [&] (std::string& t) {
             s += t;

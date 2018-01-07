@@ -211,8 +211,9 @@ throw `std::system_error` if anything else goes wrong.
     * `SocketType Socket::`**`native`**`() const noexcept`
     * `size_t Socket::`**`read_from`**`(void* dst, size_t maxlen, SocketAddress& from)`
     * `void Socket::`**`set_blocking`**`(bool state)`
+    * `bool Socket::`**`write`**`(std::string_view s)`
     * `bool Socket::`**`write`**`(const void* src, size_t len)`
-    * `bool Socket::`**`write_str`**`(const std::string& s)`
+    * `bool Socket::`**`write_to`**`(std::string_view s, const SocketAddress& to)`
     * `bool Socket::`**`write_to`**`(const void* src, size_t len, const SocketAddress& to)`
 
 This is a wrapper around the native socket handle type. The constructor can

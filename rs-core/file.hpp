@@ -43,10 +43,12 @@ namespace RS {
         static constexpr uint32_t require = 4;
         File() = default;
         File(const std::string& name): path(name) { normalize(); }
+        File(string_view name): path(name) { normalize(); }
         File(const char* name): path(name ? name : "") { normalize(); }
         #ifndef _XOPEN_SOURCE
             File(const std::wstring& name): path(uconv<std::string>(name)) { normalize(); }
-            File(const wchar_t* name): path(name ? uconv<std::string>(std::wstring(name)) : "") { normalize(); }
+            File(wstring_view name): path(uconv<std::string>(name)) { normalize(); }
+            File(const wchar_t* name): path(name ? uconv<std::string>(name) : "") { normalize(); }
         #endif
         // File name operations
         const std::string& name() const { return path; }
@@ -55,9 +57,9 @@ namespace RS {
         bool is_absolute() const noexcept;
         File parent() const;
         File leaf() const;
-        std::string base() const;
-        std::string ext() const;
-        File change_ext(const std::string& new_ext) const;
+        string_view base() const;
+        string_view ext() const;
+        File change_ext(string_view new_ext) const;
         #if defined(_XOPEN_SOURCE) && ! defined(__CYGWIN__)
             std::string native() const { return path; }
         #else
@@ -77,8 +79,8 @@ namespace RS {
         void remove(uint32_t flags = 0) const;
         // I/O operations
         std::string load(size_t limit = npos, uint32_t flags = 0) const;
+        void save(string_view content, uint32_t flags = 0) const { save(content.data(), content.size(), flags); }
         void save(const void* ptr, size_t len, uint32_t flags = 0) const;
-        void save(const std::string& content, uint32_t flags = 0) const { save(content.data(), content.size(), flags); }
         // Metadata operations
         std::chrono::system_clock::time_point atime() const;
         std::chrono::system_clock::time_point mtime() const;
@@ -107,27 +109,36 @@ namespace RS {
 
     inline File File::parent() const {
         size_t pos = path.find_last_of('/') + 1;
-        return pos ? path.substr(0, pos - 1) : File();
+        if (pos)
+            return make_view(path, 0, pos - 1);
+        else
+            return {};
     }
 
     inline File File::leaf() const {
         size_t pos = path.find_last_of('/') + 1;
-        return path.substr(pos, npos);
+        return make_view(path, pos, npos);
     }
 
-    inline std::string File::base() const {
+    inline string_view File::base() const {
         size_t start = path.find_last_of('/') + 1;
         size_t dot = path.find_last_of('.');
-        return dot > start + 1 && dot != npos ? path.substr(start, dot - start) : path.substr(start, npos);
+        if (dot > start + 1 && dot != npos)
+            return make_view(path, start, dot - start);
+        else
+            return make_view(path, start, npos);
     }
 
-    inline std::string File::ext() const {
+    inline string_view File::ext() const {
         size_t start = path.find_last_of('/') + 1;
         size_t dot = path.find_last_of('.');
-        return dot > start + 1 && dot != npos ? path.substr(dot, npos) : std::string();
+        if (dot > start + 1 && dot != npos)
+            return make_view(path, dot, npos);
+        else
+            return {};
     }
 
-    inline File File::change_ext(const std::string& new_ext) const {
+    inline File File::change_ext(string_view new_ext) const {
         if (path.empty() || path.back() == '/')
             throw std::invalid_argument("Can't change file extension on " + quote(path));
         std::string result = path;

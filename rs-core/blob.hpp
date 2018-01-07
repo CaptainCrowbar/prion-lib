@@ -25,6 +25,7 @@ namespace RS {
         Blob(Blob&& b) noexcept: ptr(b.ptr), len(b.len) { del.swap(b.del); }
         Blob& operator=(const Blob& b) { copy(b.data(), b.size()); return *this; }
         Blob& operator=(Blob&& b) noexcept { Blob b2(std::move(b)); swap(b2); return *this; }
+        operator string_view() const noexcept { return {c_data(), len}; }
         void* data() noexcept { return ptr; }
         const void* data() const noexcept { return ptr; }
         uint8_t* b_data() noexcept { return static_cast<uint8_t*>(ptr); }

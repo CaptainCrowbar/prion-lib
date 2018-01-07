@@ -245,8 +245,8 @@ comparable.
 * `class` **`BufferChannel`**`: public StreamChannel`
     * `BufferChannel::`**`BufferChannel`**`()`
     * `void BufferChannel::`**`clear`**`() noexcept`
+    * `bool BufferChannel::`**`write`**`(std::string_view src)`
     * `bool BufferChannel::`**`write`**`(const void* src, size_t len)`
-    * `bool BufferChannel::`**`write_str`**`(const std::string& src)`
 
 A byte stream buffer channel. Message boundaries are not preserved; calling
 `read()` will extract all pending data up to the length limit, regardless of

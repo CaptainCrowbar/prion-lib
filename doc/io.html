@@ -126,9 +126,9 @@ all streams (it is not usually possible to seek on standard input or output).</p
 <li><code>virtual void IO::</code><strong><code>write_n</code></strong><code>(size_t n, char c)</code></li>
 <li><code>virtual void IO::</code><strong><code>putc</code></strong><code>(char c)</code></li>
 <li><code>void IO::</code><strong><code>write_line</code></strong><code>()</code></li>
-<li><code>void IO::</code><strong><code>write_line</code></strong><code>(const std::string&amp; str)</code></li>
-<li><code>size_t IO::</code><strong><code>write_str</code></strong><code>(const std::string&amp; str)</code></li>
-<li><code>template &lt;typename... Args&gt; void IO::</code><strong><code>format</code></strong><code>(const Ustring&amp; pattern, const Args&amp;... args)</code></li>
+<li><code>void IO::</code><strong><code>write_line</code></strong><code>(std::string_view str)</code></li>
+<li><code>size_t IO::</code><strong><code>write_str</code></strong><code>(std::string_view str)</code></li>
+<li><code>template &lt;typename... Args&gt; void IO::</code><strong><code>format</code></strong><code>(Uview pattern, const Args&amp;... args)</code></li>
 <li><code>template &lt;typename... Args&gt; void IO::</code><strong><code>print</code></strong><code>(const Args&amp;... args)</code></li>
 </ul>
 <p>Output functions. The <code>write()</code> function attempts to write the given block of
@@ -147,7 +147,7 @@ between each pair of arguments, followed by a line feed.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>void IO::</code><strong><code>check</code></strong><code>(const Ustring&amp; detail = "") const</code></li>
+<li><code>void IO::</code><strong><code>check</code></strong><code>(Uview detail = "") const</code></li>
 <li><code>void IO::</code><strong><code>clear_error</code></strong><code>() noexcept</code></li>
 <li><code>std::error_code IO::</code><strong><code>error</code></strong><code>() const noexcept</code></li>
 </ul>

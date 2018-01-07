@@ -592,8 +592,9 @@ namespace RS {
         SocketType native() const noexcept { return sock; }
         size_t read_from(void* dst, size_t maxlen, SocketAddress& from) { return do_read(dst, maxlen, &from); }
         void set_blocking(bool state);
+        bool write(string_view s) { return do_write(s.data(), s.size(), nullptr); }
         bool write(const void* src, size_t len) { return do_write(src, len, nullptr); }
-        bool write_str(const std::string& s) { return do_write(s.data(), s.size(), nullptr); }
+        bool write_to(string_view s, const SocketAddress& to) { return do_write(s.data(), s.size(), &to); }
         bool write_to(const void* src, size_t len, const SocketAddress& to) { return do_write(src, len, &to); }
     protected:
         virtual state do_wait_for(time_unit t); // Defined after SocketSet

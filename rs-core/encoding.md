@@ -13,11 +13,11 @@ By Ross Smith
 * `class` **`Encoding`**
     * `virtual Encoding::`**`~Encoding`**`() noexcept`
     * `virtual void Encoding::`**`encode_bytes`**`(const void* src, size_t len, Ustring& dst, size_t width = npos) const = 0`
-    * `virtual size_t Encoding::`**`decode_bytes`**`(const char* src, size_t len, string& dst) const = 0`
-    * `void Encoding::`**`encode`**`(const string& src, Ustring& dst, size_t width = npos) const`
-    * `Ustring Encoding::`**`encode`**`(const string& src, size_t width = npos) const`
-    * `size_t Encoding::`**`decode`**`(const Ustring& src, string& dst) const`
-    * `string Encoding::`**`decode`**`(const Ustring& src) const`
+    * `virtual size_t Encoding::`**`decode_bytes`**`(const char* src, size_t len, std::string& dst) const = 0`
+    * `void Encoding::`**`encode`**`(std::string_view src, Ustring& dst, size_t width = npos) const`
+    * `Ustring Encoding::`**`encode`**`(std::string_view src, size_t width = npos) const`
+    * `size_t Encoding::`**`decode`**`(Uview src, std::string& dst) const`
+    * `std::string Encoding::`**`decode`**`(Uview src) const`
 
 Common abstract base class for binary-to-text encodings. The `encode_bytes()`
 and `decode_bytes()` virtual functions contain the actual transformation code;
@@ -37,7 +37,7 @@ way. The return value is the number of bytes read from the input string; this
 may be less than `len` if the encoded format includes a termination marker.
 
 Behaviour of `encode_bytes()` and `decode_bytes()` is undefined if `src` is
-null.
+null and `len` is not zero.
 
 ## Character escape encodings ##
 

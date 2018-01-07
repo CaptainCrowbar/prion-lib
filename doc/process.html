@@ -29,7 +29,7 @@
 <h2 id="shell-commands">Shell commands</h2>
 <div class="defns">
 <ul>
-<li><code>std::string</code> <strong><code>shell</code></strong><code>(Uview cmd)</code></li>
+<li><code>std::string</code> <strong><code>shell</code></strong><code>(const Ustring&amp; cmd)</code></li>
 </ul>
 <p>Runs a shell command synchronously (via <code>popen()</code> or the equivalent),
 capturing standard output. No error indication is returned; standard error
@@ -44,7 +44,7 @@ channel calls <code>pclose()</code>.</p>
 <div class="defns">
 <ul>
 <li><code>class</code> <strong><code>StreamProcess</code></strong><code>: public StreamChannel</code><ul>
-<li><code>explicit StreamProcess::</code><strong><code>StreamProcess</code></strong><code>(Uview cmd)</code></li>
+<li><code>explicit StreamProcess::</code><strong><code>StreamProcess</code></strong><code>(const Ustring&amp; cmd)</code></li>
 <li><code>virtual StreamProcess::</code><strong><code>~StreamProcess</code></strong><code>() noexcept</code></li>
 <li><code>int StreamProcess::</code><strong><code>status</code></strong><code>() const noexcept</code></li>
 </ul>
@@ -58,7 +58,7 @@ if the process has not been closed yet.</p>
 <div class="defns">
 <ul>
 <li><code>class</code> <strong><code>TextProcess</code></strong><code>: public MessageChannel&lt;Ustring&gt;</code><ul>
-<li><code>explicit TextProcess::</code><strong><code>TextProcess</code></strong><code>(Uview cmd)</code></li>
+<li><code>explicit TextProcess::</code><strong><code>TextProcess</code></strong><code>(const Ustring&amp; cmd)</code></li>
 <li><code>virtual TextProcess::</code><strong><code>~TextProcess</code></strong><code>() noexcept</code></li>
 <li><code>std::string TextProcess::</code><strong><code>read_all</code></strong><code>()</code></li>
 <li><code>int TextProcess::</code><strong><code>status</code></strong><code>() const noexcept</code></li>

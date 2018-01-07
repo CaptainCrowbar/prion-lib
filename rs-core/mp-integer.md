@@ -17,7 +17,7 @@ could be.
 * `class` **`Nat`**
     * `Nat::`**`Nat`**`()`
     * `Nat::`**`Nat`**`(uint64_t x)`
-    * `explicit Nat::`**`Nat`**`(const Ustring& s, int base = 0)`
+    * `explicit Nat::`**`Nat`**`(Uview s, int base = 0)`
     * `Nat::`**`~Nat`**`() noexcept`
     * `Nat::`**`Nat`**`(const Nat& n)`
     * `Nat::`**`Nat`**`(Nat&& n) noexcept`
@@ -132,7 +132,7 @@ is undefined if `n<1`.
     * `Int::`**`Int`**`()`
     * `Int::`**`Int`**`(int64_t x)`
     * `Int::`**`Int`**`(const Nat& x)`
-    * `explicit Int::`**`Int`**`(const Ustring& s, int base = 0)`
+    * `explicit Int::`**`Int`**`(Uview s, int base = 0)`
     * `Int::`**`~Int`**`() noexcept`
     * `Int::`**`Int`**`(const Int& n)`
     * `Int::`**`Int`**`(Int&& n) noexcept`

@@ -83,7 +83,7 @@ namespace RS {
     class ProgressBar {
     public:
         RS_NO_COPY_MOVE(ProgressBar);
-        explicit ProgressBar(const Ustring& label, size_t length = 0, std::ostream& out = std::cout);
+        explicit ProgressBar(Uview label, size_t length = 0, std::ostream& out = std::cout);
         ~ProgressBar() noexcept;
         void operator()(double x);
     private:
@@ -95,7 +95,7 @@ namespace RS {
         std::chrono::system_clock::time_point start_time;
     };
 
-    inline ProgressBar::ProgressBar(const Ustring& label, size_t length, std::ostream& out):
+    inline ProgressBar::ProgressBar(Uview label, size_t length, std::ostream& out):
     bar_length(length), current_pos(0), bar_offset(label.empty() ? 1 : label.size() + 1), out_ptr(&out) {
         using namespace std::chrono;
         if (bar_length == 0) {

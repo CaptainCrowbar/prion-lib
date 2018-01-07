@@ -21,6 +21,7 @@ By Ross Smith
     * `Blob::`**`Blob`**`(Blob&& b) noexcept: ptr(b.ptr), len(b.len)`
     * `Blob& Blob::`**`operator=`**`(const Blob& b)`
     * `Blob& Blob::`**`operator=`**`(Blob&& b) noexcept`
+    * `Blob::`**`operator std::string_view`**`() const noexcept`
     * `void* Blob::`**`data`**`() noexcept`
     * `const void* Blob::`**`data`**`() const noexcept`
     * `uint8_t* Blob::`**`b_data`**`() noexcept`
@@ -42,7 +43,7 @@ By Ross Smith
     * `void Blob::`**`reset`**`(void* p, size_t n)`
     * `template <typename F> void Blob::`**`reset`**`(void* p, size_t n, F f)`
     * `size_t Blob::`**`size`**`() const noexcept`
-    * `string Blob::`**`str`**`() const`
+    * `std::string Blob::`**`str`**`() const`
     * `void Blob::`**`swap`**`(Blob& b) noexcept`
     * `static Blob Blob::`**`from_hex`**`(const Ustring& s)`
 * `bool` **`operator==`**`(const Blob& lhs, const Blob& rhs) noexcept`
@@ -85,7 +86,8 @@ referenced data.
 The `hex()` function returns the blob's data in hex form; if a nonzero block
 size is supplied, a line feed will be inserted after each block.
 
-The `str()` function copies the entire blob into a string.
+The `str()` function copies the entire blob into a string. There is also an
+implicit conversion to `string_view`.
 
 The comparison operators perform bytewise comparison by calling `memcmp()`.
 

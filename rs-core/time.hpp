@@ -111,7 +111,7 @@ namespace RS {
     // very long localized date format, but there doesn't seem to be a better
     // solution.
 
-    inline Ustring format_date(std::chrono::system_clock::time_point tp, const Ustring& format, uint32_t flags = utc_zone) {
+    inline Ustring format_date(std::chrono::system_clock::time_point tp, Uview format, uint32_t flags = utc_zone) {
         using namespace std::chrono;
         uint32_t zone = flags & (utc_zone | local_zone);
         if (ibits(zone) > 1 || flags - zone)
@@ -120,11 +120,12 @@ namespace RS {
             return {};
         auto t = system_clock::to_time_t(tp);
         tm stm = zone == local_zone ? *localtime(&t) : *gmtime(&t);
+        Ustring fs(format);
         Ustring result(std::max(2 * format.size(), size_t(100)), '\0');
-        auto rc = strftime(&result[0], result.size(), format.data(), &stm);
+        auto rc = strftime(&result[0], result.size(), fs.data(), &stm);
         if (rc == 0) {
             result.resize(10 * result.size(), '\0');
-            rc = strftime(&result[0], result.size(), format.data(), &stm);
+            rc = strftime(&result[0], result.size(), fs.data(), &stm);
         }
         result.resize(rc);
         result.shrink_to_fit();
@@ -188,36 +189,44 @@ namespace RS {
 
     namespace RS_Detail {
 
-        inline void date_skip_punct(const char*& ptr) {
-            while (ascii_ispunct(*ptr) || ascii_isspace(*ptr))
+        inline void date_skip_punct(const char*& ptr, const char* end) {
+            while (ptr != end && (ascii_ispunct(*ptr) || ascii_isspace(*ptr)))
                 ++ptr;
         };
 
-        inline bool date_read_number(const char*& ptr, int& result) {
-            date_skip_punct(ptr);
-            if (! ascii_isdigit(*ptr))
+        inline bool date_read_number(const char*& ptr, const char* end, int& result) {
+            date_skip_punct(ptr, end);
+            auto next = std::find_if_not(ptr, end, ascii_isdigit);
+            if (next == ptr)
                 return false;
-            char* next = nullptr;
-            result = int(std::strtoul(ptr, &next, 10));
+            Ustring sub(ptr, next);
+            char* dummy = nullptr;
+            result = int(std::strtoul(sub.data(), &dummy, 10));
             ptr = next;
             return true;
         };
 
-        inline bool date_read_number(const char*& ptr, double& result) {
-            date_skip_punct(ptr);
-            if (! ascii_isdigit(*ptr))
+        inline bool date_read_number(const char*& ptr, const char* end, double& result) {
+            date_skip_punct(ptr, end);
+            if (ptr == end || ! ascii_isdigit(*ptr))
                 return false;
-            char* next = nullptr;
-            result = std::strtod(ptr, &next);
+            auto next = std::find_if_not(ptr, end, ascii_isdigit);
+            if (next != end && *next == '.')
+                next = std::find_if_not(next + 1, end, ascii_isdigit);
+            Ustring sub(ptr, next);
+            char* dummy = nullptr;
+            result = std::strtod(sub.data(), &dummy);
             ptr = next;
             return true;
         };
 
-        inline bool date_read_month(const char*& ptr, int& result) {
-            date_skip_punct(ptr);
-            if (ascii_isdigit(*ptr))
-                return date_read_number(ptr, result);
-            else if (! ascii_isalpha(*ptr) || ! ptr[1] || ! ptr[2])
+        inline bool date_read_month(const char*& ptr, const char* end, int& result) {
+            date_skip_punct(ptr, end);
+            if (ptr == end)
+                return false;
+            else if (ascii_isdigit(*ptr))
+                return date_read_number(ptr, end, result);
+            else if (end - ptr < 3 || ! ascii_isalpha(*ptr))
                 return false;
             Ustring mon(ptr, 3);
             mon = ascii_lowercase(mon);
@@ -234,15 +243,13 @@ namespace RS {
             else if (mon == "nov")  result = 11;
             else if (mon == "dec")  result = 12;
             else                    return false;
-            ptr += 3;
-            while (ascii_isalpha(*ptr))
-                ++ptr;
+            ptr = std::find_if_not(ptr + 3, end, ascii_isalpha);
             return true;
         };
 
     }
 
-    inline std::chrono::system_clock::time_point parse_date(const Ustring& s, uint32_t flags = utc_zone | ymd_order) {
+    inline std::chrono::system_clock::time_point parse_date(Uview str, uint32_t flags = utc_zone | ymd_order) {
         using namespace RS_Detail;
         using namespace std::chrono;
         uint32_t order = flags & (ymd_order | dmy_order | mdy_order);
@@ -251,44 +258,43 @@ namespace RS {
             throw std::invalid_argument("Invalid date flags: 0x" + hex(flags, 1));
         int year = 0, month = 0, day = 0, hour = 0, min = 0;
         double sec = 0;
-        const char* ptr = s.data();
+        auto ptr = str.data(), end = ptr + str.size();
         bool ok = true;
         switch (order) {
-            case dmy_order:  ok = date_read_number(ptr, day) && date_read_month(ptr, month) && date_read_number(ptr, year); break;
-            case mdy_order:  ok = date_read_month(ptr, month) && date_read_number(ptr, day) && date_read_number(ptr, year); break;
-            default:         ok = date_read_number(ptr, year) && date_read_month(ptr, month) && date_read_number(ptr, day); break;
+            case dmy_order:  ok = date_read_number(ptr, end, day) && date_read_month(ptr, end, month) && date_read_number(ptr, end, year); break;
+            case mdy_order:  ok = date_read_month(ptr, end, month) && date_read_number(ptr, end, day) && date_read_number(ptr, end, year); break;
+            default:         ok = date_read_number(ptr, end, year) && date_read_month(ptr, end, month) && date_read_number(ptr, end, day); break;
         }
         if (! ok)
-            throw std::invalid_argument("Invalid date: " + quote(s));
-        date_skip_punct(ptr);
-        if (*ptr == 'T' || *ptr == 't')
+            throw std::invalid_argument("Invalid date: " + quote(str));
+        date_skip_punct(ptr, end);
+        if (ptr != end && (*ptr == 'T' || *ptr == 't'))
             ++ptr;
-        date_read_number(ptr, hour);
-        date_read_number(ptr, min);
-        date_read_number(ptr, sec);
+        date_read_number(ptr, end, hour);
+        date_read_number(ptr, end, min);
+        date_read_number(ptr, end, sec);
         return make_date(year, month, day, hour, min, sec, zone);
     }
 
     template <typename R, typename P>
-    void parse_time(const Ustring& s, std::chrono::duration<R, P>& t) {
+    void parse_time(Uview str, std::chrono::duration<R, P>& t) {
         using namespace std::chrono;
         using namespace std::literals;
         using duration_type = duration<R, P>;
         static constexpr double jyear = 31'557'600;
-        Ustring ns = replace(s, " "s, ""s);
-        const char* ptr = ns.data();
-        const char* end = ptr + ns.size();
+        Ustring nstr = replace(str, " "s, ""s);
+        auto ptr = nstr.data(), end = ptr + nstr.size();
         char sign = '+';
-        if (*ptr == '+' || *ptr == '-')
+        if (ptr != end && (*ptr == '+' || *ptr == '-'))
             sign = *ptr++;
         if (ptr == end)
-            throw std::invalid_argument("Invalid time: " + quote(s));
+            throw std::invalid_argument("Invalid time: " + quote(str));
         double count = 0, seconds = 0;
         char* next = nullptr;
         Ustring unit;
         while (ptr != end) {
             if (! ascii_isdigit(*ptr))
-                throw std::invalid_argument("Invalid time: " + quote(s));
+                throw std::invalid_argument("Invalid time: " + quote(str));
             count = std::strtod(ptr, &next);
             unit.clear();
             while (next != end && ascii_isalpha(*next))
@@ -315,7 +321,7 @@ namespace RS {
             else if (starts_with(unit, "h"s))     count *= 3600.0;
             else if (starts_with(unit, "m"s))     count *= 60.0;
             else if (starts_with(unit, "s"s))     {}
-            else                                  throw std::invalid_argument("Invalid time: " + quote(s));
+            else                                  throw std::invalid_argument("Invalid time: " + quote(str));
             seconds += count;
             ptr = next;
         }
@@ -325,7 +331,7 @@ namespace RS {
     }
 
     template <typename D>
-    D parse_time(const Ustring& str) {
+    D parse_time(Uview str) {
         D time;
         parse_time(str, time);
         return time;
@@ -336,8 +342,7 @@ namespace RS {
     class Stopwatch {
     public:
         RS_NO_COPY_MOVE(Stopwatch)
-        explicit Stopwatch(const Ustring& name, int precision = 3) noexcept: Stopwatch(name.data(), precision) {}
-        explicit Stopwatch(const char* name, int precision = 3) noexcept {
+        explicit Stopwatch(Uview name, int precision = 3) noexcept {
             try {
                 prefix = name;
                 prefix += " : ";

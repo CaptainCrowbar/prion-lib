@@ -85,9 +85,9 @@ all streams (it is not usually possible to seek on standard input or output).
 * `virtual void IO::`**`write_n`**`(size_t n, char c)`
 * `virtual void IO::`**`putc`**`(char c)`
 * `void IO::`**`write_line`**`()`
-* `void IO::`**`write_line`**`(const std::string& str)`
-* `size_t IO::`**`write_str`**`(const std::string& str)`
-* `template <typename... Args> void IO::`**`format`**`(const Ustring& pattern, const Args&... args)`
+* `void IO::`**`write_line`**`(std::string_view str)`
+* `size_t IO::`**`write_str`**`(std::string_view str)`
+* `template <typename... Args> void IO::`**`format`**`(Uview pattern, const Args&... args)`
 * `template <typename... Args> void IO::`**`print`**`(const Args&... args)`
 
 Output functions. The `write()` function attempts to write the given block of
@@ -105,7 +105,7 @@ the resulting string to the output stream. The `print()` function formats each
 argument using `to_str()`, writing them to the output stream with a space
 between each pair of arguments, followed by a line feed.
 
-* `void IO::`**`check`**`(const Ustring& detail = "") const`
+* `void IO::`**`check`**`(Uview detail = "") const`
 * `void IO::`**`clear_error`**`() noexcept`
 * `std::error_code IO::`**`error`**`() const noexcept`
 

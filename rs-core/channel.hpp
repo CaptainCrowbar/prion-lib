@@ -554,8 +554,8 @@ namespace RS {
         virtual void close() noexcept;
         virtual size_t read(void* dst, size_t maxlen);
         void clear() noexcept;
+        bool write(string_view src) { return write(src.data(), src.size()); }
         bool write(const void* src, size_t len);
-        bool write_str(const std::string& src) { return write(src.data(), src.size()); }
     protected:
         virtual state do_wait_for(time_unit t);
     private:

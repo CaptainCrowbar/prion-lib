@@ -62,17 +62,20 @@ these.)</p>
 <div class="defns">
 <ul>
 <li><code>File::</code><strong><code>File</code></strong><code>(const std::string&amp; name)</code></li>
+<li><code>File::</code><strong><code>File</code></strong><code>(std::string_view name)</code></li>
 <li><code>File::</code><strong><code>File</code></strong><code>(const char* name)</code></li>
 <li><code>File::</code><strong><code>File</code></strong><code>(const std::wstring&amp; name)</code> <em>- Windows only</em></li>
-<li><code>File::</code><strong><code>File</code></strong><code>(const wchar_t* name)</code> <em>- Windows only</em></li>
+<li><code>File::</code><strong><code>File</code></strong><code>(std::wstring_view name)</code> <em>- Windows only</em></li>
+<li><code>File::</code><strong><code>File</code></strong><code>(const char* name)</code> <em>- Windows only</em></li>
 </ul>
 <p>Constructors from a file name. On Unix, any string will be accepted as a file
 name with no validity checking. On Windows, backslashes are replaced with
 slashes; if the name is supplied as a wide string, it will be converted to
 UTF-8, with the standard replacement character (<code>U+FFFD</code>) replacing any
-invalid Unicode. (File names on Windows in their native form are nominally
+invalid Unicode (file names on Windows in their native form are nominally
 UTF-16 but can contain invalid encoding; no attempt is made to support such
-names in this class.)</p>
+names in this class). Passing an empty string or null pointer is equivalent to
+the default constructor.</p>
 </div>
 <div class="defns">
 <ul>
@@ -115,8 +118,8 @@ For example, <code>"/foo/bar/hello.txt"</code> will be split into <code>"/foo/ba
 </div>
 <div class="defns">
 <ul>
-<li><code>std::string File::</code><strong><code>base</code></strong><code>() const</code></li>
-<li><code>std::string File::</code><strong><code>ext</code></strong><code>() const</code></li>
+<li><code>std::string_view File::</code><strong><code>base</code></strong><code>() const</code></li>
+<li><code>std::string_view File::</code><strong><code>ext</code></strong><code>() const</code></li>
 </ul>
 <p>Split the file's leaf name at the last dot, into base and extension parts; the
 parent directory path is discarded. The extension includes the delimiting dot;
@@ -127,7 +130,7 @@ delimiter.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>File File::</code><strong><code>change_ext</code></strong><code>(const std::string&amp; new_ext) const</code></li>
+<li><code>File File::</code><strong><code>change_ext</code></strong><code>(std::string_view new_ext) const</code></li>
 </ul>
 <p>Return a copy of the file name but with a new extension replacing the old one.
 If the original file had no extension, the new one will simply be appended to
@@ -250,8 +253,8 @@ flag is set, it will throw <code>std::system_error</code> if anything goes wrong
 </div>
 <div class="defns">
 <ul>
+<li><code>void File::</code><strong><code>save</code></strong><code>(std::string_view content, uint32_t flags = 0) const</code></li>
 <li><code>void File::</code><strong><code>save</code></strong><code>(const void* ptr, size_t len, uint32_t flags = 0) const</code></li>
-<li><code>void File::</code><strong><code>save</code></strong><code>(const std::string&amp; content, uint32_t flags = 0) const</code></li>
 </ul>
 <p>Write the contents of a string or a block of memory to a file. By default,
 this will overwrite any existing file with the same name, if possible; if the

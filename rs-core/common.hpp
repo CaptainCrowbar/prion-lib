@@ -309,7 +309,8 @@ namespace RS {
             s += digits[b % 16];
         }
 
-        inline int decode_hex_byte(std::string::const_iterator& i, std::string::const_iterator end) noexcept {
+        template <typename CharIterator>
+        inline int decode_hex_byte(CharIterator& i, CharIterator end) noexcept {
             auto j = i;
             if (end - i >= 2 && j[0] == '0' && (j[1] == 'X' || j[1] == 'x'))
                 j += 2;

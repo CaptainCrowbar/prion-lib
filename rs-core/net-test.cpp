@@ -296,7 +296,7 @@ void test_core_net_tcp_client_server() {
         REQUIRE(client);
         TEST_EQUAL(client->remote().ipv4(), IPv4::localhost());
         TEST_EQUAL(client->wait_for(10ms), Channel::state::waiting);
-        TEST(client->write_str("hello"));
+        TEST(client->write("hello"));
         TEST_EQUAL(client->wait_for(100ms), Channel::state::ready);
         TRY(n = client->read_to(msg));
         TEST_EQUAL(n, 7);
@@ -314,7 +314,7 @@ void test_core_net_tcp_client_server() {
         TRY(n = client->read_to(msg));
         TEST_EQUAL(n, 5);
         TEST_EQUAL(msg, "hello");
-        TEST(client->write_str("goodbye"));
+        TEST(client->write("goodbye"));
         msg.clear();
         TEST_EQUAL(client->wait_for(100ms), Channel::state::ready);
         TRY(n = client->read_to(msg));
@@ -376,7 +376,7 @@ void test_core_net_socket_set() {
         std::unique_ptr<TcpClient> client;
         std::this_thread::sleep_for(50ms);
         TRY(client = std::make_unique<TcpClient>(IPv4::localhost(), port));
-        TRY(client->write_str("alpha"));
+        TRY(client->write("alpha"));
         std::this_thread::sleep_for(200ms);
     });
 
@@ -384,7 +384,7 @@ void test_core_net_socket_set() {
         std::unique_ptr<TcpClient> client;
         std::this_thread::sleep_for(50ms);
         TRY(client = std::make_unique<TcpClient>(IPv4::localhost(), port));
-        TRY(client->write_str("bravo"));
+        TRY(client->write("bravo"));
         std::this_thread::sleep_for(200ms);
     });
 

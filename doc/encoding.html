@@ -32,11 +32,11 @@
 <li><code>class</code> <strong><code>Encoding</code></strong><ul>
 <li><code>virtual Encoding::</code><strong><code>~Encoding</code></strong><code>() noexcept</code></li>
 <li><code>virtual void Encoding::</code><strong><code>encode_bytes</code></strong><code>(const void* src, size_t len, Ustring&amp; dst, size_t width = npos) const = 0</code></li>
-<li><code>virtual size_t Encoding::</code><strong><code>decode_bytes</code></strong><code>(const char* src, size_t len, string&amp; dst) const = 0</code></li>
-<li><code>void Encoding::</code><strong><code>encode</code></strong><code>(const string&amp; src, Ustring&amp; dst, size_t width = npos) const</code></li>
-<li><code>Ustring Encoding::</code><strong><code>encode</code></strong><code>(const string&amp; src, size_t width = npos) const</code></li>
-<li><code>size_t Encoding::</code><strong><code>decode</code></strong><code>(const Ustring&amp; src, string&amp; dst) const</code></li>
-<li><code>string Encoding::</code><strong><code>decode</code></strong><code>(const Ustring&amp; src) const</code></li>
+<li><code>virtual size_t Encoding::</code><strong><code>decode_bytes</code></strong><code>(const char* src, size_t len, std::string&amp; dst) const = 0</code></li>
+<li><code>void Encoding::</code><strong><code>encode</code></strong><code>(std::string_view src, Ustring&amp; dst, size_t width = npos) const</code></li>
+<li><code>Ustring Encoding::</code><strong><code>encode</code></strong><code>(std::string_view src, size_t width = npos) const</code></li>
+<li><code>size_t Encoding::</code><strong><code>decode</code></strong><code>(Uview src, std::string&amp; dst) const</code></li>
+<li><code>std::string Encoding::</code><strong><code>decode</code></strong><code>(Uview src) const</code></li>
 </ul>
 </li>
 </ul>
@@ -55,7 +55,7 @@ skipped; output is unspecified if the input string is invalid in some other
 way. The return value is the number of bytes read from the input string; this
 may be less than <code>len</code> if the encoded format includes a termination marker.</p>
 <p>Behaviour of <code>encode_bytes()</code> and <code>decode_bytes()</code> is undefined if <code>src</code> is
-null.</p>
+null and <code>len</code> is not zero.</p>
 </div>
 <h2 id="character-escape-encodings">Character escape encodings</h2>
 <div class="defns">

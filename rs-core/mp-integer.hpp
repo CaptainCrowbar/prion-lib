@@ -21,7 +21,7 @@ namespace RS {
     public:
         Nat() = default;
         Nat(uint64_t x);
-        explicit Nat(const Ustring& s, int base = 0) { init(s.data(), base); }
+        explicit Nat(Uview s, int base = 0) { init(s, base); }
         template <typename T> explicit operator T() const;
         explicit operator bool() const noexcept { return ! rep.empty(); }
         bool operator!() const noexcept { return ! bool(*this); }
@@ -68,7 +68,7 @@ namespace RS {
         friend class Int;
         static constexpr auto mask32 = ~ uint32_t(0);
         std::vector<uint32_t> rep; // Least significant word first
-        void init(const char* s, int base);
+        void init(Uview s, int base);
         void trim() noexcept;
         static constexpr int digit_2(char c) noexcept { return c == '0' ? 0 : c == '1' ? 1 : -1; }
         static constexpr int digit_10(char c) noexcept { return c >= '0' && c <= '9' ? int(c - '0') : -1; }
@@ -440,13 +440,14 @@ namespace RS {
         }
     }
 
-    inline void Nat::init(const char* s, int base) {
+    inline void Nat::init(Uview s, int base) {
         if (base != 0 && base != 2 && base != 10 && base != 16)
             throw std::invalid_argument("Invalid base: " + RS::dec(base));
-        if (! (s && *s))
+        if (s.empty())
             return;
+        auto ptr = s.data(), end = ptr + s.size();
         if (base == 0) {
-            if (s[0] != '0')
+            if (s[0] != '0' || s.size() < 3)
                 base = 10;
             else if (s[1] == 'B' || s[1] == 'b')
                 base = 2;
@@ -455,15 +456,15 @@ namespace RS {
             else
                 base = 10;
             if (base != 10)
-                s += 2;
+                ptr += 2;
         }
         Nat nbase = base;
         int digit = 0;
         auto digit_f = base == 2 ? digit_2 : base == 16 ? digit_16 : digit_10;
-        for (; *s; ++s) {
-            if (*s == '\'')
+        for (; ptr != end; ++ptr) {
+            if (*ptr == '\'')
                 continue;
-            digit = digit_f(*s);
+            digit = digit_f(*ptr);
             if (digit == -1)
                 break;
             *this *= nbase;
@@ -495,7 +496,7 @@ namespace RS {
         Int() = default;
         Int(int64_t x): mag(uint64_t(std::abs(x))), neg(x < 0) {}
         Int(const Nat& x): mag(x), neg(false) {}
-        explicit Int(const Ustring& s, int base = 0) { init(s.data(), base); }
+        explicit Int(Uview s, int base = 0) { init(s, base); }
         template <typename T> explicit operator T() const;
         explicit operator Nat() const { return mag; }
         explicit operator bool() const noexcept { return bool(mag); }
@@ -527,7 +528,7 @@ namespace RS {
     private:
         Nat mag;
         bool neg = false;
-        void init(const char* s, int base);
+        void init(Uview s, int base);
         static void do_divide(const Int& x, const Int& y, Int& q, Int& r);
         static void do_multiply(const Int& x, const Int& y, Int& z);
     };
@@ -603,15 +604,17 @@ namespace RS {
         return i;
     }
 
-    inline void Int::init(const char* s, int base) {
+    inline void Int::init(Uview s, int base) {
         if (base != 0 && base != 2 && base != 10 && base != 16)
             throw std::invalid_argument("Invalid base: " + RS::dec(base));
-        if (s == nullptr || *s == '\0')
+        if (s.empty())
             return;
-        neg = *s == '-';
-        if (*s == '+' || *s == '-')
-            ++s;
-        mag.init(s, base);
+        auto b = s.data(), e = b + s.size();
+        neg = *b == '-';
+        if (*b == '+' || *b == '-')
+            ++b;
+        Uview u(b, e - b);
+        mag.init(u, base);
         neg &= bool(mag);
     }
 

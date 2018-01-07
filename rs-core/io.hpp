@@ -59,10 +59,10 @@ namespace RS {
         virtual ptrdiff_t tell() noexcept = 0;
         virtual size_t write(const void* ptr, size_t len) = 0;
         virtual void write_n(size_t n, char c);
-        void check(const Ustring& detail = "") const;
+        void check(Uview detail = "") const;
         void clear_error() noexcept { set_error(0); }
         std::error_code error() const noexcept { return status; }
-        template <typename... Args> void format(const Ustring& pattern, const Args&... args) { write_str(fmt(pattern, args...)); }
+        template <typename... Args> void format(Uview pattern, const Args&... args) { write_str(fmt(pattern, args...)); }
         Irange<line_iterator> lines() { return {line_iterator(*this), {}}; }
         bool ok() const noexcept { return ! status && is_open(); }
         template <typename... Args> void print(const Args&... args);
@@ -70,8 +70,8 @@ namespace RS {
         size_t read_n(std::string& s, size_t maxlen = 1024);
         std::string read_str(size_t maxlen);
         void write_line() { putc('\n'); }
-        void write_line(const std::string& str);
-        size_t write_str(const std::string& str);
+        void write_line(string_view str);
+        size_t write_str(string_view str);
     protected:
         static constexpr const char* null_device =
             #ifdef _XOPEN_SOURCE
@@ -110,12 +110,12 @@ namespace RS {
                 write(buf.data(), qr.second);
         }
 
-        inline void IO::check(const Ustring& detail) const {
+        inline void IO::check(Uview detail) const {
             if (status) {
                 if (detail.empty())
                     throw std::system_error(status);
                 else
-                    throw std::system_error(status, detail);
+                    throw std::system_error(status, Ustring(detail));
             }
         }
 
@@ -146,17 +146,18 @@ namespace RS {
             return s;
         }
 
-        inline void IO::write_line(const std::string& str) {
+        inline void IO::write_line(string_view str) {
             if (str.empty())
                 putc('\n');
             else if (str.back() == '\n')
                 write_str(str);
             else
-                write_str(str + '\n');
+                write_str(std::string(str) + '\n');
         }
 
-        inline size_t IO::write_str(const std::string& str) {
-            const char* ptr = str.data();
+        inline size_t IO::write_str(string_view str) {
+            static constexpr char dummy = '\0';
+            const char* ptr = str.empty() ? &dummy : str.data();
             size_t ofs = 0, len = str.size();
             do ofs += write(ptr + ofs, len - ofs);
                 while (ofs < len && ok());

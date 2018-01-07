@@ -18,7 +18,7 @@ namespace RS {
             uint8_t i, uint8_t j, uint8_t k, uint8_t l, uint8_t m, uint8_t n, uint8_t o, uint8_t p) noexcept:
             bytes{a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p} {}
         Uuid(const void* ptr, size_t n) noexcept;
-        explicit Uuid(const Ustring& s);
+        explicit Uuid(Uview s);
         uint8_t& operator[](size_t i) noexcept { return bytes[i]; }
         const uint8_t& operator[](size_t i) const noexcept { return bytes[i]; }
         uint8_t* begin() noexcept { return bytes; }
@@ -47,21 +47,21 @@ namespace RS {
             memset(bytes + n, 0, 16 - n);
     }
 
-    inline Uuid::Uuid(const Ustring& s) {
-        auto begins = s.begin(), i = begins, ends = s.end();
-        auto j = begin(), endu = end();
+    inline Uuid::Uuid(Uview s) {
+        auto i = s.begin(), end_s = s.end();
+        auto j = begin(), end_u = end();
         int rc = 0;
-        while (i != ends && j != endu && rc != -1) {
-            i = std::find_if(i, ends, is_xdigit);
-            if (i == ends)
+        while (i != end_s && j != end_u && rc != -1) {
+            i = std::find_if(i, end_s, is_xdigit);
+            if (i == end_s)
                 break;
-            rc = RS_Detail::decode_hex_byte(i, ends);
+            rc = RS_Detail::decode_hex_byte(i, end_s);
             if (rc == -1)
                 break;
             *j++ = uint8_t(rc);
         }
-        if (rc == -1 || j != endu || std::find_if(i, ends, is_alnum) != ends)
-            throw std::invalid_argument("Invalid UUID: " + s);
+        if (rc == -1 || j != end_u || std::find_if(i, end_s, is_alnum) != end_s)
+            throw std::invalid_argument("Invalid UUID: " + Ustring(s));
     }
 
     inline Ustring Uuid::str() const {

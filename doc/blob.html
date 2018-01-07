@@ -35,6 +35,7 @@
 <li><code>Blob::</code><strong><code>Blob</code></strong><code>(Blob&amp;&amp; b) noexcept: ptr(b.ptr), len(b.len)</code></li>
 <li><code>Blob&amp; Blob::</code><strong><code>operator=</code></strong><code>(const Blob&amp; b)</code></li>
 <li><code>Blob&amp; Blob::</code><strong><code>operator=</code></strong><code>(Blob&amp;&amp; b) noexcept</code></li>
+<li><code>Blob::</code><strong><code>operator std::string_view</code></strong><code>() const noexcept</code></li>
 <li><code>void* Blob::</code><strong><code>data</code></strong><code>() noexcept</code></li>
 <li><code>const void* Blob::</code><strong><code>data</code></strong><code>() const noexcept</code></li>
 <li><code>uint8_t* Blob::</code><strong><code>b_data</code></strong><code>() noexcept</code></li>
@@ -56,7 +57,7 @@
 <li><code>void Blob::</code><strong><code>reset</code></strong><code>(void* p, size_t n)</code></li>
 <li><code>template &lt;typename F&gt; void Blob::</code><strong><code>reset</code></strong><code>(void* p, size_t n, F f)</code></li>
 <li><code>size_t Blob::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
-<li><code>string Blob::</code><strong><code>str</code></strong><code>() const</code></li>
+<li><code>std::string Blob::</code><strong><code>str</code></strong><code>() const</code></li>
 <li><code>void Blob::</code><strong><code>swap</code></strong><code>(Blob&amp; b) noexcept</code></li>
 <li><code>static Blob Blob::</code><strong><code>from_hex</code></strong><code>(const Ustring&amp; s)</code></li>
 </ul>
@@ -94,7 +95,8 @@ beginning and end of the blob.</p>
 referenced data.</p>
 <p>The <code>hex()</code> function returns the blob's data in hex form; if a nonzero block
 size is supplied, a line feed will be inserted after each block.</p>
-<p>The <code>str()</code> function copies the entire blob into a string.</p>
+<p>The <code>str()</code> function copies the entire blob into a string. There is also an
+implicit conversion to <code>string_view</code>.</p>
 <p>The comparison operators perform bytewise comparison by calling <code>memcmp()</code>.</p>
 <p>The <code>from_hex()</code> function translates a hexadecimal string into bytes. The
 argument string must contain zero or more contiguous blocks of hex digits,

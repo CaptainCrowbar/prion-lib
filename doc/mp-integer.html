@@ -36,7 +36,7 @@ could be.</p>
 <li><code>class</code> <strong><code>Nat</code></strong><ul>
 <li><code>Nat::</code><strong><code>Nat</code></strong><code>()</code></li>
 <li><code>Nat::</code><strong><code>Nat</code></strong><code>(uint64_t x)</code></li>
-<li><code>explicit Nat::</code><strong><code>Nat</code></strong><code>(const Ustring&amp; s, int base = 0)</code></li>
+<li><code>explicit Nat::</code><strong><code>Nat</code></strong><code>(Uview s, int base = 0)</code></li>
 <li><code>Nat::</code><strong><code>~Nat</code></strong><code>() noexcept</code></li>
 <li><code>Nat::</code><strong><code>Nat</code></strong><code>(const Nat&amp; n)</code></li>
 <li><code>Nat::</code><strong><code>Nat</code></strong><code>(Nat&amp;&amp; n) noexcept</code></li>
@@ -144,7 +144,7 @@ is undefined if <code>n&lt;1</code>.</p>
 <li><code>Int::</code><strong><code>Int</code></strong><code>()</code></li>
 <li><code>Int::</code><strong><code>Int</code></strong><code>(int64_t x)</code></li>
 <li><code>Int::</code><strong><code>Int</code></strong><code>(const Nat&amp; x)</code></li>
-<li><code>explicit Int::</code><strong><code>Int</code></strong><code>(const Ustring&amp; s, int base = 0)</code></li>
+<li><code>explicit Int::</code><strong><code>Int</code></strong><code>(Uview s, int base = 0)</code></li>
 <li><code>Int::</code><strong><code>~Int</code></strong><code>() noexcept</code></li>
 <li><code>Int::</code><strong><code>Int</code></strong><code>(const Int&amp; n)</code></li>
 <li><code>Int::</code><strong><code>Int</code></strong><code>(Int&amp;&amp; n) noexcept</code></li>

@@ -69,6 +69,7 @@ namespace RS {
     #else
 
         using SocketType = SOCKET;
+        using sa_family_t = unsigned short;
 
         class NetBase {
         public:

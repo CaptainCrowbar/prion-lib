@@ -126,14 +126,14 @@ namespace RS {
             return {t, e};
         };
 
-        inline void control_blocking(SocketType sock, bool state) {
-            auto mode = SocketFionbio(! state);
+        inline void control_blocking(SocketType sock, bool flag) {
+            auto mode = SocketFionbio(! flag);
             clear_error();
             net_call(ioctl_socket(sock, FIONBIO, &mode)).fail_if(-1, "ioctl()");
         }
 
-        inline void control_nagle(SocketType sock, bool state) {
-            auto mode = SocketFlag(! state);
+        inline void control_nagle(SocketType sock, bool flag) {
+            auto mode = SocketFlag(! flag);
             clear_error();
             net_call(::setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &mode, sizeof(mode))).fail_if(-1, "setsockopt()");
         }
@@ -591,7 +591,7 @@ namespace RS {
         SocketAddress remote() const;
         SocketType native() const noexcept { return sock; }
         size_t read_from(void* dst, size_t maxlen, SocketAddress& from) { return do_read(dst, maxlen, &from); }
-        void set_blocking(bool state);
+        void set_blocking(bool flag);
         bool write(string_view s) { return do_write(s.data(), s.size(), nullptr); }
         bool write(const void* src, size_t len) { return do_write(src, len, nullptr); }
         bool write_to(string_view s, const SocketAddress& to) { return do_write(s.data(), s.size(), &to); }
@@ -636,9 +636,9 @@ namespace RS {
             return sa;
         }
 
-        inline void Socket::set_blocking(bool state) {
+        inline void Socket::set_blocking(bool flag) {
             using namespace RS_Detail;
-            control_blocking(sock, state);
+            control_blocking(sock, flag);
         }
 
         inline void Socket::do_close() noexcept {
@@ -685,7 +685,7 @@ namespace RS {
         explicit TcpClient(SocketType s) noexcept: Socket(s) {}
         explicit TcpClient(const SocketAddress& remote, const SocketAddress& local = {});
         template <typename... Args> explicit TcpClient(const Args&... args): TcpClient(SocketAddress{args...}) {}
-        void set_nagle(bool state);
+        void set_nagle(bool flag);
     };
 
         inline TcpClient::TcpClient(const SocketAddress& remote, const SocketAddress& local):
@@ -701,9 +701,9 @@ namespace RS {
             control_nagle(native(), false);
         }
 
-        inline void TcpClient::set_nagle(bool state) {
+        inline void TcpClient::set_nagle(bool flag) {
             using namespace RS_Detail;
-            control_nagle(native(), state);
+            control_nagle(native(), flag);
         }
 
     class TcpServer:

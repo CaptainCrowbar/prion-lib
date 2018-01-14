@@ -252,7 +252,7 @@ throw <code>std::system_error</code> if anything else goes wrong.</p>
 <li><code>SocketAddress Socket::</code><strong><code>remote</code></strong><code>() const</code></li>
 <li><code>SocketType Socket::</code><strong><code>native</code></strong><code>() const noexcept</code></li>
 <li><code>size_t Socket::</code><strong><code>read_from</code></strong><code>(void* dst, size_t maxlen, SocketAddress&amp; from)</code></li>
-<li><code>void Socket::</code><strong><code>set_blocking</code></strong><code>(bool state)</code></li>
+<li><code>void Socket::</code><strong><code>set_blocking</code></strong><code>(bool flag)</code></li>
 <li><code>bool Socket::</code><strong><code>write</code></strong><code>(std::string_view s)</code></li>
 <li><code>bool Socket::</code><strong><code>write</code></strong><code>(const void* src, size_t len)</code></li>
 <li><code>bool Socket::</code><strong><code>write_to</code></strong><code>(std::string_view s, const SocketAddress&amp; to)</code></li>
@@ -283,7 +283,7 @@ its normal default value for the socket type (normally enabled).</p>
 <li><code>virtual TcpClient::</code><strong><code>~TcpClient</code></strong><code>() noexcept</code></li>
 <li><code>TcpClient::</code><strong><code>TcpClient</code></strong><code>(TcpClient&amp;&amp;) noexcept</code></li>
 <li><code>TcpClient&amp; TcpClient::</code><strong><code>operator=</code></strong><code>(TcpClient&amp;&amp;) noexcept</code></li>
-<li><code>void TcpClient::</code><strong><code>set_nagle</code></strong><code>(bool state)</code></li>
+<li><code>void TcpClient::</code><strong><code>set_nagle</code></strong><code>(bool flag)</code></li>
 </ul>
 </li>
 </ul>

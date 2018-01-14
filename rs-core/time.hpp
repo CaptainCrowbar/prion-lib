@@ -344,8 +344,7 @@ namespace RS {
         RS_NO_COPY_MOVE(Stopwatch)
         explicit Stopwatch(Uview name, int precision = 3) noexcept {
             try {
-                prefix = name;
-                prefix += " : ";
+                prefix = Ustring(name) + " : ";
                 prec = precision;
                 start = ReliableClock::now();
             }

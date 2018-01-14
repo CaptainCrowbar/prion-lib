@@ -216,7 +216,7 @@ namespace RS {
 
         inline Cstdio::Cstdio(FILE* f, bool owner) noexcept {
             if (owner)
-                fp = {f, [] (FILE* f) { if (f) ::fclose(f); }};
+                fp = {f, [] (FILE* p) { if (p) ::fclose(p); }};
             else
                 fp = {f, [] (FILE*) {}};
         }
@@ -407,7 +407,7 @@ namespace RS {
 
         inline Fdio::Fdio(int f, bool owner) noexcept {
             if (owner)
-                fd = {f, [] (int f) { if (f != -1) RS_IO_FUNCTION(close)(f); }};
+                fd = {f, [] (int d) { if (d != -1) RS_IO_FUNCTION(close)(d); }};
             else
                 fd = {f, [] (int) {}};
         }

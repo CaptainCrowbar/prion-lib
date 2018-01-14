@@ -42,14 +42,14 @@ namespace RS {
     constexpr bool ascii_isalnum_w(char c) noexcept { return ascii_isalnum(c) || c == '_'; }
     constexpr bool ascii_isalpha_w(char c) noexcept { return ascii_isalpha(c) || c == '_'; }
     constexpr bool ascii_ispunct_w(char c) noexcept { return ascii_ispunct(c) && c != '_'; }
-    constexpr char ascii_tolower(char c) noexcept { return ascii_isupper(c) ? c + 32 : c; }
-    constexpr char ascii_toupper(char c) noexcept { return ascii_islower(c) ? c - 32 : c; }
+    constexpr char ascii_tolower(char c) noexcept { return ascii_isupper(c) ? char(c + 32) : c; }
+    constexpr char ascii_toupper(char c) noexcept { return ascii_islower(c) ? char(c - 32) : c; }
     template <typename T> constexpr T char_to(char c) noexcept { return T(uint8_t(c)); }
 
     // Construction functions
 
     template <typename C> basic_string_view<C> make_view(const std::basic_string<C>& s) noexcept { return s; }
-    template <typename C> basic_string_view<C> make_view(std::basic_string_view<C> s) noexcept { return s; }
+    template <typename C> basic_string_view<C> make_view(basic_string_view<C> s) noexcept { return s; }
     template <typename C> basic_string_view<C> make_view(const C* s) noexcept { if (s) return s; else return {}; }
 
     template <typename S>
@@ -69,7 +69,7 @@ namespace RS {
         struct UtfConvert {
             S operator()(SV sv) const {
                 auto u = UtfConvert<SV, std::u32string>()(sv);
-                return UtfConvert<std::u32string_view, S>()(u);
+                return UtfConvert<u32string_view, S>()(u);
             }
         };
 
@@ -408,14 +408,14 @@ namespace RS {
 
     inline std::string drop_prefix(string_view s, string_view prefix) {
         if (starts_with(s, prefix))
-            return std::string(s, prefix.size(), npos);
+            return std::string(s.data() + prefix.size(), s.size() - prefix.size());
         else
             return std::string(s);
     }
 
     inline std::string drop_suffix(string_view s, string_view suffix) {
         if (ends_with(s, suffix))
-            return std::string(s, 0, s.size() - suffix.size());
+            return std::string(s.data(), s.size() - suffix.size());
         else
             return std::string(s);
     }
@@ -477,7 +477,7 @@ namespace RS {
                 j = size;
             if (j > i) {
                 result.append(4 * depth, ' ');
-                result.append(str, i, j - i);
+                result.append(str.data() + i, j - i);
             }
             result += '\n';
             i = j + 1;
@@ -509,7 +509,7 @@ namespace RS {
                 j = size;
             if (! result.empty())
                 result += ' ';
-            result.append(str, i, j - i);
+            result.append(str.data() + i, j - i);
         }
         return result;
     }
@@ -590,11 +590,11 @@ namespace RS {
             j = s.find(target, i);
             if (j == npos)
                 break;
-            r.append(s, i, j - i);
+            r.append(s.data() + i, j - i);
             r += subst;
             i = j + tlen;
         }
-        r.append(s, i, npos);
+        r.append(s.data() + i, s.size() - i);
         return r;
     }
 
@@ -713,14 +713,7 @@ namespace RS {
         auto x = double(t);
         int rc = 0;
         for (;;) {
-            #ifdef __GNUC__
-                #pragma GCC diagnostic push
-                #pragma GCC diagnostic ignored "-Wformat-nonliteral"
-            #endif
             rc = snprintf(&buf[0], buf.size(), fmt.data(), prec, x);
-            #ifdef __GNUC__
-                #pragma GCC diagnostic pop
-            #endif
             if (rc < 0)
                 throw std::system_error(errno, std::generic_category(), "snprintf()");
             if (size_t(rc) < buf.size())
@@ -865,21 +858,21 @@ namespace RS {
         template <> struct ObjectToString<char> { Ustring operator()(char t) const { return {t}; } };
 
         template <> struct ObjectToString<std::u16string> { Ustring operator()(const std::u16string& t) const { return uconv<Ustring>(t); } };
-        template <> struct ObjectToString<std::u16string_view> { Ustring operator()(std::u16string_view t) const { return uconv<Ustring>(t); } };
+        template <> struct ObjectToString<u16string_view> { Ustring operator()(u16string_view t) const { return uconv<Ustring>(t); } };
         template <> struct ObjectToString<char16_t*> { Ustring operator()(char16_t* t) const { return t ? uconv<Ustring>(std::u16string(t)) : Ustring(); } };
         template <> struct ObjectToString<const char16_t*> { Ustring operator()(const char16_t* t) const { return t ? uconv<Ustring>(std::u16string(t)) : Ustring(); } };
         template <size_t N> struct ObjectToString<char16_t[N], 'X'> { Ustring operator()(const char16_t* t) const { return uconv<Ustring>(std::u16string(t)); } };
         template <> struct ObjectToString<char16_t> { Ustring operator()(char16_t t) const { return uconv<Ustring>(std::u16string{t}); } };
 
         template <> struct ObjectToString<std::u32string> { Ustring operator()(const std::u32string& t) const { return uconv<Ustring>(t); } };
-        template <> struct ObjectToString<std::u32string_view> { Ustring operator()(std::u32string_view t) const { return uconv<Ustring>(t); } };
+        template <> struct ObjectToString<u32string_view> { Ustring operator()(u32string_view t) const { return uconv<Ustring>(t); } };
         template <> struct ObjectToString<char32_t*> { Ustring operator()(char32_t* t) const { return t ? uconv<Ustring>(std::u32string(t)) : Ustring(); } };
         template <> struct ObjectToString<const char32_t*> { Ustring operator()(const char32_t* t) const { return t ? uconv<Ustring>(std::u32string(t)) : Ustring(); } };
         template <size_t N> struct ObjectToString<char32_t[N], 'X'> { Ustring operator()(const char32_t* t) const { return uconv<Ustring>(std::u32string(t)); } };
         template <> struct ObjectToString<char32_t> { Ustring operator()(char32_t t) const { return uconv<Ustring>(std::u32string{t}); } };
 
         template <> struct ObjectToString<std::wstring> { Ustring operator()(const std::wstring& t) const { return uconv<Ustring>(t); } };
-        template <> struct ObjectToString<std::wstring_view> { Ustring operator()(std::wstring_view t) const { return uconv<Ustring>(t); } };
+        template <> struct ObjectToString<wstring_view> { Ustring operator()(wstring_view t) const { return uconv<Ustring>(t); } };
         template <> struct ObjectToString<wchar_t*> { Ustring operator()(wchar_t* t) const { return t ? uconv<Ustring>(std::wstring(t)) : Ustring(); } };
         template <> struct ObjectToString<const wchar_t*> { Ustring operator()(const wchar_t* t) const { return t ? uconv<Ustring>(std::wstring(t)) : Ustring(); } };
         template <size_t N> struct ObjectToString<wchar_t[N], 'X'> { Ustring operator()(const wchar_t* t) const { return uconv<Ustring>(std::wstring(t)); } };
@@ -908,7 +901,7 @@ namespace RS {
             size_t j = pattern.find('$', i);
             if (j == npos)
                 j = psize;
-            result.append(pattern, i, j - i);
+            result.append(pattern.data() + i, j - i);
             i = j;
             while (pattern[i] == '$') {
                 ++i;
@@ -973,7 +966,7 @@ namespace RS {
             if (pp) {
                 int64_t steps = pp - prefixes + 1;
                 double limit = log10(double(limits::max()) / double(std::abs(n))) / 3;
-                if (steps > limit)
+                if (double(steps) > limit)
                     throw std::range_error("Out of range: " + quote(s));
                 n *= int_power(int64_t(1000), steps);
             }
@@ -1002,9 +995,9 @@ namespace RS {
             if (pp) {
                 auto steps = pp - prefixes - 8;
                 double limit = log10(limits::max() / fabs(x)) / 3;
-                if (steps > limit)
+                if (double(steps) > limit)
                     throw std::range_error("Out of range: " + quote(s));
-                x *= pow(1000.0, steps);
+                x *= std::pow(1000.0, steps);
             }
         }
         return x;

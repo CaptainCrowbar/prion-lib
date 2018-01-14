@@ -148,14 +148,14 @@ namespace RS {
             size_t nhex = 0;
             for (size_t i = 0; i < len; ++i) {
                 if (src[i] >= '0' && src[i] <= '9')
-                    digit = src[i] - '0';
+                    digit = uint8_t(src[i] - '0');
                 else if (src[i] >= 'A' && src[i] <= 'F')
-                    digit = src[i] - 'A' + 10;
+                    digit = uint8_t(src[i] - 'A' + 10);
                 else if (src[i] >= 'a' && src[i] <= 'f')
-                    digit = src[i] - 'a' + 10;
+                    digit = uint8_t(src[i] - 'a' + 10);
                 else
                     continue;
-                byte = 16 * byte + digit;
+                byte = uint8_t(16 * byte + digit);
                 if (++nhex == 2) {
                     dst += char(byte);
                     byte = 0;

@@ -210,7 +210,7 @@ throw `std::system_error` if anything else goes wrong.
     * `SocketAddress Socket::`**`remote`**`() const`
     * `SocketType Socket::`**`native`**`() const noexcept`
     * `size_t Socket::`**`read_from`**`(void* dst, size_t maxlen, SocketAddress& from)`
-    * `void Socket::`**`set_blocking`**`(bool state)`
+    * `void Socket::`**`set_blocking`**`(bool flag)`
     * `bool Socket::`**`write`**`(std::string_view s)`
     * `bool Socket::`**`write`**`(const void* src, size_t len)`
     * `bool Socket::`**`write_to`**`(std::string_view s, const SocketAddress& to)`
@@ -241,7 +241,7 @@ Any function that implicitly calls a native socket API function will throw
     * `virtual TcpClient::`**`~TcpClient`**`() noexcept`
     * `TcpClient::`**`TcpClient`**`(TcpClient&&) noexcept`
     * `TcpClient& TcpClient::`**`operator=`**`(TcpClient&&) noexcept`
-    * `void TcpClient::`**`set_nagle`**`(bool state)`
+    * `void TcpClient::`**`set_nagle`**`(bool flag)`
 
 A TCP client can be constructed from a native socket, a remote and local
 address (which are passed to `bind()` and `connect()`), or a set of arguments

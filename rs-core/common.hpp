@@ -94,19 +94,31 @@
 // Temporary measure until all my compilers upport std::string_view
 
 #if defined(__GNUC__) && ! defined(__clang__) && __GNUC__ < 7
+
     #include <experimental/string_view>
+
     using std::experimental::basic_string_view;
     using std::experimental::string_view;
     using std::experimental::u16string_view;
     using std::experimental::u32string_view;
     using std::experimental::wstring_view;
+
+    template <typename C>
+    inline std::basic_string<C>& operator+=(std::basic_string<C>& lhs, basic_string_view<C> rhs) {
+        lhs.append(rhs.data(), rhs.size());
+        return lhs;
+    }
+
 #else
+
     #include <string_view>
+
     using std::basic_string_view;
     using std::string_view;
     using std::u16string_view;
     using std::u32string_view;
     using std::wstring_view;
+
 #endif
 
 // GNU brain damage

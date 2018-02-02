@@ -52,9 +52,9 @@ the date elements are in. If none of these are present, the default is
 * `template <typename C1, typename D1, typename C2, typename D2> void` **`convert_time_point`**`(time_point<C1, D1> src, time_point<C2, D2>& dst)`
 
 Convert a time point from one representation to another, possibly on a
-different clock. This will call `std::time_point_cast()` if possible;
-otherwise, it will check the current times on both clocks and use that to
-convert from one clock to the other.
+different clock. This will call `time_point_cast()` if possible; otherwise, it
+will check the current times on both clocks and use that to convert from one
+clock to the other.
 
 * `template <typename R, typename P> void` **`from_seconds`**`(double s, duration<R, P>& d) noexcept`
 * `template <typename R, typename P> double` **`to_seconds`**`(const duration<R, P>& d) noexcept`
@@ -141,6 +141,33 @@ time cannot be represented by the duration type, or if the second version of
 `std::chrono::duration`.
 
 ## Timing utilities ##
+
+* `class` **`Backoff`**
+    * `Backoff::`**`Backoff`**`() noexcept`
+    * `template <typename R1, typename P1, typename R2, typename P2> Backoff::`**`Backoff`**`(duration<R1, P1> min_interval, duration<R2, P2> max_interval) noexcept`
+    * `Backoff::`**`~Backoff`**`() noexcept`
+    * `Backoff::`**`Backoff`**`(const Backoff& b) noexcept`
+    * `Backoff::`**`Backoff`**`(Backoff&& b) noexcept`
+    * `Backoff& Backoff::`**`operator=`**`(const Backoff& b) noexcept`
+    * `Backoff& Backoff::`**`operator=`**`(Backoff&& b) noexcept`
+    * `[duration type] Backoff::`**`min`**`() const noexcept`
+    * `[duration type] Backoff::`**`max`**`() const noexcept`
+    * `template <typename Predicate> void Backoff::`**`wait`**`(Predicate pred) const`
+    * `template <typename Predicate, typename R, typename P> bool Backoff::`**`wait_for`**`(Predicate pred, duration<R, P> timeout) const`
+    * `template <typename Predicate, typename C, typename D> bool Backoff::`**`wait_until`**`(Predicate pred, time_point<C, D> timeout) const`
+
+This implements a backoff wait algorithm. The constructor takes a minimum and
+maximum poll interval, defaulting to 10 microseconds and 10 milliseconds
+respectively. The `min()` and `max()` query functions return the intervals
+expressed in an unspecified duration type (the same type for both functions).
+When one of the wait functions is called, after testing the predicate, it will
+wait for the minimum interval before testing again, doubling the interval
+after each test until the maximum interval is reached, after which it will
+continue testing at that interval. The `wait()` function will return when the
+predicate is true; the other wait functions will return true when the
+predicate is true, or false when the timeout expires, whichever comes first.
+All of the wait functions will propagate any exceptions thrown by the
+predicate.
 
 * `class` **`Stopwatch`**
     * `explicit Stopwatch::`**`Stopwatch`**`(Uview name, int precision = 3) noexcept`

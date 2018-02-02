@@ -241,6 +241,22 @@ void test_core_time_parse_time() {
 
 }
 
+void test_core_time_backoff_wait() {
+
+    Backoff b;
+    int x = 42;
+
+    TEST_EQUAL(b.min().count(), 10'000);
+    TEST_EQUAL(b.max().count(), 10'000'000);
+
+    auto start = system_clock::now();
+    TEST(! b.wait_for([&] { return x == 0; }, 200ms));
+    auto stop = system_clock::now();
+    auto msec = duration_cast<milliseconds>(stop - start).count();
+    TEST_NEAR_EPSILON(msec, 200, 100);
+
+}
+
 void test_core_time_system_specific_conversions() {
 
     using IntMsec = duration<int64_t, std::ratio<1, 1000>>;

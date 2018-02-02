@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <ratio>
 #include <stdexcept>
+#include <thread>
 #include <type_traits>
 
 namespace RS {
@@ -339,10 +340,72 @@ namespace RS {
 
     // Timing utilities
 
+    class Backoff {
+    public:
+        Backoff() = default;
+        template <typename R1, typename P1, typename R2, typename P2> Backoff(std::chrono::duration<R1, P1> min_interval, std::chrono::duration<R2, P2> max_interval) noexcept;
+        auto min() const noexcept { return min_wait; }
+        auto max() const noexcept { return max_wait; }
+        template <typename Predicate> void wait(Predicate pred) const;
+        template <typename Predicate, typename R, typename P> bool wait_for(Predicate pred, std::chrono::duration<R, P> timeout) const;
+        template <typename Predicate, typename C, typename D> bool wait_until(Predicate pred, std::chrono::time_point<C, D> timeout) const;
+    private:
+        using duration = std::chrono::nanoseconds;
+        duration min_wait = std::chrono::microseconds(10);
+        duration max_wait = std::chrono::milliseconds(10);
+    };
+
+        template <typename R1, typename P1, typename R2, typename P2>
+        Backoff::Backoff(std::chrono::duration<R1, P1> min_interval, std::chrono::duration<R2, P2> max_interval) noexcept {
+            using namespace std::chrono;
+            min_wait = duration_cast<duration>(min_interval);
+            max_wait = duration_cast<duration>(max_interval);
+        }
+
+        template <typename Predicate>
+        void Backoff::wait(Predicate pred) const {
+            duration delta = min_wait;
+            while (! pred()) {
+                std::this_thread::sleep_for(delta);
+                delta = std::min(2 * delta, max_wait);
+            }
+        }
+
+        template <typename Predicate, typename R, typename P>
+        bool Backoff::wait_for(Predicate pred, std::chrono::duration<R, P> timeout) const {
+            return wait_until(pred, ReliableClock::now() + timeout);
+        }
+
+        template <typename Predicate, typename C, typename D>
+        bool Backoff::wait_until(Predicate pred, std::chrono::time_point<C, D> timeout) const {
+            using namespace std::chrono;
+            duration delta = min_wait;
+            auto deadline = time_point_cast<duration>(timeout);
+            for (;;) {
+                if (pred())
+                    return true;
+                auto now = time_point_cast<duration>(C::now());
+                if (now >= deadline)
+                    return false;
+                auto remain = deadline - now;
+                delta = std::min(delta, remain);
+                std::this_thread::sleep_for(delta);
+                delta = std::min(2 * delta, max_wait);
+            }
+        }
+
     class Stopwatch {
     public:
         RS_NO_COPY_MOVE(Stopwatch)
-        explicit Stopwatch(Uview name, int precision = 3) noexcept {
+        explicit Stopwatch(Uview name, int precision = 3) noexcept;
+        ~Stopwatch() noexcept;
+    private:
+        Ustring prefix;
+        int prec;
+        ReliableClock::time_point start;
+    };
+
+        inline Stopwatch::Stopwatch(Uview name, int precision) noexcept {
             try {
                 prefix = Ustring(name) + " : ";
                 prec = precision;
@@ -350,18 +413,14 @@ namespace RS {
             }
             catch (...) {}
         }
-        ~Stopwatch() noexcept {
+
+        inline Stopwatch::~Stopwatch() noexcept {
             try {
                 auto t = ReliableClock::now() - start;
                 logx(prefix + format_time(t, prec));
             }
             catch (...) {}
         }
-    private:
-        Ustring prefix;
-        int prec;
-        ReliableClock::time_point start;
-    };
 
     // System specific time and date conversions
 

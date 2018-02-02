@@ -81,9 +81,9 @@ the date elements are in. If none of these are present, the default is
 <li><code>template &lt;typename C1, typename D1, typename C2, typename D2&gt; void</code> <strong><code>convert_time_point</code></strong><code>(time_point&lt;C1, D1&gt; src, time_point&lt;C2, D2&gt;&amp; dst)</code></li>
 </ul>
 <p>Convert a time point from one representation to another, possibly on a
-different clock. This will call <code>std::time_point_cast()</code> if possible;
-otherwise, it will check the current times on both clocks and use that to
-convert from one clock to the other.</p>
+different clock. This will call <code>time_point_cast()</code> if possible; otherwise, it
+will check the current times on both clocks and use that to convert from one
+clock to the other.</p>
 </div>
 <div class="defns">
 <ul>
@@ -251,6 +251,37 @@ time cannot be represented by the duration type, or if the second version of
 <code>std::chrono::duration</code>.</p>
 </div>
 <h2 id="timing-utilities">Timing utilities</h2>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>Backoff</code></strong><ul>
+<li><code>Backoff::</code><strong><code>Backoff</code></strong><code>() noexcept</code></li>
+<li><code>template &lt;typename R1, typename P1, typename R2, typename P2&gt; Backoff::</code><strong><code>Backoff</code></strong><code>(duration&lt;R1, P1&gt; min_interval, duration&lt;R2, P2&gt; max_interval) noexcept</code></li>
+<li><code>Backoff::</code><strong><code>~Backoff</code></strong><code>() noexcept</code></li>
+<li><code>Backoff::</code><strong><code>Backoff</code></strong><code>(const Backoff&amp; b) noexcept</code></li>
+<li><code>Backoff::</code><strong><code>Backoff</code></strong><code>(Backoff&amp;&amp; b) noexcept</code></li>
+<li><code>Backoff&amp; Backoff::</code><strong><code>operator=</code></strong><code>(const Backoff&amp; b) noexcept</code></li>
+<li><code>Backoff&amp; Backoff::</code><strong><code>operator=</code></strong><code>(Backoff&amp;&amp; b) noexcept</code></li>
+<li><code>[duration type] Backoff::</code><strong><code>min</code></strong><code>() const noexcept</code></li>
+<li><code>[duration type] Backoff::</code><strong><code>max</code></strong><code>() const noexcept</code></li>
+<li><code>template &lt;typename Predicate&gt; void Backoff::</code><strong><code>wait</code></strong><code>(Predicate pred) const</code></li>
+<li><code>template &lt;typename Predicate, typename R, typename P&gt; bool Backoff::</code><strong><code>wait_for</code></strong><code>(Predicate pred, duration&lt;R, P&gt; timeout) const</code></li>
+<li><code>template &lt;typename Predicate, typename C, typename D&gt; bool Backoff::</code><strong><code>wait_until</code></strong><code>(Predicate pred, time_point&lt;C, D&gt; timeout) const</code></li>
+</ul>
+</li>
+</ul>
+<p>This implements a backoff wait algorithm. The constructor takes a minimum and
+maximum poll interval, defaulting to 10 microseconds and 10 milliseconds
+respectively. The <code>min()</code> and <code>max()</code> query functions return the intervals
+expressed in an unspecified duration type (the same type for both functions).
+When one of the wait functions is called, after testing the predicate, it will
+wait for the minimum interval before testing again, doubling the interval
+after each test until the maximum interval is reached, after which it will
+continue testing at that interval. The <code>wait()</code> function will return when the
+predicate is true; the other wait functions will return true when the
+predicate is true, or false when the timeout expires, whichever comes first.
+All of the wait functions will propagate any exceptions thrown by the
+predicate.</p>
+</div>
 <div class="defns">
 <ul>
 <li><code>class</code> <strong><code>Stopwatch</code></strong><ul>

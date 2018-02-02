@@ -230,6 +230,14 @@ extern void test_core_time_parse_time();
 extern void test_core_time_system_specific_conversions();
 extern void test_core_topological_order_algorithm();
 extern void test_core_topological_order_reverse();
+extern void test_skeleton_url_parse_http();
+extern void test_skeleton_url_parse_file();
+extern void test_skeleton_url_parse_mailto();
+extern void test_skeleton_url_assembly();
+extern void test_skeleton_url_modifiers();
+extern void test_skeleton_url_navigation();
+extern void test_skeleton_url_encoding();
+extern void test_skeleton_url_query();
 extern void test_core_uuid_class();
 extern void test_core_variant_types();
 extern void test_core_variant_behaviour();
@@ -482,6 +490,14 @@ int main() {
         { "core/time/system-specific-conversions", test_core_time_system_specific_conversions },
         { "core/topological-order/algorithm", test_core_topological_order_algorithm },
         { "core/topological-order/reverse", test_core_topological_order_reverse },
+        { "skeleton/url/parse-http", test_skeleton_url_parse_http },
+        { "skeleton/url/parse-file", test_skeleton_url_parse_file },
+        { "skeleton/url/parse-mailto", test_skeleton_url_parse_mailto },
+        { "skeleton/url/assembly", test_skeleton_url_assembly },
+        { "skeleton/url/modifiers", test_skeleton_url_modifiers },
+        { "skeleton/url/navigation", test_skeleton_url_navigation },
+        { "skeleton/url/encoding", test_skeleton_url_encoding },
+        { "skeleton/url/query", test_skeleton_url_query },
         { "core/uuid/class", test_core_uuid_class },
         { "core/variant/types", test_core_variant_types },
         { "core/variant/behaviour", test_core_variant_behaviour },

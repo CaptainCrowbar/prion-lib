@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>URL</title>
+<link type="text/css" rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<h1 id="url">URL</h1>
+<p>By Ross Smith</p>
+<ul>
+<li><code>#include "rs-core/url.hpp"</code></li>
+</ul>
+<h2 id="contents">Contents</h2>
+<div class="toc">
+<ul>
+<li><a href="#url">URL</a><ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#url-class">URL class</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="url-class">URL class</h2>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>Url</code></strong></li>
+</ul>
+<p>This class holds a URL, assumed to follow the format:</p>
+<pre><code>scheme: [//] [ [user [:password] @] host [:port] ] [/path] [?query] [#fragment]
+</code></pre>
+</div>
+<div class="defns">
+<ul>
+<li><code>Url::</code><strong><code>Url</code></strong><code>()</code></li>
+<li><code>explicit Url::</code><strong><code>Url</code></strong><code>(Uview s)</code></li>
+<li><code>Url::</code><strong><code>Url</code></strong><code>(Uview scheme, Uview user, Uview password, Uview host, uint16_t port = 0, Uview path = {}, Uview query = {}, Uview fragment = {})</code></li>
+</ul>
+<p>Constructors. The default constructor produces an empty URL; the second
+constructor parses a URL supplied as a string; the third assembles a URL from
+its component parts (following the same rules as the individual <code>set_*()</code>
+functions described below). The second and third constructors will throw
+<code>std::invalid_argument</code> if their arguments do not form a valid URL.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Url::</code><strong><code>~Url</code></strong><code>() noexcept</code></li>
+<li><code>Url::</code><strong><code>Url</code></strong><code>(const Url&amp; u)</code></li>
+<li><code>Url::</code><strong><code>Url</code></strong><code>(Url&amp;&amp; u) noexcept</code></li>
+<li><code>Url&amp; Url::</code><strong><code>operator=</code></strong><code>(const Url&amp; u)</code></li>
+<li><code>Url&amp; Url::</code><strong><code>operator=</code></strong><code>(Url&amp;&amp; u) noexcept</code></li>
+</ul>
+<p>Other life cycle functions.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool Url::</code><strong><code>has_scheme</code></strong><code>() const noexcept</code></li>
+<li><code>bool Url::</code><strong><code>has_slashes</code></strong><code>() const noexcept</code></li>
+<li><code>bool Url::</code><strong><code>has_user</code></strong><code>() const noexcept</code></li>
+<li><code>bool Url::</code><strong><code>has_password</code></strong><code>() const noexcept</code></li>
+<li><code>bool Url::</code><strong><code>has_host</code></strong><code>() const noexcept</code></li>
+<li><code>bool Url::</code><strong><code>has_port</code></strong><code>() const noexcept</code></li>
+<li><code>bool Url::</code><strong><code>has_path</code></strong><code>() const noexcept</code></li>
+<li><code>bool Url::</code><strong><code>has_query</code></strong><code>() const noexcept</code></li>
+<li><code>bool Url::</code><strong><code>has_fragment</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>Query whether a given URL element is present.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Ustring Url::</code><strong><code>scheme</code></strong><code>() const</code></li>
+<li><code>Ustring Url::</code><strong><code>user</code></strong><code>() const</code></li>
+<li><code>Ustring Url::</code><strong><code>password</code></strong><code>() const</code></li>
+<li><code>Ustring Url::</code><strong><code>host</code></strong><code>() const</code></li>
+<li><code>uint16_t Url::</code><strong><code>port</code></strong><code>() const noexcept</code></li>
+<li><code>Ustring Url::</code><strong><code>path</code></strong><code>() const</code></li>
+<li><code>Ustring Url::</code><strong><code>query</code></strong><code>() const</code></li>
+<li><code>Ustring Url::</code><strong><code>fragment</code></strong><code>() const</code></li>
+</ul>
+<p>Query the value of a given URL element. The returned strings do not include
+the associated punctuation (e.g. <code>scheme()</code> will not have a trailing colon).
+In some cases this means that the corresponding <code>has_*()</code> function must also
+be checked in order to distinguish between an element that is absent and one
+that is present but with an empty value (e.g. a URL ending in a question mark
+is considered to include an empty query string, which is not the same thing as
+one with no query part).</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void Url::</code><strong><code>set_scheme</code></strong><code>(Uview new_scheme)</code></li>
+<li><code>void Url::</code><strong><code>set_user</code></strong><code>(Uview new_user)</code></li>
+<li><code>void Url::</code><strong><code>set_password</code></strong><code>(Uview new_password)</code></li>
+<li><code>void Url::</code><strong><code>set_host</code></strong><code>(Uview new_host)</code></li>
+<li><code>void Url::</code><strong><code>set_port</code></strong><code>(uint16_t new_port)</code></li>
+<li><code>void Url::</code><strong><code>set_path</code></strong><code>(Uview new_path)</code></li>
+<li><code>void Url::</code><strong><code>set_query</code></strong><code>(Uview new_query)</code></li>
+<li><code>void Url::</code><strong><code>set_fragment</code></strong><code>(Uview new_fragment)</code></li>
+</ul>
+<p>Change the value of a given URL element. The string supplied will be escaped
+when necessary. Passing an empty string is equivalent to clearing the element
+only for elements that do not distinguish between an empty value and a missing
+element; this is not true of the query and fragment elements (e.g.
+<code>set_user("")</code> is equivalent to <code>clear_user()</code>, but <code>set_query("")</code> is not
+equivalent to <code>clear_query()</code>). By default, <code>set_scheme()</code> will follow the
+scheme with two slashes if the previous URL had slashes there, or if it was
+empty; this can be overridden by explicitly ending the new scheme in <code>":"</code> or
+<code>"://"</code>. All of these can throw <code>std::invalid_argument</code>: all except
+<code>set_scheme()</code> will throw if the URL is empty and (for elements other than
+query and fragment) the value is not empty; <code>set_scheme()</code> will throw if the
+scheme is invalid (it is expected to start with an ASCII letter and contain
+only letters, digits, dots, and plus and minus signs); <code>set_user()</code> will throw
+if the host is empty; <code>set_password()</code> will throw if the user or host is
+empty; <code>set_path()</code> will throw if the path contains two consecutive slashes.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void Url::</code><strong><code>clear_user</code></strong><code>() noexcept</code></li>
+<li><code>void Url::</code><strong><code>clear_password</code></strong><code>() noexcept</code></li>
+<li><code>void Url::</code><strong><code>clear_host</code></strong><code>() noexcept</code></li>
+<li><code>void Url::</code><strong><code>clear_port</code></strong><code>() noexcept</code></li>
+<li><code>void Url::</code><strong><code>clear_path</code></strong><code>() noexcept</code></li>
+<li><code>void Url::</code><strong><code>clear_query</code></strong><code>() noexcept</code></li>
+<li><code>void Url::</code><strong><code>clear_fragment</code></strong><code>() noexcept</code></li>
+</ul>
+<p>Remove a given URL element. There is no function to clear the scheme because
+the scheme is always required.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void Url::</code><strong><code>append_path</code></strong><code>(Uview new_path)</code></li>
+<li><code>Url&amp; Url::</code><strong><code>operator/=</code></strong><code>(Uview rhs)</code></li>
+<li><code>Url</code> <strong><code>operator/</code></strong><code>(const Url&amp; lhs, Uview rhs)</code></li>
+</ul>
+<p>Append one or more file path elements to the URL's path. Appending an absolute
+path (one that starts with a slash) will discard the original path and behave
+like <code>set_path()</code>. These will throw <code>std::invalid_argument</code> if the path is
+invalid (contains two consecutive slashes).</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>File Url::</code><strong><code>as_file</code></strong><code>() const</code></li>
+<li><code>static Url Url::</code><strong><code>from_file</code></strong><code>(const File&amp; f)</code></li>
+</ul>
+<p>Convert between a file name and a file URL. The <code>as_file()</code> function discards
+all elements other than host and path, and will throw <code>std::invalid_argument</code>
+if the URL is not a file URL (except that an empty URL will return an empty
+file name). The <code>from_file()</code> function always treats its argument as an
+absolute path, even if it does not start with a slash (or a drive letter on
+Windows).</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void Url::</code><strong><code>clear</code></strong><code>() noexcept;</code></li>
+</ul>
+<p>Resets the URL to an empty string.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Url Url::</code><strong><code>doc</code></strong><code>() const</code></li>
+<li><code>Url Url::</code><strong><code>base</code></strong><code>() const</code></li>
+<li><code>Url Url::</code><strong><code>parent</code></strong><code>() const</code></li>
+<li><code>Url Url::</code><strong><code>root</code></strong><code>() const</code></li>
+</ul>
+<p>These return related URLs. The <code>doc()</code> function discards the fragment part
+(equivalent to <code>clear_fragment()</code>); <code>base()</code> discards the query and fragment
+parts; <code>parent()</code> discards the last element of the path, if any; <code>root()</code>
+discards the entire path and returns the root of the host directory tree
+(equivalent to <code>set_path("/")</code>).</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool Url::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>True if the URL is an empty string.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool Url::</code><strong><code>is_root</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>True if the URL refers to the root of the host directory tree (the path part
+is empty or <code>"/"</code>).</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Ustring Url::</code><strong><code>path_dir</code></strong><code>() const</code></li>
+<li><code>Ustring Url::</code><strong><code>path_leaf</code></strong><code>() const</code></li>
+</ul>
+<p>Split the path element into a directory path and a leaf name. If <code>path_dir()</code>
+is not empty, it will always start and end with a slash. If the whole path
+ends with a slash, it is assumed to be a directory name, and <code>path_leaf()</code> is
+empty.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Ustring Url::</code><strong><code>str</code></strong><code>() const</code></li>
+<li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const Url&amp; u)</code></li>
+<li><code>Ustring</code> <strong><code>to_str</code></strong><code>(const Url&amp; u)</code></li>
+</ul>
+<p>Return the URL as a string.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool Url::</code><strong><code>try_parse</code></strong><code>(Uview s)</code></li>
+</ul>
+<p>Attempts to parse the given string as a URL. On success, this changes the
+current object to hold the new URL and returns true; on failure, it returns
+false and leaves the object unchanged.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>static Ustring Url::</code><strong><code>encode</code></strong><code>(Uview s, Uview exempt = "")</code></li>
+<li><code>static Ustring Url::</code><strong><code>decode</code></strong><code>(Uview s)</code></li>
+</ul>
+<p>These apply percent encoding to a string. Safe bytes, left unencoded, are the
+ASCII alphanumerics plus <code>[-._~]</code>; all other bytes are encoded unless they
+appear in the exempt string.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename Range&gt; static Ustring Url::</code><strong><code>make_query</code></strong><code>(const Range&amp; r, char delimiter = '&amp;', uint32_t flags = 0)</code></li>
+<li><code>static std::vector&lt;std::pair&lt;Ustring, Ustring&gt;&gt; Url::</code><strong><code>parse_query</code></strong><code>(Uview query, char delimiter = '\0')</code></li>
+</ul>
+<p>Construct or deconstruct a query string. The range argument to <code>make_query()</code>
+is expected to contain pairs whose first and second fields are string views or
+convertible to them; the delimiter character is inserted between key/value
+pairs; an equals sign is inserted between keys and values, except that it will
+be left out if the value is empty and the <code>lone_keys</code> flag is set. The
+<code>parse_query()</code> function breaks down a query string into a vector of key/value
+pairs; if no delimiter is explicitly supplied, the first of <code>'&amp;'</code> or <code>';'</code>
+that appears in the string will be used. Key and value strings are percent
+encoded by <code>make_query()</code> and decoded by <code>parse_query()</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool</code> <strong><code>operator==</code></strong><code>(const Url&amp; lhs, const Url&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator!=</code></strong><code>(const Url&amp; lhs, const Url&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&lt;</code></strong><code>(const Url&amp; lhs, const Url&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&gt;</code></strong><code>(const Url&amp; lhs, const Url&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&lt;=</code></strong><code>(const Url&amp; lhs, const Url&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&gt;=</code></strong><code>(const Url&amp; lhs, const Url&amp; rhs) noexcept</code></li>
+</ul>
+<p>Comparison operators. These perform a simple string comparison on the URL
+string.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>namespace RS::Literals</code><ul>
+<li><code>Url</code> <strong><code>operator""_url</code></strong><code>(const char* p, size_t n)</code></li>
+</ul>
+</li>
+</ul>
+<p>URL literal operator. This calls the constructor from a string view,
+and will throw the same exceptions.</p></body>
+</html>

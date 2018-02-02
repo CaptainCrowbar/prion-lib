@@ -35,6 +35,7 @@
 #include "rs-core/time.hpp"
 #include "rs-core/topological-order.hpp"
 #include "rs-core/unit-test.hpp"
+#include "rs-core/url.hpp"
 #include "rs-core/uuid.hpp"
 #include "rs-core/variant.hpp"
 #include "rs-core/vector.hpp"

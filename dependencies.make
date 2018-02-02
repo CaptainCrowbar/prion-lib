@@ -33,6 +33,7 @@ $(BUILD)/terminal-test.o: rs-core/terminal-test.cpp rs-core/common.hpp rs-core/f
 $(BUILD)/time-test.o: rs-core/time-test.cpp rs-core/common.hpp rs-core/string.hpp rs-core/time.hpp rs-core/unit-test.hpp
 $(BUILD)/topological-order-test.o: rs-core/topological-order-test.cpp rs-core/common.hpp rs-core/string.hpp rs-core/topological-order.hpp rs-core/unit-test.hpp
 $(BUILD)/unit-test.o: rs-core/unit-test.cpp rs-core/common.hpp rs-core/unit-test.hpp
+$(BUILD)/url-test.o: rs-core/url-test.cpp rs-core/common.hpp rs-core/file.hpp rs-core/string.hpp rs-core/time.hpp rs-core/unit-test.hpp rs-core/url.hpp
 $(BUILD)/uuid-test.o: rs-core/uuid-test.cpp rs-core/common.hpp rs-core/float.hpp rs-core/random.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/uuid.hpp rs-core/vector.hpp
 $(BUILD)/variant-test.o: rs-core/variant-test.cpp rs-core/common.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/variant.hpp
 $(BUILD)/vector-test.o: rs-core/vector-test.cpp rs-core/common.hpp rs-core/float.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp

@@ -46,6 +46,7 @@
     * [`"rs-core/serial.hpp"`](serial.html) -- JSON serialization
     * [`"rs-core/string.hpp"`](string.html) - String algorithms
     * [`"rs-core/table.hpp"`](table.html) - Simple table layout
+    * [`"rs-core/url.hpp"`](url.html) - URL
     * [`"rs-core/uuid.hpp"`](uuid.html) - UUID
 * _Time and date_
     * [`"rs-core/time.hpp"`](time.html) - Time and date algorithms

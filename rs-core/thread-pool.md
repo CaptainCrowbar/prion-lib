@@ -44,6 +44,8 @@ The wait functions will block until there are no queued jobs left, or the
 timeout expires. The timed wait functions return true on success (no jobs are
 queued), false on timeout.
 
-The `size()` and `pending()` functions are async safe and can be called by any
-thread at any time. The `insert()`, `clear()`, and `wait*()` functions must be
-called synchronously.
+All member functions, except the constructors and destructor, are async safe
+and can be called from any thread. Functions other than `clear()` and
+`wait*()` can be called from inside an executing job. Although it is legal for
+one thread to call `insert()` while another is calling `clear()`, the newly
+inserted job will probably be discarded without being executed.

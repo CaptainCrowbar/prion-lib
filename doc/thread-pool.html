@@ -58,7 +58,9 @@ as usual afterwards. The destructor calls <code>clear()</code>.</p>
 <p>The wait functions will block until there are no queued jobs left, or the
 timeout expires. The timed wait functions return true on success (no jobs are
 queued), false on timeout.</p>
-<p>The <code>size()</code> and <code>pending()</code> functions are async safe and can be called by any
-thread at any time. The <code>insert()</code>, <code>clear()</code>, and <code>wait*()</code> functions must be
-called synchronously.</p></body>
+<p>All member functions, except the constructors and destructor, are async safe
+and can be called from any thread. Functions other than <code>clear()</code> and
+<code>wait*()</code> can be called from inside an executing job. Although it is legal for
+one thread to call <code>insert()</code> while another is calling <code>clear()</code>, the newly
+inserted job will probably be discarded without being executed.</p></body>
 </html>

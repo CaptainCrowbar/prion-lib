@@ -18,7 +18,7 @@ namespace RS {
         RS_NO_COPY_MOVE(ThreadPool);
         ThreadPool(): ThreadPool(0) {}
         explicit ThreadPool(size_t threads);
-        ~ThreadPool() noexcept { clear(); }
+        ~ThreadPool() noexcept;
         size_t size() const noexcept { return workers.size(); }
         template <typename F> void insert(F&& f);
         size_t pending() const noexcept { return queued; }
@@ -33,22 +33,23 @@ namespace RS {
             std::vector<callback> queue;
             std::thread thread;
         };
-        std::atomic<bool> alive;
+        std::atomic<size_t> hold;
         std::atomic<size_t> index;
         std::atomic<size_t> queued;
+        std::atomic<size_t> stop;
         std::vector<worker> workers;
         static size_t adjust_threads(size_t n) noexcept;
         static const Backoff& backoff() noexcept;
     };
 
         inline ThreadPool::ThreadPool(size_t threads):
-        alive(true), index(0), queued(0), workers(adjust_threads(threads)) {
+        hold(0), index(0), queued(0), stop(0), workers(adjust_threads(threads)) {
             for (size_t i = 0, n = workers.size(); i < n; ++i)
                 workers[i].thread = std::thread([this,i,n] {
                     auto delta = backoff().min();
-                    while (alive) {
+                    while (! stop) {
                         callback call;
-                        for (size_t j = 0; j < n && alive && ! call; ++j) {
+                        for (size_t j = 0; j < n && ! call && ! stop; ++j) {
                             auto& w = workers[(i + j) % n];
                             auto lock = make_lock(w.mutex);
                             if (! w.queue.empty()) {
@@ -56,7 +57,7 @@ namespace RS {
                                 w.queue.pop_back();
                             }
                         }
-                        if (! alive)
+                        if (stop)
                             break;
                         if (call) {
                             try { call(); } catch (...) {}
@@ -70,42 +71,48 @@ namespace RS {
                 });
         }
 
+        inline ThreadPool::~ThreadPool() noexcept {
+            clear();
+            stop = true;
+            for (auto& w: workers)
+                w.thread.join();
+        }
+
         template <typename F>
         void ThreadPool::insert(F&& f) {
-            if (! alive)
+            if (hold)
                 return;
-            ++queued;
             size_t i = index;
             index = (i + 1) % workers.size();
             auto& w = workers[i];
             auto lock = make_lock(w.mutex);
             callback c(std::forward<F>(f));
+            ++queued;
             w.queue.push_back(std::move(c));
         }
 
         inline void ThreadPool::clear() noexcept {
-            alive = false;
+            ++hold;
             for (auto& w: workers) {
                 auto lock = make_lock(w.mutex);
                 w.queue.clear();
             }
-            for (auto& w: workers)
-                w.thread.join();
-            alive = true;
+            wait();
+            --hold;
         }
 
         inline void ThreadPool::wait() {
-            backoff().wait([this] { return ! pending(); });
+            backoff().wait([this] { return ! queued; });
         }
 
         template <typename R, typename P>
         bool ThreadPool::wait_for(std::chrono::duration<R, P> timeout) {
-            return backoff().wait_for([this] { return ! pending(); }, timeout);
+            return backoff().wait_for([this] { return ! queued; }, timeout);
         }
 
         template <typename C, typename D>
         bool ThreadPool::wait_until(std::chrono::time_point<C, D> timeout) {
-            return backoff().wait_until([this] { return ! pending(); }, timeout);
+            return backoff().wait_until([this] { return ! queued; }, timeout);
         }
 
         inline size_t ThreadPool::adjust_threads(size_t n) noexcept {

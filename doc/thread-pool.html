@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Thread Pool</title>
+<link type="text/css" rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<h1 id="thread-pool">Thread Pool</h1>
+<p>By Ross Smith</p>
+<ul>
+<li><code>#include "rs-core/thread-pool.hpp"</code></li>
+</ul>
+<h2 id="contents">Contents</h2>
+<ul>
+<div class="toc">
+<ul>
+<li><a href="#thread-pool">Thread Pool</a><ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#class-threadpool">Class ThreadPool</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</ul>
+<h2 id="class-threadpool">Class ThreadPool</h2>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>ThreadPool</code></strong><ul>
+<li><code>ThreadPool::</code><strong><code>ThreadPool</code></strong><code>()</code></li>
+<li><code>explicit ThreadPool::</code><strong><code>ThreadPool</code></strong><code>(size_t threads)</code></li>
+<li><code>ThreadPool::</code><strong><code>~ThreadPool</code></strong><code>() noexcept</code></li>
+<li><code>size_t ThreadPool::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
+<li><code>template &lt;typename F&gt; void ThreadPool::</code><strong><code>insert</code></strong><code>(F&amp;&amp; f)</code></li>
+<li><code>size_t ThreadPool::</code><strong><code>pending</code></strong><code>() const noexcept</code></li>
+<li><code>void ThreadPool::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
+<li><code>void ThreadPool::</code><strong><code>wait</code></strong><code>()</code></li>
+<li><code>template &lt;typename R, typename P&gt; bool ThreadPool::</code><strong><code>wait_for</code></strong><code>(std::chrono::duration&lt;R, P&gt; timeout)</code></li>
+<li><code>template &lt;typename C, typename D&gt; bool ThreadPool::</code><strong><code>wait_until</code></strong><code>(std::chrono::time_point&lt;C, D&gt; timeout)</code></li>
+</ul>
+</li>
+</ul>
+<p>This class runs an interval thread pool, with the number of system threads
+specified to the constructor. If no thread count is specified, or the count is
+zero, <code>std::thread::hardware_concurrency()</code> will be used. The <code>size()</code>
+function returns the thread count (always positive, and always constant for
+the lifetime of the <code>ThreadPool</code> object).</p>
+<p>The <code>insert()</code> function queues a job for execution. The argument is expected
+to be a function object that can be called with no arguments. Any return value
+or exception will be silently discarded when the job is called. Jobs are
+handled by a work stealing algorithm, and may not be executed in the order in
+which they were queued. The <code>pending()</code> function returns the number of jobs
+currently queued or executing.</p>
+<p>The <code>clear()</code> function discards any queued jobs that have not yet been
+started, and waits for all currently executing jobs to finish before
+returning. After it returns, <code>pending()</code> will be zero; new jobs can be queued
+as usual afterwards. The destructor calls <code>clear()</code>.</p>
+<p>The wait functions will block until there are no queued jobs left, or the
+timeout expires. The timed wait functions return true on success (no jobs are
+queued), false on timeout.</p>
+<p>The <code>size()</code> and <code>pending()</code> functions are async safe and can be called by any
+thread at any time. The <code>insert()</code>, <code>clear()</code>, and <code>wait*()</code> functions must be
+called synchronously.</p></body>
+</html>

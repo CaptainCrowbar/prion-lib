@@ -14,6 +14,7 @@
     * [`"rs-core/ipc.hpp"`](ipc.html) - Interprocess communication
     * [`"rs-core/process.hpp"`](process.html) - Process control
     * [`"rs-core/signal.hpp"`](signal.html) - Signal handling
+    * [`"rs-core/thread-pool.hpp"`](thread-pool.html) - Thread pool
 * _Containers_
     * [`"rs-core/array-map.hpp"`](array-map.html) - Sequence based associative array
     * [`"rs-core/blob.hpp"`](blob.html) - Binary large object

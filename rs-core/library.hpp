@@ -32,6 +32,7 @@
 #include "rs-core/string.hpp"
 #include "rs-core/table.hpp"
 #include "rs-core/terminal.hpp"
+#include "rs-core/thread-pool.hpp"
 #include "rs-core/time.hpp"
 #include "rs-core/topological-order.hpp"
 #include "rs-core/unit-test.hpp"

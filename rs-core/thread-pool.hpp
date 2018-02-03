@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <atomic>
 #include <chrono>
+#include <deque>
 #include <functional>
 #include <mutex>
 #include <thread>
@@ -30,7 +31,7 @@ namespace RS {
         using callback = std::function<void()>;
         struct worker {
             std::mutex mutex;
-            std::vector<callback> queue;
+            std::deque<callback> queue;
             std::thread thread;
         };
         std::atomic<size_t> hold;
@@ -45,16 +46,24 @@ namespace RS {
         inline ThreadPool::ThreadPool(size_t threads):
         hold(0), index(0), queued(0), stop(0), workers(adjust_threads(threads)) {
             for (size_t i = 0, n = workers.size(); i < n; ++i)
-                workers[i].thread = std::thread([this,i,n] {
+                workers[i].thread = std::thread([i,n,this] {
                     auto delta = backoff().min();
                     while (! stop) {
                         callback call;
-                        for (size_t j = 0; j < n && ! call && ! stop; ++j) {
-                            auto& w = workers[(i + j) % n];
+                        {
+                            auto& w = workers[i];
                             auto lock = make_lock(w.mutex);
                             if (! w.queue.empty()) {
                                 call = std::move(w.queue.back());
                                 w.queue.pop_back();
+                            }
+                        }
+                        for (size_t j = 1; j < n && ! call && ! stop; ++j) {
+                            auto& w = workers[(i + j) % n];
+                            auto lock = make_lock(w.mutex);
+                            if (! w.queue.empty()) {
+                                call = std::move(w.queue.front());
+                                w.queue.pop_front();
                             }
                         }
                         if (stop)

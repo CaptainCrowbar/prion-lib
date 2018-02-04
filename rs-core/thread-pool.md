@@ -22,7 +22,7 @@ By Ross Smith
     * `template <typename R, typename P> bool ThreadPool::`**`wait_for`**`(std::chrono::duration<R, P> timeout)`
     * `template <typename C, typename D> bool ThreadPool::`**`wait_until`**`(std::chrono::time_point<C, D> timeout)`
 
-This class runs an interval thread pool, with the number of system threads
+This class runs an internal thread pool, with the number of system threads
 specified to the constructor. If no thread count is specified, or the count is
 zero, `std::thread::hardware_concurrency()` will be used. The `size()`
 function returns the thread count (always positive, and always constant for
@@ -40,9 +40,9 @@ started, and waits for all currently executing jobs to finish before
 returning. After it returns, `pending()` will be zero; new jobs can be queued
 as usual afterwards. The destructor calls `clear()`.
 
-The wait functions will block until there are no queued jobs left, or the
-timeout expires. The timed wait functions return true on success (no jobs are
-queued), false on timeout.
+The wait functions will block until there are no queued or executing jobs
+left, or the timeout expires. The timed wait functions return true on success
+(no jobs left), false on timeout.
 
 All member functions, except the constructors and destructor, are async safe
 and can be called from any thread. Functions other than `clear()` and

@@ -40,7 +40,7 @@
 </ul>
 </li>
 </ul>
-<p>This class runs an interval thread pool, with the number of system threads
+<p>This class runs an internal thread pool, with the number of system threads
 specified to the constructor. If no thread count is specified, or the count is
 zero, <code>std::thread::hardware_concurrency()</code> will be used. The <code>size()</code>
 function returns the thread count (always positive, and always constant for
@@ -55,9 +55,9 @@ currently queued or executing.</p>
 started, and waits for all currently executing jobs to finish before
 returning. After it returns, <code>pending()</code> will be zero; new jobs can be queued
 as usual afterwards. The destructor calls <code>clear()</code>.</p>
-<p>The wait functions will block until there are no queued jobs left, or the
-timeout expires. The timed wait functions return true on success (no jobs are
-queued), false on timeout.</p>
+<p>The wait functions will block until there are no queued or executing jobs
+left, or the timeout expires. The timed wait functions return true on success
+(no jobs left), false on timeout.</p>
 <p>All member functions, except the constructors and destructor, are async safe
 and can be called from any thread. Functions other than <code>clear()</code> and
 <code>wait*()</code> can be called from inside an executing job. Although it is legal for

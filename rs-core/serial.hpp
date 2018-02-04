@@ -24,12 +24,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-
-#ifdef _MSC_VER
-    #include <nlohmann/json.hpp>
-#else
-    #include <json.hpp>
-#endif
+#include <nlohmann/json.hpp>
 
 namespace RS {
 

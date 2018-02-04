@@ -42,6 +42,23 @@ void test_core_thread_pool_class() {
     std::sort(log.begin(), log.end());
     TEST_EQUAL(log, expect);
 
+    TRY(pool.clear());
+    TEST_EQUAL(pool.size(), std::thread::hardware_concurrency());
+    TEST_EQUAL(pool.pending(), 0);
+    log.clear();
+
+    for (char c = 'a'; c <= 'z'; ++c) {
+        auto t = dist(rng);
+        TRY(pool.insert([=,&pool] { f(c, t); }));
+    }
+
+    TEST(pool.wait_for(5s));
+    TEST_EQUAL(pool.pending(), 0);
+    TEST_EQUAL(log.size(), expect.size());
+    TEST_COMPARE(log, !=, expect);
+    std::sort(log.begin(), log.end());
+    TEST_EQUAL(log, expect);
+
 }
 
 void test_core_thread_pool_timing() {

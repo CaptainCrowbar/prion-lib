@@ -26,7 +26,7 @@ write_index() {
             | sed -E 's/_'"$module"'_/ /' \
             | while read void prefix suffix; do
                 project=${prefix#test_}
-                section=${suffix%()*}
+                section=${suffix%%()*}
                 function=test_${project}_${module}_${section}
                 project=${project//_/-}
                 section=${section//_/-}

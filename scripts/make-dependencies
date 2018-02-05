@@ -17,7 +17,7 @@ def is_homebrew(file):
 
 def find_all_files(file, headers, sources=None, root=None):
     path = os.path.normpath(os.path.expanduser(file))
-    if is_homebrew(path):
+    if not os.path.exists(path) or is_homebrew(path):
         return
     if root is None:
         root = path

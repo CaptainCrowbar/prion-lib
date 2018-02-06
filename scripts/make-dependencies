@@ -12,12 +12,17 @@ def is_source_file(file):
     ext = os.path.splitext(file)[1]
     return ext == '.c' or ext == '.cpp' or ext == '.m' or ext == '.mm'
 
-def is_homebrew(file):
-    return os.path.islink(file) and os.path.realpath(file).startswith('/usr/local/Cellar/')
+def exclude_special_cases(file):
+    if os.path.islink(file) and os.path.realpath(file).startswith('/usr/local/Cellar/'):
+        return True # Homebrew
+    elif file.startswith('/usr/local/include/nlohmann/'):
+        return True # nlohmann/json
+    else:
+        return False
 
 def find_all_files(file, headers, sources=None, root=None):
     path = os.path.normpath(os.path.expanduser(file))
-    if not os.path.exists(path) or is_homebrew(path):
+    if not os.path.exists(path) or exclude_special_cases(path):
         return
     if root is None:
         root = path

@@ -1294,13 +1294,13 @@ namespace RS {
     #ifdef __GNUC__
 
         template <typename T>
-        constexpr size_t ibits(T t) noexcept {
+        constexpr int ibits(T t) noexcept {
             static_assert(std::is_integral<T>::value);
             return __builtin_popcountll(uint64_t(t));
         }
 
         template <typename T>
-        constexpr size_t ilog2p1(T t) noexcept {
+        constexpr int ilog2p1(T t) noexcept {
             static_assert(std::is_integral<T>::value);
             return t ? 64 - __builtin_clzll(uint64_t(t)) : 0;
         }
@@ -1308,16 +1308,16 @@ namespace RS {
     #else
 
         template <typename T>
-        constexpr size_t ibits(T t) noexcept {
-            static constexpr uint8_t bits16[16] = {0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4};
-            size_t n = 0;
+        constexpr int ibits(T t) noexcept {
+            static constexpr int8_t bits16[16] = {0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4};
+            int n = 0;
             for (; t; t >>= 4) { n += bits16[t & 0xf]; }
             return n;
         }
 
         template <typename T>
-        constexpr size_t ilog2p1(T t) noexcept {
-            size_t n = 0;
+        constexpr int ilog2p1(T t) noexcept {
+            int n = 0;
             for (; t > 0xff; t >>= 8) { n += 8; }
             for (; t; t >>= 1) { ++n; }
             return n;

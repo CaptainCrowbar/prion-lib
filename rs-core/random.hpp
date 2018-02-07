@@ -26,6 +26,11 @@
     #include <wincrypt.h>
 #endif
 
+#ifdef _MSC_VER
+    #pragma warning(push)
+    #pragma warning(disable: 4723) // potential divide by 0
+#endif
+
 RS_LDLIB(msvc: advapi32);
 
 namespace RS {
@@ -882,3 +887,7 @@ namespace RS {
     }
 
 }
+
+#ifdef _MSC_VER
+    #pragma warning(pop)
+#endif

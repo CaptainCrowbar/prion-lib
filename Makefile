@@ -92,27 +92,6 @@ ifeq ($(cross_target),msvc)
 	RCFLAGS :=
 	rc_output := /fo
 	native_windows := yes
-else
-	# https://www.reddit.com/r/cpp/comments/7cfea3/clipp_a_single_header_nodependency_c11_library/dpq8xgi/
-	diagnostic_flags += -Wcast-align
-	diagnostic_flags += -Wcast-qual
-	diagnostic_flags += -Wctor-dtor-privacy
-	diagnostic_flags += -Winit-self
-	diagnostic_flags += -Wmissing-include-dirs
-	diagnostic_flags += -Woverloaded-virtual
-	diagnostic_flags += -Wredundant-decls
-	diagnostic_flags += -Wshadow
-	diagnostic_flags += -Wstrict-aliasing
-	diagnostic_flags += -Wstrict-overflow=5
-	diagnostic_flags += -Wswitch-default
-	diagnostic_flags += -Wundef
-	# diagnostic_flags += -Wconversion -Wno-sign-conversion
-	# diagnostic_flags += -Wdisabled-optimization
-	# diagnostic_flags += -Wformat=2
-	# diagnostic_flags += -Wmissing-declarations
-	# diagnostic_flags += -Wnull-dereference
-	# diagnostic_flags += -Wold-style-cast
-	# diagnostic_flags += -Wpedantic
 endif
 
 ifeq ($(cross_target),cygwin)

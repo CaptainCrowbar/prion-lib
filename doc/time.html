@@ -11,34 +11,28 @@
 <ul>
 <li><code>#include "rs-core/time.hpp"</code></li>
 </ul>
-<h2 id="contents">Contents</h2>
-<div class="toc">
-<ul>
-<li><a href="#core-time-and-date-algorithms">Core Time and Date Algorithms</a><ul>
-<li><a href="#contents">Contents</a></li>
-<li><a href="#time-and-date-operations">Time and date operations</a><ul>
-<li><a href="#time-and-date-types">Time and date types</a></li>
-<li><a href="#constants">Constants</a></li>
-<li><a href="#general-time-and-date-operations">General time and date operations</a></li>
-<li><a href="#time-and-date-formatting">Time and date formatting</a></li>
-<li><a href="#time-and-date-parsing">Time and date parsing</a></li>
-</ul>
-</li>
-<li><a href="#timing-utilities">Timing utilities</a><ul>
-<li><a href="#system-specific-time-and-date-conversions">System specific time and date conversions</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-<h2 id="time-and-date-operations">Time and date operations</h2>
 <p>In this documentation, the <code>std::chrono::</code> prefix on the standard date and
 time types is left out for brevity. For all functions here that accept or
 return a broken down date, results are unspecified if the date is outside the
 range of a <code>time_t</code> (1970-2038 on 32-bit systems), or if the fields are set to
 values that do not represent a valid date.</p>
-<h3 id="time-and-date-types">Time and date types</h3>
+<h2 id="contents">Contents</h2>
+<div class="toc">
+<ul>
+<li><a href="#core-time-and-date-algorithms">Core Time and Date Algorithms</a><ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#time-and-date-types">Time and date types</a></li>
+<li><a href="#constants">Constants</a></li>
+<li><a href="#general-time-and-date-operations">General time and date operations</a></li>
+<li><a href="#time-and-date-formatting">Time and date formatting</a></li>
+<li><a href="#time-and-date-parsing">Time and date parsing</a></li>
+<li><a href="#timing-utilities">Timing utilities</a></li>
+<li><a href="#system-specific-time-and-date-conversions">System specific time and date conversions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="time-and-date-types">Time and date types</h2>
 <div class="defns">
 <ul>
 <li><code>using</code> <strong><code>Dseconds</code></strong> <code>= duration&lt;double&gt;</code></li>
@@ -55,7 +49,7 @@ values that do not represent a valid date.</p>
 be <code>high_resolution_clock</code> if <code>high_resolution_clock::is_steady</code> is true,
 otherwise <code>steady_clock</code>.</p>
 </div>
-<h3 id="constants">Constants</h3>
+<h2 id="constants">Constants</h2>
 <div class="defns">
 <ul>
 <li><code>constexpr uint32_t</code> <strong><code>utc_zone</code></strong></li>
@@ -75,7 +69,7 @@ of these are present, the default is <code>utc_zone</code>.</p>
 the date elements are in. If none of these are present, the default is
 <code>ymd_order</code>.</p>
 </div>
-<h3 id="general-time-and-date-operations">General time and date operations</h3>
+<h2 id="general-time-and-date-operations">General time and date operations</h2>
 <div class="defns">
 <ul>
 <li><code>template &lt;typename C1, typename D1, typename C2, typename D2&gt; void</code> <strong><code>convert_time_point</code></strong><code>(time_point&lt;C1, D1&gt; src, time_point&lt;C2, D2&gt;&amp; dst)</code></li>
@@ -101,7 +95,7 @@ number of seconds.</p>
 arguments are invalid follows the same rules as <code>mktime()</code>. This will throw
 <code>std::invalid_argument</code> if an invalid combination of flags is passed.</p>
 </div>
-<h3 id="time-and-date-formatting">Time and date formatting</h3>
+<h2 id="time-and-date-formatting">Time and date formatting</h2>
 <div class="defns">
 <ul>
 <li><code>Ustring</code> <strong><code>format_date</code></strong><code>(system_clock::time_point tp, int prec = 0, uint32_t flags = utc_zone)</code></li>
@@ -216,7 +210,7 @@ flags is passed.</p>
 <p>Formats a time duration in days, hours, minutes, seconds, and (if <code>prec&gt;0</code>)
 fractions of a second.</p>
 </div>
-<h3 id="time-and-date-parsing">Time and date parsing</h3>
+<h2 id="time-and-date-parsing">Time and date parsing</h2>
 <div class="defns">
 <ul>
 <li><code>system_clock::time_point</code> <strong><code>parse_date</code></strong><code>(Uview str, uint32_t flags = utc_zone | ymd_order)</code></li>
@@ -294,7 +288,7 @@ predicate.</p>
 name and the elapsed time since construction. The note on exceptions for
 <code>logx()</code> above applies here too.</p>
 </div>
-<h3 id="system-specific-time-and-date-conversions">System specific time and date conversions</h3>
+<h2 id="system-specific-time-and-date-conversions">System specific time and date conversions</h2>
 <div class="defns">
 <ul>
 <li><em>Unix</em><ul>

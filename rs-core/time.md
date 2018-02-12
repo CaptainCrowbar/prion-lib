@@ -4,19 +4,17 @@ By Ross Smith
 
 * `#include "rs-core/time.hpp"`
 
-## Contents ##
-
-[TOC]
-
-## Time and date operations ##
-
 In this documentation, the `std::chrono::` prefix on the standard date and
 time types is left out for brevity. For all functions here that accept or
 return a broken down date, results are unspecified if the date is outside the
 range of a `time_t` (1970-2038 on 32-bit systems), or if the fields are set to
 values that do not represent a valid date.
 
-### Time and date types ###
+## Contents ##
+
+[TOC]
+
+## Time and date types ##
 
 * `using` **`Dseconds`** `= duration<double>`
 * `using` **`Ddays`** `= duration<double, ratio<86400>>`
@@ -30,7 +28,7 @@ This is the highest resolution clock that can be trusted to be steady. It will
 be `high_resolution_clock` if `high_resolution_clock::is_steady` is true,
 otherwise `steady_clock`.
 
-### Constants ###
+## Constants ##
 
 * `constexpr uint32_t` **`utc_zone`**
 * `constexpr uint32_t` **`local_zone`**
@@ -47,7 +45,7 @@ One of these is passed to the `parse_date()` function to indicate which order
 the date elements are in. If none of these are present, the default is
 `ymd_order`.
 
-### General time and date operations ###
+## General time and date operations ##
 
 * `template <typename C1, typename D1, typename C2, typename D2> void` **`convert_time_point`**`(time_point<C1, D1> src, time_point<C2, D2>& dst)`
 
@@ -68,7 +66,7 @@ Converts a broken down date into a time point. Behaviour if any of the date
 arguments are invalid follows the same rules as `mktime()`. This will throw
 `std::invalid_argument` if an invalid combination of flags is passed.
 
-### Time and date formatting ###
+## Time and date formatting ##
 
 * `Ustring` **`format_date`**`(system_clock::time_point tp, int prec = 0, uint32_t flags = utc_zone)`
 * `Ustring` **`format_date`**`(system_clock::time_point tp, Uview format, uint32_t flags = utc_zone)`
@@ -109,7 +107,7 @@ For reference, the portable subset of the `strftime()` formatting codes are:
 Formats a time duration in days, hours, minutes, seconds, and (if `prec>0`)
 fractions of a second.
 
-### Time and date parsing ###
+## Time and date parsing ##
 
 * `system_clock::time_point` **`parse_date`**`(Uview str, uint32_t flags = utc_zone | ymd_order)`
 
@@ -177,7 +175,7 @@ Simple timer for debugging. The destructor will write (using `logx()`) the
 name and the elapsed time since construction. The note on exceptions for
 `logx()` above applies here too.
 
-### System specific time and date conversions ###
+## System specific time and date conversions ##
 
 * _Unix_
     * `template <typename R, typename P> timespec` **`duration_to_timespec`**`(const duration<R, P>& d) noexcept`

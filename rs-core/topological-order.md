@@ -86,11 +86,11 @@ listed, an ordering relation is implied between each element and all elements
 after it in the list. In all insert functions, implied relations between an
 element and itself are ignored.
 
-* `template <typename Range> void TopologicalOrder::`**`insert_1n`**`(const T& t1, const Range& r2)`
+* `template <typename R> void TopologicalOrder::`**`insert_1n`**`(const T& t1, const R& r2)`
 * `void TopologicalOrder::`**`insert_1n`**`(const T& t1, std::initializer_list<T> r2)`
-* `template <typename Range> void TopologicalOrder::`**`insert_n1`**`(const Range& r1, const T& t2)`
+* `template <typename R> void TopologicalOrder::`**`insert_n1`**`(const R& r1, const T& t2)`
 * `void TopologicalOrder::`**`insert_n1`**`(std::initializer_list<T> r1, const T& t2)`
-* `template <typename Range1, typename Range2> void TopologicalOrder::`**`insert_mn`**`(const Range1& r1, const Range2& r2)`
+* `template <typename R1, typename R2> void TopologicalOrder::`**`insert_mn`**`(const R1& r1, const R2& r2)`
 * `void TopologicalOrder::`**`insert_mn`**`(std::initializer_list<T> r1, std::initializer_list<T> r2)`
 
 Insert one or more pairs of elements, with ordering relations between the left

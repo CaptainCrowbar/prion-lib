@@ -98,7 +98,7 @@ namespace RS {
         using size_type = size_t;
         using value_type = T;
         IndexTable() = default;
-        template <typename Range> explicit IndexTable(const Range& src);
+        template <typename InputRange> explicit IndexTable(const InputRange& src);
         template <typename Iterator> IndexTable(Iterator i1, Iterator i2);
         ~IndexTable() = default;
         iterator begin() { return list.begin(); }
@@ -110,7 +110,7 @@ namespace RS {
         void erase(iterator i);
         void erase(iterator i1, iterator i2);
         void insert(const T& t);
-        template <typename Range> void insert(const Range& src) { for (auto& t: src) insert(t); }
+        template <typename InputRange> void insert(const InputRange& src) { for (auto& t: src) insert(t); }
         template <typename Iterator> void insert(Iterator i1, Iterator i2) { for (; i1 != i2; ++i1) insert(*i1); }
         void push_back(const T& t) { insert(t); }
         size_t size() const noexcept { return list.size(); }
@@ -125,8 +125,8 @@ namespace RS {
     };
 
     template <typename T>
-    template <typename Range>
-    IndexTable<T>::IndexTable(const Range& src):
+    template <typename InputRange>
+    IndexTable<T>::IndexTable(const InputRange& src):
     indices(), list(begin(src), end(src)) {}
 
     template <typename T>

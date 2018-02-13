@@ -53,7 +53,7 @@ static assert).</p>
 <ul>
 <li><code>void Statistics::</code><strong><code>add</code></strong><code>(T x, T y = 0) noexcept</code></li>
 <li><code>void Statistics::</code><strong><code>add</code></strong><code>(const std::pair&lt;T, T&gt;&amp; xy) noexcept</code></li>
-<li><code>template &lt;typename Range&gt; void Statistics::</code><strong><code>append</code></strong><code>(const Range&amp; r)</code></li>
+<li><code>template &lt;typename InputRange&gt; void Statistics::</code><strong><code>append</code></strong><code>(const InputRange&amp; r)</code></li>
 </ul>
 <p>Add one or more data points, either as univariate <code>x</code> values or bivariate
 <em>(x,y)</em> pairs. The <code>append()</code> function can read a vector-like range of values

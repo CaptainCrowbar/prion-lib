@@ -70,7 +70,7 @@ namespace RS {
         static Ustring encode(Uview s, Uview exempt = {});
         static Ustring decode(Uview s);
         static Url from_file(const File& f);
-        template <typename Range> static Ustring make_query(const Range& r, char delimiter = '&', uint32_t flags = 0);
+        template <typename R> static Ustring make_query(const R& range, char delimiter = '&', uint32_t flags = 0);
         static std::vector<std::pair<Ustring, Ustring>> parse_query(Uview query, char delimiter = '\0');
         friend Url operator/(const Url& lhs, Uview rhs) { Url u = lhs; u.append_path(rhs); return u; }
         friend bool operator==(const Url& lhs, const Url& rhs) noexcept { return lhs.text == rhs.text; }
@@ -485,11 +485,11 @@ namespace RS {
             return Url(u);
         }
 
-        template <typename Range>
-        Ustring Url::make_query(const Range& r, char delimiter, uint32_t flags) {
+        template <typename R>
+        Ustring Url::make_query(const R& range, char delimiter, uint32_t flags) {
             bool lone = flags & lone_keys;
             Ustring q;
-            for (auto& kv: r) {
+            for (auto& kv: range) {
                 Uview k(kv.first), v(kv.second);
                 q += encode(k);
                 if (! lone || ! v.empty())

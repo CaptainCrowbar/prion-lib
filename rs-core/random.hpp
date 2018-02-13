@@ -722,11 +722,11 @@ namespace RS {
         using result_type = T;
         WeightedChoice() = default;
         WeightedChoice(std::initializer_list<std::pair<T, F>> pairs) { append(pairs); }
-        template <typename Range> explicit WeightedChoice(const Range& pairs) { append(pairs); }
+        template <typename InputRange> explicit WeightedChoice(const InputRange& pairs) { append(pairs); }
         template <typename RNG> T operator()(RNG& rng) const;
         void add(const T& t, F f);
         void append(std::initializer_list<std::pair<T, F>> pairs);
-        template <typename Range> void append(const Range& pairs);
+        template <typename InputRange> void append(const InputRange& pairs);
         bool empty() const noexcept { return total() <= F(0); }
     private:
         static_assert(std::is_arithmetic<F>::value);
@@ -763,8 +763,8 @@ namespace RS {
         }
 
         template <typename T, typename F>
-        template <typename Range>
-        void WeightedChoice<T, F>::append(const Range& pairs) {
+        template <typename InputRange>
+        void WeightedChoice<T, F>::append(const InputRange& pairs) {
             auto sum = total();
             for (auto& p: pairs) {
                 if (p.second > F(0)) {

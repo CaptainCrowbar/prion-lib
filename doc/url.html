@@ -217,7 +217,7 @@ appear in the exempt string.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename Range&gt; static Ustring Url::</code><strong><code>make_query</code></strong><code>(const Range&amp; r, char delimiter = '&amp;', uint32_t flags = 0)</code></li>
+<li><code>template &lt;typename R&gt; static Ustring Url::</code><strong><code>make_query</code></strong><code>(const R&amp; range, char delimiter = '&amp;', uint32_t flags = 0)</code></li>
 <li><code>static std::vector&lt;std::pair&lt;Ustring, Ustring&gt;&gt; Url::</code><strong><code>parse_query</code></strong><code>(Uview query, char delimiter = '\0')</code></li>
 </ul>
 <p>Construct or deconstruct a query string. The range argument to <code>make_query()</code>

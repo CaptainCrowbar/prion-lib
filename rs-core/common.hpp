@@ -267,8 +267,8 @@ namespace RS {
 
     }
 
-    template <typename Range> using RangeIterator = typename RS_Detail::CommonRangeTraits<Range>::iterator;
-    template <typename Range> using RangeValue = typename RS_Detail::CommonRangeTraits<Range>::value_type;
+    template <typename R> using RangeIterator = typename RS_Detail::CommonRangeTraits<R>::iterator;
+    template <typename R> using RangeValue = typename RS_Detail::CommonRangeTraits<R>::value_type;
 
     constexpr const char* ascii_whitespace = "\t\n\v\f\r ";
     constexpr size_t npos = size_t(-1);
@@ -698,15 +698,15 @@ namespace RS {
         return compare_3way(r1, r2, std::less<>());
     }
 
-    template <typename Range, typename Container>
-    void con_append(const Range& src, Container& dst) {
+    template <typename InputRange, typename Container>
+    void con_append(const InputRange& src, Container& dst) {
         using std::begin;
         using std::end;
         std::copy(begin(src), end(src), append(dst));
     }
 
-    template <typename Range, typename Container>
-    void con_overwrite(const Range& src, Container& dst) {
+    template <typename InputRange, typename Container>
+    void con_overwrite(const InputRange& src, Container& dst) {
         using std::begin;
         using std::end;
         std::copy(begin(src), end(src), overwrite(dst));
@@ -764,9 +764,9 @@ namespace RS {
 
     }
 
-    template <typename Range, typename... Ranges>
-    std::vector<RangeValue<Range>> concatenate(const Range& range, const Ranges&... ranges) {
-        std::vector<RangeValue<Range>> v;
+    template <typename InputRange, typename... Ranges>
+    std::vector<RangeValue<InputRange>> concatenate(const InputRange& range, const Ranges&... ranges) {
+        std::vector<RangeValue<InputRange>> v;
         RS_Detail::concat_helper(v, range, ranges...);
         return v;
     }
@@ -876,33 +876,33 @@ namespace RS {
         std::tie(t, args...) = array_to_tuple(array);
     }
 
-    template <typename Range>
-    RangeValue<Range> sum_of(const Range& r) {
-        auto t = RangeValue<Range>();
+    template <typename InputRange>
+    RangeValue<InputRange> sum_of(const InputRange& r) {
+        auto t = RangeValue<InputRange>();
         for (auto& x: r)
             t = t + x;
         return t;
     }
 
-    template <typename Range>
-    RangeValue<Range> sum_of(Range&& r) {
-        auto t = RangeValue<Range>();
+    template <typename InputRange>
+    RangeValue<InputRange> sum_of(InputRange&& r) {
+        auto t = RangeValue<InputRange>();
         for (auto& x: r)
             t = t + x;
         return t;
     }
 
-    template <typename Range>
-    RangeValue<Range> product_of(const Range& r) {
-        auto t = RangeValue<Range>(1);
+    template <typename InputRange>
+    RangeValue<InputRange> product_of(const InputRange& r) {
+        auto t = RangeValue<InputRange>(1);
         for (auto& x: r)
             t = t * x;
         return t;
     }
 
-    template <typename Range>
-    RangeValue<Range> product_of(Range&& r) {
-        auto t = RangeValue<Range>(1);
+    template <typename InputRange>
+    RangeValue<InputRange> product_of(InputRange&& r) {
+        auto t = RangeValue<InputRange>(1);
         for (auto& x: r)
             t = t * x;
         return t;
@@ -951,15 +951,15 @@ namespace RS {
 
     template <typename T> constexpr size_t array_count(T&&) noexcept { return RS_Detail::ArrayCount<std::remove_reference_t<T>>::value; }
 
-    template <typename Range>
-    size_t range_count(const Range& r) {
+    template <typename InputRange>
+    size_t range_count(const InputRange& r) {
         using std::begin;
         using std::end;
         return std::distance(begin(r), end(r));
     }
 
-    template <typename Range>
-    bool range_empty(const Range& r) {
+    template <typename InputRange>
+    bool range_empty(const InputRange& r) {
         using std::begin;
         using std::end;
         return begin(r) == end(r);
@@ -1487,16 +1487,16 @@ namespace RS {
         return hash;
     }
 
-    template <typename Range>
-    size_t hash_range(const Range& range) noexcept {
+    template <typename InputRange>
+    size_t hash_range(const InputRange& range) noexcept {
         size_t hash = 0;
         for (auto&& x: range)
             hash_combine(hash, x);
         return hash;
     }
 
-    template <typename Range>
-    void hash_range(size_t& hash, const Range& range) noexcept {
+    template <typename InputRange>
+    void hash_range(size_t& hash, const InputRange& range) noexcept {
         for (auto&& x: range)
             hash_combine(hash, x);
     }

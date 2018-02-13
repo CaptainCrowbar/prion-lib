@@ -10,8 +10,8 @@ using namespace std::literals;
 
 namespace {
 
-    template <typename Range, typename DiffList>
-    Ustring report_diff(const Range& lhs, const Range& rhs, const DiffList& delta) {
+    template <typename R, typename DiffList>
+    Ustring report_diff(const R& lhs, const R& rhs, const DiffList& delta) {
         auto lbegin = std::begin(lhs), rbegin = std::begin(rhs);
         Ustring s;
         for (auto& d: delta) {

@@ -583,8 +583,8 @@ zero if they are equal, and +1 if the first range is greater.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename Range, typename Container&gt; void</code> <strong><code>con_append</code></strong><code>(const Range&amp; src, Container&amp; dst)</code></li>
-<li><code>template &lt;typename Range, typename Container&gt; void</code> <strong><code>con_overwrite</code></strong><code>(const Range&amp; src, Container&amp; dst)</code></li>
+<li><code>template &lt;typename R, typename Container&gt; void</code> <strong><code>con_append</code></strong><code>(const R&amp; src, Container&amp; dst)</code></li>
+<li><code>template &lt;typename R, typename Container&gt; void</code> <strong><code>con_overwrite</code></strong><code>(const R&amp; src, Container&amp; dst)</code></li>
 </ul>
 <p>These are just shorthand for a <code>std::copy()</code> from a range to an append or
 overwrite iterator.</p>
@@ -608,7 +608,7 @@ of <code>std::unique()</code>, has equality semantics).</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename Range, typename... Ranges&gt; std::vector&lt;[value type]&gt;</code> <strong><code>concatenate</code></strong><code>(const Range&amp; range, const Ranges&amp;... ranges)</code></li>
+<li><code>template &lt;typename InputRange, typename... Ranges&gt; std::vector&lt;[value type]&gt;</code> <strong><code>concatenate</code></strong><code>(const InputRange&amp; range, const Ranges&amp;... ranges)</code></li>
 </ul>
 <p>Returns a vector composed by concatenating all of the argument ranges. The
 value type is that of the first argument range. If any subsequent argument has
@@ -659,8 +659,8 @@ are assumed to be ordered in accordance with the comparison predicate.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename Range&gt; [value type]</code> <strong><code>sum_of</code></strong><code>(const Range&amp; r)</code></li>
-<li><code>template &lt;typename Range&gt; [value type]</code> <strong><code>product_of</code></strong><code>(const Range&amp; r)</code></li>
+<li><code>template &lt;typename InputRange&gt; [value type]</code> <strong><code>sum_of</code></strong><code>(const InputRange&amp; r)</code></li>
+<li><code>template &lt;typename InputRange&gt; [value type]</code> <strong><code>product_of</code></strong><code>(const InputRange&amp; r)</code></li>
 </ul>
 <p>Simple range sum and product functions, to save the trouble of calling
 <code>std::accumulate()</code> in trivial cases. Calling <code>sum_of()</code> on an empty range
@@ -721,16 +721,16 @@ same, but behaviour is undefined if either pointer is null.</p>
 <h3 id="range-traits">Range traits</h3>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename Range&gt; using</code> <strong><code>RangeIterator</code></strong> <code>= ...</code></li>
-<li><code>template &lt;typename Range&gt; using</code> <strong><code>RangeValue</code></strong> <code>= ...</code></li>
+<li><code>template &lt;typename InputRange&gt; using</code> <strong><code>RangeIterator</code></strong> <code>= ...</code></li>
+<li><code>template &lt;typename InputRange&gt; using</code> <strong><code>RangeValue</code></strong> <code>= ...</code></li>
 </ul>
 <p>The iterator and value types of a range.</p>
 </div>
 <div class="defns">
 <ul>
 <li><code>template &lt;typename T, size_t N&gt; constexpr size_t</code> <strong><code>array_count</code></strong><code>(T[N]) noexcept</code></li>
-<li><code>template &lt;typename Range&gt; size_t</code> <strong><code>range_count</code></strong><code>(const Range&amp; r)</code></li>
-<li><code>template &lt;typename Range&gt; bool</code> <strong><code>range_empty</code></strong><code>(const Range&amp; r)</code></li>
+<li><code>template &lt;typename InputRange&gt; size_t</code> <strong><code>range_count</code></strong><code>(const InputRange&amp; r)</code></li>
+<li><code>template &lt;typename InputRange&gt; bool</code> <strong><code>range_empty</code></strong><code>(const InputRange&amp; r)</code></li>
 </ul>
 <p>Return the length of a range. The <code>range_count()</code> function is just shorthand
 for <code>std::distance(begin(r),end(r))</code>, and <code>range_empty()</code> has the obvious
@@ -987,8 +987,8 @@ overloaded), function pointers, function objects, lambda expressions, and
 <ul>
 <li><code>template &lt;typename... Args&gt; size_t</code> <strong><code>hash_value</code></strong><code>(const Args&amp;... args) noexcept</code></li>
 <li><code>template &lt;typename... Args&gt; void</code> <strong><code>hash_combine</code></strong><code>(size_t&amp; hash, const Args&amp;... args) noexcept</code></li>
-<li><code>template &lt;typename Range&gt; size_t</code> <strong><code>hash_range</code></strong><code>(const Range&amp; range) noexcept</code></li>
-<li><code>template &lt;typename Range&gt; void</code> <strong><code>hash_range</code></strong><code>(size_t&amp; hash, const Range&amp; range) noexcept</code></li>
+<li><code>template &lt;typename InputRange&gt; size_t</code> <strong><code>hash_range</code></strong><code>(const InputRange&amp; range) noexcept</code></li>
+<li><code>template &lt;typename InputRange&gt; void</code> <strong><code>hash_range</code></strong><code>(size_t&amp; hash, const InputRange&amp; range) noexcept</code></li>
 </ul>
 <p>Functions for combining hashes incrementally, or for generating the hash of a
 number of objects in one call, for use in implementing hash functions for

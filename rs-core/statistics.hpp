@@ -14,7 +14,7 @@ namespace RS {
         Statistics() = default;
         void add(T x, T y = 0) noexcept;
         void add(const std::pair<T, T>& xy) noexcept { add(xy.first, xy.second); }
-        template <typename Range> void append(const Range& r) { for (auto& t: r) add(t); }
+        template <typename InputRange> void append(const InputRange& r) { for (auto& t: r) add(t); }
         void clear() noexcept { xmin = ymin = xmax = ymax = xsum = x2sum = xysum = ysum = y2sum = 0; n = 0; }
         bool empty() const noexcept { return n == 0; }
         size_t num() const noexcept { return n; }

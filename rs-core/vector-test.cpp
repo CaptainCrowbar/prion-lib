@@ -14,8 +14,8 @@ using namespace RS::Literals;
 
 namespace {
 
-    template <typename Range>
-    void fuzz(Range& r) {
+    template <typename R>
+    void fuzz(R& r) {
         for (auto& x: r)
             if (std::abs(x) < 1e-6)
                 x = 0;

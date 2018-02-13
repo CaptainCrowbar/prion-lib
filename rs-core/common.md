@@ -432,8 +432,8 @@ suitable `insert()` method.
 Compare two ranges, returning -1 if the first range is less than the second,
 zero if they are equal, and +1 if the first range is greater.
 
-* `template <typename Range, typename Container> void` **`con_append`**`(const Range& src, Container& dst)`
-* `template <typename Range, typename Container> void` **`con_overwrite`**`(const Range& src, Container& dst)`
+* `template <typename R, typename Container> void` **`con_append`**`(const R& src, Container& dst)`
+* `template <typename R, typename Container> void` **`con_overwrite`**`(const R& src, Container& dst)`
 
 These are just shorthand for a `std::copy()` from a range to an append or
 overwrite iterator.
@@ -453,7 +453,7 @@ by removing equivalent elements from the container; like `std::sort()`, its
 predicate has less-than semantics (whereas that of `con_unique()`, like that
 of `std::unique()`, has equality semantics).
 
-* `template <typename Range, typename... Ranges> std::vector<[value type]>` **`concatenate`**`(const Range& range, const Ranges&... ranges)`
+* `template <typename InputRange, typename... Ranges> std::vector<[value type]>` **`concatenate`**`(const InputRange& range, const Ranges&... ranges)`
 
 Returns a vector composed by concatenating all of the argument ranges. The
 value type is that of the first argument range. If any subsequent argument has
@@ -492,8 +492,8 @@ are assumed to be ordered in accordance with the comparison predicate.
 
 Sort an explicit list of variables.
 
-* `template <typename Range> [value type]` **`sum_of`**`(const Range& r)`
-* `template <typename Range> [value type]` **`product_of`**`(const Range& r)`
+* `template <typename InputRange> [value type]` **`sum_of`**`(const InputRange& r)`
+* `template <typename InputRange> [value type]` **`product_of`**`(const InputRange& r)`
 
 Simple range sum and product functions, to save the trouble of calling
 `std::accumulate()` in trivial cases. Calling `sum_of()` on an empty range
@@ -549,14 +549,14 @@ same, but behaviour is undefined if either pointer is null.
 
 ### Range traits ###
 
-* `template <typename Range> using` **`RangeIterator`** `= ...`
-* `template <typename Range> using` **`RangeValue`** `= ...`
+* `template <typename InputRange> using` **`RangeIterator`** `= ...`
+* `template <typename InputRange> using` **`RangeValue`** `= ...`
 
 The iterator and value types of a range.
 
 * `template <typename T, size_t N> constexpr size_t` **`array_count`**`(T[N]) noexcept`
-* `template <typename Range> size_t` **`range_count`**`(const Range& r)`
-* `template <typename Range> bool` **`range_empty`**`(const Range& r)`
+* `template <typename InputRange> size_t` **`range_count`**`(const InputRange& r)`
+* `template <typename InputRange> bool` **`range_empty`**`(const InputRange& r)`
 
 Return the length of a range. The `range_count()` function is just shorthand
 for `std::distance(begin(r),end(r))`, and `range_empty()` has the obvious
@@ -762,8 +762,8 @@ Combine two hash values.
 
 * `template <typename... Args> size_t` **`hash_value`**`(const Args&... args) noexcept`
 * `template <typename... Args> void` **`hash_combine`**`(size_t& hash, const Args&... args) noexcept`
-* `template <typename Range> size_t` **`hash_range`**`(const Range& range) noexcept`
-* `template <typename Range> void` **`hash_range`**`(size_t& hash, const Range& range) noexcept`
+* `template <typename InputRange> size_t` **`hash_range`**`(const InputRange& range) noexcept`
+* `template <typename InputRange> void` **`hash_range`**`(size_t& hash, const InputRange& range) noexcept`
 
 Functions for combining hashes incrementally, or for generating the hash of a
 number of objects in one call, for use in implementing hash functions for

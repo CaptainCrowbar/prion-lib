@@ -169,7 +169,7 @@ These apply percent encoding to a string. Safe bytes, left unencoded, are the
 ASCII alphanumerics plus `[-._~]`; all other bytes are encoded unless they
 appear in the exempt string.
 
-* `template <typename Range> static Ustring Url::`**`make_query`**`(const Range& r, char delimiter = '&', uint32_t flags = 0)`
+* `template <typename R> static Ustring Url::`**`make_query`**`(const R& range, char delimiter = '&', uint32_t flags = 0)`
 * `static std::vector<std::pair<Ustring, Ustring>> Url::`**`parse_query`**`(Uview query, char delimiter = '\0')`
 
 Construct or deconstruct a query string. The range argument to `make_query()`

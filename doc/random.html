@@ -346,11 +346,11 @@ the cache already contains every possible value of the result type.</p>
 <li><code>using WeightedChoice::</code><strong><code>result_type</code></strong> <code>= T</code></li>
 <li><code>WeightedChoice::</code><strong><code>WeightedChoice</code></strong><code>() noexcept</code></li>
 <li><code>WeightedChoice::</code><strong><code>WeightedChoice</code></strong><code>(initializer_list&lt;pair&lt;T, F&gt;&gt; pairs)</code></li>
-<li><code>template &lt;typename Range&gt; explicit WeightedChoice::</code><strong><code>WeightedChoice</code></strong><code>(const Range&amp; pairs)</code></li>
+<li><code>template &lt;typename InputRange&gt; explicit WeightedChoice::</code><strong><code>WeightedChoice</code></strong><code>(const InputRange&amp; pairs)</code></li>
 <li><code>template &lt;typename RNG&gt; T WeightedChoice::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
 <li><code>void WeightedChoice::</code><strong><code>add</code></strong><code>(const T&amp; t, F f)</code></li>
 <li><code>void WeightedChoice::</code><strong><code>append</code></strong><code>(initializer_list&lt;pair&lt;T, F&gt;&gt; pairs)</code></li>
-<li><code>template &lt;typename Range&gt; void WeightedChoice::</code><strong><code>append</code></strong><code>(const Range&amp; pairs)</code></li>
+<li><code>template &lt;typename InputRange&gt; void WeightedChoice::</code><strong><code>append</code></strong><code>(const InputRange&amp; pairs)</code></li>
 <li><code>bool WeightedChoice::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
 </ul>
 </li>

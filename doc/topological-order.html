@@ -124,11 +124,11 @@ element and itself are ignored.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename Range&gt; void TopologicalOrder::</code><strong><code>insert_1n</code></strong><code>(const T&amp; t1, const Range&amp; r2)</code></li>
+<li><code>template &lt;typename R&gt; void TopologicalOrder::</code><strong><code>insert_1n</code></strong><code>(const T&amp; t1, const R&amp; r2)</code></li>
 <li><code>void TopologicalOrder::</code><strong><code>insert_1n</code></strong><code>(const T&amp; t1, std::initializer_list&lt;T&gt; r2)</code></li>
-<li><code>template &lt;typename Range&gt; void TopologicalOrder::</code><strong><code>insert_n1</code></strong><code>(const Range&amp; r1, const T&amp; t2)</code></li>
+<li><code>template &lt;typename R&gt; void TopologicalOrder::</code><strong><code>insert_n1</code></strong><code>(const R&amp; r1, const T&amp; t2)</code></li>
 <li><code>void TopologicalOrder::</code><strong><code>insert_n1</code></strong><code>(std::initializer_list&lt;T&gt; r1, const T&amp; t2)</code></li>
-<li><code>template &lt;typename Range1, typename Range2&gt; void TopologicalOrder::</code><strong><code>insert_mn</code></strong><code>(const Range1&amp; r1, const Range2&amp; r2)</code></li>
+<li><code>template &lt;typename R1, typename R2&gt; void TopologicalOrder::</code><strong><code>insert_mn</code></strong><code>(const R1&amp; r1, const R2&amp; r2)</code></li>
 <li><code>void TopologicalOrder::</code><strong><code>insert_mn</code></strong><code>(std::initializer_list&lt;T&gt; r1, std::initializer_list&lt;T&gt; r2)</code></li>
 </ul>
 <p>Insert one or more pairs of elements, with ordering relations between the left

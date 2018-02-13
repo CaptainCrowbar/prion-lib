@@ -36,11 +36,11 @@ namespace RS {
         bool has(const T& t) const { return graph.count(t); }
         void insert(const T& t) { ensure_key(t); }
         template <typename... Args> void insert(const T& t1, const T& t2, const Args&... args);
-        template <typename Range> void insert_1n(const T& t1, const Range& r2) { insert_ranges(array_range(&t1, 1), r2); }
+        template <typename R> void insert_1n(const T& t1, const R& r2) { insert_ranges(array_range(&t1, 1), r2); }
         void insert_1n(const T& t1, std::initializer_list<T> r2) { insert_ranges(array_range(&t1, 1), r2); }
-        template <typename Range> void insert_n1(const Range& r1, const T& t2) { insert_ranges(r1, array_range(&t2, 1)); }
+        template <typename R> void insert_n1(const R& r1, const T& t2) { insert_ranges(r1, array_range(&t2, 1)); }
         void insert_n1(std::initializer_list<T> r1, const T& t2) { insert_ranges(r1, array_range(&t2, 1)); }
-        template <typename Range1, typename Range2> void insert_mn(const Range1& r1, const Range2& r2) { insert_ranges(r1, r2); }
+        template <typename R1, typename R2> void insert_mn(const R1& r1, const R2& r2) { insert_ranges(r1, r2); }
         void insert_mn(std::initializer_list<T> r1, std::initializer_list<T> r2) { insert_ranges(r1, r2); }
         bool is_front(const T& t) const;
         bool is_back(const T& t) const;
@@ -58,7 +58,7 @@ namespace RS {
         using map_iterator = typename map_type::iterator;
         map_type graph;
         map_iterator ensure_key(const T& t);
-        template <typename Range1, typename Range2> void insert_ranges(const Range1& r1, const Range2& r2);
+        template <typename R1, typename R2> void insert_ranges(const R1& r1, const R2& r2);
         link_sets make_link_sets() const { return {set_type(graph.key_comp()), set_type(graph.key_comp())}; }
     };
 
@@ -263,8 +263,8 @@ namespace RS {
     }
 
     template <typename T, typename Compare>
-    template <typename Range1, typename Range2>
-    void TopologicalOrder<T, Compare>::insert_ranges(const Range1& r1, const Range2& r2) {
+    template <typename R1, typename R2>
+    void TopologicalOrder<T, Compare>::insert_ranges(const R1& r1, const R2& r2) {
         using std::begin;
         using std::end;
         for (auto& t1: r1) {

@@ -92,7 +92,7 @@ allowed.</p>
 <div class="defns">
 <ul>
 <li><code>IndexTable::</code><strong><code>IndexTable</code></strong><code>()</code></li>
-<li><code>template &lt;typename Range&gt; explicit IndexTable::</code><strong><code>IndexTable</code></strong><code>(const Range&amp; src)</code></li>
+<li><code>template &lt;typename InputRange&gt; explicit IndexTable::</code><strong><code>IndexTable</code></strong><code>(const InputRange&amp; src)</code></li>
 <li><code>template &lt;typename Iterator&gt; IndexTable::</code><strong><code>IndexTable</code></strong><code>(Iterator i1, Iterator i2)</code></li>
 <li><code>IndexTable::</code><strong><code>~IndexTable</code></strong><code>() noexcept</code></li>
 </ul>
@@ -134,7 +134,7 @@ version, <code>O(k)</code> for the second.)</em></p>
 <div class="defns">
 <ul>
 <li><code>void IndexTable::</code><strong><code>insert</code></strong><code>(const T&amp; t)</code></li>
-<li><code>template &lt;typename Range&gt; void IndexTable::</code><strong><code>insert</code></strong><code>(const Range&amp; src)</code></li>
+<li><code>template &lt;typename InputRange&gt; void IndexTable::</code><strong><code>insert</code></strong><code>(const InputRange&amp; src)</code></li>
 <li><code>template &lt;typename Iterator&gt; void IndexTable::</code><strong><code>insert</code></strong><code>(Iterator i1, Iterator i2)</code></li>
 <li><code>void IndexTable::</code><strong><code>push_back</code></strong><code>(const T&amp; t)</code></li>
 </ul>

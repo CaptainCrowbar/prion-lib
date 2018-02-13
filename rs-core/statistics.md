@@ -31,7 +31,7 @@ Life cycle functions.
 
 * `void Statistics::`**`add`**`(T x, T y = 0) noexcept`
 * `void Statistics::`**`add`**`(const std::pair<T, T>& xy) noexcept`
-* `template <typename Range> void Statistics::`**`append`**`(const Range& r)`
+* `template <typename InputRange> void Statistics::`**`append`**`(const InputRange& r)`
 
 Add one or more data points, either as univariate `x` values or bivariate
 _(x,y)_ pairs. The `append()` function can read a vector-like range of values

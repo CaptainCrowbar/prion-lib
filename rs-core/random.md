@@ -280,11 +280,11 @@ the cache already contains every possible value of the result type.
     * `using WeightedChoice::`**`result_type`** `= T`
     * `WeightedChoice::`**`WeightedChoice`**`() noexcept`
     * `WeightedChoice::`**`WeightedChoice`**`(initializer_list<pair<T, F>> pairs)`
-    * `template <typename Range> explicit WeightedChoice::`**`WeightedChoice`**`(const Range& pairs)`
+    * `template <typename InputRange> explicit WeightedChoice::`**`WeightedChoice`**`(const InputRange& pairs)`
     * `template <typename RNG> T WeightedChoice::`**`operator()`**`(RNG& rng) const`
     * `void WeightedChoice::`**`add`**`(const T& t, F f)`
     * `void WeightedChoice::`**`append`**`(initializer_list<pair<T, F>> pairs)`
-    * `template <typename Range> void WeightedChoice::`**`append`**`(const Range& pairs)`
+    * `template <typename InputRange> void WeightedChoice::`**`append`**`(const InputRange& pairs)`
     * `bool WeightedChoice::`**`empty`**`() const noexcept`
 
 Selects items at random from a weighted list. The frequency type (`F`) must be

@@ -73,7 +73,7 @@ The basic data table class.
 Member types.
 
 * `IndexTable::`**`IndexTable`**`()`
-* `template <typename Range> explicit IndexTable::`**`IndexTable`**`(const Range& src)`
+* `template <typename InputRange> explicit IndexTable::`**`IndexTable`**`(const InputRange& src)`
 * `template <typename Iterator> IndexTable::`**`IndexTable`**`(Iterator i1, Iterator i2)`
 * `IndexTable::`**`~IndexTable`**`() noexcept`
 
@@ -105,7 +105,7 @@ Remove elements from the table. _(Complexity: Amortised constant for the first
 version, `O(k)` for the second.)_
 
 * `void IndexTable::`**`insert`**`(const T& t)`
-* `template <typename Range> void IndexTable::`**`insert`**`(const Range& src)`
+* `template <typename InputRange> void IndexTable::`**`insert`**`(const InputRange& src)`
 * `template <typename Iterator> void IndexTable::`**`insert`**`(Iterator i1, Iterator i2)`
 * `void IndexTable::`**`push_back`**`(const T& t)`
 

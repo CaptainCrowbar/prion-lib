@@ -57,6 +57,11 @@ namespace RS {
         dst = RS_Detail::ConvertTimePointHelper<C1, D1, C2, D2>()(src);
     }
 
+    template <typename TP2, typename C1, typename D1>
+    TP2 convert_time_point(std::chrono::time_point<C1, D1> src) {
+        return RS_Detail::ConvertTimePointHelper<C1, D1, typename TP2::clock, typename TP2::duration>()(src);
+    }
+
     template <typename R, typename P>
     void from_seconds(double s, std::chrono::duration<R, P>& d) noexcept {
         using namespace std::chrono;

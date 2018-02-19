@@ -73,6 +73,7 @@ the date elements are in. If none of these are present, the default is
 <div class="defns">
 <ul>
 <li><code>template &lt;typename C1, typename D1, typename C2, typename D2&gt; void</code> <strong><code>convert_time_point</code></strong><code>(time_point&lt;C1, D1&gt; src, time_point&lt;C2, D2&gt;&amp; dst)</code></li>
+<li><code>template &lt;typename TP2, typename C1, typename D1&gt; TP2</code> <strong><code>convert_time_point</code></strong><code>(time_point&lt;C1, D1&gt; src)</code></li>
 </ul>
 <p>Convert a time point from one representation to another, possibly on a
 different clock. This will call <code>time_point_cast()</code> if possible; otherwise, it

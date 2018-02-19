@@ -48,6 +48,7 @@ the date elements are in. If none of these are present, the default is
 ## General time and date operations ##
 
 * `template <typename C1, typename D1, typename C2, typename D2> void` **`convert_time_point`**`(time_point<C1, D1> src, time_point<C2, D2>& dst)`
+* `template <typename TP2, typename C1, typename D1> TP2` **`convert_time_point`**`(time_point<C1, D1> src)`
 
 Convert a time point from one representation to another, possibly on a
 different clock. This will call `time_point_cast()` if possible; otherwise, it

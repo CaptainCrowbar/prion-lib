@@ -38,31 +38,26 @@ void test_core_time_date_types() {
 
 void test_core_time_convert_time_point() {
 
-    system_clock::time_point sys1, sys2, sys3;
-    high_resolution_clock::time_point hrc1, hrc2, hrc3;
-    milliseconds msec;
+    using Systp = system_clock::time_point;
+    using Hrctp = high_resolution_clock::time_point;
+
+    Systp sys1, sys2, sys3;
+    Hrctp hrc1, hrc2, hrc3;
+    milliseconds ms;
 
     sys1 = system_clock::now();
     hrc1 = high_resolution_clock::now();
-
     sys2 = sys1 + 1min;
     hrc2 = hrc1 + 1min;
 
-    convert_time_point(sys2, sys3);
-    convert_time_point(hrc2, hrc3);
-
-    msec = duration_cast<milliseconds>(sys3 - sys1);
-    TEST_EQUAL(msec.count(), 60'000);
-    msec = duration_cast<milliseconds>(hrc3 - hrc1);
-    TEST_EQUAL(msec.count(), 60'000);
-
-    convert_time_point(hrc2, sys3);
-    convert_time_point(sys2, hrc3);
-
-    msec = duration_cast<milliseconds>(sys3 - sys1);
-    TEST_NEAR_EPSILON(msec.count(), 60'000, 50);
-    msec = duration_cast<milliseconds>(hrc3 - hrc1);
-    TEST_NEAR_EPSILON(msec.count(), 60'000, 50);
+    convert_time_point(sys2, sys3);          ms = duration_cast<milliseconds>(sys3 - sys1);  TEST_EQUAL(ms.count(), 60'000);
+    convert_time_point(hrc2, hrc3);          ms = duration_cast<milliseconds>(hrc3 - hrc1);  TEST_EQUAL(ms.count(), 60'000);
+    convert_time_point(hrc2, sys3);          ms = duration_cast<milliseconds>(sys3 - sys1);  TEST_NEAR_EPSILON(ms.count(), 60'000, 50);
+    convert_time_point(sys2, hrc3);          ms = duration_cast<milliseconds>(hrc3 - hrc1);  TEST_NEAR_EPSILON(ms.count(), 60'000, 50);
+    sys3 = convert_time_point<Systp>(sys2);  ms = duration_cast<milliseconds>(sys3 - sys1);  TEST_EQUAL(ms.count(), 60'000);
+    hrc3 = convert_time_point<Hrctp>(hrc2);  ms = duration_cast<milliseconds>(hrc3 - hrc1);  TEST_EQUAL(ms.count(), 60'000);
+    sys3 = convert_time_point<Systp>(hrc2);  ms = duration_cast<milliseconds>(sys3 - sys1);  TEST_NEAR_EPSILON(ms.count(), 60'000, 50);
+    hrc3 = convert_time_point<Hrctp>(sys2);  ms = duration_cast<milliseconds>(hrc3 - hrc1);  TEST_NEAR_EPSILON(ms.count(), 60'000, 50);
 
 }
 

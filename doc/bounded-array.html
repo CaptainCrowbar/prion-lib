@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Bounded Array</title>
+<link type="text/css" rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<h1 id="bounded-array">Bounded Array</h1>
+<p>By Ross Smith</p>
+<ul>
+<li><code>#include "rs-core/bounded-array.hpp"</code></li>
+</ul>
+<h2 id="contents">Contents</h2>
+<div class="toc">
+<ul>
+<li><a href="#bounded-array">Bounded Array</a><ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#bounded-array_1">Bounded array</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="bounded-array_1">Bounded array</h2>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T, size_t N&gt; class</code> <strong><code>BoundedArray</code></strong></li>
+</ul>
+<p><code>BoundedArray</code> is a vector-like container with a fixed, statically known upper
+limit on its size (supplied as a template parameter). Its contents are always
+stored on the stack, and no dynamic allocation will be done (unless the
+element type itself does any internally). Any attempt to grow the size beyond
+the fixed limit will throw a <code>std::length_error</code> exception.</p>
+<p>The element type <code>T</code> must be a complete, concrete type that is at least
+destructible and either move or copy constructible and assignable. Some
+operations place additional requirements on <code>T</code>. Copy construction and
+assignment are required by any operation that may copy an object; default
+construction is only required by operations that may create new elements
+without being supplied with a value to give them. <code>BoundedArray</code>'s equality
+comparison calls <code>T</code>'s equality operator; the ordered comparisons call <code>T</code>'s
+less-than operator. <code>BoundedArray</code>'s hash function calls <code>std::hash&lt;T&gt;</code>.
+Comparison, swap, move, and hash operations on <code>T</code> are assumed not to throw.</p>
+<p>Most of the <code>BoundedArray</code> interface is the same as a standard vector.
+Operations that are new to <code>BoundedArray</code> or differ in some significant way
+from the corresponding operations on a vector are described in more detail.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>class BoundedArray::</code><strong><code>const_iterator</code></strong></li>
+<li><code>using BoundedArray::</code><strong><code>const_reference</code></strong> <code>= const T&amp;</code></li>
+<li><code>using BoundedArray::</code><strong><code>difference_type</code></strong> <code>= ptrdiff_t</code></li>
+<li><code>class BoundedArray::</code><strong><code>iterator</code></strong></li>
+<li><code>using BoundedArray::</code><strong><code>reference</code></strong> <code>= T&amp;</code></li>
+<li><code>using BoundedArray::</code><strong><code>size_type</code></strong> <code>= size_t</code></li>
+<li><code>using BoundedArray::</code><strong><code>value_type</code></strong> <code>= T</code></li>
+</ul>
+<p>Member types.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>static constexpr size_t BoundedArray::</code><strong><code>bound</code></strong> <code>= N</code></li>
+</ul>
+<p>Member constant.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>BoundedArray::</code><strong><code>BoundedArray</code></strong><code>() noexcept</code></li>
+<li><code>explicit BoundedArray::</code><strong><code>BoundedArray</code></strong><code>(size_t n, const T&amp; t = {})</code></li>
+<li><code>template &lt;typename InputIterator&gt; BoundedArray::</code><strong><code>BoundedArray</code></strong><code>(InputIterator i, InputIterator j, ArrayDetail::IteratorEnable&lt;InputIterator, T&gt;* = nullptr)</code></li>
+<li><code>BoundedArray::</code><strong><code>BoundedArray</code></strong><code>(std::initializer_list&lt;T&gt; list)</code></li>
+<li><code>BoundedArray::</code><strong><code>~BoundedArray</code></strong><code>() noexcept</code></li>
+<li><code>BoundedArray::</code><strong><code>BoundedArray</code></strong><code>(const BoundedArray&amp; ca)</code></li>
+<li><code>BoundedArray::</code><strong><code>BoundedArray</code></strong><code>(BoundedArray&amp;&amp; ca) noexcept</code></li>
+<li><code>BoundedArray&amp; BoundedArray::</code><strong><code>operator=</code></strong><code>(const BoundedArray&amp; ca)</code></li>
+<li><code>BoundedArray&amp; BoundedArray::</code><strong><code>operator=</code></strong><code>(BoundedArray&amp;&amp; ca) noexcept</code></li>
+<li><code>BoundedArray&amp; BoundedArray::</code><strong><code>operator=</code></strong><code>(std::initializer_list&lt;T&gt; list)</code></li>
+</ul>
+<p>Life cycle functions.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>T&amp; BoundedArray::</code><strong><code>operator[]</code></strong><code>(size_t i) noexcept</code></li>
+<li><code>const T&amp; BoundedArray::</code><strong><code>operator[]</code></strong><code>(size_t i) const noexcept</code></li>
+<li><code>T&amp; BoundedArray::</code><strong><code>at</code></strong><code>(size_t i)</code></li>
+<li><code>const T&amp; BoundedArray::</code><strong><code>at</code></strong><code>(size_t i) const</code></li>
+<li><code>BoundedArray::iterator BoundedArray::</code><strong><code>begin</code></strong><code>() noexcept</code></li>
+<li><code>BoundedArray::const_iterator BoundedArray::</code><strong><code>begin</code></strong><code>() const noexcept</code></li>
+<li><code>BoundedArray::const_iterator BoundedArray::</code><strong><code>cbegin</code></strong><code>() const noexcept</code></li>
+<li><code>BoundedArray::iterator BoundedArray::</code><strong><code>end</code></strong><code>() noexcept</code></li>
+<li><code>BoundedArray::const_iterator BoundedArray::</code><strong><code>end</code></strong><code>() const noexcept</code></li>
+<li><code>BoundedArray::const_iterator BoundedArray::</code><strong><code>cend</code></strong><code>() const noexcept</code></li>
+<li><code>T* BoundedArray::</code><strong><code>data</code></strong><code>() noexcept</code></li>
+<li><code>const T* BoundedArray::</code><strong><code>data</code></strong><code>() const noexcept</code></li>
+<li><code>const T* BoundedArray::</code><strong><code>cdata</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>Element access functions.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>size_t BoundedArray::</code><strong><code>capacity</code></strong><code>() const noexcept</code></li>
+<li><code>void BoundedArray::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
+<li><code>bool BoundedArray::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
+<li><code>void BoundedArray::</code><strong><code>resize</code></strong><code>(size_t n, const T&amp; t = {})</code></li>
+<li><code>size_t BoundedArray::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>Capacity functions. The <code>capacity()</code> function always returns <code>N</code>. The other
+functions have their usual semantics for sequential containers, except that
+<code>resize()</code> will throw <code>std::length_error</code> if the new size exceeds the
+capacity.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename InputIterator&gt; BoundedArray::iterator BoundedArray::</code><strong><code>append</code></strong><code>(InputIterator i, InputIterator j)</code></li>
+<li><code>template &lt;typename InputRange&gt; BoundedArray::iterator BoundedArray::</code><strong><code>append</code></strong><code>(const InputRange&amp; r)</code></li>
+<li><code>template &lt;typename InputRange&gt; BoundedArray::iterator BoundedArray::</code><strong><code>append</code></strong><code>(InputRange&amp;&amp; r)</code></li>
+<li><code>template &lt;typename... Args&gt; void BoundedArray::</code><strong><code>emplace_back</code></strong><code>(Args&amp;&amp;... args)</code></li>
+<li><code>template &lt;typename... Args&gt; BoundedArray::iterator BoundedArray::</code><strong><code>emplace</code></strong><code>(const_iterator i, Args&amp;&amp;... args)</code></li>
+<li><code>BoundedArray::iterator BoundedArray::</code><strong><code>insert</code></strong><code>(const_iterator i, const T&amp; t)</code></li>
+<li><code>BoundedArray::iterator BoundedArray::</code><strong><code>insert</code></strong><code>(const_iterator i, T&amp;&amp; t)</code></li>
+<li><code>template &lt;typename InputIterator&gt; BoundedArray::iterator BoundedArray::</code><strong><code>insert</code></strong><code>(const_iterator i, InputIterator j, InputIterator k)</code></li>
+<li><code>void BoundedArray::</code><strong><code>push_back</code></strong><code>(const T&amp; t)</code></li>
+<li><code>void BoundedArray::</code><strong><code>push_back</code></strong><code>(T&amp;&amp; t)</code></li>
+</ul>
+<p>Insertion functions. The <code>append()</code> function is a convenience shorthand for
+insertion at the end, which is usually more efficient than insertion anywhere
+else; like <code>insert()</code>, it returns an iterator pointing to the first inserted
+element. All of these will throw <code>std::length_error</code> if the insertion would
+grow the size beyond the static capacity.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void BoundedArray::</code><strong><code>erase</code></strong><code>(const_iterator i) noexcept</code></li>
+<li><code>void BoundedArray::</code><strong><code>erase</code></strong><code>(const_iterator i, const_iterator j) noexcept</code></li>
+<li><code>void BoundedArray::</code><strong><code>pop_back</code></strong><code>() noexcept</code></li>
+</ul>
+<p>Erasure functions.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>size_t BoundedArray::</code><strong><code>hash</code></strong><code>() const noexcept</code></li>
+<li><code>class std::</code><strong><code>hash</code></strong><code>&lt;BoundedArray&lt;T, N&gt;&gt;</code></li>
+</ul>
+<p>Hash functions.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void BoundedArray::</code><strong><code>swap</code></strong><code>(BoundedArray&amp; ca) noexcept</code></li>
+<li><code>void</code> <strong><code>swap</code></strong><code>(BoundedArray&amp; a, BoundedArray&amp; b) noexcept</code></li>
+</ul>
+<p>Swap functions.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool</code> <strong><code>operator==</code></strong><code>(const BoundedArray&amp; lhs, const BoundedArray&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator!=</code></strong><code>(const BoundedArray&amp; lhs, const BoundedArray&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&lt;</code></strong><code>(const BoundedArray&amp; lhs, const BoundedArray&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&gt;</code></strong><code>(const BoundedArray&amp; lhs, const BoundedArray&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&lt;=</code></strong><code>(const BoundedArray&amp; lhs, const BoundedArray&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&gt;=</code></strong><code>(const BoundedArray&amp; lhs, const BoundedArray&amp; rhs) noexcept</code></li>
+</ul>
+<p>Comparison operators.</p></body>
+</html>

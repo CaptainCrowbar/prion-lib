@@ -31,6 +31,11 @@ extern void test_core_algorithm_paired_transform();
 extern void test_core_array_map_class();
 extern void test_core_array_map_set();
 extern void test_core_blob_class();
+extern void test_core_bounded_array_construction();
+extern void test_core_bounded_array_capacity();
+extern void test_core_bounded_array_insertion();
+extern void test_core_bounded_array_accounting();
+extern void test_core_bounded_array_keys();
 extern void test_core_cache_class();
 extern void test_core_channel_true();
 extern void test_core_channel_false();
@@ -294,6 +299,11 @@ int main() {
         { "core/array-map/class", test_core_array_map_class },
         { "core/array-map/set", test_core_array_map_set },
         { "core/blob/class", test_core_blob_class },
+        { "core/bounded-array/construction", test_core_bounded_array_construction },
+        { "core/bounded-array/capacity", test_core_bounded_array_capacity },
+        { "core/bounded-array/insertion", test_core_bounded_array_insertion },
+        { "core/bounded-array/accounting", test_core_bounded_array_accounting },
+        { "core/bounded-array/keys", test_core_bounded_array_keys },
         { "core/cache/class", test_core_cache_class },
         { "core/channel/true", test_core_channel_true },
         { "core/channel/false", test_core_channel_false },

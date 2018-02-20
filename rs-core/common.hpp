@@ -240,6 +240,30 @@ namespace RS {
 
     namespace RS_Detail {
 
+        #if (defined(__GNUC__) && ! defined(__clang__) && (__GNUC__ <= 6)) || (defined(_MSC_VER) && _MSC_VER <= 1900)
+
+            template <typename ForwardIterator>
+            void destroy(ForwardIterator i, ForwardIterator j) {
+                using T = typename std::iterator_traits<ForwardIterator>::value_type;
+                for (; i != j; ++i)
+                    (*i).~T();
+            }
+
+            template <typename InputIterator, typename ForwardIterator>
+            ForwardIterator uninitialized_move(InputIterator i, InputIterator j, ForwardIterator k) {
+                using T = typename std::iterator_traits<ForwardIterator>::value_type;
+                for (; i != j; ++i, ++k)
+                    new (&*k) T(std::move(*i));
+                return k;
+            }
+
+        #else
+
+            using std::destroy;
+            using std::uninitialized_move;
+
+        #endif
+
         template <typename> struct CommonTrue: std::true_type {};
         template <typename T> auto common_adl_begin(int) -> CommonTrue<decltype(begin(std::declval<T>()))>;
         template <typename T> auto common_adl_begin(long) -> std::false_type;

@@ -18,6 +18,7 @@
 * _Containers_
     * [`"rs-core/array-map.hpp"`](array-map.html) - Sequence based associative array
     * [`"rs-core/blob.hpp"`](blob.html) - Binary large object
+    * [`"rs-core/bounded-array.hpp"`](bounded-array.html) - Bounded array
     * [`"rs-core/compact-array.hpp"`](compact-array.html) - Compact array
     * [`"rs-core/grid.hpp"`](grid.html) - Multidimensional array
     * [`"rs-core/index-table.hpp"`](index-table.html) - Multi-index map

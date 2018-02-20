@@ -3,6 +3,7 @@
 #include "rs-core/algorithm.hpp"
 #include "rs-core/array-map.hpp"
 #include "rs-core/blob.hpp"
+#include "rs-core/bounded-array.hpp"
 #include "rs-core/cache.hpp"
 #include "rs-core/channel.hpp"
 #include "rs-core/common.hpp"

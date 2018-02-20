@@ -1,6 +1,7 @@
 $(BUILD)/algorithm-test.o: rs-core/algorithm-test.cpp rs-core/algorithm.hpp rs-core/common.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/unit-test.hpp
 $(BUILD)/array-map-test.o: rs-core/array-map-test.cpp rs-core/array-map.hpp rs-core/common.hpp rs-core/string.hpp rs-core/unit-test.hpp
 $(BUILD)/blob-test.o: rs-core/blob-test.cpp rs-core/blob.hpp rs-core/common.hpp rs-core/string.hpp rs-core/unit-test.hpp
+$(BUILD)/bounded-array-test.o: rs-core/bounded-array-test.cpp rs-core/bounded-array.hpp rs-core/common.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/unit-test.hpp
 $(BUILD)/cache-test.o: rs-core/cache-test.cpp rs-core/cache.hpp rs-core/common.hpp rs-core/unit-test.hpp
 $(BUILD)/channel-test.o: rs-core/channel-test.cpp rs-core/channel.hpp rs-core/common.hpp rs-core/optional.hpp rs-core/string.hpp rs-core/time.hpp rs-core/unit-test.hpp
 $(BUILD)/common-test.o: rs-core/common-test.cpp rs-core/common.hpp rs-core/unit-test.hpp

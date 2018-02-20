@@ -4,7 +4,7 @@
 
 using namespace RS;
 
-void test_skeleton_ring_buffer_basics() {
+void test_core_ring_buffer_basics() {
 
     RingBuffer<int> r(5);
     Ustring s;
@@ -45,7 +45,7 @@ void test_skeleton_ring_buffer_basics() {
 
 }
 
-void test_skeleton_ring_buffer_accounting_with_copy() {
+void test_core_ring_buffer_accounting_with_copy() {
 
     using account = Accountable<int>;
 
@@ -85,7 +85,7 @@ void test_skeleton_ring_buffer_accounting_with_copy() {
 
 }
 
-void test_skeleton_ring_buffer_accounting_with_move() {
+void test_core_ring_buffer_accounting_with_move() {
 
     using account = Accountable<int, false>;
 

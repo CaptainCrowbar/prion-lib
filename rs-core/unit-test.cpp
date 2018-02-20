@@ -193,9 +193,9 @@ extern void test_core_rational_properties();
 extern void test_core_rational_comparison();
 extern void test_core_rational_mixed();
 extern void test_core_rational_parsing();
-extern void test_skeleton_ring_buffer_basics();
-extern void test_skeleton_ring_buffer_accounting_with_copy();
-extern void test_skeleton_ring_buffer_accounting_with_move();
+extern void test_core_ring_buffer_basics();
+extern void test_core_ring_buffer_accounting_with_copy();
+extern void test_core_ring_buffer_accounting_with_move();
 extern void test_core_scale_map_class();
 extern void test_core_serial_standard_types();
 extern void test_core_serial_std_chrono();
@@ -240,14 +240,14 @@ extern void test_core_time_backoff_wait();
 extern void test_core_time_system_specific_conversions();
 extern void test_core_topological_order_algorithm();
 extern void test_core_topological_order_reverse();
-extern void test_skeleton_url_parse_http();
-extern void test_skeleton_url_parse_file();
-extern void test_skeleton_url_parse_mailto();
-extern void test_skeleton_url_assembly();
-extern void test_skeleton_url_modifiers();
-extern void test_skeleton_url_navigation();
-extern void test_skeleton_url_encoding();
-extern void test_skeleton_url_query();
+extern void test_core_url_parse_http();
+extern void test_core_url_parse_file();
+extern void test_core_url_parse_mailto();
+extern void test_core_url_assembly();
+extern void test_core_url_modifiers();
+extern void test_core_url_navigation();
+extern void test_core_url_encoding();
+extern void test_core_url_query();
 extern void test_core_uuid_class();
 extern void test_core_variant_types();
 extern void test_core_variant_behaviour();
@@ -463,9 +463,9 @@ int main() {
         { "core/rational/comparison", test_core_rational_comparison },
         { "core/rational/mixed", test_core_rational_mixed },
         { "core/rational/parsing", test_core_rational_parsing },
-        { "skeleton/ring-buffer/basics", test_skeleton_ring_buffer_basics },
-        { "skeleton/ring-buffer/accounting-with-copy", test_skeleton_ring_buffer_accounting_with_copy },
-        { "skeleton/ring-buffer/accounting-with-move", test_skeleton_ring_buffer_accounting_with_move },
+        { "core/ring-buffer/basics", test_core_ring_buffer_basics },
+        { "core/ring-buffer/accounting-with-copy", test_core_ring_buffer_accounting_with_copy },
+        { "core/ring-buffer/accounting-with-move", test_core_ring_buffer_accounting_with_move },
         { "core/scale-map/class", test_core_scale_map_class },
         { "core/serial/standard-types", test_core_serial_standard_types },
         { "core/serial/std-chrono", test_core_serial_std_chrono },
@@ -510,14 +510,14 @@ int main() {
         { "core/time/system-specific-conversions", test_core_time_system_specific_conversions },
         { "core/topological-order/algorithm", test_core_topological_order_algorithm },
         { "core/topological-order/reverse", test_core_topological_order_reverse },
-        { "skeleton/url/parse-http", test_skeleton_url_parse_http },
-        { "skeleton/url/parse-file", test_skeleton_url_parse_file },
-        { "skeleton/url/parse-mailto", test_skeleton_url_parse_mailto },
-        { "skeleton/url/assembly", test_skeleton_url_assembly },
-        { "skeleton/url/modifiers", test_skeleton_url_modifiers },
-        { "skeleton/url/navigation", test_skeleton_url_navigation },
-        { "skeleton/url/encoding", test_skeleton_url_encoding },
-        { "skeleton/url/query", test_skeleton_url_query },
+        { "core/url/parse-http", test_core_url_parse_http },
+        { "core/url/parse-file", test_core_url_parse_file },
+        { "core/url/parse-mailto", test_core_url_parse_mailto },
+        { "core/url/assembly", test_core_url_assembly },
+        { "core/url/modifiers", test_core_url_modifiers },
+        { "core/url/navigation", test_core_url_navigation },
+        { "core/url/encoding", test_core_url_encoding },
+        { "core/url/query", test_core_url_query },
         { "core/uuid/class", test_core_uuid_class },
         { "core/variant/types", test_core_variant_types },
         { "core/variant/behaviour", test_core_variant_behaviour },

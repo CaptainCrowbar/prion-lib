@@ -8,7 +8,7 @@
 using namespace RS;
 using namespace RS::Literals;
 
-void test_skeleton_url_parse_http() {
+void test_core_url_parse_http() {
 
     Url u;
 
@@ -155,7 +155,7 @@ void test_skeleton_url_parse_http() {
 
 }
 
-void test_skeleton_url_parse_file() {
+void test_core_url_parse_file() {
 
     Url u;
     File f;
@@ -211,7 +211,7 @@ void test_skeleton_url_parse_file() {
 
 }
 
-void test_skeleton_url_parse_mailto() {
+void test_core_url_parse_mailto() {
 
     Url u;
 
@@ -230,7 +230,7 @@ void test_skeleton_url_parse_mailto() {
 
 }
 
-void test_skeleton_url_assembly() {
+void test_core_url_assembly() {
 
     Url u;
 
@@ -242,7 +242,7 @@ void test_skeleton_url_assembly() {
 
 }
 
-void test_skeleton_url_modifiers() {
+void test_core_url_modifiers() {
 
     Url u;
 
@@ -312,7 +312,7 @@ void test_skeleton_url_modifiers() {
 
 }
 
-void test_skeleton_url_navigation() {
+void test_core_url_navigation() {
 
     Url u1, u2;
 
@@ -350,7 +350,7 @@ void test_skeleton_url_navigation() {
 
 }
 
-void test_skeleton_url_encoding() {
+void test_core_url_encoding() {
 
     Ustring s1, s2, s3;
 
@@ -359,7 +359,7 @@ void test_skeleton_url_encoding() {
 
 }
 
-void test_skeleton_url_query() {
+void test_core_url_query() {
 
     Ustring query, s;
     std::vector<std::pair<Ustring, Ustring>> table;

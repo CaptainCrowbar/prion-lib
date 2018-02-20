@@ -25,6 +25,7 @@
 <li><a href="#io-operations">I/O operations</a></li>
 <li><a href="#metadata-operations">Metadata operations</a></li>
 <li><a href="#standard-locations">Standard locations</a></li>
+<li><a href="#file-name-literals">File name literals</a></li>
 </ul>
 </li>
 </ul>
@@ -332,5 +333,16 @@ relevant), and only consult the system API if that fails.</p>
 <td><code>&lt;home&gt;/AppData/Roaming</code></td>
 </tr>
 </tbody>
-</table></body>
+</table>
+</div>
+<h3 id="file-name-literals">File name literals</h3>
+<div class="defns">
+<ul>
+<li><code>namespace RS::Literals</code><ul>
+<li><code>File</code> <strong><code>operator""_file</code></strong><code>(const char* p, size_t n)</code></li>
+<li><code>File</code> <strong><code>operator""_file</code></strong><code>(const wchar_t* p, size_t n)</code> <em>- Windows only</em></li>
+</ul>
+</li>
+</ul>
+<p>File name literals. These simply call the corresponding constructor.</p></body>
 </html>

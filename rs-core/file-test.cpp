@@ -12,6 +12,7 @@
 #include <vector>
 
 using namespace RS;
+using namespace RS::Literals;
 using namespace std::chrono;
 using namespace std::literals;
 
@@ -371,6 +372,24 @@ void test_core_file_standard_locations() {
         TEST_MATCH(f.name(), "/.config$");
     #else
         TEST_MATCH(f.name(), "/AppData/Roaming$");
+    #endif
+
+}
+
+void test_core_file_literals() {
+
+    auto f = "foo/bar"_file;
+
+    TEST_TYPE_OF(f, File);
+    TEST_EQUAL(f.name(), "foo/bar");
+
+    #ifndef _XOPEN_SOURCE
+
+        auto wf = L"foo/bar"_file;
+
+        TEST_TYPE_OF(wf, File);
+        TEST_EQUAL(wf.name(), "foo/bar");
+
     #endif
 
 }

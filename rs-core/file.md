@@ -236,3 +236,11 @@ Function            | Linux               | Mac                                 
 `user_documents()`  | `<home>/Documents`  | `<home>/Documents`                    | `<home>/Documents`
 `user_cache()`      | `<home>/.cache`     | `<home>/Library/Caches`               | `<home>/AppData/Local`
 `user_settings()`   | `<home>/.config`    | `<home>/Library/Application Support`  | `<home>/AppData/Roaming`
+
+### File name literals ###
+
+* `namespace RS::Literals`
+    * `File` **`operator""_file`**`(const char* p, size_t n)`
+    * `File` **`operator""_file`**`(const wchar_t* p, size_t n)` _- Windows only_
+
+File name literals. These simply call the corresponding constructor.

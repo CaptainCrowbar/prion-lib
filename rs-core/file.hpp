@@ -254,6 +254,18 @@ namespace RS {
         }
     }
 
+    // File name literals
+
+    namespace Literals {
+
+        inline File operator""_file(const char* p, size_t n) { return File(string_view(p, n)); }
+
+        #ifndef _XOPEN_SOURCE
+            inline File operator""_file(const wchar_t* p, size_t n) { return File(wstring_view(p, n)); }
+        #endif
+
+    }
+
     #ifdef _XOPEN_SOURCE
 
         // File name operations

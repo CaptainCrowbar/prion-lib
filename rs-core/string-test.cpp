@@ -101,7 +101,7 @@ void test_core_string_literals() {
     );
 }
 
-void test_core_string_character() {
+void test_core_string_case_conversion() {
 
     TEST(! ascii_isalnum('\0'));
     TEST(! ascii_isalnum('\t'));
@@ -441,6 +441,81 @@ void test_core_string_character() {
     TEST_EQUAL(ascii_toupper('\x80'), '\x80');
     TEST_EQUAL(ascii_toupper('\xff'), '\xff');
 
+    TEST_EQUAL(ascii_lowercase("Hello World"s), "hello world");
+    TEST_EQUAL(ascii_uppercase("Hello World"s), "HELLO WORLD");
+    TEST_EQUAL(ascii_titlecase("hello world"s), "Hello World");
+    TEST_EQUAL(ascii_titlecase("HELLO WORLD"s), "Hello World");
+
+    TEST_EQUAL(ascii_sentencecase(""), "");
+    TEST_EQUAL(ascii_sentencecase("hello world"), "Hello world");
+    TEST_EQUAL(ascii_sentencecase("hello world. goodbye. hello again."), "Hello world. Goodbye. Hello again.");
+    TEST_EQUAL(ascii_sentencecase("hello world\ngoodbye\nhello again"), "Hello world\ngoodbye\nhello again");
+    TEST_EQUAL(ascii_sentencecase("hello world\n\ngoodbye\n\nhello again"), "Hello world\n\nGoodbye\n\nHello again");
+    TEST_EQUAL(ascii_sentencecase("hello world\r\n\r\ngoodbye\r\n\r\nhello again"), "Hello world\r\n\r\nGoodbye\r\n\r\nHello again");
+
+    static const Ustring n1 = "... ALPHA ... bravo ... charlie ... 12345 ...";
+    static const Ustring n2 = "ALPHABravo/Charlie12345";
+    static const Ustring lc = "alpha_bravo_charlie_12345";
+    static const Ustring uc = "ALPHA_BRAVO_CHARLIE_12345";
+    static const Ustring tc = "AlphaBravoCharlie12345";
+    static const Ustring cc = "alphaBravoCharlie12345";
+    static const Ustring sc = "Alpha bravo charlie 12345";
+
+    Strings vec;
+    Ustring str;
+
+    TRY(vec = name_breakdown(n1));  TEST_EQUAL(vec.size(), 4);  TRY(str = to_str(vec));  TEST_EQUAL(str, "[ALPHA,bravo,charlie,12345]");
+    TRY(vec = name_breakdown(n2));  TEST_EQUAL(vec.size(), 4);  TRY(str = to_str(vec));  TEST_EQUAL(str, "[ALPHA,Bravo,Charlie,12345]");
+    TRY(vec = name_breakdown(lc));  TEST_EQUAL(vec.size(), 4);  TRY(str = to_str(vec));  TEST_EQUAL(str, "[alpha,bravo,charlie,12345]");
+    TRY(vec = name_breakdown(uc));  TEST_EQUAL(vec.size(), 4);  TRY(str = to_str(vec));  TEST_EQUAL(str, "[ALPHA,BRAVO,CHARLIE,12345]");
+    TRY(vec = name_breakdown(tc));  TEST_EQUAL(vec.size(), 4);  TRY(str = to_str(vec));  TEST_EQUAL(str, "[Alpha,Bravo,Charlie,12345]");
+    TRY(vec = name_breakdown(cc));  TEST_EQUAL(vec.size(), 4);  TRY(str = to_str(vec));  TEST_EQUAL(str, "[alpha,Bravo,Charlie,12345]");
+    TRY(vec = name_breakdown(sc));  TEST_EQUAL(vec.size(), 4);  TRY(str = to_str(vec));  TEST_EQUAL(str, "[Alpha,bravo,charlie,12345]");
+
+    TRY(str = name_to_lower_case(n1));  TEST_EQUAL(str, lc);
+    TRY(str = name_to_lower_case(n2));  TEST_EQUAL(str, lc);
+    TRY(str = name_to_lower_case(lc));  TEST_EQUAL(str, lc);
+    TRY(str = name_to_lower_case(uc));  TEST_EQUAL(str, lc);
+    TRY(str = name_to_lower_case(tc));  TEST_EQUAL(str, lc);
+    TRY(str = name_to_lower_case(cc));  TEST_EQUAL(str, lc);
+    TRY(str = name_to_lower_case(sc));  TEST_EQUAL(str, lc);
+
+    TRY(str = name_to_upper_case(n1));  TEST_EQUAL(str, uc);
+    TRY(str = name_to_upper_case(n2));  TEST_EQUAL(str, uc);
+    TRY(str = name_to_upper_case(lc));  TEST_EQUAL(str, uc);
+    TRY(str = name_to_upper_case(uc));  TEST_EQUAL(str, uc);
+    TRY(str = name_to_upper_case(tc));  TEST_EQUAL(str, uc);
+    TRY(str = name_to_upper_case(cc));  TEST_EQUAL(str, uc);
+    TRY(str = name_to_upper_case(sc));  TEST_EQUAL(str, uc);
+
+    TRY(str = name_to_title_case(n1));  TEST_EQUAL(str, tc);
+    TRY(str = name_to_title_case(n2));  TEST_EQUAL(str, tc);
+    TRY(str = name_to_title_case(lc));  TEST_EQUAL(str, tc);
+    TRY(str = name_to_title_case(uc));  TEST_EQUAL(str, tc);
+    TRY(str = name_to_title_case(tc));  TEST_EQUAL(str, tc);
+    TRY(str = name_to_title_case(cc));  TEST_EQUAL(str, tc);
+    TRY(str = name_to_title_case(sc));  TEST_EQUAL(str, tc);
+
+    TRY(str = name_to_camel_case(n1));  TEST_EQUAL(str, cc);
+    TRY(str = name_to_camel_case(n2));  TEST_EQUAL(str, cc);
+    TRY(str = name_to_camel_case(lc));  TEST_EQUAL(str, cc);
+    TRY(str = name_to_camel_case(uc));  TEST_EQUAL(str, cc);
+    TRY(str = name_to_camel_case(tc));  TEST_EQUAL(str, cc);
+    TRY(str = name_to_camel_case(cc));  TEST_EQUAL(str, cc);
+    TRY(str = name_to_camel_case(sc));  TEST_EQUAL(str, cc);
+
+    TRY(str = name_to_sentence_case(n1));  TEST_EQUAL(str, sc);
+    TRY(str = name_to_sentence_case(n2));  TEST_EQUAL(str, sc);
+    TRY(str = name_to_sentence_case(lc));  TEST_EQUAL(str, sc);
+    TRY(str = name_to_sentence_case(uc));  TEST_EQUAL(str, sc);
+    TRY(str = name_to_sentence_case(tc));  TEST_EQUAL(str, sc);
+    TRY(str = name_to_sentence_case(cc));  TEST_EQUAL(str, sc);
+    TRY(str = name_to_sentence_case(sc));  TEST_EQUAL(str, sc);
+
+}
+
+void test_core_string_character() {
+
     TEST_EQUAL(char_to<int>(0), 0);
     TEST_EQUAL(char_to<int>('A'), 65);
     TEST_EQUAL(char_to<int>(char(127)), 127);
@@ -539,18 +614,6 @@ void test_core_string_manipulation() {
     s = "Hello";       TRY(s = drop_suffix(s, "World"));  TEST_EQUAL(s, "Hello");
     s = "HelloWorld";  TRY(s = drop_suffix(s, "Hello"));  TEST_EQUAL(s, "HelloWorld");
     s = "HelloWorld";  TRY(s = drop_suffix(s, "World"));  TEST_EQUAL(s, "Hello");
-
-    TEST_EQUAL(ascii_lowercase("Hello World"s), "hello world");
-    TEST_EQUAL(ascii_uppercase("Hello World"s), "HELLO WORLD");
-    TEST_EQUAL(ascii_titlecase("hello world"s), "Hello World");
-    TEST_EQUAL(ascii_titlecase("HELLO WORLD"s), "Hello World");
-
-    TEST_EQUAL(ascii_sentencecase(""), "");
-    TEST_EQUAL(ascii_sentencecase("hello world"), "Hello world");
-    TEST_EQUAL(ascii_sentencecase("hello world. goodbye. hello again."), "Hello world. Goodbye. Hello again.");
-    TEST_EQUAL(ascii_sentencecase("hello world\ngoodbye\nhello again"), "Hello world\ngoodbye\nhello again");
-    TEST_EQUAL(ascii_sentencecase("hello world\n\ngoodbye\n\nhello again"), "Hello world\n\nGoodbye\n\nHello again");
-    TEST_EQUAL(ascii_sentencecase("hello world\r\n\r\ngoodbye\r\n\r\nhello again"), "Hello world\r\n\r\nGoodbye\r\n\r\nHello again");
 
     TRY(s = indent("", 2));
     TEST_EQUAL(s, "");

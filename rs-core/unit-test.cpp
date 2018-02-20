@@ -214,6 +214,7 @@ extern void test_core_signal_name();
 extern void test_core_stack_class();
 extern void test_core_statistics_class();
 extern void test_core_string_literals();
+extern void test_core_string_case_conversion();
 extern void test_core_string_character();
 extern void test_core_string_property();
 extern void test_core_string_manipulation();
@@ -482,6 +483,7 @@ int main() {
         { "core/stack/class", test_core_stack_class },
         { "core/statistics/class", test_core_statistics_class },
         { "core/string/literals", test_core_string_literals },
+        { "core/string/case-conversion", test_core_string_case_conversion },
         { "core/string/character", test_core_string_character },
         { "core/string/property", test_core_string_property },
         { "core/string/manipulation", test_core_string_manipulation },

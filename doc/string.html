@@ -17,6 +17,7 @@
 <li><a href="#core-string-algorithms">Core String Algorithms</a><ul>
 <li><a href="#contents">Contents</a></li>
 <li><a href="#string-literals">String literals</a></li>
+<li><a href="#case-conversion-functions">Case conversion functions</a></li>
 <li><a href="#character-functions">Character functions</a></li>
 <li><a href="#construction-functions">Construction functions</a></li>
 <li><a href="#string-property-functions">String property functions</a></li>
@@ -65,7 +66,7 @@ empty lines. Tab indentation is converted to 4 spaces.</p>
 "Goodbye.\n"
 </code></pre>
 </div>
-<h2 id="character-functions">Character functions</h2>
+<h2 id="case-conversion-functions">Case conversion functions</h2>
 <div class="defns">
 <ul>
 <li><code>constexpr bool</code> <strong><code>ascii_isalnum</code></strong><code>(char c) noexcept</code></li>
@@ -99,10 +100,42 @@ element, which does much the same thing.)</p>
 <ul>
 <li><code>constexpr char</code> <strong><code>ascii_tolower</code></strong><code>(char c) noexcept</code></li>
 <li><code>constexpr char</code> <strong><code>ascii_toupper</code></strong><code>(char c) noexcept</code></li>
+<li><code>std::string</code> <strong><code>ascii_lowercase</code></strong><code>(std::string_view s)</code></li>
+<li><code>std::string</code> <strong><code>ascii_uppercase</code></strong><code>(std::string_view s)</code></li>
+<li><code>std::string</code> <strong><code>ascii_titlecase</code></strong><code>(std::string_view s)</code></li>
+<li><code>std::string</code> <strong><code>ascii_sentencecase</code></strong><code>(std::string_view s)</code></li>
 </ul>
 <p>Simple ASCII-only case conversion functions. All non-ASCII characters are left
-unchanged.</p>
+unchanged. The sentence case function capitalizes the first letter of every
+sentence (delimited by a full stop or two consecutive line breaks), leaving
+everything else alone.</p>
 </div>
+<div class="defns">
+<ul>
+<li><code>Strings</code> <strong><code>name_breakdown</code></strong><code>(Uview name)</code></li>
+</ul>
+<p>Breaks down a name (such as a programming language variable name) into its
+component parts. Name elements are assumed to consist only of ASCII letters
+and digits; any other character is treated as a delimiter and discarded. Words
+can also be delimited by casing: names in title case or camel case will be
+broken down in the natural way; a subsequence of two or more capital letters
+will be assumed to be a single word, except that if it is followed by any
+lower case letters, the last capital letter is assumed to start a new word
+(this means that a mixed case name like <code>"HTTPResponse"</code> will be correctly
+parsed as <code>"HTTP Response"</code>). Numbers are parsed as separate name elements.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Ustring</code> <strong><code>name_to_lower_case</code></strong><code>(Uview name, char delim = '_')</code> <em>- e.g. <code>"quick_brown_fox"</code></em></li>
+<li><code>Ustring</code> <strong><code>name_to_upper_case</code></strong><code>(Uview name, char delim = '_')</code> <em>- e.g. <code>"QUICK_BROWN_FOX"</code></em></li>
+<li><code>Ustring</code> <strong><code>name_to_title_case</code></strong><code>(Uview name, char delim = '\0')</code> <em>- e.g. <code>"QuickBrownFox"</code></em></li>
+<li><code>Ustring</code> <strong><code>name_to_camel_case</code></strong><code>(Uview name, char delim = '\0')</code> <em>- e.g. <code>"quickBrownFox"</code></em></li>
+<li><code>Ustring</code> <strong><code>name_to_sentence_case</code></strong><code>(Uview name, char delim = ' ')</code> <em>- e.g. <code>"Quick brown fox"</code></em></li>
+</ul>
+<p>These convert a name (parsed as described above) to various casing
+conventions.</p>
+</div>
+<h2 id="character-functions">Character functions</h2>
 <div class="defns">
 <ul>
 <li><code>template &lt;typename T&gt; constexpr T</code> <strong><code>char_to</code></strong><code>(char c) noexcept</code></li>
@@ -113,6 +146,12 @@ high bit set end up as integers in the 128-255 range, and not as negative or
 extremely high values.</p>
 </div>
 <h2 id="construction-functions">Construction functions</h2>
+<div class="defns">
+<ul>
+<li><code>Ustring</code> <strong><code>dent</code></strong><code>(size_t depth)</code></li>
+</ul>
+<p>Returns a string containing <code>4*depth</code> spaces, for indentation.</p>
+</div>
 <div class="defns">
 <ul>
 <li><code>template &lt;typename S&gt; [string view]</code> <strong><code>make_view</code></strong><code>(const S&amp; s) noexcept</code></li>
@@ -159,24 +198,6 @@ code points).</p>
 was not already there, or return the string unchanged if it was. The
 <code>drop_prefix/suffix()</code> functions remove a prefix or suffix if it was present,
 otherwise return the string unchanged.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>std::string</code> <strong><code>ascii_lowercase</code></strong><code>(std::string_view s)</code></li>
-<li><code>std::string</code> <strong><code>ascii_uppercase</code></strong><code>(std::string_view s)</code></li>
-<li><code>std::string</code> <strong><code>ascii_titlecase</code></strong><code>(std::string_view s)</code></li>
-<li><code>std::string</code> <strong><code>ascii_sentencecase</code></strong><code>(std::string_view s)</code></li>
-</ul>
-<p>Simple ASCII-only case conversion functions. All non-ASCII characters are left
-unchanged. The sentence case function capitalizes the first letter of every
-sentence (delimited by a full stop or two consecutive line breaks), leaving
-everything else alone.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>Ustring</code> <strong><code>dent</code></strong><code>(size_t depth)</code></li>
-</ul>
-<p>Returns a string containing <code>4*depth</code> spaces, for indentation.</p>
 </div>
 <div class="defns">
 <ul>

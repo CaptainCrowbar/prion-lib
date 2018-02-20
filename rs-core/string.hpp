@@ -10,6 +10,7 @@
 #include <memory>
 #include <new>
 #include <ostream>
+#include <regex>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -26,7 +27,34 @@
 
 namespace RS {
 
-    // Character functions
+    // These are defined out of order so other functions can use them
+
+    template <typename C> basic_string_view<C> make_view(const std::basic_string<C>& s) noexcept { return s; }
+    template <typename C> basic_string_view<C> make_view(basic_string_view<C> s) noexcept { return s; }
+    template <typename C> basic_string_view<C> make_view(const C* s) noexcept { if (s) return s; else return {}; }
+
+    template <typename S>
+    auto make_view(const S& s, size_t pos, size_t len) noexcept {
+        auto v = make_view(s);
+        using SV = decltype(v);
+        pos = std::min(pos, v.size());
+        len = std::min(len, v.size() - pos);
+        return SV(v.data() + pos, len);
+    }
+
+    template <typename InputRange>
+    std::string join(const InputRange& range, string_view delim = {}, bool term = false) {
+        std::string result;
+        for (auto& s: range) {
+            result += make_view(s);
+            result += delim;
+        }
+        if (! term && ! result.empty() && ! delim.empty())
+            result.resize(result.size() - delim.size());
+        return result;
+    }
+
+    // Case conversion functions
 
     constexpr bool ascii_iscntrl(char c) noexcept { return uint8_t(c) <= 31 || c == 127; }
     constexpr bool ascii_isdigit(char c) noexcept { return c >= '0' && c <= '9'; }
@@ -44,22 +72,116 @@ namespace RS {
     constexpr bool ascii_ispunct_w(char c) noexcept { return ascii_ispunct(c) && c != '_'; }
     constexpr char ascii_tolower(char c) noexcept { return ascii_isupper(c) ? char(c + 32) : c; }
     constexpr char ascii_toupper(char c) noexcept { return ascii_islower(c) ? char(c - 32) : c; }
+
+    inline std::string ascii_lowercase(string_view s) {
+        Ustring r(s);
+        std::transform(r.begin(), r.end(), r.begin(), ascii_tolower);
+        return r;
+    }
+
+    inline std::string ascii_uppercase(string_view s) {
+        Ustring r(s);
+        std::transform(r.begin(), r.end(), r.begin(), ascii_toupper);
+        return r;
+    }
+
+    inline std::string ascii_titlecase(string_view s) {
+        Ustring r(s);
+        bool was_alpha = false;
+        for (char& c: r) {
+            if (was_alpha)
+                c = ascii_tolower(c);
+            else
+                c = ascii_toupper(c);
+            was_alpha = ascii_isalpha(c);
+        }
+        return r;
+    }
+
+    inline std::string ascii_sentencecase(string_view s) {
+        Ustring r(s);
+        bool new_sentence = true, was_break = false;
+        for (char& c: r) {
+            if (c == '\n' || c == '\f' || c == '\r') {
+                if (was_break)
+                    new_sentence = true;
+                was_break = true;
+            } else {
+                was_break = false;
+                if (c == '.') {
+                    new_sentence = true;
+                } else if (new_sentence && ascii_isalpha(c)) {
+                    c = ascii_toupper(c);
+                    new_sentence = false;
+                }
+            }
+        }
+        return r;
+    }
+
+    inline Strings name_breakdown(Uview name) {
+        static const std::regex word_pattern(
+            "[[:digit:]]+"
+            "|[[:lower:]]+"
+            "|[[:upper:]]+(?![[:lower:]])"
+            "|[[:upper:]][[:lower:]]*"
+        );
+        const char* cbegin = name.data();
+        const char* cend = cbegin + name.size();
+        std::cregex_iterator rbegin(cbegin, cend, word_pattern), rend;
+        Strings vec;
+        std::transform(rbegin, rend, append(vec), [] (auto& m) { return m.str(); });
+        return vec;
+    }
+
+    inline Ustring name_to_lower_case(Uview name, char delim = '_') {
+        const char dchars[] = {delim, '\0'};
+        Strings vec = name_breakdown(name);
+        std::transform(vec.begin(), vec.end(), vec.begin(), ascii_lowercase);
+        return join(vec, dchars);
+    }
+
+    inline Ustring name_to_upper_case(Uview name, char delim = '_') {
+        const char dchars[] = {delim, '\0'};
+        Strings vec = name_breakdown(name);
+        std::transform(vec.begin(), vec.end(), vec.begin(), ascii_uppercase);
+        return join(vec, dchars);
+    }
+
+    inline Ustring name_to_title_case(Uview name, char delim = '\0') {
+        const char dchars[] = {delim, '\0'};
+        Strings vec = name_breakdown(name);
+        std::transform(vec.begin(), vec.end(), vec.begin(), ascii_titlecase);
+        return join(vec, dchars);
+    }
+
+    inline Ustring name_to_camel_case(Uview name, char delim = '\0') {
+        const char dchars[] = {delim, '\0'};
+        Strings vec = name_breakdown(name);
+        if (! vec.empty()) {
+            vec[0] = ascii_lowercase(vec[0]);
+            std::transform(vec.begin() + 1, vec.end(), vec.begin() + 1, ascii_titlecase);
+        }
+        return join(vec, dchars);
+    }
+
+    inline Ustring name_to_sentence_case(Uview name, char delim = ' ') {
+        const char dchars[] = {delim, '\0'};
+        Strings vec = name_breakdown(name);
+        if (! vec.empty()) {
+            vec[0] = ascii_titlecase(vec[0]);
+            std::transform(vec.begin() + 1, vec.end(), vec.begin() + 1, ascii_lowercase);
+        }
+        return join(vec, dchars);
+    }
+
+    // Character functions
+
     template <typename T> constexpr T char_to(char c) noexcept { return T(uint8_t(c)); }
 
     // Construction functions
 
-    template <typename C> basic_string_view<C> make_view(const std::basic_string<C>& s) noexcept { return s; }
-    template <typename C> basic_string_view<C> make_view(basic_string_view<C> s) noexcept { return s; }
-    template <typename C> basic_string_view<C> make_view(const C* s) noexcept { if (s) return s; else return {}; }
-
-    template <typename S>
-    auto make_view(const S& s, size_t pos, size_t len) noexcept {
-        auto v = make_view(s);
-        using SV = decltype(v);
-        pos = std::min(pos, v.size());
-        len = std::min(len, v.size() - pos);
-        return SV(v.data() + pos, len);
-    }
+    inline Ustring dent(size_t depth) { return Ustring(4 * depth, ' '); }
 
     // Unicode functions
 
@@ -420,54 +542,6 @@ namespace RS {
             return std::string(s);
     }
 
-    inline std::string ascii_lowercase(string_view s) {
-        Ustring r(s);
-        std::transform(r.begin(), r.end(), r.begin(), ascii_tolower);
-        return r;
-    }
-
-    inline std::string ascii_uppercase(string_view s) {
-        Ustring r(s);
-        std::transform(r.begin(), r.end(), r.begin(), ascii_toupper);
-        return r;
-    }
-
-    inline std::string ascii_titlecase(string_view s) {
-        Ustring r(s);
-        bool was_alpha = false;
-        for (char& c: r) {
-            if (was_alpha)
-                c = ascii_tolower(c);
-            else
-                c = ascii_toupper(c);
-            was_alpha = ascii_isalpha(c);
-        }
-        return r;
-    }
-
-    inline std::string ascii_sentencecase(string_view s) {
-        Ustring r(s);
-        bool new_sentence = true, was_break = false;
-        for (char& c: r) {
-            if (c == '\n' || c == '\f' || c == '\r') {
-                if (was_break)
-                    new_sentence = true;
-                was_break = true;
-            } else {
-                was_break = false;
-                if (c == '.') {
-                    new_sentence = true;
-                } else if (new_sentence && ascii_isalpha(c)) {
-                    c = ascii_toupper(c);
-                    new_sentence = false;
-                }
-            }
-        }
-        return r;
-    }
-
-    inline Ustring dent(size_t depth) { return Ustring(4 * depth, ' '); }
-
     inline Ustring indent(Uview str, size_t depth) {
         Ustring result;
         size_t i = 0, j = 0, size = str.size();
@@ -482,18 +556,6 @@ namespace RS {
             result += '\n';
             i = j + 1;
         }
-        return result;
-    }
-
-    template <typename InputRange>
-    std::string join(const InputRange& range, string_view delim = {}, bool term = false) {
-        std::string result;
-        for (auto& s: range) {
-            result += make_view(s);
-            result += delim;
-        }
-        if (! term && ! result.empty() && ! delim.empty())
-            result.resize(result.size() - delim.size());
         return result;
     }
 

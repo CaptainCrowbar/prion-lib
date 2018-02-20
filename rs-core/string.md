@@ -44,7 +44,7 @@ Result:
     "    Hello again.\n"
     "Goodbye.\n"
 
-## Character functions ##
+## Case conversion functions ##
 
 * `constexpr bool` **`ascii_isalnum`**`(char c) noexcept`
 * `constexpr bool` **`ascii_isalpha`**`(char c) noexcept`
@@ -73,9 +73,38 @@ element, which does much the same thing.)
 
 * `constexpr char` **`ascii_tolower`**`(char c) noexcept`
 * `constexpr char` **`ascii_toupper`**`(char c) noexcept`
+* `std::string` **`ascii_lowercase`**`(std::string_view s)`
+* `std::string` **`ascii_uppercase`**`(std::string_view s)`
+* `std::string` **`ascii_titlecase`**`(std::string_view s)`
+* `std::string` **`ascii_sentencecase`**`(std::string_view s)`
 
 Simple ASCII-only case conversion functions. All non-ASCII characters are left
-unchanged.
+unchanged. The sentence case function capitalizes the first letter of every
+sentence (delimited by a full stop or two consecutive line breaks), leaving
+everything else alone.
+
+* `Strings` **`name_breakdown`**`(Uview name)`
+
+Breaks down a name (such as a programming language variable name) into its
+component parts. Name elements are assumed to consist only of ASCII letters
+and digits; any other character is treated as a delimiter and discarded. Words
+can also be delimited by casing: names in title case or camel case will be
+broken down in the natural way; a subsequence of two or more capital letters
+will be assumed to be a single word, except that if it is followed by any
+lower case letters, the last capital letter is assumed to start a new word
+(this means that a mixed case name like `"HTTPResponse"` will be correctly
+parsed as `"HTTP Response"`). Numbers are parsed as separate name elements.
+
+* `Ustring` **`name_to_lower_case`**`(Uview name, char delim = '_')` _- e.g. `"quick_brown_fox"`_
+* `Ustring` **`name_to_upper_case`**`(Uview name, char delim = '_')` _- e.g. `"QUICK_BROWN_FOX"`_
+* `Ustring` **`name_to_title_case`**`(Uview name, char delim = '\0')` _- e.g. `"QuickBrownFox"`_
+* `Ustring` **`name_to_camel_case`**`(Uview name, char delim = '\0')` _- e.g. `"quickBrownFox"`_
+* `Ustring` **`name_to_sentence_case`**`(Uview name, char delim = ' ')` _- e.g. `"Quick brown fox"`_
+
+These convert a name (parsed as described above) to various casing
+conventions.
+
+## Character functions ##
 
 * `template <typename T> constexpr T` **`char_to`**`(char c) noexcept`
 
@@ -85,6 +114,10 @@ high bit set end up as integers in the 128-255 range, and not as negative or
 extremely high values.
 
 ## Construction functions ##
+
+* `Ustring` **`dent`**`(size_t depth)`
+
+Returns a string containing `4*depth` spaces, for indentation.
 
 * `template <typename S> [string view]` **`make_view`**`(const S& s) noexcept`
 * `template <typename S> [string view]` **`make_view`**`(const S& s, size_t pos, size_t len) noexcept`
@@ -124,20 +157,6 @@ The `add_prefix/suffix()` functions add a prefix or suffix to the string if it
 was not already there, or return the string unchanged if it was. The
 `drop_prefix/suffix()` functions remove a prefix or suffix if it was present,
 otherwise return the string unchanged.
-
-* `std::string` **`ascii_lowercase`**`(std::string_view s)`
-* `std::string` **`ascii_uppercase`**`(std::string_view s)`
-* `std::string` **`ascii_titlecase`**`(std::string_view s)`
-* `std::string` **`ascii_sentencecase`**`(std::string_view s)`
-
-Simple ASCII-only case conversion functions. All non-ASCII characters are left
-unchanged. The sentence case function capitalizes the first letter of every
-sentence (delimited by a full stop or two consecutive line breaks), leaving
-everything else alone.
-
-* `Ustring` **`dent`**`(size_t depth)`
-
-Returns a string containing `4*depth` spaces, for indentation.
 
 * `Ustring` **`indent`**`(Uview str, size_t depth)`
 

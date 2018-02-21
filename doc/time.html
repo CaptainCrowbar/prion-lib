@@ -285,9 +285,25 @@ predicate.</p>
 </ul>
 </li>
 </ul>
-<p>Simple timer for debugging. The destructor will write (using <code>logx()</code>) the
-name and the elapsed time since construction. The note on exceptions for
-<code>logx()</code> above applies here too.</p>
+<p>This is a simple timer specialized for debugging. The destructor will write
+(using <code>logx()</code>) the name and the elapsed time since construction.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename D&gt; class</code> <strong><code>Timer</code></strong><ul>
+<li><code>using Timer::</code><strong><code>duration</code></strong> <code>= D</code></li>
+<li><code>Timer::</code><strong><code>Timer</code></strong><code>()</code></li>
+<li><code>Timer::</code><strong><code>~Timer</code></strong><code>() noexcept</code></li>
+<li><code>Timer::</code><strong><code>operator duration</code></strong><code>() const</code></li>
+<li><code>duration Timer::</code><strong><code>get</code></strong><code>() const</code></li>
+<li><code>void Timer::</code><strong><code>reset</code></strong><code>()</code></li>
+</ul>
+</li>
+</ul>
+<p>Another simple timer (not specialized for debugging). The template argument
+must be an instantiation of <code>std::chrono::duration</code>. The timer is started on
+construction, and restarted when <code>reset()</code> is called; <code>get()</code> or the
+conversion operator return the time since the last start.</p>
 </div>
 <h2 id="system-specific-time-and-date-conversions">System specific time and date conversions</h2>
 <div class="defns">

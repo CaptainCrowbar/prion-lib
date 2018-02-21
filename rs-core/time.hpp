@@ -427,6 +427,22 @@ namespace RS {
             catch (...) {}
         }
 
+    template <typename D> class Timer;
+
+    template <typename R, typename P>
+    class Timer<std::chrono::duration<R, P>> {
+    public:
+        RS_MOVE_ONLY(Timer);
+        using duration = std::chrono::duration<R, P>;
+        Timer() { reset(); }
+        ~Timer() = default;
+        operator duration() const { return get(); }
+        duration get() const { return std::chrono::duration_cast<duration>(ReliableClock::now() - start); }
+        void reset() { start = ReliableClock::now(); }
+    private:
+        ReliableClock::time_point start;
+    };
+
     // System specific time and date conversions
 
     template <typename R, typename P>

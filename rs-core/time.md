@@ -172,9 +172,21 @@ predicate.
     * `explicit Stopwatch::`**`Stopwatch`**`(Uview name, int precision = 3) noexcept`
     * `Stopwatch::`**`~Stopwatch`**`() noexcept`
 
-Simple timer for debugging. The destructor will write (using `logx()`) the
-name and the elapsed time since construction. The note on exceptions for
-`logx()` above applies here too.
+This is a simple timer specialized for debugging. The destructor will write
+(using `logx()`) the name and the elapsed time since construction.
+
+* `template <typename D> class` **`Timer`**
+    * `using Timer::`**`duration`** `= D`
+    * `Timer::`**`Timer`**`()`
+    * `Timer::`**`~Timer`**`() noexcept`
+    * `Timer::`**`operator duration`**`() const`
+    * `duration Timer::`**`get`**`() const`
+    * `void Timer::`**`reset`**`()`
+
+Another simple timer (not specialized for debugging). The template argument
+must be an instantiation of `std::chrono::duration`. The timer is started on
+construction, and restarted when `reset()` is called; `get()` or the
+conversion operator return the time since the last start.
 
 ## System specific time and date conversions ##
 

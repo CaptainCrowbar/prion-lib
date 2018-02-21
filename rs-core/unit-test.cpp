@@ -237,6 +237,7 @@ extern void test_core_time_format_time();
 extern void test_core_time_parse_date();
 extern void test_core_time_parse_time();
 extern void test_core_time_backoff_wait();
+extern void test_core_time_timer();
 extern void test_core_time_system_specific_conversions();
 extern void test_core_topological_order_algorithm();
 extern void test_core_topological_order_reverse();
@@ -507,6 +508,7 @@ int main() {
         { "core/time/parse-date", test_core_time_parse_date },
         { "core/time/parse-time", test_core_time_parse_time },
         { "core/time/backoff-wait", test_core_time_backoff_wait },
+        { "core/time/timer", test_core_time_timer },
         { "core/time/system-specific-conversions", test_core_time_system_specific_conversions },
         { "core/topological-order/algorithm", test_core_topological_order_algorithm },
         { "core/topological-order/reverse", test_core_topological_order_reverse },

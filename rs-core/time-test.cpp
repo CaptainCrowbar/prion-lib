@@ -4,6 +4,7 @@
 #include <cmath>
 #include <ratio>
 #include <stdexcept>
+#include <thread>
 
 #ifdef _XOPEN_SOURCE
     #include <sys/time.h>
@@ -249,6 +250,24 @@ void test_core_time_backoff_wait() {
     auto stop = system_clock::now();
     auto msec = duration_cast<milliseconds>(stop - start).count();
     TEST_NEAR_EPSILON(msec, 200, 100);
+
+}
+
+void test_core_time_timer() {
+
+    Timer<milliseconds> timer;
+    milliseconds t;
+
+    std::this_thread::sleep_for(100ms);
+    TRY(t = timer);
+    TEST_NEAR_EPSILON(t.count(), 100, 50);
+    std::this_thread::sleep_for(100ms);
+    TRY(t = timer);
+    TEST_NEAR_EPSILON(t.count(), 200, 50);
+    TRY(timer.reset());
+    std::this_thread::sleep_for(100ms);
+    TRY(t = timer);
+    TEST_NEAR_EPSILON(t.count(), 100, 50);
 
 }
 

@@ -91,7 +91,7 @@
     #include <unistd.h>
 #endif
 
-// Temporary measure until all my compilers upport std::string_view
+// Temporary measure until all my compilers support std::string_view
 
 #if defined(__GNUC__) && ! defined(__clang__) && __GNUC__ < 7
 
@@ -136,6 +136,7 @@
 
 #ifdef _MSC_VER
     #pragma warning(disable: 4127) // conditional expression is constant
+    #pragma warning(disable: 4250) // class inherits member by dominance
     #pragma warning(disable: 4310) // cast truncates constant value
 #endif
 

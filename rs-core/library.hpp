@@ -17,6 +17,7 @@
 #include "rs-core/io.hpp"
 #include "rs-core/ipc.hpp"
 #include "rs-core/kwargs.hpp"
+#include "rs-core/meta-internal.hpp"
 #include "rs-core/meta.hpp"
 #include "rs-core/mp-integer.hpp"
 #include "rs-core/net.hpp"

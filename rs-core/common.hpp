@@ -37,7 +37,7 @@
 
 // Includes go here so anything that needs the macros above will see them
 
-#include "rs-core/meta.hpp"
+#include "rs-core/meta-internal.hpp"
 #include <algorithm>
 #include <array>
 #include <cerrno>

@@ -5,6 +5,7 @@
 * _General utilities_
     * [`"rs-core/common.hpp"`](common.html) - Common utilities
     * [`"rs-core/kwargs.hpp"`](kwargs.html) - Keyword arguments
+    * [`"rs-core/meta.hpp"`](meta.html) - Template metaprogramming
     * [`"rs-core/optional.hpp"`](optional.html) - Optional type
     * [`"rs-core/variant.hpp"`](variant.html) - Variant type
 * _Compression_
@@ -29,7 +30,6 @@
 * _Functional programming_
     * [`"rs-core/algorithm.hpp"`](algorithm.html) -- Algorithms
     * [`"rs-core/cache.hpp"`](cache.html) -- Function memoization
-    * [`"rs-core/meta.hpp"`](meta.html) - Template metaprogramming
 * _Input/output_
     * [`"rs-core/file.hpp"`](file.html) - File class
     * [`"rs-core/io.hpp"`](io.html) - I/O utilities

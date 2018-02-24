@@ -1,6 +1,8 @@
 #pragma once
 
+#include "rs-core/meta-internal.hpp"
 #include <algorithm>
+#include <functional>
 #include <iterator>
 #include <ostream>
 #include <tuple>
@@ -463,61 +465,6 @@ namespace RS::Meta {
     template <typename TL> constexpr int length_of                                   = LengthOf<TL>::value;
     template <typename TL, template <typename> class UP> constexpr bool none_of      = NoneOf<TL, UP>::value;
 
-    // Reflection tools
-
-    // Walter E. Brown, N4502 Proposing Standard Library Support for the C++ Detection Idiom V2 (2015)
-    // http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/n4502.pdf
-
-    namespace MetaDetail {
-
-        template <typename...> using VoidType = void;
-
-        struct Nonesuch {
-            Nonesuch() = delete;
-            ~Nonesuch() = delete;
-            Nonesuch(const Nonesuch&) = delete;
-            Nonesuch(Nonesuch&&) = delete;
-            void operator=(const Nonesuch&) = delete;
-            void operator=(Nonesuch&&) = delete;
-        };
-
-        template <typename Default, typename, template <typename...> typename Archetype, typename... Args>
-        struct Detector {
-            using value_t = std::false_type;
-            using type = Default;
-        };
-
-        template <typename Default, template <typename...> typename Archetype, typename... Args>
-        struct Detector<Default, VoidType<Archetype<Args...>>, Archetype, Args...> {
-            using value_t = std::true_type;
-            using type = Archetype<Args...>;
-        };
-
-    }
-
-    template <template <typename...> typename Archetype, typename... Args>
-        using IsDetected = typename MetaDetail::Detector<MetaDetail::Nonesuch, void, Archetype, Args...>::value_t;
-    template <template <typename...> typename Archetype, typename... Args>
-        constexpr bool is_detected = IsDetected<Archetype, Args...>::value;
-    template <template <typename...> typename Archetype, typename... Args>
-        using DetectedType = typename MetaDetail::Detector<MetaDetail::Nonesuch, void, Archetype, Args...>::type;
-
-    // Return nested type if detected, otherwise default
-    template <typename Default, template <typename...> typename Archetype, typename... Args>
-        using DetectedOr = typename MetaDetail::Detector<Default, void, Archetype, Args...>::type;
-
-    // Detect only if it yields a specific return type
-    template <typename Result, template <typename...> typename Archetype, typename... Args>
-        using IsDetectedExact = std::is_same<Result, DetectedType<Archetype, Args...>>;
-    template <typename Result, template <typename...> typename Archetype, typename... Args>
-        constexpr bool is_detected_exact = IsDetectedExact<Result, Archetype, Args...>::value;
-
-    // Detect only if it yields a return type convertible to the given type
-    template <typename Result, template <typename...> typename Archetype, typename... Args>
-        using IsDetectedConvertible = std::is_convertible<DetectedType<Archetype, Args...>, Result>;
-    template <typename Result, template <typename...> typename Archetype, typename... Args>
-        constexpr bool is_detected_convertible = IsDetectedConvertible<Result, Archetype, Args...>::value;
-
     // Operator detection
 
     #define RS_DETECT_PREFIX_OPERATOR(op, tname, cname) \
@@ -714,7 +661,6 @@ namespace RS::Meta {
 
         template <typename T> using IsHashableArchetype = decltype(std::hash<T>()(std::declval<const T&>()));
 
-        template <typename T> using IteratorCategory = typename std::iterator_traits<T>::iterator_category;
         template <typename T, bool Iter = IsDetected<IteratorCategory, T>::value> struct ExtendedIteratorCategory: ReturnT<void> {};
         template <typename T> struct ExtendedIteratorCategory<T, true>: ReturnT<IteratorCategory<T>> {};
 
@@ -724,10 +670,6 @@ namespace RS::Meta {
         template <typename T> struct IteratorLevelType<T, std::bidirectional_iterator_tag>: IntT<3> {};
         template <typename T> struct IteratorLevelType<T, std::random_access_iterator_tag>: IntT<4> {};
 
-        template <typename T> using HasStdBeginArchetype = decltype(std::begin(std::declval<T>()));
-        template <typename T> using HasAdlBeginArchetype = decltype(begin(std::declval<T>()));
-        template <typename T> using HasStdEndArchetype = decltype(std::end(std::declval<T>()));
-        template <typename T> using HasAdlEndArchetype = decltype(end(std::declval<T>()));
         template <typename T> using HasStdSwapArchetype = decltype(std::swap(std::declval<T&>(), std::declval<T&>()));
         template <typename T> using HasAdlSwapArchetype = decltype(swap(std::declval<T&>(), std::declval<T&>()));
 
@@ -737,15 +679,9 @@ namespace RS::Meta {
         template <typename T> using HasValueTypeArchetype = typename T::value_type;
         template <typename T, typename... Args> using HasInsertMethodArchetype = decltype(std::declval<T>().insert(std::declval<Args>()...));
 
-        template <typename T, bool Std = IsDetected<HasStdBeginArchetype, T>::value, bool Adl = IsDetected<HasAdlBeginArchetype, T>::value> struct RangeIteratorType { using type = void; };
-        template <typename T, bool Adl> struct RangeIteratorType<T, true, Adl> { using type = decltype(std::begin(std::declval<T&>())); };
-        template <typename T> struct RangeIteratorType<T, false, true> { using type = decltype(begin(std::declval<T&>())); };
-
     }
 
     template <typename T> using IsHashable = IsDetected<MetaDetail::IsHashableArchetype, T>;
-
-    template <typename T> using IsIterator = IsDetected<MetaDetail::IteratorCategory, T>;
 
     template <typename T> struct IsForwardIterator: BoolT<(MetaDetail::IteratorLevelType<T>::value >= 2)> {};
     template <typename T> struct IsBidirectionalIterator: BoolT<(MetaDetail::IteratorLevelType<T>::value >= 3)> {};
@@ -767,7 +703,6 @@ namespace RS::Meta {
     template <typename T> using IsSwappable = Or<IsDetected<MetaDetail::HasStdSwapArchetype, T>, IsDetected<MetaDetail::HasAdlSwapArchetype, T>>;
 
     template <typename T> constexpr bool is_hashable = IsHashable<T>::value;
-    template <typename T> constexpr bool is_iterator = IsIterator<T>::value;
     template <typename T> constexpr bool is_forward_iterator = IsForwardIterator<T>::value;
     template <typename T> constexpr bool is_bidirectional_iterator = IsBidirectionalIterator<T>::value;
     template <typename T> constexpr bool is_random_access_iterator = IsRandomAccessIterator<T>::value;
@@ -777,17 +712,6 @@ namespace RS::Meta {
     template <typename T> constexpr bool is_container = IsContainer<T>::value;
     template <typename T> constexpr bool is_insertable_container = IsInsertableContainer<T>::value;
     template <typename T> constexpr bool is_swappable = IsSwappable<T>::value;
-
-    namespace MetaDetail {
-
-        template <typename T, bool Iter = Meta::is_iterator<T>> struct IteratorValueType { using type = void; };
-        template <typename T> struct IteratorValueType<T, true> { using type = std::decay_t<decltype(*std::declval<T>())>; };
-
-    }
-
-    template <typename T> using IteratorValue = typename MetaDetail::IteratorValueType<T>::type;
-    template <typename T> using RangeIterator = typename MetaDetail::RangeIteratorType<T>::type;
-    template <typename T> using RangeValue = IteratorValue<RangeIterator<T>>;
 
 }
 

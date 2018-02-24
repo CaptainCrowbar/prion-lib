@@ -289,6 +289,7 @@ Example:
 
 | Metafunction type                   | Metafunction constant                 |
 | -----------------                   | ---------------------                 |
+| **`IsHashable`**`<T>`               | **`is_hashable`**`<T>`                |
 | **`IsIterator`**`<T>`               | **`is_iterator`**`<T>`                |
 | **`IsForwardIterator`**`<T>`        | **`is_forward_iterator`**`<T>`        |
 | **`IsBidirectionalIterator`**`<T>`  | **`is_bidirectional_iterator`**`<T>`  |
@@ -302,11 +303,14 @@ Example:
 
 Metafunction predicates that attempt to detect certain kinds of type. In most
 cases we can only look for an expected set of valid operations on the type; we
-have no way to check their semantics. The tests for specific iterator
-categories will pass if the iterator is at least that caegory. The
-`is_[mutable_]range` predicates will succeed if the `begin()` and `end()`
-functions can be found either in `namespace std` or by argument dependent
-lookup; similarly for `is_swappable` and the `swap()` function.
+have no way to check their semantics.
+
+Notes on specific predicates:
+
+* `is_hashable` is true if `std::hash<T>()(t)` is valid.
+* Iterator category predicates are true if the iterator is at least that category.
+* `is_[mutable_]range` is true if `begin()` and `end()` can be found either in `namespace std` or by ADL.
+* `is_swappable` is true if `swap()` can be found either in `namespace std` or by ADL.
 
 ### Associated types ###
 

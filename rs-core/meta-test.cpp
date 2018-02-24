@@ -1249,6 +1249,11 @@ void test_core_meta_function_detection() {
 
 void test_core_meta_type_categories() {
 
+    TEST(! is_hashable<void>);
+    TEST(is_hashable<int>);
+    TEST(is_hashable<std::string>);
+    TEST(! is_hashable<std::vector<int>>);
+
     TEST(! is_iterator<int>);
     TEST(is_iterator<int*>);
     TEST(is_iterator<const int*>);

@@ -712,6 +712,8 @@ namespace RS::Meta {
 
     namespace MetaDetail {
 
+        template <typename T> using IsHashableArchetype = decltype(std::hash<T>()(std::declval<const T&>()));
+
         template <typename T> using IteratorCategory = typename std::iterator_traits<T>::iterator_category;
         template <typename T, bool Iter = IsDetected<IteratorCategory, T>::value> struct ExtendedIteratorCategory: ReturnT<void> {};
         template <typename T> struct ExtendedIteratorCategory<T, true>: ReturnT<IteratorCategory<T>> {};
@@ -741,6 +743,8 @@ namespace RS::Meta {
 
     }
 
+    template <typename T> using IsHashable = IsDetected<MetaDetail::IsHashableArchetype, T>;
+
     template <typename T> using IsIterator = IsDetected<MetaDetail::IteratorCategory, T>;
 
     template <typename T> struct IsForwardIterator: BoolT<(MetaDetail::IteratorLevelType<T>::value >= 2)> {};
@@ -762,6 +766,7 @@ namespace RS::Meta {
 
     template <typename T> using IsSwappable = Or<IsDetected<MetaDetail::HasStdSwapArchetype, T>, IsDetected<MetaDetail::HasAdlSwapArchetype, T>>;
 
+    template <typename T> constexpr bool is_hashable = IsHashable<T>::value;
     template <typename T> constexpr bool is_iterator = IsIterator<T>::value;
     template <typename T> constexpr bool is_forward_iterator = IsForwardIterator<T>::value;
     template <typename T> constexpr bool is_bidirectional_iterator = IsBidirectionalIterator<T>::value;

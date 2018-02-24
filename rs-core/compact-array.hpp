@@ -46,7 +46,7 @@ namespace RS {
         static constexpr size_t threshold = N;
         CompactArray() noexcept = default;
         explicit CompactArray(size_t n, const T& t = {});
-        template <typename InputIterator> CompactArray(InputIterator i, InputIterator j, std::enable_if_t<is_iterator<InputIterator>>* = nullptr);
+        template <typename InputIterator> CompactArray(InputIterator i, InputIterator j, std::enable_if_t<Meta::is_iterator<InputIterator>>* = nullptr);
         CompactArray(std::initializer_list<T> list);
         ~CompactArray() noexcept { clear(); }
         CompactArray(const CompactArray& ca);
@@ -117,7 +117,7 @@ namespace RS {
 
     template <typename T, size_t N>
     template <typename InputIterator>
-    CompactArray<T, N>::CompactArray(InputIterator i, InputIterator j, std::enable_if_t<is_iterator<InputIterator>>*) {
+    CompactArray<T, N>::CompactArray(InputIterator i, InputIterator j, std::enable_if_t<Meta::is_iterator<InputIterator>>*) {
         using namespace RS_Detail;
         if (std::is_same<typename std::iterator_traits<InputIterator>::iterator_category, std::input_iterator_tag>::value) {
             for (; i != j; ++i)

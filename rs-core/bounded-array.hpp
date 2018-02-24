@@ -46,7 +46,7 @@ namespace RS {
         static constexpr size_t bound = N;
         BoundedArray() noexcept = default;
         explicit BoundedArray(size_t n, const T& t = {});
-        template <typename InputIterator> BoundedArray(InputIterator i, InputIterator j, std::enable_if_t<is_iterator<InputIterator>>* = nullptr);
+        template <typename InputIterator> BoundedArray(InputIterator i, InputIterator j, std::enable_if_t<Meta::is_iterator<InputIterator>>* = nullptr);
         BoundedArray(std::initializer_list<T> list);
         ~BoundedArray() noexcept { clear(); }
         BoundedArray(const BoundedArray& ba);
@@ -108,7 +108,7 @@ namespace RS {
 
     template <typename T, size_t N>
     template <typename InputIterator>
-    BoundedArray<T, N>::BoundedArray(InputIterator i, InputIterator j, std::enable_if_t<is_iterator<InputIterator>>*) {
+    BoundedArray<T, N>::BoundedArray(InputIterator i, InputIterator j, std::enable_if_t<Meta::is_iterator<InputIterator>>*) {
         using namespace RS_Detail;
         if (std::is_same<typename std::iterator_traits<InputIterator>::iterator_category, std::input_iterator_tag>::value) {
             for (; i != j; ++i)

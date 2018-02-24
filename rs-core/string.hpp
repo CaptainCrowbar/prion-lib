@@ -901,7 +901,7 @@ namespace RS {
                 std::is_integral<T>::value ? 'I' :
                 std::is_floating_point<T>::value ? 'F' :
                 std::is_convertible<T, std::string>::value ? 'S' :
-                is_range<T> ? 'R' : 'X';
+                Meta::is_range<T> ? 'R' : 'X';
         };
 
         template <typename T, char C = ObjectToStringCategory<T>::value>

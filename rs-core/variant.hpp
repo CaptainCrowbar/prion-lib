@@ -160,14 +160,14 @@ namespace RS {
     template <typename... TS>
     class Variant {
     public:
-        using typelist = Typelist<TS...>;
-        using head = Head<typelist>;
+        using typelist = Meta::Typelist<TS...>;
+        using head = Meta::Head<typelist>;
         static constexpr bool is_nullable = std::is_same<head, Nil>::value;
-        static_assert(is_unique<typelist>, "Variant contains duplicate types");
-        static_assert((find_type<typelist, Nil> <= 0), "Nil can only be the first branch of a variant");
-        static_assert(all_of<typelist, std::is_default_constructible>, "Variant branch types are not all default constructible");
-        static_assert(all_of<typelist, std::is_move_constructible>, "Variant branch types are not all move constructible");
-        static_assert(all_of<typelist, std::is_move_assignable>, "Variant branch types are not all move assignable");
+        static_assert(Meta::is_unique<typelist>, "Variant contains duplicate types");
+        static_assert((Meta::find_type<typelist, Nil> <= 0), "Nil can only be the first branch of a variant");
+        static_assert(Meta::all_of<typelist, std::is_default_constructible>, "Variant branch types are not all default constructible");
+        static_assert(Meta::all_of<typelist, std::is_move_constructible>, "Variant branch types are not all move constructible");
+        static_assert(Meta::all_of<typelist, std::is_move_assignable>, "Variant branch types are not all move assignable");
         Variant() noexcept(is_nullable) { new (&data) head{}; }
         template <typename T> Variant(const T& t);
         template <typename T> Variant(T&& t) noexcept;
@@ -179,14 +179,14 @@ namespace RS {
         explicit operator bool() const;
         template <typename T> T& as();
         template <typename T> const T& as() const;
-        template <int Index> TypeAt<typelist, Index>& at();
-        template <int Index> const TypeAt<typelist, Index>& at() const;
+        template <int Index> Meta::TypeAt<typelist, Index>& at();
+        template <int Index> const Meta::TypeAt<typelist, Index>& at() const;
         template <typename T> T get_as(const T& def = {}) const;
-        template <int Index> TypeAt<typelist, Index> get_at(const TypeAt<typelist, Index>& def = {}) const;
+        template <int Index> Meta::TypeAt<typelist, Index> get_at(const Meta::TypeAt<typelist, Index>& def = {}) const;
         template <typename T> T& ref_as() noexcept;
         template <typename T> const T& ref_as() const noexcept;
-        template <int Index> TypeAt<typelist, Index>& ref_at() noexcept;
-        template <int Index> const TypeAt<typelist, Index>& ref_at() const noexcept;
+        template <int Index> Meta::TypeAt<typelist, Index>& ref_at() noexcept;
+        template <int Index> const Meta::TypeAt<typelist, Index>& ref_at() const noexcept;
         template <typename T, typename F> void call_if(F f);
         template <typename T, typename F> void call_if(F f) const;
         template <typename T, typename F> std::decay_t<decltype(std::declval<F>()(std::declval<T>()))> call_or(F f) const;
@@ -194,7 +194,7 @@ namespace RS {
         bool empty() const noexcept { return is_nullable && which == 0; }
         size_t hash() const noexcept;
         int index() const noexcept { return which; }
-        template <typename T> bool is() const noexcept { return which == find_type<typelist, T>; }
+        template <typename T> bool is() const noexcept { return which == Meta::find_type<typelist, T>; }
         bool is_equal(const Variant& v) const noexcept;
         bool is_greater(const Variant& v) const noexcept { return v.is_less(*this); }
         bool is_less(const Variant& v) const noexcept;
@@ -213,12 +213,12 @@ namespace RS {
 
     template <> class Variant<>;
 
-    template <typename V, int Index> using VariantTypeAt = TypeAt<typename V::typelist, Index>;
+    template <typename V, int Index> using VariantTypeAt = Meta::TypeAt<typename V::typelist, Index>;
     template <typename V> struct IsVariant: std::false_type {};
     template <typename... TS> struct IsVariant<Variant<TS...>>: std::true_type {};
-    template <typename V, typename T> struct VariantHasType: std::integral_constant<bool, count_type<typename V::typelist, T>> {};
-    template <typename V, typename T> using VariantIndexOf = FindType<typename V::typelist, T>;
-    template <typename V> using VariantLength = LengthOf<typename V::typelist>;
+    template <typename V, typename T> struct VariantHasType: std::integral_constant<bool, Meta::count_type<typename V::typelist, T>> {};
+    template <typename V, typename T> using VariantIndexOf = Meta::FindType<typename V::typelist, T>;
+    template <typename V> using VariantLength = Meta::LengthOf<typename V::typelist>;
     template <typename V> constexpr bool is_variant = IsVariant<V>::value;
     template <typename V, typename T> constexpr bool variant_has_type = VariantHasType<V, T>::value;
     template <typename V, typename T> constexpr int variant_index_of = VariantIndexOf<V, T>::value;
@@ -227,7 +227,7 @@ namespace RS {
     template <typename V, typename T>
     constexpr void static_check_variant_type() noexcept {
         static_assert(is_variant<V>, "Not a variant type");
-        static_assert(count_type<typename V::typelist, T>, "Type is not a branch of the variant");
+        static_assert(Meta::count_type<typename V::typelist, T>, "Type is not a branch of the variant");
     }
 
     template <typename V, int Index>
@@ -336,7 +336,7 @@ namespace RS {
 
     template <typename... TS>
     template <int Index>
-    TypeAt<Typelist<TS...>, Index>& Variant<TS...>::at() {
+    Meta::TypeAt<Meta::Typelist<TS...>, Index>& Variant<TS...>::at() {
         static_check_variant_index<Variant, Index>();
         if (which != Index)
             throw VariantError();
@@ -345,7 +345,7 @@ namespace RS {
 
     template <typename... TS>
     template <int Index>
-    const TypeAt<Typelist<TS...>, Index>& Variant<TS...>::at() const {
+    const Meta::TypeAt<Meta::Typelist<TS...>, Index>& Variant<TS...>::at() const {
         static_check_variant_index<Variant, Index>();
         if (which != Index)
             throw VariantError();
@@ -364,7 +364,7 @@ namespace RS {
 
     template <typename... TS>
     template <int Index>
-    TypeAt<Typelist<TS...>, Index> Variant<TS...>::get_at(const TypeAt<Typelist<TS...>, Index>& def) const {
+    Meta::TypeAt<Meta::Typelist<TS...>, Index> Variant<TS...>::get_at(const Meta::TypeAt<Meta::Typelist<TS...>, Index>& def) const {
         static_check_variant_index<Variant, Index>();
         if (which == Index)
             return ref_at<Index>();
@@ -388,17 +388,17 @@ namespace RS {
 
     template <typename... TS>
     template <int Index>
-    TypeAt<Typelist<TS...>, Index>& Variant<TS...>::ref_at() noexcept {
+    Meta::TypeAt<Meta::Typelist<TS...>, Index>& Variant<TS...>::ref_at() noexcept {
         static_check_variant_index<Variant, Index>();
-        using T = TypeAt<typelist, Index>;
+        using T = Meta::TypeAt<typelist, Index>;
         return reinterpret_cast<T&>(data);
     }
 
     template <typename... TS>
     template <int Index>
-    const TypeAt<Typelist<TS...>, Index>& Variant<TS...>::ref_at() const noexcept {
+    const Meta::TypeAt<Meta::Typelist<TS...>, Index>& Variant<TS...>::ref_at() const noexcept {
         static_check_variant_index<Variant, Index>();
-        using T = TypeAt<typelist, Index>;
+        using T = Meta::TypeAt<typelist, Index>;
         return reinterpret_cast<const T&>(data);
     }
 

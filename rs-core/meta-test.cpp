@@ -12,6 +12,7 @@
 #include <vector>
 
 using namespace RS;
+using namespace RS::Meta;
 
 // Used in introspection tests
 // (global to work around unused function warning bug in gcc)
@@ -65,59 +66,59 @@ namespace {
 
 void test_core_meta_logic() {
 
-    TEST((! MetaNot<std::is_signed<int>>::value));
-    TEST((MetaNot<std::is_signed<unsigned>>::value));
+    TEST((! Not<std::is_signed<int>>::value));
+    TEST((Not<std::is_signed<unsigned>>::value));
 
-    TEST((MetaAnd<std::is_signed<int>, std::is_integral<int>>::value));
-    TEST((! MetaAnd<std::is_signed<unsigned>, std::is_integral<unsigned>>::value));
-    TEST((! MetaAnd<std::is_signed<unsigned>, std::is_floating_point<unsigned>>::value));
-    TEST((MetaAnd<std::is_signed<int>, std::is_integral<int>, std::is_arithmetic<int>>::value));
-    TEST((! MetaAnd<std::is_signed<unsigned>, std::is_integral<unsigned>, std::is_arithmetic<unsigned>>::value));
-    TEST((! MetaAnd<std::is_signed<unsigned>, std::is_floating_point<unsigned>, std::is_pointer<unsigned>>::value));
+    TEST((And<std::is_signed<int>, std::is_integral<int>>::value));
+    TEST((! And<std::is_signed<unsigned>, std::is_integral<unsigned>>::value));
+    TEST((! And<std::is_signed<unsigned>, std::is_floating_point<unsigned>>::value));
+    TEST((And<std::is_signed<int>, std::is_integral<int>, std::is_arithmetic<int>>::value));
+    TEST((! And<std::is_signed<unsigned>, std::is_integral<unsigned>, std::is_arithmetic<unsigned>>::value));
+    TEST((! And<std::is_signed<unsigned>, std::is_floating_point<unsigned>, std::is_pointer<unsigned>>::value));
 
-    TEST((MetaOr<std::is_signed<int>, std::is_integral<int>>::value));
-    TEST((MetaOr<std::is_signed<unsigned>, std::is_integral<unsigned>>::value));
-    TEST((! MetaOr<std::is_signed<unsigned>, std::is_floating_point<unsigned>>::value));
-    TEST((MetaOr<std::is_signed<int>, std::is_integral<int>, std::is_arithmetic<int>>::value));
-    TEST((MetaOr<std::is_signed<unsigned>, std::is_integral<unsigned>, std::is_arithmetic<unsigned>>::value));
-    TEST((! MetaOr<std::is_signed<unsigned>, std::is_floating_point<unsigned>, std::is_pointer<unsigned>>::value));
+    TEST((Or<std::is_signed<int>, std::is_integral<int>>::value));
+    TEST((Or<std::is_signed<unsigned>, std::is_integral<unsigned>>::value));
+    TEST((! Or<std::is_signed<unsigned>, std::is_floating_point<unsigned>>::value));
+    TEST((Or<std::is_signed<int>, std::is_integral<int>, std::is_arithmetic<int>>::value));
+    TEST((Or<std::is_signed<unsigned>, std::is_integral<unsigned>, std::is_arithmetic<unsigned>>::value));
+    TEST((! Or<std::is_signed<unsigned>, std::is_floating_point<unsigned>, std::is_pointer<unsigned>>::value));
 
-    TEST((! MetaXor<std::is_signed<int>, std::is_integral<int>>::value));
-    TEST((MetaXor<std::is_signed<unsigned>, std::is_integral<unsigned>>::value));
-    TEST((! MetaXor<std::is_signed<unsigned>, std::is_floating_point<unsigned>>::value));
+    TEST((! Xor<std::is_signed<int>, std::is_integral<int>>::value));
+    TEST((Xor<std::is_signed<unsigned>, std::is_integral<unsigned>>::value));
+    TEST((! Xor<std::is_signed<unsigned>, std::is_floating_point<unsigned>>::value));
 
-    TEST((! MetaNot<MetaAnd<std::is_signed<int>, std::is_integral<int>>>::value));
-    TEST((MetaNot<MetaAnd<std::is_signed<unsigned>, std::is_integral<unsigned>>>::value));
-    TEST((MetaNot<MetaAnd<std::is_signed<unsigned>, std::is_floating_point<unsigned>>>::value));
+    TEST((! Not<And<std::is_signed<int>, std::is_integral<int>>>::value));
+    TEST((Not<And<std::is_signed<unsigned>, std::is_integral<unsigned>>>::value));
+    TEST((Not<And<std::is_signed<unsigned>, std::is_floating_point<unsigned>>>::value));
 
-    TEST((! MetaNot<MetaOr<std::is_signed<int>, std::is_integral<int>>>::value));
-    TEST((! MetaNot<MetaOr<std::is_signed<unsigned>, std::is_integral<unsigned>>>::value));
-    TEST((MetaNot<MetaOr<std::is_signed<unsigned>, std::is_floating_point<unsigned>>>::value));
+    TEST((! Not<Or<std::is_signed<int>, std::is_integral<int>>>::value));
+    TEST((! Not<Or<std::is_signed<unsigned>, std::is_integral<unsigned>>>::value));
+    TEST((Not<Or<std::is_signed<unsigned>, std::is_floating_point<unsigned>>>::value));
 
-    TEST((MetaNot<MetaXor<std::is_signed<int>, std::is_integral<int>>>::value));
-    TEST((! MetaNot<MetaXor<std::is_signed<unsigned>, std::is_integral<unsigned>>>::value));
-    TEST((MetaNot<MetaXor<std::is_signed<unsigned>, std::is_floating_point<unsigned>>>::value));
+    TEST((Not<Xor<std::is_signed<int>, std::is_integral<int>>>::value));
+    TEST((! Not<Xor<std::is_signed<unsigned>, std::is_integral<unsigned>>>::value));
+    TEST((Not<Xor<std::is_signed<unsigned>, std::is_floating_point<unsigned>>>::value));
 
-    TEST((! meta_not<std::is_signed<int>>));
-    TEST((meta_not<std::is_signed<unsigned>>));
+    TEST((! not_<std::is_signed<int>>));
+    TEST((not_<std::is_signed<unsigned>>));
 
-    TEST((meta_and<std::is_signed<int>, std::is_integral<int>>));
-    TEST((! meta_and<std::is_signed<unsigned>, std::is_integral<unsigned>>));
-    TEST((! meta_and<std::is_signed<unsigned>, std::is_floating_point<unsigned>>));
-    TEST((meta_and<std::is_signed<int>, std::is_integral<int>, std::is_arithmetic<int>>));
-    TEST((! meta_and<std::is_signed<unsigned>, std::is_integral<unsigned>, std::is_arithmetic<unsigned>>));
-    TEST((! meta_and<std::is_signed<unsigned>, std::is_floating_point<unsigned>, std::is_pointer<unsigned>>));
+    TEST((and_<std::is_signed<int>, std::is_integral<int>>));
+    TEST((! and_<std::is_signed<unsigned>, std::is_integral<unsigned>>));
+    TEST((! and_<std::is_signed<unsigned>, std::is_floating_point<unsigned>>));
+    TEST((and_<std::is_signed<int>, std::is_integral<int>, std::is_arithmetic<int>>));
+    TEST((! and_<std::is_signed<unsigned>, std::is_integral<unsigned>, std::is_arithmetic<unsigned>>));
+    TEST((! and_<std::is_signed<unsigned>, std::is_floating_point<unsigned>, std::is_pointer<unsigned>>));
 
-    TEST((meta_or<std::is_signed<int>, std::is_integral<int>>));
-    TEST((meta_or<std::is_signed<unsigned>, std::is_integral<unsigned>>));
-    TEST((! meta_or<std::is_signed<unsigned>, std::is_floating_point<unsigned>>));
-    TEST((meta_or<std::is_signed<int>, std::is_integral<int>, std::is_arithmetic<int>>));
-    TEST((meta_or<std::is_signed<unsigned>, std::is_integral<unsigned>, std::is_arithmetic<unsigned>>));
-    TEST((! meta_or<std::is_signed<unsigned>, std::is_floating_point<unsigned>, std::is_pointer<unsigned>>));
+    TEST((or_<std::is_signed<int>, std::is_integral<int>>));
+    TEST((or_<std::is_signed<unsigned>, std::is_integral<unsigned>>));
+    TEST((! or_<std::is_signed<unsigned>, std::is_floating_point<unsigned>>));
+    TEST((or_<std::is_signed<int>, std::is_integral<int>, std::is_arithmetic<int>>));
+    TEST((or_<std::is_signed<unsigned>, std::is_integral<unsigned>, std::is_arithmetic<unsigned>>));
+    TEST((! or_<std::is_signed<unsigned>, std::is_floating_point<unsigned>, std::is_pointer<unsigned>>));
 
-    TEST((! meta_xor<std::is_signed<int>, std::is_integral<int>>));
-    TEST((meta_xor<std::is_signed<unsigned>, std::is_integral<unsigned>>));
-    TEST((! meta_xor<std::is_signed<unsigned>, std::is_floating_point<unsigned>>));
+    TEST((! xor_<std::is_signed<int>, std::is_integral<int>>));
+    TEST((xor_<std::is_signed<unsigned>, std::is_integral<unsigned>>));
+    TEST((! xor_<std::is_signed<unsigned>, std::is_floating_point<unsigned>>));
 
 }
 

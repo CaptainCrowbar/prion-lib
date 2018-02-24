@@ -7,26 +7,26 @@
 #include <type_traits>
 #include <utility>
 
-namespace RS {
+namespace RS::Meta {
 
     // Logical metafunctions
 
-    template <typename P> struct MetaNot { static constexpr bool value = ! P::value; };
+    template <typename P> struct Not { static constexpr bool value = ! P::value; };
 
-    template <typename... PS> struct MetaAnd: std::true_type {};
-    template <typename P, typename... PS> struct MetaAnd<P, PS...> { static constexpr bool value = P::value && MetaAnd<PS...>::value; };
-    template <> struct MetaAnd<>: std::true_type {};
+    template <typename... PS> struct And: std::true_type {};
+    template <typename P, typename... PS> struct And<P, PS...> { static constexpr bool value = P::value && And<PS...>::value; };
+    template <> struct And<>: std::true_type {};
 
-    template <typename... PS> struct MetaOr: std::true_type {};
-    template <typename P, typename... PS> struct MetaOr<P, PS...> { static constexpr bool value = P::value || MetaOr<PS...>::value; };
-    template <> struct MetaOr<>: std::false_type {};
+    template <typename... PS> struct Or: std::true_type {};
+    template <typename P, typename... PS> struct Or<P, PS...> { static constexpr bool value = P::value || Or<PS...>::value; };
+    template <> struct Or<>: std::false_type {};
 
-    template <typename P, typename Q> struct MetaXor { static constexpr bool value = bool(P::value) != bool(Q::value); };
+    template <typename P, typename Q> struct Xor { static constexpr bool value = bool(P::value) != bool(Q::value); };
 
-    template <typename P> constexpr bool meta_not = MetaNot<P>::value;
-    template <typename... PS> constexpr bool meta_and = MetaAnd<PS...>::value;
-    template <typename... PS> constexpr bool meta_or = MetaOr<PS...>::value;
-    template <typename P1, typename P2> constexpr bool meta_xor = MetaXor<P1, P2>::value;
+    template <typename P> constexpr bool not_ = Not<P>::value;
+    template <typename... PS> constexpr bool and_ = And<PS...>::value;
+    template <typename... PS> constexpr bool or_ = Or<PS...>::value;
+    template <typename P1, typename P2> constexpr bool xor_ = Xor<P1, P2>::value;
 
     // Typelist primitives
 
@@ -47,7 +47,7 @@ namespace RS {
     template <int N> using IntT = std::integral_constant<int, N>;
     template <typename T> struct ReturnT { using type = T; };
 
-    namespace RS_Detail {
+    namespace MetaDetail {
 
         // Typelist composition and decomposition metafunctions
 
@@ -401,50 +401,50 @@ namespace RS {
 
     // Typelist composition and decomposition metafunctions
 
-    template <typename TL, typename T> using Append                                          = typename RS_Detail::Append<TL, T>::type;
-    template <typename T, typename TL> using Prefix                                          = typename RS_Detail::Prefix<T, TL>::type;
-    template <typename... TLS> using Concat                                                  = typename RS_Detail::Concat<TLS...>::type;
-    template <typename TL, typename T, template <typename, typename> class CP> using Insert  = typename RS_Detail::Insert<TL, T, CP>::type;
-    template <typename TL, typename T, int N> using InsertAt                                 = typename RS_Detail::InsertAt<TL, T, N>::type;
-    template <typename TL> using Most                                                        = typename RS_Detail::Most<TL>::type;
-    template <typename TL, int N> using RepList                                              = typename RS_Detail::RepList<TL, N>::type;
-    template <typename T, int N> using RepType                                               = typename RS_Detail::RepType<T, N>::type;
-    template <typename TL, int N, typename T> using Resize                                   = typename RS_Detail::Resize<TL, N, T>::type;
-    template <typename TL, int N> using Skip                                                 = typename RS_Detail::Skip<TL, N>::type;
-    template <typename TL, int N1, int N2> using Sublist                                     = typename RS_Detail::Sublist<TL, N1, N2>::type;
-    template <typename TL> using Tail                                                        = typename RS_Detail::Tail<TL>::type;
-    template <typename TL, int N> using Take                                                 = typename RS_Detail::Take<TL, N>::type;
+    template <typename TL, typename T> using Append                                          = typename MetaDetail::Append<TL, T>::type;
+    template <typename T, typename TL> using Prefix                                          = typename MetaDetail::Prefix<T, TL>::type;
+    template <typename... TLS> using Concat                                                  = typename MetaDetail::Concat<TLS...>::type;
+    template <typename TL, typename T, template <typename, typename> class CP> using Insert  = typename MetaDetail::Insert<TL, T, CP>::type;
+    template <typename TL, typename T, int N> using InsertAt                                 = typename MetaDetail::InsertAt<TL, T, N>::type;
+    template <typename TL> using Most                                                        = typename MetaDetail::Most<TL>::type;
+    template <typename TL, int N> using RepList                                              = typename MetaDetail::RepList<TL, N>::type;
+    template <typename T, int N> using RepType                                               = typename MetaDetail::RepType<T, N>::type;
+    template <typename TL, int N, typename T> using Resize                                   = typename MetaDetail::Resize<TL, N, T>::type;
+    template <typename TL, int N> using Skip                                                 = typename MetaDetail::Skip<TL, N>::type;
+    template <typename TL, int N1, int N2> using Sublist                                     = typename MetaDetail::Sublist<TL, N1, N2>::type;
+    template <typename TL> using Tail                                                        = typename MetaDetail::Tail<TL>::type;
+    template <typename TL, int N> using Take                                                 = typename MetaDetail::Take<TL, N>::type;
 
     // Type selection metafunctions
 
-    template <typename TL> using Head                                             = typename RS_Detail::Head<TL>::type;
-    template <typename TL> using Last                                             = typename RS_Detail::Last<TL>::type;
-    template <typename TL, template <typename, typename> class CP> using MaxType  = typename RS_Detail::MaxType<TL, CP>::type;
-    template <typename TL, template <typename, typename> class CP> using MinType  = typename RS_Detail::MinType<TL, CP>::type;
-    template <typename TL, int N> using TypeAt                                    = typename RS_Detail::TypeAt<TL, N>::type;
+    template <typename TL> using Head                                             = typename MetaDetail::Head<TL>::type;
+    template <typename TL> using Last                                             = typename MetaDetail::Last<TL>::type;
+    template <typename TL, template <typename, typename> class CP> using MaxType  = typename MetaDetail::MaxType<TL, CP>::type;
+    template <typename TL, template <typename, typename> class CP> using MinType  = typename MetaDetail::MinType<TL, CP>::type;
+    template <typename TL, int N> using TypeAt                                    = typename MetaDetail::TypeAt<TL, N>::type;
 
     // Typelist transformation metafunctions
 
-    template <typename TL, template <typename, typename> class BF, typename T> using FoldLeft                                   = typename RS_Detail::FoldLeft<TL, BF, T>::type;
-    template <typename TL, template <typename, typename> class BF, typename T> using FoldRight                                  = typename RS_Detail::FoldRight<TL, BF, T>::type;
-    template <typename TL> using FullyUnique                                                                                    = typename RS_Detail::FullyUnique<TL>::type;
-    template <typename TL, template <typename, typename> class CP> using MakeSet                                                = typename RS_Detail::MakeSet<TL, CP>::type;
-    template <typename TL, template <typename> class UF> using Map                                                              = typename RS_Detail::Map<TL, UF>::type;
-    template <typename TL, template <typename, typename> class BP, template <typename, typename> class BF> using PartialReduce  = typename RS_Detail::PartialReduce<TL, BP, BF>::type;
-    template <typename TL, template <typename, typename> class BF> using Reduce                                                 = typename RS_Detail::Reduce<TL, BF>::type;
-    template <typename TL, typename T> using Remove                                                                             = typename RS_Detail::Remove<TL, T>::type;
-    template <typename TL, template <typename> class UP> using RemoveIf                                                         = typename RS_Detail::RemoveIf<TL, UP>::type;
-    template <typename TL> using Reverse                                                                                        = typename RS_Detail::Reverse<TL>::type;
-    template <typename TL, template <typename> class UP> using Select                                                           = typename RS_Detail::Select<TL, UP>::type;
-    template <typename TL, template <typename, typename> class CP> using Sort                                                   = typename RS_Detail::Sort<TL, CP>::type;
-    template <typename TL> using Unique                                                                                         = typename RS_Detail::Unique<TL>::type;
-    template <typename TL1, typename TL2, template <typename, typename> class BF> using Zip                                     = typename RS_Detail::Zip<TL1, TL2, BF>::type;
+    template <typename TL, template <typename, typename> class BF, typename T> using FoldLeft                                   = typename MetaDetail::FoldLeft<TL, BF, T>::type;
+    template <typename TL, template <typename, typename> class BF, typename T> using FoldRight                                  = typename MetaDetail::FoldRight<TL, BF, T>::type;
+    template <typename TL> using FullyUnique                                                                                    = typename MetaDetail::FullyUnique<TL>::type;
+    template <typename TL, template <typename, typename> class CP> using MakeSet                                                = typename MetaDetail::MakeSet<TL, CP>::type;
+    template <typename TL, template <typename> class UF> using Map                                                              = typename MetaDetail::Map<TL, UF>::type;
+    template <typename TL, template <typename, typename> class BP, template <typename, typename> class BF> using PartialReduce  = typename MetaDetail::PartialReduce<TL, BP, BF>::type;
+    template <typename TL, template <typename, typename> class BF> using Reduce                                                 = typename MetaDetail::Reduce<TL, BF>::type;
+    template <typename TL, typename T> using Remove                                                                             = typename MetaDetail::Remove<TL, T>::type;
+    template <typename TL, template <typename> class UP> using RemoveIf                                                         = typename MetaDetail::RemoveIf<TL, UP>::type;
+    template <typename TL> using Reverse                                                                                        = typename MetaDetail::Reverse<TL>::type;
+    template <typename TL, template <typename> class UP> using Select                                                           = typename MetaDetail::Select<TL, UP>::type;
+    template <typename TL, template <typename, typename> class CP> using Sort                                                   = typename MetaDetail::Sort<TL, CP>::type;
+    template <typename TL> using Unique                                                                                         = typename MetaDetail::Unique<TL>::type;
+    template <typename TL1, typename TL2, template <typename, typename> class BF> using Zip                                     = typename MetaDetail::Zip<TL1, TL2, BF>::type;
 
     // Other typelist operations
 
-    template <typename TL> using InheritTypelist  = typename RS_Detail::InheritTypelistHelper<FullyUnique<TL>>;
-    template <typename TL> using TypelistToTuple  = typename RS_Detail::TypelistToTuple<TL>::type;
-    template <typename T> using TupleToTypelist   = typename RS_Detail::TupleToTypelist<T>::type;
+    template <typename TL> using InheritTypelist  = typename MetaDetail::InheritTypelistHelper<FullyUnique<TL>>;
+    template <typename TL> using TypelistToTuple  = typename MetaDetail::TypelistToTuple<TL>::type;
+    template <typename T> using TupleToTypelist   = typename MetaDetail::TupleToTypelist<T>::type;
 
     // Typelist property metafunctions
 
@@ -468,7 +468,7 @@ namespace RS {
     // Walter E. Brown, N4502 Proposing Standard Library Support for the C++ Detection Idiom V2 (2015)
     // http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/n4502.pdf
 
-    namespace RS_Detail {
+    namespace MetaDetail {
 
         template <typename...> using VoidType = void;
 
@@ -496,15 +496,15 @@ namespace RS {
     }
 
     template <template <typename...> typename Archetype, typename... Args>
-        using IsDetected = typename RS_Detail::Detector<RS_Detail::Nonesuch, void, Archetype, Args...>::value_t;
+        using IsDetected = typename MetaDetail::Detector<MetaDetail::Nonesuch, void, Archetype, Args...>::value_t;
     template <template <typename...> typename Archetype, typename... Args>
         constexpr bool is_detected = IsDetected<Archetype, Args...>::value;
     template <template <typename...> typename Archetype, typename... Args>
-        using DetectedType = typename RS_Detail::Detector<RS_Detail::Nonesuch, void, Archetype, Args...>::type;
+        using DetectedType = typename MetaDetail::Detector<MetaDetail::Nonesuch, void, Archetype, Args...>::type;
 
     // Return nested type if detected, otherwise default
     template <typename Default, template <typename...> typename Archetype, typename... Args>
-        using DetectedOr = typename RS_Detail::Detector<Default, void, Archetype, Args...>::type;
+        using DetectedOr = typename MetaDetail::Detector<Default, void, Archetype, Args...>::type;
 
     // Detect only if it yields a specific return type
     template <typename Result, template <typename...> typename Archetype, typename... Args>
@@ -593,32 +593,32 @@ namespace RS {
     template <typename T, typename T2> using HasIndexOperator = IsDetected<HasIndexOperatorArchetype, T, T2>;
     template <typename T, typename T2> constexpr bool has_index_operator = HasIndexOperator<T, T2>::value;
 
-    template <typename T> using HasIncrementOperators = MetaAnd<
+    template <typename T> using HasIncrementOperators = And<
         HasPreIncrementOperator<T>,
         HasPostIncrementOperator<T>
     >;
 
-    template <typename T> using HasStepOperators = MetaAnd<
+    template <typename T> using HasStepOperators = And<
         HasIncrementOperators<T>,
         HasPreDecrementOperator<T>,
         HasPostDecrementOperator<T>
     >;
 
-    template <typename T, typename T2 = T> using HasAdditiveOperators = MetaAnd<
+    template <typename T, typename T2 = T> using HasAdditiveOperators = And<
         HasPlusOperator<T, T2>,
         HasMinusOperator<T, T2>,
         HasPlusAssignOperator<T, T2>,
         HasMinusAssignOperator<T, T2>
     >;
 
-    template <typename T, typename T2 = T> using HasMultiplicativeOperators = MetaAnd<
+    template <typename T, typename T2 = T> using HasMultiplicativeOperators = And<
         HasMultiplyOperator<T, T2>,
         HasDivideOperator<T, T2>,
         HasMultiplyAssignOperator<T, T2>,
         HasDivideAssignOperator<T, T2>
     >;
 
-    template <typename T> using HasArithmeticOperators = MetaAnd<
+    template <typename T> using HasArithmeticOperators = And<
         HasAdditiveOperators<T>,
         HasUnaryMinusOperator<T>,
         HasMultiplyOperator<T>,
@@ -627,27 +627,27 @@ namespace RS {
         HasDivideAssignOperator<T>
     >;
 
-    template <typename T> using HasIntegerArithmeticOperators = MetaAnd<
+    template <typename T> using HasIntegerArithmeticOperators = And<
         HasArithmeticOperators<T>,
         HasStepOperators<T>,
         HasRemainderOperator<T>,
         HasRemainderAssignOperator<T>
     >;
 
-    template <typename T, typename T2 = T> using HasLinearOperators = MetaAnd<
+    template <typename T, typename T2 = T> using HasLinearOperators = And<
         HasAdditiveOperators<T, T2>,
         HasStepOperators<T>,
         HasPlusOperator<T2, T>,
         HasMinusOperator<T>
     >;
 
-    template <typename T, typename T2 = T> using HasScalingOperators = MetaAnd<
+    template <typename T, typename T2 = T> using HasScalingOperators = And<
         HasMultiplicativeOperators<T, T2>,
         HasMultiplyOperator<T2, T>,
         HasDivideOperator<T>
     >;
 
-    template <typename T> using HasBitwiseOperators = MetaAnd<
+    template <typename T> using HasBitwiseOperators = And<
         HasBitwiseNotOperator<T>,
         HasBitwiseAndOperator<T>,
         HasBitwiseXorOperator<T>,
@@ -661,12 +661,12 @@ namespace RS {
         HasLeftShiftAssignOperator<T, int>
     >;
 
-    template <typename T, typename T2 = T> using HasEqualityOperators = MetaAnd<
+    template <typename T, typename T2 = T> using HasEqualityOperators = And<
         HasEqualOperator<T, T2>,
         HasNotEqualOperator<T, T2>
     >;
 
-    template <typename T, typename T2 = T> using HasComparisonOperators = MetaAnd<
+    template <typename T, typename T2 = T> using HasComparisonOperators = And<
         HasEqualityOperators<T, T2>,
         HasLessThanOperator<T, T2>,
         HasGreaterThanOperator<T, T2>,
@@ -710,7 +710,7 @@ namespace RS {
 
     // Type categories
 
-    namespace RS_Detail {
+    namespace MetaDetail {
 
         template <typename T> using IteratorCategory = typename std::iterator_traits<T>::iterator_category;
         template <typename T, bool Iter = IsDetected<IteratorCategory, T>::value> struct ExtendedIteratorCategory: ReturnT<void> {};
@@ -741,26 +741,26 @@ namespace RS {
 
     }
 
-    template <typename T> using IsIterator = IsDetected<RS_Detail::IteratorCategory, T>;
+    template <typename T> using IsIterator = IsDetected<MetaDetail::IteratorCategory, T>;
 
-    template <typename T> struct IsForwardIterator: BoolT<(RS_Detail::IteratorLevelType<T>::value >= 2)> {};
-    template <typename T> struct IsBidirectionalIterator: BoolT<(RS_Detail::IteratorLevelType<T>::value >= 3)> {};
-    template <typename T> struct IsRandomAccessIterator: BoolT<(RS_Detail::IteratorLevelType<T>::value >= 4)> {};
+    template <typename T> struct IsForwardIterator: BoolT<(MetaDetail::IteratorLevelType<T>::value >= 2)> {};
+    template <typename T> struct IsBidirectionalIterator: BoolT<(MetaDetail::IteratorLevelType<T>::value >= 3)> {};
+    template <typename T> struct IsRandomAccessIterator: BoolT<(MetaDetail::IteratorLevelType<T>::value >= 4)> {};
 
     template <typename T, bool = IsIterator<T>::value> struct IsMutableIterator: std::false_type {};
-    template <typename T> struct IsMutableIterator<T, true>: MetaNot<std::is_const<typename std::remove_pointer_t<decltype(&*std::declval<T>())>>> {};
+    template <typename T> struct IsMutableIterator<T, true>: Not<std::is_const<typename std::remove_pointer_t<decltype(&*std::declval<T>())>>> {};
 
-    template <typename T> using IsRange = MetaAnd<MetaOr<IsDetected<RS_Detail::HasStdBeginArchetype, T>, IsDetected<RS_Detail::HasAdlBeginArchetype, T>>,
-        MetaOr<IsDetected<RS_Detail::HasStdEndArchetype, T>, IsDetected<RS_Detail::HasAdlEndArchetype, T>>>;
-    template <typename T> struct IsMutableRange: IsMutableIterator<typename RS_Detail::RangeIteratorType<T>::type> {};
+    template <typename T> using IsRange = And<Or<IsDetected<MetaDetail::HasStdBeginArchetype, T>, IsDetected<MetaDetail::HasAdlBeginArchetype, T>>,
+        Or<IsDetected<MetaDetail::HasStdEndArchetype, T>, IsDetected<MetaDetail::HasAdlEndArchetype, T>>>;
+    template <typename T> struct IsMutableRange: IsMutableIterator<typename MetaDetail::RangeIteratorType<T>::type> {};
 
-    template <typename T> using IsContainer = MetaAnd<IsDetected<RS_Detail::HasBeginMethodArchetype, T>, IsDetected<RS_Detail::HasEndMethodArchetype, T>,
-        IsDetected<RS_Detail::HasIteratorArchetype, T>, IsDetected<RS_Detail::HasValueTypeArchetype, T>>;
+    template <typename T> using IsContainer = And<IsDetected<MetaDetail::HasBeginMethodArchetype, T>, IsDetected<MetaDetail::HasEndMethodArchetype, T>,
+        IsDetected<MetaDetail::HasIteratorArchetype, T>, IsDetected<MetaDetail::HasValueTypeArchetype, T>>;
 
     template <typename T, bool = IsContainer<T>::value> struct IsInsertableContainer: std::false_type {};
-    template <typename T> struct IsInsertableContainer<T, true>: IsDetected<RS_Detail::HasInsertMethodArchetype, T&, typename T::iterator, typename T::value_type> {};
+    template <typename T> struct IsInsertableContainer<T, true>: IsDetected<MetaDetail::HasInsertMethodArchetype, T&, typename T::iterator, typename T::value_type> {};
 
-    template <typename T> using IsSwappable = MetaOr<IsDetected<RS_Detail::HasStdSwapArchetype, T>, IsDetected<RS_Detail::HasAdlSwapArchetype, T>>;
+    template <typename T> using IsSwappable = Or<IsDetected<MetaDetail::HasStdSwapArchetype, T>, IsDetected<MetaDetail::HasAdlSwapArchetype, T>>;
 
     template <typename T> constexpr bool is_iterator = IsIterator<T>::value;
     template <typename T> constexpr bool is_forward_iterator = IsForwardIterator<T>::value;
@@ -775,12 +775,18 @@ namespace RS {
 
 }
 
+namespace RS {
+
+    using Meta::Nil;
+
+}
+
 namespace std {
 
-    template <> struct hash<RS::Nil> {
-        using argument_type = RS::Nil;
+    template <> struct hash<RS::Meta::Nil> {
+        using argument_type = RS::Meta::Nil;
         using result_type = size_t;
-        size_t operator()(RS::Nil) const noexcept { return 0; }
+        size_t operator()(RS::Meta::Nil) const noexcept { return 0; }
     };
 
 }

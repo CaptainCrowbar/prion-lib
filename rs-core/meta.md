@@ -10,6 +10,10 @@ By Ross Smith
 
 ## Introduction ##
 
+Everything in this header is in `namespace RS::Meta`. The `Meta::Nil` type is
+exported to `namespace RS` because it is used as a placeholder type elsewhere
+in the library.
+
 Metafunctions are templates that operate on types; usually they take one or
 more types as arguments and "return" another type, but non-type template
 arguments and return types are also possible.
@@ -24,20 +28,18 @@ again as template constants that yield the value directly. The two
 implementations are supplied because the inline constant form is more
 convenient if the value is going to be used directly, but these can't be used
 as template template arguments in building other metafunctions, for which the
-traditional member constant form is required. The two versions of each value
-metafunction are distinguished by spelling conventions: template types are
-named in `MixedCase`, constants in `lower_case`.
+traditional member constant form is required.
 
 ## Logical metafunctions ##
 
-* `template <typename P> struct` **`MetaNot`**
-* `template <typename... PS> struct` **`MetaAnd`**
-* `template <typename... PS> struct` **`MetaOr`**
-* `template <typename P1, typename P2> struct` **`MetaXor`**
-* `template <typename P> constexpr bool` **`meta_not`**
-* `template <typename... PS> constexpr bool` **`meta_and`**
-* `template <typename... PS> constexpr bool` **`meta_or`**
-* `template <typename P1, typename P2> constexpr bool` **`meta_xor`**
+* `template <typename P> struct` **`Not`**
+* `template <typename... PS> struct` **`And`**
+* `template <typename... PS> struct` **`Or`**
+* `template <typename P1, typename P2> struct` **`Xor`**
+* `template <typename P> constexpr bool` **`not_`**
+* `template <typename... PS> constexpr bool` **`and_`**
+* `template <typename... PS> constexpr bool` **`or_`**
+* `template <typename P1, typename P2> constexpr bool` **`xor_`**
 
 Predicate metafunctions that perform the standard logical operations on one or
 more arguments, themselves expected to be predicate metafunctions with a

@@ -33,8 +33,8 @@ constructor, copy assignment operator, hash function, output operator, or any
 comparison operator is called, the corresponding operation must be defined for
 all branch types. (All of these operations are defined for `Nil`.)
 
-* `using Variant::`**`typelist`** `= Typelist<TS...>`
-* `using Variant::`**`head`** `= Head<typelist>`
+* `using Variant::`**`typelist`** `= Meta::Typelist<TS...>`
+* `using Variant::`**`head`** `= Meta::Head<typelist>`
 
 Member types.
 

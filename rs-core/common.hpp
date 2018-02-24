@@ -266,7 +266,7 @@ namespace RS {
 
         #endif
 
-        template <typename T, bool Iter = is_iterator<T>> struct IteratorValueType { using type = void; };
+        template <typename T, bool Iter = Meta::is_iterator<T>> struct IteratorValueType { using type = void; };
         template <typename T> struct IteratorValueType<T, true> { using type = std::decay_t<decltype(*std::declval<T>())>; };
 
         // https://stackoverflow.com/questions/41207774/how-do-i-create-a-tuple-of-n-ts-from-an-array-of-t
@@ -278,7 +278,7 @@ namespace RS {
     }
 
     template <typename T> using IteratorValue = typename RS_Detail::IteratorValueType<T>::type;
-    template <typename T> using RangeIterator = typename RS_Detail::RangeIteratorType<T>::type;
+    template <typename T> using RangeIterator = typename Meta::MetaDetail::RangeIteratorType<T>::type;
     template <typename T> using RangeValue = IteratorValue<RangeIterator<T>>;
 
     constexpr const char* ascii_whitespace = "\t\n\v\f\r ";
@@ -1859,9 +1859,11 @@ namespace RS {
 }
 
 namespace std {
+
     template <typename T, RS::ByteOrder B> struct hash<RS::Endian<T, B>> {
         using argument_type = RS::Endian<T, B>;
         using result_type = size_t;
         size_t operator()(RS::Endian<T, B> t) const noexcept { return std::hash<T>()(t.get()); }
     };
+
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rs-core/common.hpp"
+#include "rs-core/meta.hpp"
 #include "rs-core/vector.hpp"
 #include <algorithm>
 #include <array>
@@ -175,8 +176,8 @@ namespace RS {
     };
 
     template <typename SinglePassRange>
-    RangeValue<SinglePassRange> precision_sum(const SinglePassRange& range) {
-        PrecisionSum<RangeValue<SinglePassRange>> sum;
+    Meta::RangeValue<SinglePassRange> precision_sum(const SinglePassRange& range) {
+        PrecisionSum<Meta::RangeValue<SinglePassRange>> sum;
         for (auto x: range)
             sum(x);
         return sum;

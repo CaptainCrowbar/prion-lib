@@ -17,7 +17,7 @@ namespace RS {
 
     template <typename RandomAccessRange>
     struct DiffEntry {
-        using iterator = RangeIterator<const RandomAccessRange>;
+        using iterator = Meta::RangeIterator<const RandomAccessRange>;
         using subrange = Irange<iterator>;
         subrange del, ins;
     };
@@ -117,7 +117,7 @@ namespace RS {
 
     template <typename RandomAccessRange>
     DiffList<RandomAccessRange> diff(const RandomAccessRange& lhs, const RandomAccessRange& rhs) {
-        return diff(lhs, rhs, std::equal_to<RangeValue<RandomAccessRange>>());
+        return diff(lhs, rhs, std::equal_to<Meta::RangeValue<RandomAccessRange>>());
     }
 
     // Edit distance (Levenshtein distance)
@@ -151,7 +151,7 @@ namespace RS {
     // Find optimum
 
     template <typename ForwardRange, typename UnaryFunction, typename Compare>
-    RangeIterator<ForwardRange> find_optimum(ForwardRange& range, UnaryFunction f, Compare c) {
+    Meta::RangeIterator<ForwardRange> find_optimum(ForwardRange& range, UnaryFunction f, Compare c) {
         using std::begin;
         using std::end;
         auto i = begin(range), i_end = end(range);
@@ -170,7 +170,7 @@ namespace RS {
     }
 
     template <typename ForwardRange, typename UnaryFunction>
-    RangeIterator<ForwardRange> find_optimum(ForwardRange& range, UnaryFunction f) {
+    Meta::RangeIterator<ForwardRange> find_optimum(ForwardRange& range, UnaryFunction f) {
         return find_optimum(range, f, std::less<>());
     }
 
@@ -193,8 +193,8 @@ namespace RS {
         template <bool Stable, typename RandomAccessRange1, typename RandomAccessRange2, typename Compare>
         void paired_sort(RandomAccessRange1& range1, RandomAccessRange2& range2, Compare comp) {
             using std::begin;
-            using T1 = RangeValue<RandomAccessRange1>;
-            using T2 = RangeValue<RandomAccessRange2>;
+            using T1 = Meta::RangeValue<RandomAccessRange1>;
+            using T2 = Meta::RangeValue<RandomAccessRange2>;
             auto p = begin(range1);
             auto q = begin(range2);
             size_t size = std::min(range_count(range1), range_count(range2));

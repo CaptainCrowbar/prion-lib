@@ -266,9 +266,6 @@ namespace RS {
 
         #endif
 
-        template <typename T, bool Iter = Meta::is_iterator<T>> struct IteratorValueType { using type = void; };
-        template <typename T> struct IteratorValueType<T, true> { using type = std::decay_t<decltype(*std::declval<T>())>; };
-
         // https://stackoverflow.com/questions/41207774/how-do-i-create-a-tuple-of-n-ts-from-an-array-of-t
         template <size_t... Sequence, typename Array>
         constexpr auto array_to_tuple_helper(const Array& array, std::index_sequence<Sequence...>) {
@@ -276,10 +273,6 @@ namespace RS {
         }
 
     }
-
-    template <typename T> using IteratorValue = typename RS_Detail::IteratorValueType<T>::type;
-    template <typename T> using RangeIterator = typename Meta::MetaDetail::RangeIteratorType<T>::type;
-    template <typename T> using RangeValue = IteratorValue<RangeIterator<T>>;
 
     constexpr const char* ascii_whitespace = "\t\n\v\f\r ";
     constexpr size_t npos = size_t(-1);
@@ -776,8 +769,8 @@ namespace RS {
     }
 
     template <typename InputRange, typename... Ranges>
-    std::vector<RangeValue<InputRange>> concatenate(const InputRange& range, const Ranges&... ranges) {
-        std::vector<RangeValue<InputRange>> v;
+    std::vector<Meta::RangeValue<InputRange>> concatenate(const InputRange& range, const Ranges&... ranges) {
+        std::vector<Meta::RangeValue<InputRange>> v;
         RS_Detail::concat_helper(v, range, ranges...);
         return v;
     }
@@ -888,32 +881,32 @@ namespace RS {
     }
 
     template <typename InputRange>
-    RangeValue<InputRange> sum_of(const InputRange& r) {
-        auto t = RangeValue<InputRange>();
+    Meta::RangeValue<InputRange> sum_of(const InputRange& r) {
+        auto t = Meta::RangeValue<InputRange>();
         for (auto& x: r)
             t = t + x;
         return t;
     }
 
     template <typename InputRange>
-    RangeValue<InputRange> sum_of(InputRange&& r) {
-        auto t = RangeValue<InputRange>();
+    Meta::RangeValue<InputRange> sum_of(InputRange&& r) {
+        auto t = Meta::RangeValue<InputRange>();
         for (auto& x: r)
             t = t + x;
         return t;
     }
 
     template <typename InputRange>
-    RangeValue<InputRange> product_of(const InputRange& r) {
-        auto t = RangeValue<InputRange>(1);
+    Meta::RangeValue<InputRange> product_of(const InputRange& r) {
+        auto t = Meta::RangeValue<InputRange>(1);
         for (auto& x: r)
             t = t * x;
         return t;
     }
 
     template <typename InputRange>
-    RangeValue<InputRange> product_of(InputRange&& r) {
-        auto t = RangeValue<InputRange>(1);
+    Meta::RangeValue<InputRange> product_of(InputRange&& r) {
+        auto t = Meta::RangeValue<InputRange>(1);
         for (auto& x: r)
             t = t * x;
         return t;

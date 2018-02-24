@@ -854,7 +854,7 @@ namespace RS {
 
     namespace RS_Detail {
 
-        template <typename R, typename T = RangeValue<R>>
+        template <typename R, typename T = Meta::RangeValue<R>>
         struct RangeToString {
             Ustring operator()(const R& r) const {
                 Ustring s = "[";

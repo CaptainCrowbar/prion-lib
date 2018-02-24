@@ -549,14 +549,6 @@ same, but behaviour is undefined if either pointer is null.
 
 ### Range traits ###
 
-* `template <typename Iterator> using` **`IteratorValueType`**
-* `template <typename Range> using` **`RangeIteratorType`**
-* `template <typename Range> using` **`RangeValueType`**
-
-These return the types associated with an iterator or range. They are
-extracted by checking the return type of `begin()`, and do not require a
-specialization of `iterator_traits` to exist.
-
 * `template <typename T, size_t N> constexpr size_t` **`array_count`**`(T[N]) noexcept`
 * `template <typename InputRange> size_t` **`range_count`**`(const InputRange& r)`
 * `template <typename InputRange> bool` **`range_empty`**`(const InputRange& r)`

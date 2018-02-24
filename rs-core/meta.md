@@ -307,3 +307,13 @@ categories will pass if the iterator is at least that caegory. The
 `is_[mutable_]range` predicates will succeed if the `begin()` and `end()`
 functions can be found either in `namespace std` or by argument dependent
 lookup; similarly for `is_swappable` and the `swap()` function.
+
+### Associated types ###
+
+* `template <typename Iterator> using` **`IteratorValue`**
+* `template <typename Range> using` **`RangeIterator`**
+* `template <typename Range> using` **`RangeValue`**
+
+These return the types associated with an iterator or range. They are
+extracted by checking the return type of `begin()`, and do not require a
+specialization of `iterator_traits` to exist.

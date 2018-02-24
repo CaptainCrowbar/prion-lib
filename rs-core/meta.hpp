@@ -773,6 +773,17 @@ namespace RS::Meta {
     template <typename T> constexpr bool is_insertable_container = IsInsertableContainer<T>::value;
     template <typename T> constexpr bool is_swappable = IsSwappable<T>::value;
 
+    namespace MetaDetail {
+
+        template <typename T, bool Iter = Meta::is_iterator<T>> struct IteratorValueType { using type = void; };
+        template <typename T> struct IteratorValueType<T, true> { using type = std::decay_t<decltype(*std::declval<T>())>; };
+
+    }
+
+    template <typename T> using IteratorValue = typename MetaDetail::IteratorValueType<T>::type;
+    template <typename T> using RangeIterator = typename MetaDetail::RangeIteratorType<T>::type;
+    template <typename T> using RangeValue = IteratorValue<RangeIterator<T>>;
+
 }
 
 namespace RS {

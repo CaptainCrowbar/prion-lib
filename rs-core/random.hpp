@@ -2,6 +2,7 @@
 
 #include "rs-core/common.hpp"
 #include "rs-core/float.hpp"
+#include "rs-core/meta.hpp"
 #include "rs-core/string.hpp"
 #include "rs-core/vector.hpp"
 #include <algorithm>
@@ -226,8 +227,8 @@ namespace RS {
     }
 
     template <typename ForwardRange, typename RNG>
-    RangeValue<ForwardRange> random_choice(RNG& rng, const ForwardRange& range) {
-        using T = RangeValue<ForwardRange>;
+    Meta::RangeValue<ForwardRange> random_choice(RNG& rng, const ForwardRange& range) {
+        using T = Meta::RangeValue<ForwardRange>;
         using std::begin;
         using std::end;
         auto i = begin(range), j = end(range);
@@ -247,8 +248,8 @@ namespace RS {
     }
 
     template <typename ForwardRange, typename RNG>
-    std::vector<RangeValue<ForwardRange>> random_sample(RNG& rng, const ForwardRange& range, size_t k) {
-        using T = RangeValue<ForwardRange>;
+    std::vector<Meta::RangeValue<ForwardRange>> random_sample(RNG& rng, const ForwardRange& range, size_t k) {
+        using T = Meta::RangeValue<ForwardRange>;
         using std::begin;
         using std::end;
         auto b = begin(range), e = end(range);

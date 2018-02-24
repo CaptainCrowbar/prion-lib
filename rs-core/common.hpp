@@ -37,6 +37,7 @@
 
 // Includes go here so anything that needs the macros above will see them
 
+#include "rs-core/meta.hpp"
 #include <algorithm>
 #include <array>
 #include <cerrno>
@@ -265,24 +266,8 @@ namespace RS {
 
         #endif
 
-        template <typename> struct CommonTrue: std::true_type {};
-        template <typename T> auto common_adl_begin(int) -> CommonTrue<decltype(begin(std::declval<T>()))>;
-        template <typename T> auto common_adl_begin(long) -> std::false_type;
-        template <typename T> auto common_std_begin(int) -> CommonTrue<decltype(std::begin(std::declval<T>()))>;
-        template <typename T> auto common_std_begin(long) -> std::false_type;
-        template <typename T> struct CommonAdlBegin: decltype(common_adl_begin<T>(0)) {};
-        template <typename T> struct CommonStdBegin: decltype(common_std_begin<T>(0)) {};
-        template <typename T> struct CommonRangeType { static constexpr bool value = CommonAdlBegin<T>::value || CommonStdBegin<T>::value; };
-
-        template <typename R, bool A = CommonAdlBegin<R>::value, bool S = CommonStdBegin<R>::value> struct CommonRangeTraits;
-        template <typename R, bool S> struct CommonRangeTraits<R, true, S> {
-            using iterator = decltype(begin(std::declval<R&>()));
-            using value_type = typename std::iterator_traits<iterator>::value_type;
-        };
-        template <typename R> struct CommonRangeTraits<R, false, true> {
-            using iterator = decltype(std::begin(std::declval<R&>()));
-            using value_type = typename std::iterator_traits<iterator>::value_type;
-        };
+        template <typename T, bool Iter = is_iterator<T>> struct IteratorValueType { using type = void; };
+        template <typename T> struct IteratorValueType<T, true> { using type = std::decay_t<decltype(*std::declval<T>())>; };
 
         // https://stackoverflow.com/questions/41207774/how-do-i-create-a-tuple-of-n-ts-from-an-array-of-t
         template <size_t... Sequence, typename Array>
@@ -292,8 +277,9 @@ namespace RS {
 
     }
 
-    template <typename R> using RangeIterator = typename RS_Detail::CommonRangeTraits<R>::iterator;
-    template <typename R> using RangeValue = typename RS_Detail::CommonRangeTraits<R>::value_type;
+    template <typename T> using IteratorValue = typename RS_Detail::IteratorValueType<T>::type;
+    template <typename T> using RangeIterator = typename RS_Detail::RangeIteratorType<T>::type;
+    template <typename T> using RangeValue = IteratorValue<RangeIterator<T>>;
 
     constexpr const char* ascii_whitespace = "\t\n\v\f\r ";
     constexpr size_t npos = size_t(-1);

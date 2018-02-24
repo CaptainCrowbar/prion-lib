@@ -971,22 +971,18 @@ void test_core_string_formatting() {
     TEST_EQUAL(to_str(L"Hello"s), "Hello");
     TEST_EQUAL(to_str(L'X'), "X");
 
-    std::vector<bool> bv;
     std::vector<int> iv;
     Strings sv;
     std::map<int, std::string> ism;
 
-    TEST_EQUAL(to_str(bv), "[]");
     TEST_EQUAL(to_str(iv), "[]");
     TEST_EQUAL(to_str(sv), "[]");
     TEST_EQUAL(to_str(ism), "{}");
 
-    bv = {true,false};
     iv = {1,2,3};
     sv = {"hello","world","goodbye"};
     ism = {{1,"hello"},{2,"world"},{3,"goodbye"}};
 
-    TEST_EQUAL(to_str(bv), "[true,false]");
     TEST_EQUAL(to_str(iv), "[1,2,3]");
     TEST_EQUAL(to_str(sv), "[hello,world,goodbye]");
     TEST_EQUAL(to_str(ism), "{1:hello,2:world,3:goodbye}");

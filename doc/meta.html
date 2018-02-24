@@ -32,7 +32,6 @@
 <li><a href="#operator-detection">Operator detection</a></li>
 <li><a href="#function-detection">Function detection</a></li>
 <li><a href="#type-categories">Type categories</a></li>
-<li><a href="#related-types">Related types</a></li>
 </ul>
 </li>
 </ul>
@@ -840,16 +839,5 @@ have no way to check their semantics. The tests for specific iterator
 categories will pass if the iterator is at least that caegory. The
 <code>is_[mutable_]range</code> predicates will succeed if the <code>begin()</code> and <code>end()</code>
 functions can be found either in <code>namespace std</code> or by argument dependent
-lookup; similarly for <code>is_swappable</code> and the <code>swap()</code> function.</p>
-</div>
-<h3 id="related-types">Related types</h3>
-<div class="defns">
-<ul>
-<li><code>template &lt;typename T&gt; using</code> <strong><code>IteratorValueType</code></strong></li>
-<li><code>template &lt;typename T&gt; using</code> <strong><code>RangeIteratorType</code></strong></li>
-<li><code>template &lt;typename T&gt; using</code> <strong><code>RangeValueType</code></strong></li>
-</ul>
-<p>These return the types associated with an iterator or range. They are
-extracted by checking the return type of <code>begin()</code>, and do not require a
-specialization of <code>iterator_traits</code> to exist.</p></body>
+lookup; similarly for <code>is_swappable</code> and the <code>swap()</code> function.</p></body>
 </html>

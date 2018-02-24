@@ -1106,6 +1106,13 @@ void test_core_common_range_traits() {
 
     char array[] {'H','e','l','l','o'};
 
+    TEST_TYPE(IteratorValue<int>, void);
+    TEST_TYPE(IteratorValue<int*>, int);
+    TEST_TYPE(IteratorValue<const int*>, int);
+    TEST_TYPE(IteratorValue<std::string>, void);
+    TEST_TYPE(IteratorValue<std::string::iterator>, char);
+    TEST_TYPE(IteratorValue<std::string::const_iterator>, char);
+
     TEST_TYPE(RangeIterator<std::string>, std::string::iterator);
     TEST_TYPE(RangeIterator<const std::string>, std::string::const_iterator);
     TEST_TYPE(RangeIterator<std::vector<int>>, std::vector<int>::iterator);

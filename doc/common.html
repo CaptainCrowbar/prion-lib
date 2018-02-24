@@ -721,10 +721,13 @@ same, but behaviour is undefined if either pointer is null.</p>
 <h3 id="range-traits">Range traits</h3>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename InputRange&gt; using</code> <strong><code>RangeIterator</code></strong> <code>= ...</code></li>
-<li><code>template &lt;typename InputRange&gt; using</code> <strong><code>RangeValue</code></strong> <code>= ...</code></li>
+<li><code>template &lt;typename Iterator&gt; using</code> <strong><code>IteratorValueType</code></strong></li>
+<li><code>template &lt;typename Range&gt; using</code> <strong><code>RangeIteratorType</code></strong></li>
+<li><code>template &lt;typename Range&gt; using</code> <strong><code>RangeValueType</code></strong></li>
 </ul>
-<p>The iterator and value types of a range.</p>
+<p>These return the types associated with an iterator or range. They are
+extracted by checking the return type of <code>begin()</code>, and do not require a
+specialization of <code>iterator_traits</code> to exist.</p>
 </div>
 <div class="defns">
 <ul>

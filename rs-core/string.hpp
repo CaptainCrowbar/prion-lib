@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rs-core/common.hpp"
+#include "rs-core/meta.hpp"
 #include <algorithm>
 #include <atomic>
 #include <cmath>
@@ -853,12 +854,12 @@ namespace RS {
 
     namespace RS_Detail {
 
-        template <typename R, typename V = RangeValue<R>>
+        template <typename R, typename T = RangeValue<R>>
         struct RangeToString {
             Ustring operator()(const R& r) const {
                 Ustring s = "[";
-                for (const V& v: r) {
-                    s += to_str(v);
+                for (auto&& t: r) {
+                    s += to_str(t);
                     s += ',';
                 }
                 if (s.size() > 1)
@@ -868,11 +869,11 @@ namespace RS {
             }
         };
 
-        template <typename R, typename K, typename V>
-        struct RangeToString<R, std::pair<K, V>> {
+        template <typename R, typename K, typename T>
+        struct RangeToString<R, std::pair<K, T>> {
             Ustring operator()(const R& r) const {
                 Ustring s = "{";
-                for (const auto& kv: r) {
+                for (auto&& kv: r) {
                     s += to_str(kv.first);
                     s += ':';
                     s += to_str(kv.second);
@@ -900,7 +901,7 @@ namespace RS {
                 std::is_integral<T>::value ? 'I' :
                 std::is_floating_point<T>::value ? 'F' :
                 std::is_convertible<T, std::string>::value ? 'S' :
-                CommonRangeType<T>::value ? 'R' : 'X';
+                is_range<T> ? 'R' : 'X';
         };
 
         template <typename T, char C = ObjectToStringCategory<T>::value>

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "rs-core/common.hpp"
 #include <algorithm>
 #include <iterator>
 #include <ostream>
@@ -773,19 +772,6 @@ namespace RS {
     template <typename T> constexpr bool is_container = IsContainer<T>::value;
     template <typename T> constexpr bool is_insertable_container = IsInsertableContainer<T>::value;
     template <typename T> constexpr bool is_swappable = IsSwappable<T>::value;
-
-    // Related types
-
-    namespace RS_Detail {
-
-        template <typename T, bool Iter = is_iterator<T>> struct IteratorValueType { using type = void; };
-        template <typename T> struct IteratorValueType<T, true> { using type = std::decay_t<decltype(*std::declval<T>())>; };
-
-    }
-
-    template <typename T> using IteratorValueType = typename RS_Detail::IteratorValueType<T>::type;
-    template <typename T> using RangeIteratorType = typename RS_Detail::RangeIteratorType<T>::type;
-    template <typename T> using RangeValueType = IteratorValueType<RangeIteratorType<T>>;
 
 }
 

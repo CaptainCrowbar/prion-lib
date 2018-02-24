@@ -1323,22 +1323,3 @@ void test_core_meta_type_categories() {
     TEST(is_swappable<std::vector<int>>);
 
 }
-
-void test_core_meta_related_types() {
-
-    TEST_TYPE(IteratorValueType<int>, void);
-    TEST_TYPE(IteratorValueType<int*>, int);
-    TEST_TYPE(IteratorValueType<const int*>, int);
-    TEST_TYPE(IteratorValueType<std::string>, void);
-    TEST_TYPE(IteratorValueType<std::string::iterator>, char);
-    TEST_TYPE(IteratorValueType<std::string::const_iterator>, char);
-
-    TEST_TYPE(RangeIteratorType<int>, void);
-    TEST_TYPE(RangeIteratorType<std::string>, std::string::iterator);
-    TEST_TYPE(RangeIteratorType<const std::string>, std::string::const_iterator);
-
-    TEST_TYPE(RangeValueType<int>, void);
-    TEST_TYPE(RangeValueType<std::string>, char);
-    TEST_TYPE(RangeValueType<const std::string>, char);
-
-}

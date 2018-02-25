@@ -40,13 +40,12 @@ void test_core_process_stream() {
     std::unique_ptr<StreamProcess> chan;
     Ustring s;
     Strings v;
-    auto cs = Channel::state::closed;
     int st = -1;
     size_t n = 0;
 
     TRY(chan = std::make_unique<StreamProcess>("ls"));
-    TRY(cs = chan->wait_for(100ms));
-    TEST_EQUAL(cs, Channel::state::ready);
+    TEST(chan->wait_for(100ms));
+    TEST(! chan->is_closed());
     TRY(n = chan->read_to(s));
     TEST_COMPARE(n, >, 0);
     TEST_MATCH(s, "([A-Za-z0-9.]+\\n)+");
@@ -56,12 +55,12 @@ void test_core_process_stream() {
     TRY(s = to_str(v));
     TEST_EQUAL(s, files);
 
-    TRY(cs = chan->wait_for(10ms));
-    TEST_EQUAL(cs, Channel::state::ready);
+    TEST(chan->wait_for(10ms));
+    TEST(! chan->is_closed());
     TRY(n = chan->read_to(s));
     TEST_EQUAL(n, 0);
-    TRY(cs = chan->wait_for(10ms));
-    TEST_EQUAL(cs, Channel::state::closed);
+    TEST(chan->wait_for(10ms));
+    TEST(chan->is_closed());
     TRY(st = chan->status());
     TEST_EQUAL(st, 0);
 
@@ -80,16 +79,16 @@ void test_core_process_text() {
     std::unique_ptr<TextProcess> chan;
     Ustring s;
     Strings v;
-    auto cs = Channel::state::closed;
     int st = -1;
+    bool rc = false;
 
     TRY(chan = std::make_unique<TextProcess>("ls"));
 
     for (int i = 1; i <= 10; ++i) {
-        TRY(cs = chan->wait_for(10ms));
-        if (cs == Channel::state::closed)
+        TRY(rc = bool(chan->wait_for(10ms)));
+        if (chan->is_closed())
             break;
-        if (cs == Channel::state::ready) {
+        if (rc) {
             TEST(chan->read(s));
             v.push_back(s);
         }

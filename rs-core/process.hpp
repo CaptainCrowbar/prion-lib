@@ -25,6 +25,7 @@ namespace RS {
         explicit StreamProcess(const Ustring& cmd);
         virtual ~StreamProcess() noexcept { do_close(); }
         virtual void close() noexcept { do_close(); }
+        virtual bool is_closed() const noexcept { return ! fp; }
         virtual size_t read(void* dst, size_t maxlen);
         int status() const noexcept { return st; }
     protected:
@@ -118,20 +119,21 @@ namespace RS {
     public MessageChannel<Ustring> {
     public:
         RS_NO_COPY_MOVE(TextProcess);
-        explicit TextProcess(const Ustring& cmd): ps(cmd), buf() {}
+        explicit TextProcess(const Ustring& cmd): sp(cmd), buf() {}
         virtual void close() noexcept;
+        virtual bool is_closed() const noexcept { return sp.is_closed() && buf.empty(); }
         virtual bool read(Ustring& t);
-        std::string read_all() { return buf + ps.read_all(); }
-        int status() const noexcept { return ps.status(); }
+        std::string read_all() { return buf + sp.read_all(); }
+        int status() const noexcept { return sp.status(); }
     protected:
         virtual state do_wait_for(time_unit t);
     private:
-        StreamProcess ps;
+        StreamProcess sp;
         Ustring buf;
     };
 
         inline void TextProcess::close() noexcept {
-            ps.close();
+            sp.close();
             buf.clear();
         }
 
@@ -158,8 +160,8 @@ namespace RS {
             auto deadline = ReliableClock::now() + t;
             time_unit delta = {};
             for (;;) {
-                auto rc = ps.wait_for(delta);
-                if (rc == state::closed || ! ps.read_to(buf))
+                auto rc = sp.wait_for(delta);
+                if (rc == state::closed || ! sp.read_to(buf))
                     return buf.empty() ? state::closed : state::ready;
                 size_t lf = buf.find('\n');
                 if (lf != npos)

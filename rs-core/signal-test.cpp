@@ -18,43 +18,44 @@ void test_core_signal_channel() {
         PosixSignal ps3{signals};
         int s = 0;
 
-        TEST_EQUAL(ps1.wait_for(10ms), Channel::state::waiting);
+        TEST(! ps1.wait_for(10ms));
 
         raise(SIGINT);
-        TEST_EQUAL(ps1.wait_for(10ms), Channel::state::ready);
+        TEST(ps1.wait_for(10ms));
         TEST(ps1.read(s));
         TEST_EQUAL(s, SIGINT);
-        TEST_EQUAL(ps1.wait_for(10ms), Channel::state::waiting);
+        TEST(! ps1.wait_for(10ms));
 
         raise(SIGINT);
-        TEST_EQUAL(ps1.wait_for(10ms), Channel::state::ready);
+        TEST(ps1.wait_for(10ms));
         TEST(ps1.read(s));
         TEST_EQUAL(s, SIGINT);
-        TEST_EQUAL(ps1.wait_for(10ms), Channel::state::waiting);
+        TEST(! ps1.wait_for(10ms));
 
         raise(SIGURG);
-        TEST_EQUAL(ps1.wait_for(1ms), Channel::state::waiting);
-        TEST_EQUAL(ps2.wait_for(1ms), Channel::state::waiting);
-        TEST_EQUAL(ps3.wait_for(1ms), Channel::state::waiting);
+        TEST(! ps1.wait_for(1ms));
+        TEST(! ps2.wait_for(1ms));
+        TEST(! ps3.wait_for(1ms));
 
         raise(SIGUSR1);
-        TEST_EQUAL(ps2.wait_for(10ms), Channel::state::ready);
+        TEST(ps2.wait_for(10ms));
         TEST(ps2.read(s));
         TEST_EQUAL(s, SIGUSR1);
-        TEST_EQUAL(ps2.wait_for(10ms), Channel::state::waiting);
+        TEST(! ps2.wait_for(10ms));
 
         raise(SIGUSR2);
-        TEST_EQUAL(ps2.wait_for(10ms), Channel::state::ready);
+        TEST(ps2.wait_for(10ms));
         TEST(ps2.read(s));
         TEST_EQUAL(s, SIGUSR2);
-        TEST_EQUAL(ps2.wait_for(10ms), Channel::state::waiting);
+        TEST(! ps2.wait_for(10ms));
 
         raise(SIGHUP);
-        TEST_EQUAL(ps1.wait_for(1ms), Channel::state::waiting);
-        TEST_EQUAL(ps2.wait_for(1ms), Channel::state::waiting);
+        TEST(! ps1.wait_for(1ms));
+        TEST(! ps2.wait_for(1ms));
         TRY(ps2.close());
-        TEST_EQUAL(ps2.wait_for(10ms), Channel::state::closed);
-        TEST_EQUAL(ps3.wait_for(10ms), Channel::state::ready);
+        TEST(ps2.wait_for(10ms));
+        TEST(ps2.is_closed());
+        TEST(ps3.wait_for(10ms));
         TEST(ps3.read(s));
         TEST_EQUAL(s, SIGHUP);
 
@@ -63,11 +64,12 @@ void test_core_signal_channel() {
         PosixSignal ps{SIGINT};
         int s = 0;
 
-        TEST_EQUAL(ps.wait_for(10ms), Channel::state::waiting);
+        TEST(! ps.wait_for(10ms));
         TEST(! ps.read(s));
 
         TRY(ps.close());
-        TEST_EQUAL(ps.wait_for(10ms), Channel::state::closed);
+        TEST(ps.wait_for(10ms));
+        TEST(ps.is_closed());
         TEST(! ps.read(s));
 
     #endif

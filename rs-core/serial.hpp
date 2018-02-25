@@ -246,11 +246,11 @@ namespace RS {
         }
 
         inline void PersistState::autosave_loop() {
-            auto cs = Channel::state::waiting;
-            while (cs != Channel::state::closed) {
-                cs = autosave_channel->wait();
-                if (cs == Channel::state::ready)
-                    save_state(false);
+            for (;;) {
+                autosave_channel->wait();
+                if (autosave_channel->is_closed())
+                    break;
+                save_state(false);
             }
         }
 

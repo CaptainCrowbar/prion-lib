@@ -27,6 +27,7 @@ namespace RS {
         explicit PosixSignal(const signal_list& list);
         virtual ~PosixSignal() noexcept;
         virtual void close() noexcept;
+        virtual bool is_closed() const noexcept { return ! open; }
         virtual bool read(int& t);
         virtual bool is_async() const noexcept { return false; }
         static Ustring name(int s);

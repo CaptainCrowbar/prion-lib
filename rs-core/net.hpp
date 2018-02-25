@@ -587,6 +587,7 @@ namespace RS {
         Socket(int domain, int type, int protocol = 0);
         virtual ~Socket() noexcept { do_close(); }
         virtual void close() noexcept { do_close(); }
+        virtual bool is_closed() const noexcept { return sock == no_socket; }
         virtual size_t read(void* dst, size_t maxlen) { return do_read(dst, maxlen, nullptr); }
         SocketAddress local() const;
         SocketAddress remote() const;
@@ -717,6 +718,7 @@ namespace RS {
         explicit TcpServer(const SocketAddress& local);
         template <typename... Args> explicit TcpServer(const Args&... args): TcpServer(SocketAddress{args...}) {}
         virtual void close() noexcept { sock.close(); }
+        virtual bool is_closed() const noexcept { return sock.is_closed(); }
         virtual bool read(std::unique_ptr<TcpClient>& t); // Defined after SocketSet
         SocketAddress local() const { return sock.local(); }
         SocketType native() const noexcept { return sock.native(); }
@@ -772,6 +774,7 @@ namespace RS {
         RS_NO_COPY_MOVE(SocketSet);
         SocketSet() = default;
         virtual void close() noexcept { open = false; }
+        virtual bool is_closed() const noexcept { return ! open; }
         virtual bool read(Channel*& t);
         void clear() noexcept;
         bool empty() const noexcept { return channels.empty(); }

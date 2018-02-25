@@ -43,13 +43,14 @@ namespace RS {
     class Channel {
     public:
         using time_unit = std::chrono::microseconds;
-        enum class state { ready = 1, waiting, closed };
+        enum class state { closed = -1, waiting, ready };
         virtual ~Channel() noexcept { drop(); }
         Channel(const Channel&) = delete;
         Channel(Channel&& c) noexcept { owner = std::exchange(c.owner, nullptr); }
         Channel& operator=(const Channel&) = delete;
         Channel& operator=(Channel&& c) noexcept;
         virtual void close() noexcept = 0;
+        virtual bool is_closed() const noexcept = 0;
         virtual bool is_async() const noexcept { return true; }
         virtual bool is_shared() const noexcept { return false; }
         virtual state poll() { return do_wait_for({}); }
@@ -105,6 +106,10 @@ namespace RS {
                 default:                       out << int(cs); break;
             }
             return out;
+        }
+
+        inline bool operator!(Channel::state cs) noexcept {
+            return cs == Channel::state::waiting;
         }
 
     class EventChannel:
@@ -188,6 +193,7 @@ namespace RS {
         RS_NO_COPY_MOVE(TrueChannel);
         TrueChannel() = default;
         virtual void close() noexcept { open = false; }
+        virtual bool is_closed() const noexcept { return ! open; }
         virtual bool is_shared() const noexcept { return true; }
     protected:
         virtual state do_wait_for(time_unit /*t*/) { return open ? state::ready : state::closed; }
@@ -201,6 +207,7 @@ namespace RS {
         RS_NO_COPY_MOVE(FalseChannel);
         FalseChannel() = default;
         virtual void close() noexcept;
+        virtual bool is_closed() const noexcept { return ! open; }
         virtual bool is_shared() const noexcept { return true; }
     protected:
         virtual state do_wait_for(time_unit t);
@@ -232,6 +239,7 @@ namespace RS {
         RS_NO_COPY_MOVE(TimerChannel);
         template <typename R, typename P> explicit TimerChannel(std::chrono::duration<R, P> t) noexcept;
         virtual void close() noexcept;
+        virtual bool is_closed() const noexcept { return ! open; }
         virtual bool is_shared() const noexcept { return true; }
         void flush() noexcept;
         time_unit interval() const noexcept { return delta; }
@@ -302,6 +310,7 @@ namespace RS {
         RS_NO_COPY_MOVE(ThrottleChannel);
         template <typename R, typename P> explicit ThrottleChannel(std::chrono::duration<R, P> t) noexcept;
         virtual void close() noexcept;
+        virtual bool is_closed() const noexcept { return ! open; }
         virtual bool is_shared() const noexcept { return true; }
         time_unit interval() const noexcept { return delta; }
     protected:
@@ -360,6 +369,7 @@ namespace RS {
         using generator = std::function<T()>;
         template <typename F> explicit GeneratorChannel(F f): mutex(), gen(f) {}
         virtual void close() noexcept;
+        virtual bool is_closed() const noexcept { return ! gen; }
         virtual bool read(T& t);
     protected:
         virtual Channel::state do_wait_for(Channel::time_unit t);
@@ -395,6 +405,7 @@ namespace RS {
         RS_NO_COPY_MOVE(QueueChannel);
         QueueChannel() = default;
         virtual void close() noexcept;
+        virtual bool is_closed() const noexcept { return ! open; }
         virtual bool is_shared() const noexcept { return true; }
         virtual bool read(T& t);
         void clear() noexcept;
@@ -481,6 +492,7 @@ namespace RS {
         ValueChannel() = default;
         explicit ValueChannel(const T& t): value(t) {}
         virtual void close() noexcept;
+        virtual bool is_closed() const noexcept { return st == Channel::state::closed; }
         virtual bool is_shared() const noexcept { return true; }
         virtual bool read(T& t);
         void clear() noexcept;
@@ -552,6 +564,7 @@ namespace RS {
         RS_NO_COPY_MOVE(BufferChannel);
         BufferChannel() = default;
         virtual void close() noexcept;
+        virtual bool is_closed() const noexcept { return ! open; }
         virtual size_t read(void* dst, size_t maxlen);
         void clear() noexcept;
         bool write(string_view src) { return write(src.data(), src.size()); }

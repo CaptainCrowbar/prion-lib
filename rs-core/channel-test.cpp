@@ -28,14 +28,9 @@ namespace {
         virtual bool is_closed() const noexcept {
             return ! open;
         }
-        virtual state poll() {
+        virtual bool poll() {
             auto lock = make_lock(mutex);
-            if (! open)
-                return state::closed;
-            else if (queue.empty())
-                return state::waiting;
-            else
-                return state::ready;
+            return ! open || ! queue.empty();
         }
         virtual bool read(int& t) {
             auto lock = make_lock(mutex);
@@ -50,7 +45,7 @@ namespace {
             queue.push_back(n);
         }
     protected:
-        virtual state do_wait_for(time_unit t) {
+        virtual bool do_wait_for(time_unit t) {
             return polled_wait(t);
         }
     private:

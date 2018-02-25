@@ -29,7 +29,7 @@ namespace RS {
         virtual size_t read(void* dst, size_t maxlen);
         int status() const noexcept { return st; }
     protected:
-        virtual state do_wait_for(time_unit t);
+        virtual bool do_wait_for(time_unit t);
     private:
         std::atomic<FILE*> fp;
         int st = -1;
@@ -73,14 +73,13 @@ namespace RS {
             fp = nullptr;
         }
 
-        inline Channel::state StreamProcess::do_wait_for(time_unit t) {
+        inline bool StreamProcess::do_wait_for(time_unit t) {
             using namespace std::chrono;
             if (! fp)
-                return state::closed;
+                return true;
             if (t < time_unit())
                 t = {};
             int fd = RS_IO_FUNCTION(fileno)(fp);
-            auto cs = state::closed;
             #ifdef _XOPEN_SOURCE
                 fd_set fds;
                 FD_ZERO(&fds);
@@ -90,13 +89,11 @@ namespace RS {
                 int rc = ::select(fd + 1, &fds, nullptr, &fds, &tv);
                 int err = errno;
                 if (rc == -1 && err == EBADF)
-                    cs = state::closed;
+                    return true;
                 else if (rc == -1)
                     throw std::system_error(err, std::generic_category());
-                else if (rc == 0)
-                    cs = state::waiting;
                 else
-                    cs = state::ready;
+                    return rc > 0;
             #else
                 auto fh = reinterpret_cast<HANDLE>(_get_osfhandle(fd));
                 auto ms = duration_cast<milliseconds>(t).count();
@@ -104,15 +101,14 @@ namespace RS {
                 auto rc = WaitForSingleObject(fh, uint32_t(ms));
                 auto err = GetLastError();
                 if (rc == WAIT_OBJECT_0)
-                    cs = state::ready;
+                    return true;
                 else if (rc == WAIT_TIMEOUT)
-                    cs = state::waiting;
+                    return false;
                 else if (err == ERROR_INVALID_HANDLE)
                     throw std::system_error(err, std::system_category());
                 else
-                    cs = state::closed;
+                    return true;
             #endif
-            return cs;
         }
 
     class TextProcess:
@@ -126,7 +122,7 @@ namespace RS {
         std::string read_all() { return buf + sp.read_all(); }
         int status() const noexcept { return sp.status(); }
     protected:
-        virtual state do_wait_for(time_unit t);
+        virtual bool do_wait_for(time_unit t);
     private:
         StreamProcess sp;
         Ustring buf;
@@ -154,21 +150,21 @@ namespace RS {
             return true;
         }
 
-        inline Channel::state TextProcess::do_wait_for(time_unit t) {
+        inline bool TextProcess::do_wait_for(time_unit t) {
             using namespace std::chrono;
             t = std::max(t, time_unit());
             auto deadline = ReliableClock::now() + t;
             time_unit delta = {};
             for (;;) {
-                auto rc = sp.wait_for(delta);
-                if (rc == state::closed || ! sp.read_to(buf))
-                    return buf.empty() ? state::closed : state::ready;
+                sp.wait_for(delta);
+                if (sp.is_closed() || ! sp.read_to(buf))
+                    return true;
                 size_t lf = buf.find('\n');
                 if (lf != npos)
-                    return state::ready;
+                    return true;
                 auto now = ReliableClock::now();
                 if (now > deadline)
-                    return state::waiting;
+                    return false;
                 delta = duration_cast<time_unit>(deadline - now);
             }
         }

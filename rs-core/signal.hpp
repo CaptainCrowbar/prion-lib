@@ -32,7 +32,7 @@ namespace RS {
         virtual bool is_async() const noexcept { return false; }
         static Ustring name(int s);
     protected:
-        virtual state do_wait_for(time_unit t);
+        virtual bool do_wait_for(time_unit t);
     private:
         #ifdef _XOPEN_SOURCE
             signal_list signals;
@@ -87,15 +87,13 @@ namespace RS {
 
         #if defined(__CYGWIN__) || defined(__APPLE__)
 
-            inline Channel::state PosixSignal::do_wait_for(time_unit t) {
+            inline bool PosixSignal::do_wait_for(time_unit t) {
                 using namespace std::chrono;
                 static const time_unit delta = milliseconds(10);
                 sigset_t pending;
                 for (;;) {
-                    if (! open)
-                        return state::closed;
-                    else if (! queue.empty())
-                        return state::ready;
+                    if (! open || ! queue.empty())
+                        return true;
                     sigemptyset(&pending);
                     sigpending(&pending);
                     auto i = std::find_if(signals.begin(), signals.end(),
@@ -107,10 +105,9 @@ namespace RS {
                         int s = 0;
                         sigwait(&mask, &s);
                         queue.push_back(s);
-                        return state::ready;
-                    }
-                    if (t <= time_unit()) {
-                        return state::waiting;
+                        return true;
+                    } else if (t <= time_unit()) {
+                        return false;
                     } else if (t < delta) {
                         std::this_thread::sleep_for(t);
                         t = time_unit();
@@ -123,20 +120,18 @@ namespace RS {
 
         #else
 
-            inline Channel::state PosixSignal::do_wait_for(time_unit t) {
-                if (! open)
-                    return state::closed;
-                else if (! queue.empty())
-                    return state::ready;
+            inline bool PosixSignal::do_wait_for(time_unit t) {
+                if (! open || ! queue.empty())
+                    return true;
                 t = std::max(t, time_unit());
                 auto ts = duration_to_timespec(t);
                 int s = sigtimedwait(&newmask, nullptr, &ts);
                 if (! open)
-                    return state::closed;
+                    return true;
                 else if (s == -1)
-                    return state::waiting;
+                    return false;
                 queue.push_back(s);
-                return state::ready;
+                return true;
             }
 
         #endif
@@ -158,11 +153,11 @@ namespace RS {
             return false;
         }
 
-        inline Channel::state PosixSignal::do_wait_for(time_unit t) {
+        inline bool PosixSignal::do_wait_for(time_unit t) {
             auto lock = make_lock(mutex);
             if (t > time_unit())
                 cv.wait_for(lock, t, [&] { return ! open; });
-            return open ? state::waiting : state::closed;
+            return ! open;
         }
 
     #endif

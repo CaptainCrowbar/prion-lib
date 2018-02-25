@@ -73,32 +73,32 @@
 <ul>
 <li><code>class</code> <strong><code>Channel</code></strong><ul>
 <li><code>using Channel::</code><strong><code>time_unit</code></strong> <code>= std::chrono::microseconds</code></li>
-<li><code>enum class Channel::</code><strong><code>state</code></strong><ul>
-<li><code>Channel::state::</code><strong><code>ready</code></strong></li>
-<li><code>Channel::state::</code><strong><code>waiting</code></strong></li>
-<li><code>Channel::state::</code><strong><code>closed</code></strong></li>
-</ul>
-</li>
 <li><code>virtual Channel::</code><strong><code>~Channel</code></strong><code>() noexcept</code></li>
 <li><code>Channel::</code><strong><code>Channel</code></strong><code>(Channel&amp;&amp; c) noexcept</code></li>
 <li><code>Channel&amp; Channel::</code><strong><code>operator=</code></strong><code>(Channel&amp;&amp; c) noexcept</code></li>
 <li><code>virtual void Channel::</code><strong><code>close</code></strong><code>() noexcept = 0</code></li>
+<li><code>virtual bool Channel::</code><strong><code>is_closed</code></strong><code>() const noexcept = 0</code></li>
 <li><code>virtual bool Channel::</code><strong><code>is_async</code></strong><code>() const noexcept</code> <em>= true</em></li>
 <li><code>virtual bool Channel::</code><strong><code>is_shared</code></strong><code>() const noexcept</code> <em>= false</em></li>
-<li><code>virtual state Channel::</code><strong><code>poll</code></strong><code>()</code></li>
-<li><code>virtual state Channel::</code><strong><code>wait</code></strong><code>()</code></li>
-<li><code>template &lt;typename R, typename P&gt; Channel::state Channel::</code><strong><code>wait_for</code></strong><code>(std::chrono::duration&lt;R, P&gt; t)</code></li>
-<li><code>template &lt;typename C, typename D&gt; Channel::state Channel::</code><strong><code>wait_until</code></strong><code>(std::chrono::time_point&lt;C, D&gt; t)</code></li>
-<li><code>protected virtual Channel::state Channel::</code><strong><code>do_wait_for</code></strong><code>(time_unit t) = 0</code></li>
+<li><code>virtual bool Channel::</code><strong><code>poll</code></strong><code>()</code></li>
+<li><code>virtual void Channel::</code><strong><code>wait</code></strong><code>()</code></li>
+<li><code>template &lt;typename R, typename P&gt; bool Channel::</code><strong><code>wait_for</code></strong><code>(std::chrono::duration&lt;R, P&gt; t)</code></li>
+<li><code>template &lt;typename C, typename D&gt; bool Channel::</code><strong><code>wait_until</code></strong><code>(std::chrono::time_point&lt;C, D&gt; t)</code></li>
+<li><code>protected virtual bool Channel::</code><strong><code>do_wait_for</code></strong><code>(time_unit t) = 0</code></li>
 </ul>
 </li>
 </ul>
 <p>The base class for all readable message channels. All concrete channel classes
 must derive from one of the three intermediate classes below, not directly
-from Channel. Derived classes need to implement at least <code>close()</code> and
-<code>do_wait_for()</code>, and may optionally implement <code>poll()</code> and <code>wait()</code> if more
-efficient implementations than the default call to <code>do_wait_for()</code> are
-available. The <code>close()</code> function must be async safe and idempotent.</p>
+from Channel. Derived classes need to implement at least <code>close()</code>,
+<code>is_closed()</code>, and <code>do_wait_for()</code>, and may optionally implement <code>poll()</code> and
+<code>wait()</code> if more efficient implementations than the default call to
+<code>do_wait_for()</code> are available. The <code>close()</code> function must be async safe and
+idempotent.</p>
+<p>Any of the <code>wait()</code> functions will return true if the channel is either ready
+to read or closed, false if the wait timed out. The <code>poll()</code> function is
+equivalent to <code>wait_for()</code> with a zero timeout; <code>wait()</code> is equivalent to an
+infinite timeout (and returns nothing since it can never time out).</p>
 <p>If <code>is_async()</code> is false, the channel can only be used in a synchronous
 dispatch handler (see <code>Dispatch</code> below), usually because it calls an
 underlying native API that is only intended to be used from the main thread.</p>
@@ -191,7 +191,7 @@ for <code>read_all/str/to()</code>.</p>
 <li><code>class</code> <strong><code>Polled</code></strong><ul>
 <li><code>static constexpr Channel::time_unit Polled::</code><strong><code>default_interval</code></strong> <code>= 10ms</code></li>
 <li><code>virtual Polled::</code><strong><code>~Polled</code></strong><code>()</code></li>
-<li><code>virtual Channel::state Polled::</code><strong><code>poll</code></strong><code>() = 0</code></li>
+<li><code>virtual bool Polled::</code><strong><code>poll</code></strong><code>() = 0</code></li>
 <li><code>Channel::time_unit Polled::</code><strong><code>interval</code></strong><code>() const noexcept</code></li>
 <li><code>template &lt;typename R, typename P&gt; void Polled::</code><strong><code>set_interval</code></strong><code>(std::chrono::duration&lt;R, P&gt; t) noexcept</code></li>
 </ul>
@@ -201,9 +201,8 @@ for <code>read_all/str/to()</code>.</p>
 requiring a polled implementation. The <code>set_interval()</code> function clamps the
 argument to a minimum of zero.</p>
 <p>Polled channel classes should derive from both <code>Channel</code> and <code>Polled</code>,
-implementing <code>close()</code>, <code>poll()</code>, and <code>do_wait_for()</code>. The <code>poll()</code> function
-should immediately return <code>ready</code>, <code>waiting</code>, or <code>closed</code>; the <code>do_wait_for()</code>
-function should just call <code>polled_wait()</code>.</p>
+implementing <code>close()</code>, <code>is_closed()</code>, <code>poll()</code>, and <code>do_wait_for()</code>, which
+should just call <code>polled_wait()</code>.</p>
 </div>
 <h2 id="concrete-channel-classes">Concrete channel classes</h2>
 <p>Member functions inherited from the channel base classes are not documented

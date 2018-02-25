@@ -599,7 +599,7 @@ namespace RS {
         bool write_to(string_view s, const SocketAddress& to) { return do_write(s.data(), s.size(), &to); }
         bool write_to(const void* src, size_t len, const SocketAddress& to) { return do_write(src, len, &to); }
     protected:
-        virtual state do_wait_for(time_unit t); // Defined after SocketSet
+        virtual bool do_wait_for(time_unit t); // Defined after SocketSet
         void do_close() noexcept;
     private:
         SocketType sock = no_socket;
@@ -723,7 +723,7 @@ namespace RS {
         SocketAddress local() const { return sock.local(); }
         SocketType native() const noexcept { return sock.native(); }
     protected:
-        virtual state do_wait_for(time_unit t) { return sock.wait_for(t); }
+        virtual bool do_wait_for(time_unit t) { return sock.wait_for(t); }
     private:
         Socket sock;
     };
@@ -784,7 +784,7 @@ namespace RS {
         void insert(TcpServer& s) { do_insert(s, s.native()); }
         size_t size() const noexcept { return channels.size(); }
     protected:
-        virtual state do_wait_for(time_unit t);
+        virtual bool do_wait_for(time_unit t);
     private:
         friend class Socket;
         friend class TcpServer;
@@ -794,7 +794,7 @@ namespace RS {
         std::atomic<bool> open {true};
         void do_erase(Channel& c) noexcept;
         void do_insert(Channel& c, SocketType s);
-        static Channel::state do_select(SocketType* sockets, size_t n, time_unit t = {}, size_t* index = nullptr);
+        static int do_select(SocketType* sockets, size_t n, time_unit t = {}, size_t* index = nullptr); // +1 = ready, 0 = timeout, -1 = socket closed
     };
 
         inline bool SocketSet::read(Channel*& t) {
@@ -819,19 +819,14 @@ namespace RS {
             current = nullptr;
         }
 
-        inline Channel::state SocketSet::do_wait_for(time_unit t) {
-            if (! open)
-                return state::closed;
-            if (current)
-                return state::ready;
+        inline bool SocketSet::do_wait_for(time_unit t) {
+            if (! open || current)
+                return true;
             size_t index = npos;
-            auto rc = do_select(natives.data(), natives.size(), t, &index);
-            if (rc != state::waiting && index < channels.size())
+            int rc = do_select(natives.data(), natives.size(), t, &index);
+            if (rc && index < channels.size())
                 current = channels[index];
-            if (rc == state::closed)
-                return state::ready;
-            else
-                return rc;
+            return rc;
         }
 
         inline void SocketSet::do_erase(Channel& c) noexcept {
@@ -849,7 +844,7 @@ namespace RS {
             natives.push_back(s);
         }
 
-        inline Channel::state SocketSet::do_select(SocketType* sockets, size_t n, time_unit t, size_t* index) {
+        inline int SocketSet::do_select(SocketType* sockets, size_t n, time_unit t, size_t* index) {
             using namespace RS_Detail;
             if (index)
                 *index = npos;
@@ -869,32 +864,28 @@ namespace RS {
             clear_error();
             auto rc = net_call(::select(last + 1, &rfds, nullptr, &efds, &tv));
             if (rc.res == 0)
-                return Channel::state::waiting;
+                return 0;
             else if (rc.res == -1 && rc.err == e_badf)
-                return Channel::state::closed;
-            else
-                rc.fail_if(-1, "select()");
+                return -1;
+            rc.fail_if(-1, "select()");
             size_t pos = npos;
             for (size_t i = 0; i < n && pos == npos; ++i)
                 if (sockets[i] != no_socket && (FD_ISSET(sockets[i], &rfds) || FD_ISSET(sockets[i], &efds)))
                     pos = i;
             if (pos == npos)
-                return Channel::state::waiting;
+                return 0;
             if (index)
                 *index = pos;
-            return Channel::state::ready;
+            return 1;
         }
 
-        inline Channel::state Socket::do_wait_for(time_unit t) {
-            if (sock == no_socket)
-                return state::closed;
-            else
-                return SocketSet::do_select(&sock, 1, t);
+        inline bool Socket::do_wait_for(time_unit t) {
+            return sock == no_socket || SocketSet::do_select(&sock, 1, t);
         }
 
         inline size_t Socket::do_read(void* dst, size_t maxlen, SocketAddress* from) {
             using namespace RS_Detail;
-            if (! dst || ! maxlen || sock == no_socket || SocketSet::do_select(&sock, 1) != state::ready)
+            if (! dst || ! maxlen || sock == no_socket || SocketSet::do_select(&sock, 1) != 1)
                 return 0;
             auto cdst = static_cast<char*>(dst);
             NetResult<SocketSendRecv> rc;
@@ -917,7 +908,7 @@ namespace RS {
             if (sock.native() == no_socket)
                 return false;
             auto s = sock.native();
-            if (SocketSet::do_select(&s, 1) != state::ready)
+            if (SocketSet::do_select(&s, 1) != 1)
                 return false;
             clear_error();
             auto rc = net_call(::accept(sock.native(), nullptr, nullptr)).fail_if(no_socket, "socket()");

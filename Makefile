@@ -22,7 +22,7 @@ scripts_dir := $(LIBROOT)/core-lib/scripts
 build_host := $(shell uname | tr A-Z a-z | sed -E 's/[^a-z].*//')
 
 ifeq ($(TOOLS),msvc)
-	build_target := $(shell cl 2>&1 | head -n 1 | sed -E 's/^.*Version ([0-9]+)\.([0-9]+)\.[0-9]+ for (.+)$$/msvc-\1\2-\3/')
+	build_target := $(shell cl 2>&1 | head -n 1 | sed -E 's/^.*Version ([0-9]+)\.([0-9]+)\.[0-9.]+ for (.+)$$/msvc-\1\2-\3/')
 	cross_target := msvc
 else
 	build_target := $(shell gcc -v 2>&1 | grep '^Target:' | sed -E -e 's/^Target: //' -e 's/[0-9.]*$$//' | tr A-Z a-z)

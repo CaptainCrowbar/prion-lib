@@ -17,6 +17,7 @@
 <li><a href="#sequence-based-associative-array">Sequence Based Associative Array</a><ul>
 <li><a href="#contents">Contents</a></li>
 <li><a href="#class-arraymap">Class ArrayMap</a></li>
+<li><a href="#general-associative-container-selectors">General associative container selectors</a></li>
 </ul>
 </li>
 </ul>
@@ -40,8 +41,10 @@
 <li><code>T&amp; ArrayMap::</code><strong><code>operator[]</code></strong><code>(const K&amp; k) [only defined if T is not void]</code></li>
 <li><code>iterator ArrayMap::</code><strong><code>begin</code></strong><code>() noexcept</code></li>
 <li><code>const_iterator ArrayMap::</code><strong><code>begin</code></strong><code>() const noexcept</code></li>
+<li><code>const_iterator ArrayMap::</code><strong><code>cbegin</code></strong><code>() const noexcept</code></li>
 <li><code>iterator ArrayMap::</code><strong><code>end</code></strong><code>() noexcept</code></li>
 <li><code>const_iterator ArrayMap::</code><strong><code>end</code></strong><code>() const noexcept</code></li>
+<li><code>const_iterator ArrayMap::</code><strong><code>cend</code></strong><code>() const noexcept</code></li>
 <li><code>size_t ArrayMap::</code><strong><code>capacity</code></strong><code>() const noexcept</code></li>
 <li><code>void ArrayMap::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
 <li><code>bool ArrayMap::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
@@ -51,6 +54,7 @@
 <li><code>const_iterator ArrayMap::</code><strong><code>find</code></strong><code>(const K&amp; k) const noexcept</code></li>
 <li><code>bool ArrayMap::</code><strong><code>has</code></strong><code>(const K&amp; k) const noexcept</code></li>
 <li><code>std::pair&lt;iterator, bool&gt; ArrayMap::</code><strong><code>insert</code></strong><code>(const value_type&amp; v)</code></li>
+<li><code>std::pair&lt;iterator, bool&gt; ArrayMap::</code><strong><code>insert</code></strong><code>(const_iterator i, const value_type&amp; v)</code></li>
 <li><code>void ArrayMap::</code><strong><code>reserve</code></strong><code>(size_t n)</code></li>
 <li><code>size_t ArrayMap::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
 </ul>
@@ -67,5 +71,22 @@
 finding keys by linear search (using equality comparison). This can be more
 efficient than a tree or hash based container for small element counts; it can
 also be useful when the element type has no natural ordering or hash function.
-Functions have their usual meaning for associative containers.</p></body>
+Functions have their usual meaning for associative containers.</p>
+</div>
+<h2 id="general-associative-container-selectors">General associative container selectors</h2>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename K, typename T, bool PreferOrdered = false&gt; using</code> <strong><code>BasicMap</code></strong> <code>= [see below]</code></li>
+<li><code>template &lt;typename K, bool PreferOrdered = false&gt; using</code> <strong><code>BasicSet</code></strong> <code>= [see below]</code></li>
+</ul>
+<p>These can be used to select an appropriate associative container for a generic
+key type. The <code>BasicMap</code> and <code>BasicSet</code> types are selected according to the
+following rules:</p>
+<ul>
+<li>If <code>K</code> implements both less-than ordering and <code>std::hash</code>, use <code>std::map/set</code> or <code>std::unordered_map/unordered_set</code>, depending on the <code>PreferOrdered</code> flag.</li>
+<li>If <code>K</code> implements less-than ordering but not <code>std::hash</code>, use <code>std::map/set</code>.</li>
+<li>If <code>K</code> implements <code>std::hash</code> but not less-than ordering, use <code>std::unordered_map/unordered_set</code>.</li>
+<li>If <code>K</code> implements equality comparison, but not less-than ordering or <code>std::hash</code>, use <code>ArrayMap/ArraySet</code>.</li>
+<li>Otherwise (<code>K</code> implements none of equality, less-than, or <code>std::hash</code>), <code>BasicMap/BasicSet</code> will fail to compile.</li>
+</ul></body>
 </html>

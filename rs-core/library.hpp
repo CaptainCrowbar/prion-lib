@@ -6,6 +6,7 @@
 #include "rs-core/bounded-array.hpp"
 #include "rs-core/cache.hpp"
 #include "rs-core/channel.hpp"
+#include "rs-core/colony.hpp"
 #include "rs-core/common.hpp"
 #include "rs-core/compact-array.hpp"
 #include "rs-core/digest.hpp"

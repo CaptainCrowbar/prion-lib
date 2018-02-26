@@ -54,12 +54,15 @@
     * [`"rs-core/time.hpp"`](time.html) - Time and date algorithms
 * _Unit testing_
     * [`"rs-core/unit-test.hpp"`](unit-test.html) - Unit testing
+* _Third party code_
+    * `"rs-core/colony.hpp"` - Matthew Bentley's colony implementation
 
 This is a header-only library that contains the utilities that I've found a
 common need for in multiple projects.
 
-Everything in this library is in `namespace RS`, and can be used either by
-explicit namespace qualification or via `using namespace RS`.
+Everything in this library (except 3rd party code) is in `namespace RS`, and
+can be used either by explicit namespace qualification or via `using namespace
+RS`.
 
 Since this library is header-only, it is not necessary to build anything
 before using it with any other library. The makefile included here exists

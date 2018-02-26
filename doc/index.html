@@ -82,11 +82,16 @@
 <li><a href="unit-test.html"><code>"rs-core/unit-test.hpp"</code></a> - Unit testing</li>
 </ul>
 </li>
+<li><em>Third party code</em><ul>
+<li><code>"rs-core/colony.hpp"</code> - Matthew Bentley's colony implementation</li>
+</ul>
+</li>
 </ul>
 <p>This is a header-only library that contains the utilities that I've found a
 common need for in multiple projects.</p>
-<p>Everything in this library is in <code>namespace RS</code>, and can be used either by
-explicit namespace qualification or via <code>using namespace RS</code>.</p>
+<p>Everything in this library (except 3rd party code) is in <code>namespace RS</code>, and
+can be used either by explicit namespace qualification or via <code>using namespace
+RS</code>.</p>
 <p>Since this library is header-only, it is not necessary to build anything
 before using it with any other library. The makefile included here exists
 mainly to be referenced by inclusion in other projects' makefiles; it can also

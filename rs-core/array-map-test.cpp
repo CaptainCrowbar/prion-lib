@@ -148,8 +148,7 @@ namespace {
         std::string str;
         EqualityType(const std::string& s = {}): str(s) {}
         size_t hash() const noexcept { return std::hash<std::string>()(str); }
-        friend bool operator==(const EqualityType& lhs, const EqualityType& rhs) noexcept { return lhs.str == rhs.str; }
-        friend std::ostream& operator<<(std::ostream& out, const EqualityType& t) { return out << t.str; }
+        bool operator==(const EqualityType& rhs) const noexcept { return str == rhs.str; }
     };
 
     struct HashedType:
@@ -157,17 +156,15 @@ namespace {
         std::string str;
         HashedType(const std::string& s = {}): str(s) {}
         size_t hash() const noexcept { return std::hash<std::string>()(str); }
-        friend bool operator==(const HashedType& lhs, const HashedType& rhs) noexcept { return lhs.str == rhs.str; }
-        friend std::ostream& operator<<(std::ostream& out, const HashedType& t) { return out << t.str; }
+        bool operator==(const HashedType& rhs) const noexcept { return str == rhs.str; }
     };
 
     struct OrderedType:
     public LessThanComparable<OrderedType> {
         std::string str;
         OrderedType(const std::string& s = {}): str(s) {}
-        friend RS_ATTR_UNUSED bool operator==(const OrderedType& lhs, const OrderedType& rhs) noexcept { return lhs.str == rhs.str; }
-        friend bool operator<(const OrderedType& lhs, const OrderedType& rhs) noexcept { return lhs.str < rhs.str; }
-        friend std::ostream& operator<<(std::ostream& out, const OrderedType& t) { return out << t.str; }
+        bool operator==(const OrderedType& rhs) const noexcept { return str == rhs.str; }
+        bool operator<(const OrderedType& rhs) const noexcept { return str < rhs.str; }
     };
 
 }

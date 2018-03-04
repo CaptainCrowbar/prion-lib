@@ -311,10 +311,10 @@ void test_core_common_preprocessor_macros() {
 
 void test_core_common_integer_types() {
 
-    uint16_t u16 = 1;
+    uint16_t u16_1 = 1;
     uint8_t u8_2[2];
 
-    std::memcpy(u8_2, &u16, 2);
+    std::memcpy(u8_2, &u16_1, 2);
     TEST_COMPARE(little_endian_target, !=, big_endian_target);
     TEST_EQUAL(bool(u8_2[0]), little_endian_target);
     TEST_EQUAL(bool(u8_2[1]), big_endian_target);

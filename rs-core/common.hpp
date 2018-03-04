@@ -477,6 +477,7 @@ namespace RS {
     enum ByteOrder {
         big_endian = 1,
         little_endian = 2,
+        native_endian = big_endian_target ? big_endian : little_endian
     };
 
     namespace RS_Detail {

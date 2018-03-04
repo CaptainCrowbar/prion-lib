@@ -94,6 +94,7 @@ Arthur O'Dwyer on the C++ standard proposals mailing list, 14 Sep 2015.)
 * `enum` **`ByteOrder`**
     * **`big_endian`**
     * **`little_endian`**
+    * **`native_endian`** `= [big_endian or little_endian]`
 * `template <typename T, ByteOrder B> class` **`Endian`**
     * `using Endian::`**`value_type`** `= T`
     * `static constexpr ByteOrder Endian::`**`byte_order`** `= B`

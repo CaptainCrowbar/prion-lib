@@ -869,8 +869,9 @@ any newly added function pairs become part of a new cycle, equivalent to a
 newly constructed `ScopedTransaction`.
 
 * `template <typename T> std::unique_lock<T>` **`make_lock`**`(T& t)`
+* `template <typename T> std::shared_lock<T>` **`make_shared_lock`**`(T& t)`
 
-Simple wrapper function to create a mutex lock.
+Simple wrapper functions to create a mutex lock.
 
 ## I/O utilities ##
 

@@ -61,6 +61,7 @@
 #include <mutex>
 #include <ostream>
 #include <random>
+#include <shared_mutex>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -1702,6 +1703,7 @@ namespace RS {
     };
 
     template <typename T> inline auto make_lock(T& t) { return std::unique_lock<T>(t); }
+    template <typename T> inline auto make_shared_lock(T& t) { return std::shared_lock<T>(t); }
 
     // [Things that need to go at the end because of dependencies]
 

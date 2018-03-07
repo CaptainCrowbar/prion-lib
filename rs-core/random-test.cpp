@@ -775,7 +775,7 @@ void test_core_random_weighted_choice_distribution() {
 
 }
 
-void test_core_random_algorithms() {
+void test_core_random_bytes() {
 
     static constexpr size_t n = 10000;
 
@@ -807,6 +807,11 @@ void test_core_random_algorithms() {
     TEST_NEAR_EPSILON(mean, 0.5, 0.05);
     TEST_NEAR_EPSILON(sd, 0.288675, 0.05);
 
+}
+
+void test_core_random_shuffle() {
+
+    std::mt19937 rng(42);
     Ustring s;
 
     TRY(shuffle(rng, s));

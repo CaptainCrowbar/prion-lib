@@ -373,14 +373,6 @@ nothing if <code>ptr</code> is null or <code>n=0</code>.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename Rng2, typename Rng1&gt; Rng2</code> <strong><code>seed_from</code></strong><code>(Rng1&amp; src)</code></li>
-<li><code>template &lt;typename Rng1, typename Rng2&gt; void</code> <strong><code>seed_from</code></strong><code>(Rng1&amp; src, Rng2&amp; dst)</code></li>
-</ul>
-<p>Seed one standard RNG from another, calling the source enough times to fill
-the second generator's full state.</p>
-</div>
-<div class="defns">
-<ul>
 <li><code>template &lt;typename RNG, typename RandomAccessRange&gt; void</code> <strong><code>shuffle</code></strong><code>(RNG&amp; rng, RandomAccessRange&amp; range)</code></li>
 <li><code>template &lt;typename RNG, typename RandomAccessIterator&gt; void</code> <strong><code>shuffle</code></strong><code>(RNG&amp; rng, RandomAccessIterator i, RandomAccessIterator j)</code></li>
 </ul>

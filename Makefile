@@ -67,9 +67,9 @@ endif
 ifeq ($(cross_target),msvc)
 	install_prefix := ~/Dropbox/Lib/msvc
 	windows_prefix := $(shell cygpath -aw $(install_prefix))
-	vcpkg_prefix := $(VCPKG_ROOT)/installed/x64-windows-static
+	vcpkg_prefix := $(VCPKG_ROOT)/installed/x64-windows
 	CXX := cl
-	common_flags := /EHc /EHs /fp:precise /Gy /MT /MP /nologo /sdl /utf-8 /Y-
+	common_flags := /EHc /EHs /fp:precise /Gy /MD /MP /nologo /sdl /utf-8 /Y-
 	diagnostic_flags := /W4 /WX
 	cc_specific_flags :=
 	cxx_specific_flags := /permissive- /std:c++latest

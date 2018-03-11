@@ -942,6 +942,30 @@ overloaded), function pointers, function objects, lambda expressions, and
 <h3 id="generic-function-objects">Generic function objects</h3>
 <div class="defns">
 <ul>
+<li><code>template &lt;typename Signature&gt; class</code> <strong><code>CallRef</code></strong><ul>
+<li><code>using CallRef::</code><strong><code>function_type</code></strong> <code>= std::function&lt;Signature&gt;</code></li>
+<li><code>using CallRef::</code><strong><code>signature_type</code></strong> <code>= Signature</code></li>
+<li><code>CallRef::</code><strong><code>CallRef</code></strong><code>() noexcept</code></li>
+<li><code>CallRef::</code><strong><code>CallRef</code></strong><code>(std::nullptr_t) noexcept</code></li>
+<li><code>template &lt;typename F&gt; CallRef::</code><strong><code>CallRef</code></strong><code>(F f)</code></li>
+<li><code>CallRef::</code><strong><code>~CallRef</code></strong><code>() noexcept</code></li>
+<li><code>CallRef::</code><strong><code>CallRef</code></strong><code>(const CallRef&amp; cr)</code></li>
+<li><code>CallRef::</code><strong><code>CallRef</code></strong><code>(CallRef&amp;&amp; cr) noexcept</code></li>
+<li><code>CallRef&amp; CallRef::</code><strong><code>operator=</code></strong><code>(const CallRef&amp; cr)</code></li>
+<li><code>CallRef&amp; CallRef::</code><strong><code>operator=</code></strong><code>(CallRef&amp;&amp; cr) noexcept</code></li>
+<li><code>explicit CallRef::</code><strong><code>operator bool</code></strong><code>() const noexcept</code></li>
+<li><code>template &lt;typename... Args&gt; [return type] CallRef::</code><strong><code>operator()</code></strong><code>(Args... args) const</code></li>
+</ul>
+</li>
+</ul>
+<p>A function wrapper with reference semantics (a thin wrapper around
+<code>std::shared_ptr&lt;std::function&lt;Signature&gt;&gt;</code>), intended to make it easier to
+use heavyweight function objects where copying them around would impose too
+much overhead. Like <code>std::function</code>, invoking a null <code>CallRef</code> will throw
+<code>std::bad_function_call</code>.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>struct</code> <strong><code>DoNothing</code></strong><ul>
 <li><code>void</code> <strong><code>operator()</code></strong><code>() const noexcept {}</code></li>
 <li><code>template &lt;typename T&gt; void</code> <strong><code>operator()</code></strong><code>(T&amp;) const noexcept {}</code></li>

@@ -730,6 +730,26 @@ Calls a function, passing a tuple as the argument list.
 
 ### Generic function objects ###
 
+* `template <typename Signature> class` **`CallRef`**
+    * `using CallRef::`**`function_type`** `= std::function<Signature>`
+    * `using CallRef::`**`signature_type`** `= Signature`
+    * `CallRef::`**`CallRef`**`() noexcept`
+    * `CallRef::`**`CallRef`**`(std::nullptr_t) noexcept`
+    * `template <typename F> CallRef::`**`CallRef`**`(F f)`
+    * `CallRef::`**`~CallRef`**`() noexcept`
+    * `CallRef::`**`CallRef`**`(const CallRef& cr)`
+    * `CallRef::`**`CallRef`**`(CallRef&& cr) noexcept`
+    * `CallRef& CallRef::`**`operator=`**`(const CallRef& cr)`
+    * `CallRef& CallRef::`**`operator=`**`(CallRef&& cr) noexcept`
+    * `explicit CallRef::`**`operator bool`**`() const noexcept`
+    * `template <typename... Args> [return type] CallRef::`**`operator()`**`(Args... args) const`
+
+A function wrapper with reference semantics (a thin wrapper around
+`std::shared_ptr<std::function<Signature>>`), intended to make it easier to
+use heavyweight function objects where copying them around would impose too
+much overhead. Like `std::function`, invoking a null `CallRef` will throw
+`std::bad_function_call`.
+
 * `struct` **`DoNothing`**
     * `void` **`operator()`**`() const noexcept {}`
     * `template <typename T> void` **`operator()`**`(T&) const noexcept {}`

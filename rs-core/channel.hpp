@@ -663,7 +663,6 @@ namespace RS {
         };
         std::map<Channel*, task_info> tasks;
         void add_task(Channel& chan, mode m, callback call);
-        template <typename C, typename F> static typename C::callback make_callback(C& /*chan*/, const F& func) { return func; }
     };
 
         inline std::ostream& operator<<(std::ostream& out, Dispatch::mode dm) {
@@ -687,14 +686,14 @@ namespace RS {
 
         template <typename F>
         void Dispatch::add(EventChannel& chan, mode m, F func) {
-            auto handler = make_callback(chan, func);
+            EventChannel::callback handler(func);
             if (handler)
                 add_task(chan, m, handler);
         }
 
         template <typename T, typename F>
         void Dispatch::add(MessageChannel<T>& chan, mode m, F func) {
-            auto handler = make_callback(chan, func);
+            typename MessageChannel<T>::callback handler(func);
             if (! handler)
                 return;
             auto call = [&chan,handler,t=T()] () mutable {
@@ -706,7 +705,7 @@ namespace RS {
 
         template <typename F>
         void Dispatch::add(StreamChannel& chan, mode m, F func) {
-            auto handler = make_callback(chan, func);
+            StreamChannel::callback handler(func);
             if (! handler)
                 return;
             auto call = [&chan,handler,s=std::string()] () mutable {

@@ -1432,6 +1432,24 @@ namespace RS {
 
     // Generic function objects
 
+    template <typename Signature>
+    class CallRef {
+    public:
+        using function_type = std::function<Signature>;
+        using signature_type = Signature;
+        CallRef() = default;
+        CallRef(std::nullptr_t) noexcept: fptr() {}
+        template <typename F> CallRef(F f): fptr(std::make_shared<function_type>(f)) {}
+        explicit operator bool() const noexcept { return fptr && *fptr; }
+        template <typename... Args> auto operator()(Args... args) const {
+            if (! fptr)
+                throw std::bad_function_call();
+            return (*fptr)(std::forward<Args>(args)...);
+        }
+    private:
+        std::shared_ptr<function_type> fptr;
+    };
+
     struct DoNothing {
         void operator()() const noexcept {}
         template <typename T> void operator()(T&) const noexcept {}

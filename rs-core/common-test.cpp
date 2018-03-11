@@ -1956,24 +1956,23 @@ void test_core_common_function_operations() {
 
 void test_core_common_generic_function_objects() {
 
-    using account = Accountable<void>;
+    CallRef<void()> cr1;
+    CallRef<int(int, int)> cr2;
+    Ustring s;
+    int n = 0;
 
-    account::reset();
-    TEST_EQUAL(account::count(), 0);
-
-    account* cp = nullptr;
-    std::shared_ptr<account> csp;
-    TRY(csp.reset(new account));
-    TEST_EQUAL(account::count(), 1);
-    TRY(csp.reset());
-    TEST_EQUAL(account::count(), 0);
-    TRY(csp.reset(new account, do_nothing));
-    TEST_EQUAL(account::count(), 1);
-    cp = csp.get();
-    TRY(csp.reset());
-    TEST_EQUAL(account::count(), 1);
-    delete cp;
-    TEST_EQUAL(account::count(), 0);
+    TEST(! cr1);
+    TEST(! cr2);
+    TEST_THROW(cr1(), std::bad_function_call);
+    TEST_THROW(cr2(2, 3), std::bad_function_call);
+    TRY(cr1 = [&] { s = "Hello"; });
+    TRY(cr2 = [] (int x, int y) { return x + y; });
+    TEST(cr1);
+    TEST(cr2);
+    TRY(cr1());
+    TEST_EQUAL(s, "Hello");
+    TRY(n = cr2(2, 3));
+    TEST_EQUAL(n, 5);
 
     int n1 = 42, n2 = 0;
     Ustring s1 = "Hello world", s2;

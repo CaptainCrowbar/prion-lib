@@ -327,8 +327,8 @@ conversion.
     * `unsigned Version::`**`minor`**`() const noexcept`
     * `unsigned Version::`**`patch`**`() const noexcept`
     * `size_t Version::`**`size`**`() const noexcept`
-    * `string Version::`**`str`**`(size_t min_elements = 2) const`
-    * `string Version::`**`suffix`**`() const`
+    * `Ustring Version::`**`str`**`(size_t min_elements = 2, char delimiter = '.') const`
+    * `Ustring Version::`**`suffix`**`() const`
     * `uint32_t Version::`**`to32`**`() const noexcept`
     * `static Version Version::`**`from32`**`(uint32_t n) noexcept`
 * `bool` **`operator==`**`(const Version& lhs, const Version& rhs) noexcept`

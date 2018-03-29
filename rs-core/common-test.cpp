@@ -637,6 +637,7 @@ void test_core_common_version_number() {
     TEST_EQUAL(v.str(2), "0.0");
     TEST_EQUAL(v.str(3), "0.0.0");
     TEST_EQUAL(v.str(4), "0.0.0.0");
+    TEST_EQUAL(v.str(4, '-'), "0-0-0-0");
     TEST_EQUAL(v.to32(), 0);
 
     TRY((v = {42}));
@@ -678,6 +679,7 @@ void test_core_common_version_number() {
     TEST_EQUAL(v.str(2), "1.2.3");
     TEST_EQUAL(v.str(3), "1.2.3");
     TEST_EQUAL(v.str(4), "1.2.3.0");
+    TEST_EQUAL(v.str(4, '-'), "1-2-3-0");
     TEST_EQUAL(v.to32(), 0x01020300);
 
     TRY((v = {1,2,3,"beta"}));

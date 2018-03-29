@@ -1800,8 +1800,8 @@ namespace RS {
         unsigned minor() const noexcept { return (*this)[1]; }
         unsigned patch() const noexcept { return (*this)[2]; }
         size_t size() const noexcept { return std::max(ver.size(), size_t(1)); }
-        std::string str(size_t min_elements = 2) const;
-        std::string suffix() const { return suf; }
+        Ustring str(size_t min_elements = 2, char delimiter = '.') const;
+        Ustring suffix() const { return suf; }
         uint32_t to32() const noexcept;
         static Version from32(uint32_t n) noexcept;
         friend bool operator==(const Version& lhs, const Version& rhs) noexcept { return lhs.ver == rhs.ver && lhs.suf == rhs.suf; }
@@ -1835,16 +1835,20 @@ namespace RS {
         trim();
     }
 
-    inline std::string Version::str(size_t min_elements) const {
-        std::ostringstream out;
-        for (auto& v: ver)
-            out << v << '.';
-        for (size_t i = ver.size(); i < min_elements; ++i)
-            out << "0.";
-        Ustring pre = out.str();
-        if (! pre.empty())
-            pre.pop_back();
-        return pre + suf;
+    inline Ustring Version::str(size_t min_elements, char delimiter) const {
+        Ustring s;
+        for (auto& v: ver) {
+            s += std::to_string(v);
+            s += delimiter;
+        }
+        for (size_t i = ver.size(); i < min_elements; ++i) {
+            s += '0';
+            s += delimiter;
+        }
+        if (! s.empty())
+            s.pop_back();
+        s += suf;
+        return s;
     }
 
     inline uint32_t Version::to32() const noexcept {

@@ -61,6 +61,7 @@ extern void test_core_digest_md5();
 extern void test_core_digest_sha1();
 extern void test_core_digest_sha256();
 extern void test_core_digest_sha512();
+extern void test_core_dso_dynamic_library();
 extern void test_core_encoding_escape();
 extern void test_core_encoding_quote();
 extern void test_core_encoding_hex();
@@ -334,6 +335,7 @@ int main() {
         { "core/digest/sha1", test_core_digest_sha1 },
         { "core/digest/sha256", test_core_digest_sha256 },
         { "core/digest/sha512", test_core_digest_sha512 },
+        { "core/dso/dynamic-library", test_core_dso_dynamic_library },
         { "core/encoding/escape", test_core_encoding_escape },
         { "core/encoding/quote", test_core_encoding_quote },
         { "core/encoding/hex", test_core_encoding_hex },

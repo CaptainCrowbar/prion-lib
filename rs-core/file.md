@@ -38,7 +38,7 @@ Default constructor. This sets the file name to an empty string.
 * `File::`**`File`**`(const char* name)`
 * `File::`**`File`**`(const std::wstring& name)` _- Windows only_
 * `File::`**`File`**`(std::wstring_view name)` _- Windows only_
-* `File::`**`File`**`(const char* name)` _- Windows only_
+* `File::`**`File`**`(const wchar_t* name)` _- Windows only_
 
 Constructors from a file name. On Unix, any string will be accepted as a file
 name with no validity checking. On Windows, backslashes are replaced with

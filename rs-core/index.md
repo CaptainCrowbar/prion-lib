@@ -50,6 +50,8 @@
     * [`"rs-core/table.hpp"`](table.html) - Simple table layout
     * [`"rs-core/url.hpp"`](url.html) - URL
     * [`"rs-core/uuid.hpp"`](uuid.html) - UUID
+* _System facilities_
+    * [`"rs-core/dso.hpp"`](dso.html) - Dynamic library
 * _Time and date_
     * [`"rs-core/time.hpp"`](time.html) - Time and date algorithms
 * _Unit testing_

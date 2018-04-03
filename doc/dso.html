@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Shared Library</title>
+<link type="text/css" rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<h1 id="shared-library">Shared Library</h1>
+<p>by Ross Smith</p>
+<ul>
+<li><code>#include "rs-core/dso.hpp"</code></li>
+</ul>
+<h2 id="contents">Contents</h2>
+<div class="toc">
+<ul>
+<li><a href="#shared-library">Shared Library</a><ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#class-dso">Class Dso</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="class-dso">Class Dso</h2>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>Dso</code></strong></li>
+</ul>
+<p>This class loads a dynamic library when constructed. Symbols from the library
+can be loaded at run time.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>using Dso::</code><strong><code>flag_type</code></strong> <code>= [int on Unix, uint32_t on Windows]</code></li>
+<li><code>using Dso::</code><strong><code>handle_type</code></strong> <code>= [void* on Unix, HMODULE on Windows]</code></li>
+</ul>
+<p>Member types.</p>
+</div>
+<div class="defns">
+<ul>
+<li><em>Posix <code>dlopen()</code> flags</em><ul>
+<li><code>static constexpr flag_type Dso::</code><strong><code>lazy</code></strong>                <code>= RTLD_LAZY</code>                            <em>(Relocations may be delayed)</em></li>
+<li><code>static constexpr flag_type Dso::</code><strong><code>now</code></strong>                 <code>= RTLD_NOW</code>                             <em>(Relocations are performed immediately)</em></li>
+<li><code>static constexpr flag_type Dso::</code><strong><code>global</code></strong>              <code>= RTLD_GLOBAL</code>                          <em>(Symbols are available when relocating other libraries)</em></li>
+<li><code>static constexpr flag_type Dso::</code><strong><code>local</code></strong>               <code>= RTLD_LOCAL</code>                           <em>(Symbols are not visible)</em></li>
+</ul>
+</li>
+<li><em>Apple specific <code>dlopen()</code> flags</em><ul>
+<li><code>static constexpr flag_type Dso::</code><strong><code>noload</code></strong>              <code>= RTLD_NOLOAD</code>                          <em>(Do not load, succeed only if already loaded)</em></li>
+<li><code>static constexpr flag_type Dso::</code><strong><code>nodelete</code></strong>            <code>= RTLD_NODELETE</code>                        <em>(Never unload)</em></li>
+<li><code>static constexpr flag_type Dso::</code><strong><code>first</code></strong>               <code>= RTLD_FIRST</code>                           <em>(Search only this library for symbols)</em></li>
+</ul>
+</li>
+<li><em>Windows <code>LoadLibrary()</code> flags</em><ul>
+<li><code>static constexpr flag_type Dso::</code><strong><code>ignore_authz</code></strong>        <code>= LOAD_IGNORE_CODE_AUTHZ_LEVEL</code>         <em>(Do not check software restriction policies)</em></li>
+<li><code>static constexpr flag_type Dso::</code><strong><code>datafile</code></strong>            <code>= LOAD_LIBRARY_AS_DATAFILE</code>             <em>(Map address space as data, do not execute)</em></li>
+<li><code>static constexpr flag_type Dso::</code><strong><code>datafile_exclusive</code></strong>  <code>= LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE</code>   <em>(Map address space as data, with exclusive write access)</em></li>
+<li><code>static constexpr flag_type Dso::</code><strong><code>image_resource</code></strong>      <code>= LOAD_LIBRARY_AS_IMAGE_RESOURCE</code>       <em>(Map address space as image, do not execute)</em></li>
+<li><code>static constexpr flag_type Dso::</code><strong><code>search_application</code></strong>  <code>= LOAD_LIBRARY_SEARCH_APPLICATION_DIR</code>  <em>(Search application directory only)</em></li>
+<li><code>static constexpr flag_type Dso::</code><strong><code>search_default</code></strong>      <code>= LOAD_LIBRARY_SEARCH_DEFAULT_DIRS</code>     <em>(Search application, system, and user-added directories)</em></li>
+<li><code>static constexpr flag_type Dso::</code><strong><code>search_dll</code></strong>          <code>= LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR</code>     <em>(Search DLL directory for its dependencies)</em></li>
+<li><code>static constexpr flag_type Dso::</code><strong><code>search_system32</code></strong>     <code>= LOAD_LIBRARY_SEARCH_SYSTEM32</code>         <em>(Search system directory only)</em></li>
+<li><code>static constexpr flag_type Dso::</code><strong><code>search_user</code></strong>         <code>= LOAD_LIBRARY_SEARCH_USER_DIRS</code>        <em>(Search user-added directories only)</em></li>
+<li><code>static constexpr flag_type Dso::</code><strong><code>altered_search</code></strong>      <code>= LOAD_WITH_ALTERED_SEARCH_PATH</code>        <em>(Use alternative standard search path)</em></li>
+</ul>
+</li>
+</ul>
+<p>Flags passed to the constructor and related functions, controlling the way the
+library is loaded. Flags not relevant to the target system are set to zero.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Dso::</code><strong><code>Dso</code></strong><code>() noexcept</code></li>
+<li><code>explicit Dso::</code><strong><code>Dso</code></strong><code>(const File&amp; file, flag_type flags = 0)</code></li>
+<li><code>Dso::</code><strong><code>~Dso</code></strong><code>() noexcept</code></li>
+<li><code>Dso::</code><strong><code>Dso</code></strong><code>(Dso&amp;&amp;) noexcept</code></li>
+<li><code>Dso&amp; Dso::</code><strong><code>operator=</code></strong><code>(Dso&amp;&amp;) noexcept</code></li>
+</ul>
+<p>Life cycle functions. The default constructor does not load anything;
+<code>symbol()</code> will always fail. The second constructor attempts to load the named
+library. The search strategy depends on the format of the file name, and may
+vary slightly between systems; it may also be modified by some of the flags.</p>
+<table>
+<thead>
+<tr>
+<th>File name format</th>
+<th>Search strategy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Empty string</td>
+<td>The executable for the calling process is loaded</td>
+</tr>
+<tr>
+<td>Unqualified name</td>
+<td>The standard dynamic library search path is used</td>
+</tr>
+<tr>
+<td>Absolute path</td>
+<td>Only that exact file is checked</td>
+</tr>
+<tr>
+<td>Relative path</td>
+<td>Behaviour is implementation defined</td>
+</tr>
+</tbody>
+</table>
+<p>If the library is not found, the constructor will throw <code>std::system_error</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>explicit Dso::</code><strong><code>operator bool</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>True if the object holds a handle on a valid library (this is false for
+default constructed and moved from objects).</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>handle_type Dso::</code><strong><code>get</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>Returns the native operating system handle on the library. This will be null
+if <code>bool(*this)</code> is false.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>File Dso::</code><strong><code>file</code></strong><code>() const</code></li>
+</ul>
+<p>Returns the file name (as supplied to the constructor; this does not attempt
+to determine the actual absolute path to the loaded library).</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename Sym&gt; Sym Dso::</code><strong><code>symbol</code></strong><code>(const Ustring&amp; name)</code></li>
+<li><code>template &lt;typename Sym&gt; bool Dso::</code><strong><code>symbol</code></strong><code>(const Ustring&amp; name, Sym&amp; sym) noexcept</code></li>
+</ul>
+<p>Load a symbol from the library. The first version takes a symbol type
+explicitly, and returns the symbol, or throws <code>std::system_error</code> if the
+symbol is not found. The second version returns the symbol by reference,
+returns a flag indicating whether or not the symbol was successfully loaded,
+and does not throw anything.</p>
+<p>It is up to the caller to ensure that the symbol type supplied matches that of
+the actual symbol in the library; there is no way to check that through the
+standard dynamic library API on any supported system. Behaviour is undefined
+if the types do not match.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>static Dso Dso::</code><strong><code>search</code></strong><code>(const Strings&amp; names, flag_type flags = 0)</code></li>
+<li><code>template &lt;typename... Args&gt; static Dso Dso::</code><strong><code>search</code></strong><code>(Args... args)</code></li>
+</ul>
+<p>Search for a library that may have any of several names. Any number of names
+may be passed, either as variadic arguments compatible with string views, or a
+vector of strings; either can optionally be followed by a bitmask of flags. If
+a name is an unqualified file name, in addition to the exact name supplied, it
+will also be tried with the standard dynamic library suffix for the target
+system (<code>".dll"</code>, <code>".dylib"</code>, or <code>".so"</code>), and with a <code>"lib"</code> prefix (on
+Cygwin the <code>"cyg"</code> prefix will also be tried). A <code>std::system_error</code> exception
+will be thrown if none of these work.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>static Dso Dso::</code><strong><code>self</code></strong><code>(flag_type flags = 0)</code></li>
+</ul>
+<p>Obtains a handle on the executable of the current process (equivalent to
+<code>Dso("")</code>).</p></body>
+</html>

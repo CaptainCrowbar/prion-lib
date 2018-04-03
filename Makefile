@@ -58,7 +58,6 @@ lib_prefix := lib
 lib_suffix := .a
 exe_suffix :=
 native_windows :=
-STRIP := @echo >/dev/null
 
 ifeq ($(build_host),cygwin)
 	exe_suffix := .exe
@@ -97,7 +96,7 @@ endif
 ifeq ($(cross_target),cygwin)
 	cc_defines += -D_REENTRANT=1 -D_XOPEN_SOURCE=700
 	cxx_specific_flags += -std=gnu++1z
-	ld_specific_flags += -s -Wl,--enable-auto-import
+	ld_specific_flags += -Wl,--enable-auto-import
 endif
 
 ifeq ($(cross_target),darwin)
@@ -106,13 +105,11 @@ ifeq ($(cross_target),darwin)
 	cc_defines += -D_DARWIN_C_SOURCE=1 -D_REENTRANT=1 -D_XOPEN_SOURCE=700
 	cxx_specific_flags += -std=c++1z -stdlib=libc++
 	ld_specific_flags += -framework Cocoa
-	STRIP := strip
 endif
 
 ifeq ($(cross_target),linux)
 	cc_defines += -D_REENTRANT=1 -D_XOPEN_SOURCE=700
 	cxx_specific_flags += -std=gnu++1z
-	ld_specific_flags += -s
 endif
 
 ifneq ($(shell grep -Fo sdl $(dependency_file)),)
@@ -505,13 +502,11 @@ $(app_target): $(app_objects) $(static_target)
 	@mkdir -p $(dir $@)
 	@rm -f $@
 	$(LD) $(LDFLAGS) $^ $(LDLIBS) $(ld_output)$@
-	$(STRIP) $@
 
 $(test_target): $(test_objects) $(static_target)
 	@mkdir -p $(dir $@)
 	@rm -f $@
 	$(LD) $(test_ldflags) $^ $(LDLIBS) $(ld_output)$@
-	$(STRIP) $@
 
 # Other build rules
 

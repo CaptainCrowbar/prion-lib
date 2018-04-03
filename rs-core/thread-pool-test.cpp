@@ -32,7 +32,7 @@ void test_core_thread_pool_class() {
     for (char c = 'a'; c <= 'z'; ++c) {
         expect += c;
         auto t = dist(rng);
-        TRY(pool.insert([=,&pool] { f(c, t); }));
+        TRY(pool.insert([=] { f(c, t); }));
     }
 
     TEST(pool.wait_for(5s));
@@ -49,7 +49,7 @@ void test_core_thread_pool_class() {
 
     for (char c = 'a'; c <= 'z'; ++c) {
         auto t = dist(rng);
-        TRY(pool.insert([=,&pool] { f(c, t); }));
+        TRY(pool.insert([=] { f(c, t); }));
     }
 
     TEST(pool.wait_for(5s));

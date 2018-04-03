@@ -76,6 +76,13 @@ extern void test_core_file_io();
 extern void test_core_file_metadata();
 extern void test_core_file_standard_locations();
 extern void test_core_file_literals();
+extern void test_core_fixed_binary_implementation_selection();
+extern void test_core_fixed_binary_small_binary();
+extern void test_core_fixed_binary_large_binary();
+extern void test_core_fixed_binary_random_numbers();
+extern void test_core_fixed_binary_random_arithmetic_tests();
+extern void test_core_fixed_binary_type_conversions();
+extern void test_core_fixed_binary_string_parsing();
 extern void test_core_float_arithmetic_constants();
 extern void test_core_float_arithmetic_functions();
 extern void test_core_float_arithmetic_literals();
@@ -350,6 +357,13 @@ int main() {
         { "core/file/metadata", test_core_file_metadata },
         { "core/file/standard-locations", test_core_file_standard_locations },
         { "core/file/literals", test_core_file_literals },
+        { "core/fixed-binary/implementation-selection", test_core_fixed_binary_implementation_selection },
+        { "core/fixed-binary/small-binary", test_core_fixed_binary_small_binary },
+        { "core/fixed-binary/large-binary", test_core_fixed_binary_large_binary },
+        { "core/fixed-binary/random-numbers", test_core_fixed_binary_random_numbers },
+        { "core/fixed-binary/random-arithmetic-tests", test_core_fixed_binary_random_arithmetic_tests },
+        { "core/fixed-binary/type-conversions", test_core_fixed_binary_type_conversions },
+        { "core/fixed-binary/string-parsing", test_core_fixed_binary_string_parsing },
         { "core/float/arithmetic-constants", test_core_float_arithmetic_constants },
         { "core/float/arithmetic-functions", test_core_float_arithmetic_functions },
         { "core/float/arithmetic-literals", test_core_float_arithmetic_literals },

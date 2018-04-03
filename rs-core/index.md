@@ -36,6 +36,7 @@
     * [`"rs-core/net.hpp"`](net.html) - TCP/IP networking
     * [`"rs-core/terminal.hpp"`](terminal.html) - Terminal I/O
 * _Numerics_
+    * [`"rs-core/fixed-binary.hpp"`](fixed-binary.html) - Fixed precision integers
     * [`"rs-core/float.hpp"`](float.html) - Floating point utilities
     * [`"rs-core/mp-integer.hpp"`](mp-integer.html) -- Multiple precision integers
     * [`"rs-core/random.hpp"`](random.html) - Random numbers

@@ -10,6 +10,7 @@ $(BUILD)/digest-test.o: rs-core/digest-test.cpp rs-core/common.hpp rs-core/diges
 $(BUILD)/dso-test.o: rs-core/dso-test.cpp rs-core/common.hpp rs-core/dso.hpp rs-core/file.hpp rs-core/meta-internal.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/time.hpp rs-core/unit-test.hpp
 $(BUILD)/encoding-test.o: rs-core/encoding-test.cpp rs-core/common.hpp rs-core/encoding.hpp rs-core/float.hpp rs-core/meta-internal.hpp rs-core/meta.hpp rs-core/random.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp
 $(BUILD)/file-test.o: rs-core/file-test.cpp rs-core/common.hpp rs-core/file.hpp rs-core/meta-internal.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/time.hpp rs-core/unit-test.hpp
+$(BUILD)/fixed-binary-test.o: rs-core/fixed-binary-test.cpp rs-core/common.hpp rs-core/fixed-binary.hpp rs-core/float.hpp rs-core/meta-internal.hpp rs-core/meta.hpp rs-core/random.hpp rs-core/statistics.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp
 $(BUILD)/float-test.o: rs-core/float-test.cpp rs-core/common.hpp rs-core/float.hpp rs-core/meta-internal.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp
 $(BUILD)/grid-test.o: rs-core/grid-test.cpp rs-core/common.hpp rs-core/grid.hpp rs-core/meta-internal.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp
 $(BUILD)/index-table-test.o: rs-core/index-table-test.cpp rs-core/common.hpp rs-core/index-table.hpp rs-core/meta-internal.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/unit-test.hpp

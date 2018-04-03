@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Fixed Precision Integers</title>
+<link type="text/css" rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<h1 id="fixed-precision-integers">Fixed Precision Integers</h1>
+<p>By Ross Smith</p>
+<ul>
+<li><code>#include "rs-core/fixed-binary.hpp"</code></li>
+</ul>
+<h2 id="contents">Contents</h2>
+<div class="toc">
+<ul>
+<li><a href="#fixed-precision-integers">Fixed Precision Integers</a><ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#binary-integer-classes">Binary integer classes</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="binary-integer-classes">Binary integer classes</h2>
+<div class="defns">
+<ul>
+<li><code>template &lt;size_t N&gt; class</code> <strong><code>SmallBinary</code></strong></li>
+<li><code>template &lt;size_t N&gt; class</code> <strong><code>LargeBinary</code></strong></li>
+<li><code>template &lt;size_t N&gt; using</code> <strong><code>Binary</code></strong> <code>= std::conditional_t&lt;N &lt;= 64, SmallBinary&lt;N&gt;, LargeBinary&lt;N&gt;&gt;</code></li>
+</ul>
+<p>All of these classes represent unsigned integers with <code>N</code> bits. <code>SmallBinary</code>
+stores its value in a single native integer of an appropriate size,
+<code>LargeBinary</code> in a suitably sized array of 32-bit integers, stored in little
+endian order. Normally you should just use the <code>Binary</code> alias; all of the
+functions described below are common to both templates (except that, where a
+function is documented as taking a <code>Binary</code> argument by value, usually the
+<code>LargeBinary</code> version actually takes its argument by reference).</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>static constexpr size_t Binary::</code><strong><code>bits</code></strong><code>= N</code></li>
+<li><code>static constexpr size_t Binary::</code><strong><code>bytes</code></strong><code>= [total bytes in representation]</code></li>
+<li><code>static constexpr size_t Binary::</code><strong><code>hex_digits</code></strong><code>= [maximum number of hex digits in value]</code></li>
+</ul>
+<p>Member constants.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>constexpr Binary::</code><strong><code>Binary</code></strong><code>() noexcept</code></li>
+<li><code>constexpr explicit Binary::</code><strong><code>Binary</code></strong><code>(uint64_t x) noexcept</code></li>
+<li><code>template &lt;size_t M&gt; constexpr explicit Binary::</code><strong><code>Binary</code></strong><code>(Binary&lt;M&gt; x) noexcept</code></li>
+<li><code>constexpr explicit Binary::</code><strong><code>Binary</code></strong><code>(std::initializer_list&lt;uint64_t&gt; init) noexcept</code></li>
+<li><code>constexpr explicit Binary::</code><strong><code>Binary</code></strong><code>(const Ustring&amp; str, int base = 10) noexcept</code></li>
+<li><code>constexpr Binary::</code><strong><code>~Binary</code></strong><code>() noexcept</code></li>
+<li><code>constexpr Binary::</code><strong><code>Binary</code></strong><code>(const Binary&amp; x) noexcept</code></li>
+<li><code>constexpr Binary::</code><strong><code>Binary</code></strong><code>(Binary&amp;&amp; x) noexcept</code></li>
+<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator=</code></strong><code>(const Binary&amp; x) noexcept</code></li>
+<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator=</code></strong><code>(Binary&amp;&amp; x) noexcept</code></li>
+</ul>
+<p>Life cycle operations. The default constructor sets the value to zero. A
+<code>Binary</code> can be constructed from a native unsigned integer, another <code>Binary</code>
+of any size, a list of 64-bit integers (in big endian order), or a string. In
+all cases, if the actual value supplied is too large to fit in <code>N</code> bits, the
+excess bits are discarded. The string constructor calls <code>parse()</code> and follows
+the same rules.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Ustring Binary::</code><strong><code>as_binary</code></strong><code>() const</code></li>
+<li><code>Ustring Binary::</code><strong><code>as_decimal</code></strong><code>() const</code></li>
+<li><code>Ustring Binary::</code><strong><code>as_hex</code></strong><code>() const</code></li>
+<li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, Binary x)</code></li>
+<li><code>Ustring</code> <strong><code>to_str</code></strong><code>(Binary x)</code></li>
+</ul>
+<p>String formatting functions. The output operator and <code>to_str()</code> function call
+<code>as_decimal()</code>. The <code>as_binary()</code> and <code>as_hex()</code> functions always return the
+same number of digits (equal to <code>bits</code> and <code>hex_digits</code> respectively);
+<code>as_decimal()</code> writes only the number of digits needed, with no leading zeros
+(unless the value is zero).</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>double Binary::</code><strong><code>as_double</code></strong><code>() const noexcept</code></li>
+<li><code>static Binary Binary::</code><strong><code>from_double</code></strong><code>(double x) noexcept</code></li>
+</ul>
+<p>Conversions between <code>Binary</code> and <code>double</code>. Conversions to a <code>double</code> may
+produce an approximation if <code>N&gt;53</code>. Conversion from a <code>double</code> yields the
+equivalent of converting the significand exactly and then shifting by a number
+of bits based on the exponent; behaviour is undefined if the argument is
+negative.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>constexpr uint64_t Binary::</code><strong><code>as_uint64</code></strong><code>() const noexcept</code></li>
+<li><code>constexpr bool Binary::</code><strong><code>is_uint64</code></strong><code>() const noexcept</code></li>
+<li><code>constexpr explicit Binary::</code><strong><code>operator uint64_t</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>Conversions between <code>Binary</code> and a native 64-bit integer. Depending on the
+size of the value involved, either conversion may truncate the high order
+bits. The <code>is_uint64()</code> function tests whether the value will fit in a
+<code>uint64_t</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>constexpr void Binary::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
+</ul>
+<p>Sets the value to zero.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>constexpr int Binary::</code><strong><code>compare</code></strong><code>(Binary y) const noexcept</code></li>
+</ul>
+<p>Compares the current value (<code>x</code>) to <code>y</code>, returning <code>-1</code> if <code>x&lt;y</code>, <code>0</code> if
+<code>x==y</code>, or <code>1</code> if <code>x&gt;y</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>constexpr uint8_t* Binary::</code><strong><code>data</code></strong><code>() noexcept</code></li>
+<li><code>constexpr const uint8_t* Binary::</code><strong><code>data</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>Pointers to the internal representation, which will consist of a number of
+bytes equal to the <code>bytes</code> constant, in little endian order.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>size_t Binary::</code><strong><code>parse</code></strong><code>(const Ustring&amp; str, int base = 10) noexcept</code></li>
+</ul>
+<p>Attempts to parse a string as an unsigned integer, writing the value into the
+current object. This will always update the value, setting it to zero if the
+string does not contain a valid number. It will stop parsing when the first
+character that cannot be a digit in the given base is encountered, if this
+comes before the end of the string, and returns the number of characters
+successfully parsed. Behaviour is undefined if the base is less than 2 or
+greater than 35.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>constexpr size_t Binary::</code><strong><code>significant_bits</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>Returns the number of significant bits in the value.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>constexpr explicit Binary::</code><strong><code>operator bool</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>Returns true if the value is not zero.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>constexpr Binary Binary::</code><strong><code>operator+</code></strong><code>() const noexcept</code></li>
+<li><code>constexpr Binary Binary::</code><strong><code>operator-</code></strong><code>() const noexcept</code></li>
+<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator++</code></strong><code>() noexcept</code></li>
+<li><code>constexpr Binary Binary::</code><strong><code>operator++</code></strong><code>(int) noexcept</code></li>
+<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator--</code></strong><code>() noexcept</code></li>
+<li><code>constexpr Binary Binary::</code><strong><code>operator--</code></strong><code>(int) noexcept</code></li>
+<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator+=</code></strong><code>(Binary y) noexcept</code></li>
+<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator-=</code></strong><code>(Binary y) noexcept</code></li>
+<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator*=</code></strong><code>(Binary y) noexcept</code></li>
+<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator/=</code></strong><code>(Binary y) noexcept</code></li>
+<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator%=</code></strong><code>(Binary y) noexcept</code></li>
+<li><code>constexpr Binary</code> <strong><code>operator+</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>constexpr Binary</code> <strong><code>operator-</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>constexpr Binary</code> <strong><code>operator*</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>constexpr Binary</code> <strong><code>operator/</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>constexpr Binary</code> <strong><code>operator%</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>static constexpr void Binary::</code><strong><code>divide</code></strong><code>(Binary x, Binary y, Binary&amp; q, Binary&amp; r) noexcept</code></li>
+</ul>
+<p>Arithmetic operations. Most of these just have the obvious semantics, with the
+usual wraparound behaviour on overflow or underflow. For all of the division
+and remainder operations (including <code>divide()</code>), behaviour is undefined if the
+divisor is zero.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>constexpr Binary Binary::</code><strong><code>operator~</code></strong><code>() const noexcept</code></li>
+<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator&amp;=</code></strong><code>(Binary y) noexcept</code></li>
+<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator|=</code></strong><code>(Binary y) noexcept</code></li>
+<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator^=</code></strong><code>(Binary y) noexcept</code></li>
+<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator&lt;&lt;=</code></strong><code>(int y) noexcept</code></li>
+<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator&gt;&gt;=</code></strong><code>(int y) noexcept</code></li>
+<li><code>constexpr Binary</code> <strong><code>operator&amp;</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>constexpr Binary</code> <strong><code>operator|</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>constexpr Binary</code> <strong><code>operator^</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>constexpr Binary</code> <strong><code>operator&lt;&lt;</code></strong><code>(Binary x, int y) noexcept</code></li>
+<li><code>constexpr Binary</code> <strong><code>operator&gt;&gt;</code></strong><code>(Binary x, int y) noexcept</code></li>
+<li><code>constexpr Binary&amp; Binary::</code><strong><code>rotate_left</code></strong><code>(int n) noexcept</code></li>
+<li><code>constexpr Binary&amp; Binary::</code><strong><code>rotate_right</code></strong><code>(int n) noexcept</code></li>
+</ul>
+<p>Bitwise operations. These have their usual semantics. The bit count argument
+to the shift and rotate operations can be any value, including out of range or
+negative values; a negative shift or rotate is interpreted as a positive one
+in the opposite direction.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>constexpr bool</code> <strong><code>operator==</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>constexpr bool</code> <strong><code>operator!=</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>constexpr bool</code> <strong><code>operator&lt;</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>constexpr bool</code> <strong><code>operator&gt;</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>constexpr bool</code> <strong><code>operator&lt;=</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>constexpr bool</code> <strong><code>operator&gt;=</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+</ul>
+<p>Comparison operators.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>static constexpr Binary Binary::</code><strong><code>max</code></strong><code>() noexcept</code></li>
+</ul>
+<p>Returns the maximum value of the type (the complement of zero).</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename RNG&gt; static Binary Binary::</code><strong><code>random</code></strong><code>(RNG&amp; rng)</code></li>
+<li><code>template &lt;typename RNG&gt; static Binary Binary::</code><strong><code>random</code></strong><code>(RNG&amp; rng, Binary x)</code></li>
+<li><code>template &lt;typename RNG&gt; static Binary Binary::</code><strong><code>random</code></strong><code>(RNG&amp; rng, Binary x, Binary y)</code></li>
+</ul>
+<p>Generate a random integer. The first version generates a random value from the
+whole range of the type; the second generates a value from zero to <code>x-1</code> (this
+will always return zero if <code>x&lt;2</code>); the third returns a value from <code>x</code> to <code>y</code>
+inclusive (the bounds can be supplied in either order).</p></body>
+</html>

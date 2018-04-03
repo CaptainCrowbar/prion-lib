@@ -1,4 +1,4 @@
-# Shared Library #
+# Dynamic Library #
 
 by Ross Smith
 

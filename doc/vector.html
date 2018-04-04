@@ -246,6 +246,16 @@ default format, enclosed in square brackets.</p>
 </div>
 <div class="defns">
 <ul>
+<li><code>Vector</code> <strong><code>clamp</code></strong><code>(Vector x, Vector min, Vector max) noexcept</code></li>
+<li><code>Vector</code> <strong><code>min</code></strong><code>(Vector x, Vector y) noexcept</code></li>
+<li><code>Vector</code> <strong><code>max</code></strong><code>(Vector x, Vector y) noexcept</code></li>
+<li><code>std::pair&lt;Vector, Vector&gt;</code> <strong><code>minmax</code></strong><code>(Vector x, Vector y) noexcept</code></li>
+</ul>
+<p>Vector algorithms. These apply the corresponding scalar operations to each
+member.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>template &lt;typename T, size_t N&gt; struct std::</code><strong><code>hash</code></strong><code>&lt;Vector&lt;T, N&gt;&gt;</code></li>
 </ul>
 <p>Hash function.</p>

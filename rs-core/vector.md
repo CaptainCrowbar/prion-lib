@@ -181,6 +181,14 @@ Comparison operators.
 Simple string formatting; this simply writes the vector's elements in their
 default format, enclosed in square brackets.
 
+* `Vector` **`clamp`**`(Vector x, Vector min, Vector max) noexcept`
+* `Vector` **`min`**`(Vector x, Vector y) noexcept`
+* `Vector` **`max`**`(Vector x, Vector y) noexcept`
+* `std::pair<Vector, Vector>` **`minmax`**`(Vector x, Vector y) noexcept`
+
+Vector algorithms. These apply the corresponding scalar operations to each
+member.
+
 * `template <typename T, size_t N> struct std::`**`hash`**`<Vector<T, N>>`
 
 Hash function.

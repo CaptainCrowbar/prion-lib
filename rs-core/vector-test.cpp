@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <sstream>
 #include <stdexcept>
+#include <tuple>
 #include <vector>
 
 using namespace RS;
@@ -59,7 +60,7 @@ namespace {
 void test_core_vector_integer() {
 
     int x = 0;
-    Int3 v1(1), v2, v3;
+    Int3 v1(1), v2, v3, v4;
     const Int3& cv1 = v1;
     const Int3& cv2 = v2;
     const Int3& cv3 = v3;
@@ -158,6 +159,22 @@ void test_core_vector_integer() {
     TRY(s4 = v1["xxxx"]);  TEST_EQUAL(to_str(s4), "[1,1,1,1]");
     TRY(s4 = v1["yyyy"]);  TEST_EQUAL(to_str(s4), "[2,2,2,2]");
     TRY(s4 = v1["zzzz"]);  TEST_EQUAL(to_str(s4), "[3,3,3,3]");
+
+    TRY((v1 = {1,5,9}));
+    TRY((v2 = {2,3,4}));
+    TRY((v3 = {4,6,8}));
+    TRY(v1 = clamp(v1, v2, v3));
+    TEST_EQUAL(to_str(v1), "[2,5,8]");
+
+    TRY((v1 = {1,3,5}));
+    TRY((v2 = {2,3,4}));
+    TRY(v3 = min(v1, v2));
+    TEST_EQUAL(to_str(v3), "[1,3,4]");
+    TRY(v3 = max(v1, v2));
+    TEST_EQUAL(to_str(v3), "[2,3,5]");
+    TRY(std::tie(v3, v4) = minmax(v1, v2));
+    TEST_EQUAL(to_str(v3), "[1,3,4]");
+    TEST_EQUAL(to_str(v4), "[2,3,5]");
 
 }
 
@@ -263,6 +280,22 @@ void test_core_vector_floating() {
     TEST_NEAR_RANGE(v2 ^ v3, Double3());
     TEST_NEAR(v2 % v4, 0);
     TEST_NEAR(v3 % v4, 0);
+
+    TRY((v1 = {1,5,9}));
+    TRY((v2 = {2,3,4}));
+    TRY((v3 = {4,6,8}));
+    TRY(v1 = clamp(v1, v2, v3));
+    TEST_EQUAL(to_str(v1), "[2,5,8]");
+
+    TRY((v1 = {1,3,5}));
+    TRY((v2 = {2,3,4}));
+    TRY(v3 = min(v1, v2));
+    TEST_EQUAL(to_str(v3), "[1,3,4]");
+    TRY(v3 = max(v1, v2));
+    TEST_EQUAL(to_str(v3), "[2,3,5]");
+    TRY(std::tie(v3, v4) = minmax(v1, v2));
+    TEST_EQUAL(to_str(v3), "[1,3,4]");
+    TEST_EQUAL(to_str(v4), "[2,3,5]");
 
 }
 

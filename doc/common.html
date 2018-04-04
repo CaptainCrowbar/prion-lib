@@ -985,6 +985,22 @@ much overhead. Like <code>std::function</code>, invoking a null <code>CallRef</c
 </ul>
 <p>Trivial function objects.</p>
 </div>
+<div class="defns">
+<ul>
+<li><code>struct</code> <strong><code>RangeEqual</code></strong><ul>
+<li><code>template &lt;typename Range&gt; bool RangeEqual::</code><strong><code>operator()</code></strong><code>(const Range&amp; r1, const Range&amp; r2) const</code></li>
+</ul>
+</li>
+<li><code>struct</code> <strong><code>RangeCompare</code></strong><ul>
+<li><code>template &lt;typename Range&gt; bool RangeCompare::</code><strong><code>operator()</code></strong><code>(const Range&amp; r1, const Range&amp; r2) const</code></li>
+</ul>
+</li>
+<li><code>constexpr RangeEqual</code> <strong><code>range_equal</code></strong></li>
+<li><code>constexpr RangeCompare</code> <strong><code>range_compare</code></strong></li>
+</ul>
+<p>Range comparison objects. These call <code>std::equal()</code> and
+<code>std::lexicographical_compare()</code> respectively.</p>
+</div>
 <h3 id="hash-functions">Hash functions</h3>
 <div class="defns">
 <ul>

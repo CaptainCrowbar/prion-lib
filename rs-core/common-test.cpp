@@ -1998,6 +1998,16 @@ void test_core_common_generic_function_objects() {
     TRY(s2 = identity("Goodbye"));       TEST_EQUAL(s2, "Goodbye");
     TRY(s2 = identity("Hello again"s));  TEST_EQUAL(s2, "Hello again");
 
+    int a[] = {1,2,3};
+    int b[] = {1,2,3};
+    int c[] = {1,2,4};
+
+    TEST(range_equal(a, b));
+    TEST(! range_equal(a, c));
+    TEST(! range_compare(a, b));
+    TEST(range_compare(a, c));
+    TEST(! range_compare(c, a));
+
 }
 
 void test_core_common_hash_functions() {

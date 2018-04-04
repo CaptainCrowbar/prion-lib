@@ -766,6 +766,16 @@ much overhead. Like `std::function`, invoking a null `CallRef` will throw
 
 Trivial function objects.
 
+* `struct` **`RangeEqual`**
+    * `template <typename Range> bool RangeEqual::`**`operator()`**`(const Range& r1, const Range& r2) const`
+* `struct` **`RangeCompare`**
+    * `template <typename Range> bool RangeCompare::`**`operator()`**`(const Range& r1, const Range& r2) const`
+* `constexpr RangeEqual` **`range_equal`**
+* `constexpr RangeCompare` **`range_compare`**
+
+Range comparison objects. These call `std::equal()` and
+`std::lexicographical_compare()` respectively.
+
 ### Hash functions ###
 
 * `class` **`Djb2a`**

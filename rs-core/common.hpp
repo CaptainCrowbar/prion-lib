@@ -1464,6 +1464,25 @@ namespace RS {
     constexpr DoNothing do_nothing {};
     constexpr Identity identity {};
 
+    struct RangeEqual {
+        template <typename Range> bool operator()(const Range& r1, const Range& r2) const {
+            using std::begin;
+            using std::end;
+            return std::equal(begin(r1), end(r1), begin(r2), end(r2));
+        }
+    };
+
+    struct RangeCompare {
+        template <typename Range> bool operator()(const Range& r1, const Range& r2) const {
+            using std::begin;
+            using std::end;
+            return std::lexicographical_compare(begin(r1), end(r1), begin(r2), end(r2));
+        }
+    };
+
+    constexpr RangeEqual range_equal {};
+    constexpr RangeCompare range_compare {};
+
     // Hash functions
 
     class Djb2a {

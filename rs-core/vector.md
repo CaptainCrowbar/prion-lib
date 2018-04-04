@@ -172,13 +172,8 @@ Returns the zero vector (the same value as the default constructor).
 
 * `bool` **`operator==`**`(const Vector& lhs, const Vector& rhs) noexcept`
 * `bool` **`operator!=`**`(const Vector& lhs, const Vector& rhs) noexcept`
-* `bool` **`operator<`**`(const Vector& lhs, const Vector& rhs) noexcept`
-* `bool` **`operator>`**`(const Vector& lhs, const Vector& rhs) noexcept`
-* `bool` **`operator<=`**`(const Vector& lhs, const Vector& rhs) noexcept`
-* `bool` **`operator>=`**`(const Vector& lhs, const Vector& rhs) noexcept`
 
-Comparison operators. These perform simple lexicographical comparison on the
-vector elements.
+Comparison operators.
 
 * `std::ostream&` **`operator<<`**`(std::ostream& out, const Vector& v)`
 * `Ustring` **`to_str`**`(const Vector& v)`

@@ -19,8 +19,7 @@ namespace RS {
     // Vector
 
     template <typename T, size_t N>
-    class Vector:
-    public EqualityComparable<Vector<T, N>> {
+    class Vector {
     public:
         using value_type = T;
         static constexpr size_t dim = N;
@@ -260,23 +259,8 @@ namespace RS {
     }
 
     template <typename T, size_t N>
-    bool operator<(const Vector<T, N>& lhs, const Vector<T, N>& rhs) noexcept {
-        return std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
-    }
-
-    template <typename T, size_t N>
-    bool operator>(const Vector<T, N>& lhs, const Vector<T, N>& rhs) noexcept {
-        return rhs < lhs;
-    }
-
-    template <typename T, size_t N>
-    bool operator<=(const Vector<T, N>& lhs, const Vector<T, N>& rhs) noexcept {
-        return ! (rhs < lhs);
-    }
-
-    template <typename T, size_t N>
-    bool operator>=(const Vector<T, N>& lhs, const Vector<T, N>& rhs) noexcept {
-        return ! (lhs < rhs);
+    bool operator!=(const Vector<T, N>& lhs, const Vector<T, N>& rhs) noexcept {
+        return ! (rhs == lhs);
     }
 
     template <typename T, size_t N>
@@ -826,8 +810,7 @@ namespace RS {
     // Quaternion
 
     template <typename T>
-    class Quaternion:
-    public EqualityComparable<Quaternion<T>> {
+    class Quaternion {
     public:
         using value_type = T;
         Quaternion() noexcept: arr{{T(0), T(0), T(0), T(0)}} {}
@@ -955,6 +938,11 @@ namespace RS {
     template <typename T>
     bool operator==(const Quaternion<T>& lhs, const Quaternion<T>& rhs) noexcept {
         return std::equal(lhs.begin(), lhs.end(), rhs.begin());
+    }
+
+    template <typename T>
+    bool operator!=(const Quaternion<T>& lhs, const Quaternion<T>& rhs) noexcept {
+        return ! (lhs == rhs);
     }
 
     template <typename T>

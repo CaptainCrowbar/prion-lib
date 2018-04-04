@@ -116,10 +116,6 @@ void test_core_vector_integer() {
 
     TEST(v1 == v1);      TEST(! (v1 == v2));  TEST(! (v1 == v3));  TEST(! (v2 == v3));
     TEST(! (v1 != v1));  TEST(v1 != v2);      TEST(v1 != v3);      TEST(v2 != v3);
-    TEST(! (v1 < v1));   TEST(v1 < v2);       TEST(v1 < v3);       TEST(! (v2 < v3));
-    TEST(! (v1 > v1));   TEST(! (v1 > v2));   TEST(! (v1 > v3));   TEST(v2 > v3);
-    TEST(v1 <= v1);      TEST(v1 <= v2);      TEST(v1 <= v3);      TEST(! (v2 <= v3));
-    TEST(v1 >= v1);      TEST(! (v1 >= v2));  TEST(! (v1 >= v3));  TEST(v2 >= v3);
 
     TRY((v1 = {2,3,5}));
     TRY((v2 = {7,11,13}));
@@ -225,10 +221,6 @@ void test_core_vector_floating() {
 
     TEST(v1 == v1);      TEST(! (v1 == v2));  TEST(! (v1 == v3));  TEST(! (v2 == v3));
     TEST(! (v1 != v1));  TEST(v1 != v2);      TEST(v1 != v3);      TEST(v2 != v3);
-    TEST(! (v1 < v1));   TEST(v1 < v2);       TEST(v1 < v3);       TEST(! (v2 < v3));
-    TEST(! (v1 > v1));   TEST(! (v1 > v2));   TEST(! (v1 > v3));   TEST(v2 > v3);
-    TEST(v1 <= v1);      TEST(v1 <= v2);      TEST(v1 <= v3);      TEST(! (v2 <= v3));
-    TEST(v1 >= v1);      TEST(! (v1 >= v2));  TEST(! (v1 >= v3));  TEST(v2 >= v3);
 
     TRY((v1 = {2,3,5}));
     TRY((v2 = {7,11,13}));

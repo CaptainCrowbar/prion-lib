@@ -1804,75 +1804,87 @@ namespace RS {
         Ustring suffix() const { return suf; }
         uint32_t to32() const noexcept;
         static Version from32(uint32_t n) noexcept;
-        friend bool operator==(const Version& lhs, const Version& rhs) noexcept { return lhs.ver == rhs.ver && lhs.suf == rhs.suf; }
-        friend bool operator<(const Version& lhs, const Version& rhs) noexcept { int c = compare_3way(lhs.ver, rhs.ver); return c == 0 ? lhs.suf < rhs.suf : c == -1; }
+        friend bool operator==(const Version& lhs, const Version& rhs) noexcept { return lhs.compare(rhs) == 0; }
+        friend bool operator<(const Version& lhs, const Version& rhs) noexcept { return lhs.compare(rhs) < 0; }
     private:
         std::vector<unsigned> ver;
         Ustring suf;
         template <typename... Args> void append(unsigned n, Args... args) { ver.push_back(n); append(args...); }
         void append(const Ustring& s) { suf = s; }
         void append() {}
+        int compare(const Version& v) const noexcept;
         void trim() { while (! ver.empty() && ver.back() == 0) ver.pop_back(); }
         static bool is_digit(char c) noexcept { return c >= '0' && c <= '9'; }
     };
 
-    inline Version::Version(const Ustring& s) {
-        auto i = s.begin(), end = s.end();
-        while (i != end) {
-            auto j = std::find_if_not(i, end, is_digit);
-            if (i == j)
-                break;
-            Ustring part(i, j);
-            ver.push_back(unsigned(strtoul(part.data(), nullptr, 10)));
-            i = j;
-            if (i == end || *i != '.')
-                break;
-            ++i;
-            if (i == end || ! is_digit(*i))
-                break;
+        inline Version::Version(const Ustring& s) {
+            auto i = s.begin(), end = s.end();
+            while (i != end) {
+                auto j = std::find_if_not(i, end, is_digit);
+                if (i == j)
+                    break;
+                Ustring part(i, j);
+                ver.push_back(unsigned(strtoul(part.data(), nullptr, 10)));
+                i = j;
+                if (i == end || *i != '.')
+                    break;
+                ++i;
+                if (i == end || ! is_digit(*i))
+                    break;
+            }
+            suf.assign(i, end);
+            trim();
         }
-        suf.assign(i, end);
-        trim();
-    }
 
-    inline Ustring Version::str(size_t min_elements, char delimiter) const {
-        Ustring s;
-        for (auto& v: ver) {
-            s += std::to_string(v);
-            s += delimiter;
+        inline Ustring Version::str(size_t min_elements, char delimiter) const {
+            Ustring s;
+            for (auto& v: ver) {
+                s += std::to_string(v);
+                s += delimiter;
+            }
+            for (size_t i = ver.size(); i < min_elements; ++i) {
+                s += '0';
+                s += delimiter;
+            }
+            if (! s.empty())
+                s.pop_back();
+            s += suf;
+            return s;
         }
-        for (size_t i = ver.size(); i < min_elements; ++i) {
-            s += '0';
-            s += delimiter;
+
+        inline uint32_t Version::to32() const noexcept {
+            uint32_t v = 0;
+            for (size_t i = 0; i < 4; ++i)
+                v = (v << 8) | ((*this)[i] & 0xff);
+            return v;
         }
-        if (! s.empty())
-            s.pop_back();
-        s += suf;
-        return s;
-    }
 
-    inline uint32_t Version::to32() const noexcept {
-        uint32_t v = 0;
-        for (size_t i = 0; i < 4; ++i)
-            v = (v << 8) | ((*this)[i] & 0xff);
-        return v;
-    }
+        inline Version Version::from32(uint32_t n) noexcept {
+            Version v;
+            for (int i = 24; i >= 0 && n != 0; i -= 8)
+                v.ver.push_back((n >> i) & 0xff);
+            v.trim();
+            return v;
+        }
 
-    inline Version Version::from32(uint32_t n) noexcept {
-        Version v;
-        for (int i = 24; i >= 0 && n != 0; i -= 8)
-            v.ver.push_back((n >> i) & 0xff);
-        v.trim();
-        return v;
-    }
+        inline int Version::compare(const Version& v) const noexcept {
+            int c = compare_3way(ver, v.ver);
+            if (c)
+                return c;
+            if (suf.empty() != v.suf.empty())
+                return int(suf.empty()) - int(v.suf.empty());
+            else
+                return compare_3way(suf, v.suf);
+        }
 
-    inline std::ostream& operator<<(std::ostream& o, const Version& v) {
-        return o << v.str();
-    }
+        inline std::ostream& operator<<(std::ostream& o, const Version& v) {
+            return o << v.str();
+        }
 
-    inline Ustring to_str(const Version& v) {
-        return v.str();
-    }
+        inline Ustring to_str(const Version& v) {
+            return v.str();
+        }
+
 
 }
 

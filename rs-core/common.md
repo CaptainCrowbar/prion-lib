@@ -362,6 +362,10 @@ integer, with one byte per element (e.g. version `1.2.3` becomes
 `0x01020300`); `to32()` truncates elements higher than 255 and ignores the
 string element.
 
+Following the common convention that version suffixes are used to designate
+pre-release builds, versions with a suffix are ordered before the same version
+without the suffix.
+
 ## Constants and literals ##
 
 ### Arithmetic literals ###

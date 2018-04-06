@@ -1,5 +1,6 @@
 #include "rs-core/string.hpp"
 #include "rs-core/unit-test.hpp"
+#include <array>
 #include <atomic>
 #include <map>
 #include <sstream>
@@ -918,6 +919,12 @@ void test_core_string_formatting() {
     TEST_EQUAL(roman(7777), "MMMMMMMDCCLXXVII");
     TEST_EQUAL(roman(8888), "MMMMMMMMDCCCLXXXVIII");
     TEST_EQUAL(roman(9999), "MMMMMMMMMCMXCIX");
+
+    std::array<uint8_t, 4> a4 = {{10,20,30,40}};
+    std::array<uint8_t, 8> a8 = {{10,20,30,40,50,60,70,80}};
+
+    TEST_EQUAL(hex(a4), "0a141e28");
+    TEST_EQUAL(hex(a8), "0a141e28323c4650");
 
     TEST_EQUAL(hexdump(""s), "");
     TEST_EQUAL(hexdump(""s, 5), "");

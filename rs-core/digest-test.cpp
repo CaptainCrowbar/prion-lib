@@ -34,17 +34,6 @@ namespace {
 
 }
 
-void test_core_digest_utility_functions() {
-
-    std::array<uint8_t, 4> a = {{10,20,30,40}};
-    std::array<uint8_t, 8> b = {{10,20,30,40,50,60,70,80}};
-    Ustring s;
-
-    TRY(s = hex(a));  TEST_EQUAL(s, "0a141e28");
-    TRY(s = hex(b));  TEST_EQUAL(s, "0a141e28323c4650");
-
-}
-
 void test_core_digest_adler32() {
 
     TEST_EQUAL(digest<Adler32>(sample1), 0x00000001);

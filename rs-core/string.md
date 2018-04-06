@@ -276,10 +276,11 @@ stripped. This will throw `std::invalid_argument` if the mode is not one of
 `[EFGZefgz]`; it may throw `std::system_error` under implementation defined
 circumstances.
 
+* `template <size_t N> Ustring` **`hex`**`(const std::array<uint8_t, N>& bytes)`
 * `Ustring` **`hexdump`**`(const void* ptr, size_t n, size_t block = 0)`
 * `Ustring` **`hexdump`**`(std::string_view str, size_t block = 0)`
 
-Converts a block of raw data into hexadecimal bytes. If `block` is not zero, a
+Convert a block of raw data into hexadecimal bytes. If `block` is not zero, a
 line feed is inserted after each block.
 
 * `Ustring` **`roman`**`(int n)`

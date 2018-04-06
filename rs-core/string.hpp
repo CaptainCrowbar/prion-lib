@@ -3,6 +3,7 @@
 #include "rs-core/common.hpp"
 #include "rs-core/meta.hpp"
 #include <algorithm>
+#include <array>
 #include <atomic>
 #include <cmath>
 #include <cstddef>
@@ -806,21 +807,12 @@ namespace RS {
         return buf;
     }
 
-    inline Ustring roman(int n) {
-        static constexpr std::pair<int, const char*> table[] = {
-            { 900, "CM" }, { 500, "D" }, { 400, "CD" }, { 100, "C" },
-            { 90, "XC" }, { 50, "L" }, { 40, "XL" }, { 10, "X" },
-            { 9, "IX" }, { 5, "V" }, { 4, "IV" }, { 1, "I" },
-        };
-        if (n < 1)
-            return {};
-        Ustring s(size_t(n / 1000), 'M');
-        n %= 1000;
-        for (auto& t: table) {
-            for (int q = n / t.first; q > 0; --q)
-                s += t.second;
-            n %= t.first;
-        }
+    template <size_t N>
+    Ustring hex(const std::array<uint8_t, N>& bytes) {
+        using namespace RS_Detail;
+        Ustring s;
+        for (auto b: bytes)
+            append_hex_byte(b, s);
         return s;
     }
 
@@ -846,7 +838,28 @@ namespace RS {
         return result;
     }
 
-    inline Ustring hexdump(string_view str, size_t block = 0) { return hexdump(str.data(), str.size(), block); }
+    inline Ustring hexdump(string_view str, size_t block = 0) {
+        return hexdump(str.data(), str.size(), block);
+    }
+
+    inline Ustring roman(int n) {
+        static constexpr std::pair<int, const char*> table[] = {
+            { 900, "CM" }, { 500, "D" }, { 400, "CD" }, { 100, "C" },
+            { 90, "XC" }, { 50, "L" }, { 40, "XL" }, { 10, "X" },
+            { 9, "IX" }, { 5, "V" }, { 4, "IV" }, { 1, "I" },
+        };
+        if (n < 1)
+            return {};
+        Ustring s(size_t(n / 1000), 'M');
+        n %= 1000;
+        for (auto& t: table) {
+            for (int q = n / t.first; q > 0; --q)
+                s += t.second;
+            n %= t.first;
+        }
+        return s;
+    }
+
     inline Ustring tf(bool b) { return b ? "true" : "false"; }
     inline Ustring yn(bool b) { return b ? "yes" : "no"; }
 

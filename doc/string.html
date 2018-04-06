@@ -350,10 +350,11 @@ circumstances.</p>
 </div>
 <div class="defns">
 <ul>
+<li><code>template &lt;size_t N&gt; Ustring</code> <strong><code>hex</code></strong><code>(const std::array&lt;uint8_t, N&gt;&amp; bytes)</code></li>
 <li><code>Ustring</code> <strong><code>hexdump</code></strong><code>(const void* ptr, size_t n, size_t block = 0)</code></li>
 <li><code>Ustring</code> <strong><code>hexdump</code></strong><code>(std::string_view str, size_t block = 0)</code></li>
 </ul>
-<p>Converts a block of raw data into hexadecimal bytes. If <code>block</code> is not zero, a
+<p>Convert a block of raw data into hexadecimal bytes. If <code>block</code> is not zero, a
 line feed is inserted after each block.</p>
 </div>
 <div class="defns">

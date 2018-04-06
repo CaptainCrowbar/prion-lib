@@ -53,7 +53,6 @@ extern void test_core_compact_array_capacity();
 extern void test_core_compact_array_insertion();
 extern void test_core_compact_array_accounting();
 extern void test_core_compact_array_keys();
-extern void test_core_digest_utility_functions();
 extern void test_core_digest_adler32();
 extern void test_core_digest_crc32();
 extern void test_core_digest_siphash24();
@@ -334,7 +333,6 @@ int main() {
         { "core/compact-array/insertion", test_core_compact_array_insertion },
         { "core/compact-array/accounting", test_core_compact_array_accounting },
         { "core/compact-array/keys", test_core_compact_array_keys },
-        { "core/digest/utility-functions", test_core_digest_utility_functions },
         { "core/digest/adler32", test_core_digest_adler32 },
         { "core/digest/crc32", test_core_digest_crc32 },
         { "core/digest/siphash24", test_core_digest_siphash24 },

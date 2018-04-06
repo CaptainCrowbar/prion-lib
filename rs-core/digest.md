@@ -93,7 +93,3 @@ TODO - Not fully implemented yet, multiple calls to operator() will not work
 * `template <typename MD> MD::result_type` **`digest`**`(const void* ptr, size_t n)`
 
 Convenience wrappers for message digest classes.
-
-* `template <size_t N> Ustring` **`hex`**`(const std::array<uint8_t, N>& bytes)`
-
-Convenience function to convert an array of bytes into a hexadecimal string.

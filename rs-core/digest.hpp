@@ -217,13 +217,4 @@ namespace RS {
         return digest<MD>(s.data(), s.size());
     }
 
-    template <size_t N>
-    Ustring hex(const std::array<uint8_t, N>& bytes) {
-        using namespace RS_Detail;
-        Ustring s;
-        for (auto b: bytes)
-            append_hex_byte(b, s);
-        return s;
-    }
-
 }

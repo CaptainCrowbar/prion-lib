@@ -363,7 +363,7 @@ install: uninstall static
 
 uninstall:
 	if [ -h "$(install_include)" ]; then rm $(install_include); fi
-	if [ -d "$(install_include)" ]; then rm -f $(install_include)/*; rmdir $(install_include); fi
+	if [ -d "$(install_include)" ]; then rm -rf $(install_include); fi
 
 help-install: help-test
 	@echo "    install    = Install the application"
@@ -398,8 +398,8 @@ install: uninstall static
 
 uninstall:
 	if [ -h "$(install_include)" ]; then rm $(install_include); fi
-	if [ -d "$(install_include)" ]; then rm -f $(install_include)/*; rmdir $(install_include); fi
-	if [ -f "$(install_static)" ]; then rm $(install_static); fi
+	if [ -d "$(install_include)" ]; then rm -rf $(install_include); fi
+	if [ -f "$(install_static)" ] || [ -h "$(install_static)" ]; then rm $(install_static); fi
 
 help-install: help-test
 	@echo "    install    = Install the application"

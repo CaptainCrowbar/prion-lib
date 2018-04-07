@@ -25,7 +25,7 @@ ifeq ($(TOOLS),msvc)
 	build_target := $(shell cl 2>&1 | head -n 1 | sed -E 's/^.*Version ([0-9]+)\.([0-9]+)\.[0-9.]+ for (.+)$$/msvc-\1\2-\3/')
 	cross_target := msvc
 else
-	build_target := $(shell gcc -v 2>&1 | grep '^Target:' | sed -E -e 's/^Target: //' -e 's/[0-9.]*$$//' | tr A-Z a-z)
+	build_target := $(shell gcc -v 2>&1 | grep '^Target:' | sed -E -e 's/^Target: //' -e 's/[.].*$$//' | tr A-Z a-z)
 	cross_target := $(shell echo $(build_target) | tr A-Z a-z | sed -E -e 's/-gnu$$//' -e 's/.*-//' -e 's/[^a-z].*//')
 endif
 

@@ -1485,27 +1485,6 @@ namespace RS {
 
     // Hash functions
 
-    class Djb2a {
-    public:
-        Djb2a& operator()(const void* ptr, size_t n) noexcept {
-            auto p = static_cast<const uint8_t*>(ptr);
-            if (p)
-                for (size_t i = 0; i < n; ++i)
-                    hash = ((hash << 5) + hash) ^ p[i];
-            return *this;
-        }
-        Djb2a& operator()(const std::string& s) noexcept { return (*this)(s.data(), s.size()); }
-        operator uint32_t() const noexcept { return hash; }
-    private:
-        uint32_t hash = 5381;
-    };
-
-    inline uint32_t djb2a(const void* ptr, size_t n) noexcept {
-        Djb2a d;
-        d(ptr, n);
-        return d;
-    }
-
     inline size_t hash_mix(size_t h1, size_t h2) noexcept {
         return h1 ^ (h2 + 0x9e3779b9 + (h1 << 6) + (h1 >> 2));
     }

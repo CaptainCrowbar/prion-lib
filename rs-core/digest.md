@@ -8,88 +8,66 @@ By Ross Smith
 
 [TOC]
 
-## Message digest concepts ##
+## Hash function base class ##
 
-* `class` **`MessageDigest`**
-    * `using MessageDigest::`**`result_type`** `= [result type]`
-    * `static constexpr size_t MessageDigest::`**`result_size`** `= [size of result in bytes]`
-    * `MessageDigest::`**`MessageDigest`**`()`
-    * `MessageDigest::`**`~MessageDigest`**`()`
-    * `MessageDigest& MessageDigest::`**`operator()`**`(const void* ptr, size_t n)`
-    * `MessageDigest::`**`operator result_type`**`()`
+* `template <size_t Bits> class` **`HashFunction`**
+    * `static constexpr size_t HashFunction::`**`bits`** `= Bits`
+    * `static constexpr size_t HashFunction::`**`bytes`** `= Bits / 8`
+    * `using HashFunction::`**`result_type`** `= [see below]`
+    * `virtual HashFunction::`**`~HashFunction`**`() noexcept`
+    * `virtual result_type HashFunction::`**`hash`**`(const void* ptr, size_t len) const noexcept = 0`
+    * `result_type HashFunction::`**`operator()`**`(const void* ptr, size_t len) const noexcept`
+    * `result_type HashFunction::`**`operator()`**`(const std::string& str) const noexcept`
 
-This is the pattern expected to be followed by a message digest class. The
-result type must be either an unsigned integer type or
-`std::array<uint8_t,result_size>`. A message digest class is not required to
-be copyable or movable.
+Common base class for hash functions of a given output size. A static assert
+ensures that the bit count is positive and a multiple of 8. If the bit count
+is less than or equal to 64, the result type is the smallest standard fixed
+size unsigned integer (`uint8_t` through `uint64_t`) that will hold the
+result; otherwise, the result type is `std::array<uint8_t,bytes>`. The
+function call operators call the virtual `hash()` function. Behaviour is
+undefined if a null pointer is passed to any function.
 
-A message digest class may or may not be default constructible, depending on
-whether or not the algorithm requires any initial parameters. The internal
-state is initialized by the constructor, updated by any number of calls to
-`operator()`, and finalized to generate the actual hash value by calling
-`operator result_type`. Behaviour is undefined if `operator()` is passed a
-null pointer, or if any function other than the destructor is called after
-`operator result_type`.
+Members of individual hash function classes are described below only when they
+are not present in the base class or have significant semantic differences.
 
-Documentation for individual classes below does not bother to list the
-standard members where they simply match the concept's standard signature and
-behaviour.
+## General purpose hash functions ##
 
-## Common hash functions ##
+* `class` **`Adler32`**`: public HashFunction<32>`
+* `class` **`Crc32`**`: public HashFunction<32>`
+* `class` **`Djb2a`**`: public HashFunction<32>`
+* `class` **`Fnv1a_32`**`: public HashFunction<32>`
+* `class` **`Fnv1a_64`**`: public HashFunction<64>`
+* `using` **`Fnv1a_std`** `= Fnv1a_32 or Fnv1a_64 [see below]`
+* `class` **`Murmur3_32`**`: public HashFunction<32>`
+    * `Murmur3_32::`**`Murmur3_32`**`() noexcept`
+    * `explicit Murmur3_32::`**`Murmur3_32`**`(uint32_t seed) noexcept`
+* `class` **`SipHash_32`**`: public HashFunction<32>`
+    * `static constexpr size_t SipHash_32::`**`key_bits`** `= 128`
+    * `static constexpr size_t SipHash_32::`**`key_bytes`** `= 16`
+    * `SipHash_32::`**`SipHash_32`**`() noexcept`
+    * `SipHash_32::`**`SipHash_32`**`(const void* key, size_t keylen) noexcept`
+* `class` **`SipHash_64`**`: public HashFunction<64>`
+    * `static constexpr size_t SipHash_64::`**`key_bits`** `= 128`
+    * `static constexpr size_t SipHash_64::`**`key_bytes`** `= 16`
+    * `SipHash_64::`**`SipHash_64`**`() noexcept`
+    * `SipHash_64::`**`SipHash_64`**`(const void* key, size_t keylen) noexcept`
+* `using` **`SipHash_std`** `= SipHash_32 or SipHash_64 [see below]`
 
-### Adler32 ###
+Commonly used general purpose hash functions. The Murmur3 and SipHash hashes
+can optionally take an initialization key; if the length of the key does not
+match the standard length, the key will be zero padded or truncated on the
+right. `SipHash_64` is the standard 64-bit SipHash; `SipHash_32` is generated
+by XORing the two halves of a `SipHash_64`.
 
-* `class` **`Adler32`**
-    * `using Adler32::`**`result_type`** `= uint32_t`
-    * `static constexpr size_t Adler32::`**`result_size`** `= 4`
+The classes whose names end in `_std` are aliases for the corresponding 32-bit
+or 64-bit implementations, selected to match the size of a `size_t` (the
+result type of `std::hash`).
 
-### CRC32 ###
+## Cryptographic hash functions ##
 
-* `class` **`Crc32`**
-    * `using Crc32::`**`result_type`** `= uint32_t`
-    * `static constexpr size_t Crc32::`**`result_size`** `= 4`
+* `class` **`Md5`**`: public HashFunction<128>`
+* `class` **`Sha1`**`: public HashFunction<160>`
+* `class` **`Sha256`**`: public HashFunction<256>`
+* `class` **`Sha512`**`: public HashFunction<512>`
 
-### SipHash ###
-
-* `class` **`SipHash24`**
-    * `using SipHash::`**`result_type`** `= uint64_t`
-    * `static constexpr size_t SipHash::`**`key_size`**`= 16`
-    * `static constexpr size_t SipHash::`**`result_size`**`= 8`
-    * `explicit SipHash::`**`SipHash`**`(const uint8_t* key) noexcept`
-
-Behaviour is undefined if a null pointer is passed to any function.
-
-TODO - Not fully implemented yet, multiple calls to operator() will not work
-
-## Cryptographic message digests ##
-
-### MD5 hash ###
-
-* `class` **`Md5`**
-    * `using Md5::`**`result_type`** `= std::array<uint8_t, 16>`
-    * `static constexpr size_t Md5::`**`result_size`** `= 16`
-
-### SHA1 hash ###
-
-* `class` **`Sha1`**
-    * `using Sha1::`**`result_type`** `= std::array<uint8_t, 20>`
-    * `static constexpr size_t Sha1::`**`result_size`** `= 20`
-
-### SHA256 hash ###
-
-* `class` **`Sha256`**
-    * `using Sha256::`**`result_type`** `= std::array<uint8_t, 32>`
-    * `static constexpr size_t Sha256::`**`result_size`** `= 32`
-
-### SHA512 hash ###
-
-* `class` **`Sha512`**
-    * `using Sha512::`**`result_type`** `= std::array<uint8_t, 64>`
-    * `static constexpr size_t Sha512::`**`result_size`** `= 64`
-
-## Utility functions ##
-
-* `template <typename MD> MD::result_type` **`digest`**`(std::string_view s)`
-* `template <typename MD> MD::result_type` **`digest`**`(const void* ptr, size_t n)`
-
-Convenience wrappers for message digest classes.
+Commonly used cryptographic hash functions.

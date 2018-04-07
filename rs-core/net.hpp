@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rs-core/channel.hpp"
+#include "rs-core/digest.hpp"
 #include "rs-core/string.hpp"
 #include <algorithm>
 #include <atomic>
@@ -237,7 +238,7 @@ namespace RS {
         uint8_t operator[](unsigned i) const noexcept { return i < size ? reinterpret_cast<const uint8_t*>(this)[i] : 0; }
         uint8_t* data() noexcept { return bytes; }
         const uint8_t* data() const noexcept { return bytes; }
-        size_t hash() const noexcept { return djb2a(bytes, size); }
+        size_t hash() const noexcept { return Djb2a()(bytes, size); }
         Ustring str() const;
         static IPv6 any() noexcept { return {}; }
         static IPv6 localhost() noexcept { return IPv6(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1); }
@@ -316,7 +317,7 @@ namespace RS {
         const uint8_t* data() const noexcept { return reinterpret_cast<const uint8_t*>(&sa_union); }
         uint16_t family() const noexcept { return current_size < sizeof(sockaddr) ? 0 : sa_union.base.sa_family; }
         uint32_t flow() const noexcept { return family() == AF_INET6 ? ntohl(sa_union.inet6.sin6_flowinfo) : 0; }
-        size_t hash() const noexcept { return djb2a(&sa_union, current_size); }
+        size_t hash() const noexcept { return Djb2a()(&sa_union, current_size); }
         IPv4 ipv4() const noexcept { return family() == AF_INET ? IPv4(ntohl(sa_union.inet4.sin_addr.s_addr)) : IPv4(); }
         IPv6 ipv6() const noexcept { return family() == AF_INET6 ? IPv6::from_sin(&sa_union.inet6.sin6_addr) : IPv6(); }
         sockaddr* native() noexcept { return &sa_union.base; }

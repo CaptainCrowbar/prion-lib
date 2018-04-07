@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rs-core/common.hpp"
+#include "rs-core/digest.hpp"
 #include "rs-core/string.hpp"
 #include <algorithm>
 #include <cstdlib>
@@ -40,7 +41,7 @@ namespace RS {
         void copy(const void* p, size_t n) { Blob b; b.init(p, n); swap(b); }
         bool empty() const noexcept { return len == 0; }
         void fill(uint8_t x) noexcept { memset(ptr, x, len); }
-        size_t hash() const noexcept { return djb2a(ptr, len); }
+        size_t hash() const noexcept { return Djb2a()(ptr, len); }
         Ustring hex(size_t block = 0) const { return hexdump(ptr, len, block); }
         void reset(size_t n) { Blob b(n); swap(b); }
         void reset(size_t n, uint8_t x) { Blob b(n, x); swap(b); }

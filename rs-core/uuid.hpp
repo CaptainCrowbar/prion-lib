@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rs-core/common.hpp"
+#include "rs-core/digest.hpp"
 #include "rs-core/random.hpp"
 #include <algorithm>
 #include <ostream>
@@ -25,7 +26,7 @@ namespace RS {
         const uint8_t* begin() const noexcept { return bytes; }
         uint8_t* end() noexcept { return bytes + 16; }
         const uint8_t* end() const noexcept { return bytes + 16; }
-        size_t hash() const noexcept { return djb2a(bytes, 16); }
+        size_t hash() const noexcept { return Djb2a()(bytes, 16); }
         size_t size() const noexcept { return 16; }
         Ustring str() const;
         friend bool operator==(const Uuid& lhs, const Uuid& rhs) noexcept { return memcmp(lhs.bytes, rhs.bytes, 16) == 0; }

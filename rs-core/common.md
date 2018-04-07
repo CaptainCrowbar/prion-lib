@@ -778,14 +778,6 @@ Range comparison objects. These call `std::equal()` and
 
 ### Hash functions ###
 
-* `class` **`Djb2a`**
-    * `Djb2a&` **`Djb2a`**`::operator()(const void* ptr, size_t n) noexcept`
-    * `Djb2a&` **`Djb2a`**`::operator()(const string& s) noexcept`
-    * `Djb2a::`**`operator uint32_t`**`() const noexcept`
-* `uint32_t` **`djb2a`**`(const void* ptr, size_t n) noexcept`
-
-A simple, efficient hash algorithm for a string of bytes.
-
 * `size_t` **`hash_mix`**`(size_t h1, size_t h2) noexcept`
 
 Combine two hash values.

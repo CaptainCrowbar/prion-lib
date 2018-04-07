@@ -1,21 +1,28 @@
 #pragma once
 
 #include "rs-core/common.hpp"
+#include <algorithm>
 #include <array>
 #include <cstring>
+#include <string>
 #include <type_traits>
 
-#ifdef __APPLE__
+#if defined(__APPLE__)
+
     #include <CommonCrypto/CommonDigest.h>
-    #define RS_CRYPTO_API(name) CC_##name
+
 #elif defined(_XOPEN_SOURCE)
+
     #include <openssl/md5.h>
     #include <openssl/sha.h>
-    #define RS_CRYPTO_API(name) name
+
     using SHA1_CTX = SHA_CTX;
+
 #else
+
     #include <windows.h>
     #include <wincrypt.h>
+
 #endif
 
 RS_LDLIB(cygwin: crypto);
@@ -24,32 +31,53 @@ RS_LDLIB(msvc: advapi32);
 
 namespace RS {
 
-    // Common hash functions
+    namespace RS_Detail {
 
-    class Adler32 {
+        template <size_t Bits>
+        struct HashTraits {
+            using result_type =
+                std::conditional_t<Bits <= 8, uint8_t,
+                std::conditional_t<Bits <= 16, uint16_t,
+                std::conditional_t<Bits <= 32, uint32_t,
+                std::conditional_t<Bits <= 64, uint64_t,
+                std::array<uint8_t, (Bits + 7) / 8>>>>>;
+        };
+
+    }
+
+    template <size_t Bits>
+    class HashFunction {
     public:
-        using result_type = uint32_t;
-        static constexpr size_t result_size = 4;
-        Adler32& operator()(const void* ptr, size_t n) noexcept {
-            auto bytes = static_cast<const uint8_t*>(ptr);
-            for (size_t i = 0; i < n; ++i) {
-                s1 = (s1 + bytes[i]) % 65521;
-                s2 = (s2 + s1) % 65521;
-            }
-            return *this;
-        }
-        operator uint32_t() noexcept { return (s2 << 16) + s1; }
-    private:
-        uint32_t s1 = 1, s2 = 0;
+        static_assert(Bits > 0 && Bits % 8 == 0);
+        static constexpr size_t bits = Bits;
+        static constexpr size_t bytes = Bits / 8;
+        using result_type = typename RS_Detail::HashTraits<Bits>::result_type;
+        virtual ~HashFunction() noexcept {}
+        virtual result_type hash(const void* ptr, size_t len) const noexcept = 0;
+        result_type operator()(const void* ptr, size_t len) const noexcept { return hash(ptr, len); }
+        result_type operator()(const std::string& str) const noexcept { return hash(str.data(), str.size()); }
     };
 
-    class Crc32 {
+    class Adler32:
+    public HashFunction<32> {
     public:
-        using result_type = uint32_t;
-        static constexpr size_t result_size = 4;
-        Crc32& operator()(const void* ptr, size_t n) noexcept {
+        virtual uint32_t hash(const void* ptr, size_t len) const noexcept {
+            const auto data = static_cast<const uint8_t*>(ptr);
+            uint32_t s1 = 1, s2 = 0;
+            for (size_t i = 0; i < len; ++i) {
+                s1 = (s1 + data[i]) % 65521;
+                s2 = (s2 + s1) % 65521;
+            }
+            return (s2 << 16) + s1;
+        }
+    };
+
+    class Crc32:
+    public HashFunction<32> {
+    public:
+        virtual uint32_t hash(const void* ptr, size_t len) const noexcept {
             static const auto table = [] {
-                std::array<uint32_t, 256> data;
+                std::array<uint32_t, 256> buf;
                 for (uint32_t i = 0; i < 256; i++) {
                     uint32_t x = i;
                     for (int k = 0; k < 8; k++) {
@@ -58,80 +86,152 @@ namespace RS {
                         else
                             x >>= 1;
                     }
-                    data[i] = x;
+                    buf[i] = x;
                 }
-                return data;
+                return buf;
             }();
-            auto bytes = static_cast<const uint8_t*>(ptr);
-            for (size_t i = 0; i < n; i++)
-                c = table[(c ^ bytes[i]) & 0xff] ^ (c >> 8);
-            return *this;
+            const auto data = static_cast<const uint8_t*>(ptr);
+            uint32_t c = 0xffffffff;
+            for (size_t i = 0; i < len; i++)
+                c = table[(c ^ data[i]) & 0xff] ^ (c >> 8);
+            return c ^ 0xffffffff;
         }
-        operator uint32_t() noexcept { return c ^ 0xffffffff; }
-    private:
-        uint32_t c = 0xffffffff;
     };
 
-    // SipHash implementation based on the public domain reference implementation by Jean-Philippe Aumasson and Daniel J. Bernstein
-    // See https://131002.net/siphash and https://github.com/veorq/SipHash
-    // This implementation assumes 8-bit bytes and little-endian integers
-
-    class SipHash24 {
+    class Djb2a:
+    public HashFunction<32> {
     public:
-        using result_type = uint64_t;
-        static constexpr size_t key_size = 16;
-        static constexpr size_t result_size = 8;
-        SipHash24() noexcept { static constexpr uint64_t z[2] = {0,0}; init(z); }
-        explicit SipHash24(const void* key) noexcept { init(key); }
-        SipHash24& operator()(const void* ptr, size_t n) noexcept {
-            size_t over = len % 8;
-            if (over + n < 8) {
-                memcpy(buf + over, ptr, n);
-                len += n;
-                return *this;
-            }
-            auto bp = static_cast<const uint8_t*>(ptr);
-            uint64_t x = 0;
-            if (over) {
-                size_t over2 = 8 - over;
-                auto xp = reinterpret_cast<uint8_t*>(&x);
-                memcpy(xp, buf, over);
-                memcpy(xp + over, bp, over2);
-                sip_rounds(v, x, 2);
-                bp += over2;
-                n -= over2;
-                len += over2;
-            }
-            len += n;
-            over = len % 8;
-            for (auto end = bp + n - over; bp != end; bp += 8) {
-                memcpy(&x, bp, 8);
-                sip_rounds(v, x, 2);
-            }
-            memcpy(buf, bp, over);
-            return *this;
+        virtual uint32_t hash(const void* ptr, size_t len) const noexcept {
+            const auto data = static_cast<const uint8_t*>(ptr);
+            uint32_t hash = 5381;
+            for (size_t i = 0; i < len; ++i)
+                hash = ((hash << 5) + hash) ^ data[i];
+            return hash;
         }
-        operator result_type() noexcept {
-            uint64_t x = uint64_t(len) << 56;
-            memcpy(&x, buf, len % 8);
-            sip_rounds(v, x, 2);
+    };
+
+    class Fnv1a_32:
+    public HashFunction<32> {
+    public:
+        virtual uint32_t hash(const void* ptr, size_t len) const noexcept {
+            static constexpr uint32_t offset = 0x811c9dc5;
+            static constexpr uint32_t prime = 16777619u;
+            const auto data = static_cast<const uint8_t*>(ptr);
+            auto hash = offset;
+            for (size_t i = 0; i < len; ++i)
+                hash = (hash ^ data[i]) * prime;
+            return hash;
+        }
+    };
+
+    class Fnv1a_64:
+    public HashFunction<64> {
+    public:
+        virtual uint64_t hash(const void* ptr, size_t len) const noexcept {
+            static constexpr uint64_t offset = 0xcbf29ce484222325ull;
+            static constexpr uint64_t prime = 1099511628211ull;
+            const auto data = static_cast<const uint8_t*>(ptr);
+            auto hash = offset;
+            for (size_t i = 0; i < len; ++i)
+                hash = (hash ^ data[i]) * prime;
+            return hash;
+        }
+    };
+
+    using Fnv1a_std = std::conditional_t<sizeof(size_t) <= 4, Fnv1a_32, Fnv1a_64>;
+
+    class Murmur3_32:
+    public HashFunction<32> {
+    public:
+        Murmur3_32() = default;
+        explicit Murmur3_32(uint32_t seed) noexcept: seedval(seed) {}
+        virtual uint32_t hash(const void* ptr, size_t len) const noexcept {
+            static constexpr uint32_t c1 = 0xcc9e2d51;
+            static constexpr uint32_t c2 = 0x1b873593;
+            static constexpr uint32_t c3 = 0xe6546b64;
+            static constexpr uint32_t c4 = 0x85ebca6b;
+            static constexpr uint32_t c5 = 0xc2b2ae35;
+            const auto data = static_cast<const uint8_t*>(ptr);
+            uint32_t hash = seedval, k = 0;
+            const size_t n_words = len / 4;
+            for (size_t i = 0, max = 4 * n_words; i < max; i += 4) {
+                std::memcpy(&k, data + i, 4);
+                k *= c1;
+                k = rotl(k, 15);
+                k *= c2;
+                hash ^= k;
+                hash = rotl(hash, 13);
+                hash = hash * 5 + c3;
+            }
+            const size_t n_tail = len & 3;
+            if (n_tail) {
+                const auto tail = data + len - n_tail;
+                k = 0;
+                if (n_tail == 3)
+                    k = tail[2] << 16;
+                if (n_tail >= 2)
+                    k ^= tail[1] << 8;
+                k ^= tail[0];
+                k *= c1;
+                k = rotl(k, 15);
+                k *= c2;
+                hash ^= k;
+            }
+            hash ^= len;
+            hash ^= hash >> 16;
+            hash *= c4;
+            hash ^= hash >> 13;
+            hash *= c5;
+            hash ^= hash >> 16;
+            return hash;
+        }
+    private:
+        uint32_t seedval = 0;
+    };
+
+    class SipHash_64:
+    public HashFunction<64> {
+    public:
+        static constexpr size_t key_bytes = 16;
+        static constexpr size_t key_bits = 8 * key_bytes;
+        SipHash_64() = default;
+        SipHash_64(const void* key, size_t keylen) noexcept: SipHash_64() {
+            uint64_t k[2] = {0,0};
+            std::memcpy(k, key, std::min(keylen, size_t(key_bytes)));
+            initvec[3] ^= k[1];
+            initvec[2] ^= k[0];
+            initvec[1] ^= k[1];
+            initvec[0] ^= k[0];
+        }
+        virtual uint64_t hash(const void* ptr, size_t len) const noexcept {
+            static constexpr int c_rounds = 2;
+            static constexpr int d_rounds = 4;
+            const auto data = static_cast<const uint8_t*>(ptr);
+            const size_t len64 = len - len % 8;
+            uint64_t mask = 0;
+            auto v = initvec;
+            for (size_t i = 0; i < len64; i += 8) {
+                std::memcpy(&mask, data + i, 8);
+                sip_rounds(v, c_rounds, mask);
+            }
+            mask = uint64_t(len) << 56;
+            for (int x = int(len & 7) - 1; x >= 0; --x)
+                mask |= uint64_t(data[len64 + x]) << (8 * x);
+            sip_rounds(v, c_rounds, mask);
             v[2] ^= 0xff;
-            sip_rounds(v, 0, 4);
+            sip_rounds(v, d_rounds, 0);
             return v[0] ^ v[1] ^ v[2] ^ v[3];
         }
     private:
-        uint64_t v[4];
-        size_t len = 0;
-        uint8_t buf[7];
-        void init(const void* key) noexcept {
-            memcpy(v, key, 16);
-            v[3] = v[1] ^ 0x7465646279746573ull;
-            v[2] = v[0] ^ 0x6c7967656e657261ull;
-            v[1] ^= 0x646f72616e646f6dull;
-            v[0] ^= 0x736f6d6570736575ull;
-        }
-        static void sip_rounds(uint64_t* v, uint64_t x, int n) noexcept {
-            v[3] ^= x;
+        using vec_type = std::array<uint64_t, 4>;
+        vec_type initvec = {{
+            0x736f6d6570736575ull,
+            0x646f72616e646f6dull,
+            0x6c7967656e657261ull,
+            0x7465646279746573ull,
+        }};
+        static void sip_rounds(vec_type& v, int n, uint64_t mask) noexcept {
+            v[3] ^= mask;
             for (int i = 0; i < n; ++i) {
                 v[0] += v[1];
                 v[1] = rotl(v[1], 13) ^ v[0];
@@ -144,77 +244,76 @@ namespace RS {
                 v[1] = rotl(v[1], 17) ^ v[2];
                 v[2] = rotl(v[2], 32);
             }
-            v[0] ^= x;
-        }
+            v[0] ^= mask;
+        };
     };
 
-    // Cryptographic hash functions
+    class SipHash_32:
+    public HashFunction<32> {
+    public:
+        static constexpr size_t key_bytes = 16;
+        static constexpr size_t key_bits = 8 * key_bytes;
+        SipHash_32() = default;
+        SipHash_32(const void* key, size_t keylen) noexcept: sip64(key, keylen) {}
+        virtual uint32_t hash(const void* ptr, size_t len) const noexcept {
+            uint64_t hash = sip64(ptr, len);
+            return uint32_t(hash) ^ uint32_t(hash >> 32);
+        }
+    private:
+        SipHash_64 sip64;
+    };
 
-    // Zhihao Yuan, "Message Digest Library for C++"
-    // http://www.open-std.org/JTC1/SC22/WG21/docs/papers/2015/n4449.html
+    using SipHash_std = std::conditional_t<sizeof(size_t) <= 4, SipHash_32, SipHash_64>;
 
-    // Algorithm  GNU   FreeBSD  Apple         Windows    OpenSSL
-    // ...        libc  libmd    CommonCrypto  CryptoAPI  ...
-    // MD5        yes   yes      yes           yes        yes
-    // SHA1       yes   yes      yes           yes        yes
-    // SHA224     --    --       yes           --         yes
-    // SHA256     yes   yes      yes           yes        yes
-    // SHA384     --    --       yes           yes        yes
-    // SHA512     yes   yes      yes           yes        yes
-    // RMD160     --    yes      --            --         --
+    #if defined(__APPLE__)
 
-    #ifdef _XOPEN_SOURCE
+        #define RS_HASH_FUNCTION_IMPLEMENTATION(unix_name, win_name, bits) \
+            CC_##unix_name##_CTX context; \
+            CC_##unix_name##_Init(&context); \
+            CC_##unix_name##_Update(&context, ptr, uint32_t(len)); \
+            CC_##unix_name##_Final(hash.data(), &context);
 
-        #define RS_DIGEST_CLASS(DigestClass, bytes, x_tag, w_pname, w_ptype, w_algo) \
-            class DigestClass { \
-            public: \
-                RS_NO_COPY_MOVE(DigestClass) \
-                using result_type = std::array<uint8_t, bytes>; \
-                static constexpr size_t result_size = bytes; \
-                DigestClass() noexcept { RS_CRYPTO_API(x_tag##_Init)(&c); } \
-                ~DigestClass() noexcept {} \
-                DigestClass& operator()(const void* ptr, size_t n) noexcept { RS_CRYPTO_API(x_tag##_Update)(&c, ptr, uint32_t(n)); return *this; } \
-                operator result_type() noexcept { result_type r; RS_CRYPTO_API(x_tag##_Final)(r.data(), &c); return r; } \
-            private: \
-                RS_CRYPTO_API(x_tag##_CTX) c; \
-            };
+    #elif defined(_XOPEN_SOURCE)
+
+        #define RS_HASH_FUNCTION_IMPLEMENTATION(unix_name, win_name, bits) \
+            unix_name##_CTX context; \
+            unix_name##_Init(&context); \
+            unix_name##_Update(&context, ptr, uint32_t(len)); \
+            unix_name##_Final(hash.data(), &context);
 
     #else
 
-        #define RS_DIGEST_CLASS(DigestClass, bytes, x_tag, w_pname, w_ptype, w_algo) \
-            class DigestClass { \
-            public: \
-                RS_NO_COPY_MOVE(DigestClass) \
-                using result_type = std::array<uint8_t, bytes>; \
-                static constexpr size_t result_size = bytes; \
-                DigestClass() noexcept { CryptAcquireContextW(&p, nullptr, w_pname, w_ptype, CRYPT_SILENT | CRYPT_VERIFYCONTEXT); CryptCreateHash(p, w_algo, 0, 0, &h); } \
-                ~DigestClass() noexcept { CryptDestroyHash(h); CryptReleaseContext(p, 0); } \
-                DigestClass& operator()(const void* ptr, size_t n) noexcept { CryptHashData(h, LPCBYTE(ptr), uint32_t(n), 0); return *this; } \
-                operator result_type() noexcept { result_type r; DWORD n = result_size; CryptGetHashParam(h, HP_HASHVAL, r.data(), &n, 0); return r; } \
-            private: \
-                HCRYPTHASH h = 0; \
-                HCRYPTPROV p = 0; \
-            };
+        #define RS_HASH_FUNCTION_IMPLEMENTATION(unix_name, win_name, bits) \
+            const auto data = static_cast<const uint8_t*>(ptr); \
+            DWORD hashlen = bits / 8; \
+            HCRYPTHASH hchash = 0; \
+            HCRYPTPROV hcprov = 0; \
+            CryptAcquireContextW(&hcprov, nullptr, MS_ENH_RSA_AES_PROV, PROV_RSA_AES, CRYPT_SILENT | CRYPT_VERIFYCONTEXT); \
+            CryptCreateHash(hcprov, CALG_##win_name, 0, 0, &hchash); \
+            CryptHashData(hchash, data, uint32_t(len), 0); \
+            CryptGetHashParam(hchash, HP_HASHVAL, hash.data(), &hashlen, 0); \
+            CryptDestroyHash(hchash); \
+            CryptReleaseContext(hcprov, 0);
 
     #endif
 
-    RS_DIGEST_CLASS(Md5, 16, MD5, MS_DEF_PROV, PROV_RSA_FULL, CALG_MD5);
-    RS_DIGEST_CLASS(Sha1, 20, SHA1, MS_DEF_PROV, PROV_RSA_FULL, CALG_SHA1);
-    RS_DIGEST_CLASS(Sha256, 32, SHA256, MS_ENH_RSA_AES_PROV, PROV_RSA_AES, CALG_SHA_256);
-    RS_DIGEST_CLASS(Sha512, 64, SHA512, MS_ENH_RSA_AES_PROV, PROV_RSA_AES, CALG_SHA_512);
+    #define RS_HASH_FUNCTION_CLASS(class_name, unix_name, win_name, bits) \
+        class class_name: \
+        public HashFunction<bits> { \
+        public: \
+            virtual std::array<uint8_t, bits / 8> hash(const void* ptr, size_t len) const noexcept { \
+                std::array<uint8_t, bits / 8> hash; \
+                RS_HASH_FUNCTION_IMPLEMENTATION(unix_name, win_name, bits); \
+                return hash; \
+            } \
+        };
 
-    // Utility functions
+    RS_HASH_FUNCTION_CLASS(Md5, MD5, MD5, 128);
+    RS_HASH_FUNCTION_CLASS(Sha1, SHA1, SHA1, 160);
+    RS_HASH_FUNCTION_CLASS(Sha256, SHA256, SHA_256, 256);
+    RS_HASH_FUNCTION_CLASS(Sha512, SHA512, SHA_512, 512);
 
-    template <typename MD>
-    typename MD::result_type digest(const void* ptr, size_t n) {
-        MD md;
-        md(ptr, n);
-        return md;
-    }
-
-    template <typename MD>
-    typename MD::result_type digest(string_view s) {
-        return digest<MD>(s.data(), s.size());
-    }
+    #undef RS_HASH_FUNCTION_CLASS
+    #undef RS_HASH_FUNCTION_IMPLEMENTATION
 
 }

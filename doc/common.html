@@ -1004,18 +1004,6 @@ much overhead. Like <code>std::function</code>, invoking a null <code>CallRef</c
 <h3 id="hash-functions">Hash functions</h3>
 <div class="defns">
 <ul>
-<li><code>class</code> <strong><code>Djb2a</code></strong><ul>
-<li><code>Djb2a&amp;</code> <strong><code>Djb2a</code></strong><code>::operator()(const void* ptr, size_t n) noexcept</code></li>
-<li><code>Djb2a&amp;</code> <strong><code>Djb2a</code></strong><code>::operator()(const string&amp; s) noexcept</code></li>
-<li><code>Djb2a::</code><strong><code>operator uint32_t</code></strong><code>() const noexcept</code></li>
-</ul>
-</li>
-<li><code>uint32_t</code> <strong><code>djb2a</code></strong><code>(const void* ptr, size_t n) noexcept</code></li>
-</ul>
-<p>A simple, efficient hash algorithm for a string of bytes.</p>
-</div>
-<div class="defns">
-<ul>
 <li><code>size_t</code> <strong><code>hash_mix</code></strong><code>(size_t h1, size_t h2) noexcept</code></li>
 </ul>
 <p>Combine two hash values.</p>

@@ -62,7 +62,8 @@ namespace RS {
         #ifdef _XOPEN_SOURCE
 
             inline NamedMutex::NamedMutex(const Ustring& name) {
-                path = '/' + hex(digest<Sha256>(name));
+                auto hash = Sha256()(name);
+                path = '/' + hex(hash);
                 #ifdef __APPLE__
                     path.resize(30);
                 #endif

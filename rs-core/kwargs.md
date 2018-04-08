@@ -42,10 +42,10 @@ Example:
 
     class Window {
     public:
-        static constexpr Kwarg<int, 1> width
-        static constexpr Kwarg<int, 2> height;
-        static constexpr Kwarg<std::string> title;
-        static constexpr Kwarg<bool> visible;
+        static constexpr Kwarg<int, 1> width = {};
+        static constexpr Kwarg<int, 2> height = {};
+        static constexpr Kwarg<std::string> title = {};
+        static constexpr Kwarg<bool> visible = {};
         template <typename... Args> explicit Window(Args... args) {
             int win_width = kwget(width, 640, args...);
             int win_height = kwget(height, 480, args...);

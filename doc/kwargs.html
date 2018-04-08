@@ -53,10 +53,10 @@ once in the actual argument list, the first one found will be returned.</p>
 <p>Example:</p>
 <pre><code>class Window {
 public:
-    static constexpr Kwarg&lt;int, 1&gt; width
-    static constexpr Kwarg&lt;int, 2&gt; height;
-    static constexpr Kwarg&lt;std::string&gt; title;
-    static constexpr Kwarg&lt;bool&gt; visible;
+    static constexpr Kwarg&lt;int, 1&gt; width = {};
+    static constexpr Kwarg&lt;int, 2&gt; height = {};
+    static constexpr Kwarg&lt;std::string&gt; title = {};
+    static constexpr Kwarg&lt;bool&gt; visible = {};
     template &lt;typename... Args&gt; explicit Window(Args... args) {
         int win_width = kwget(width, 640, args...);
         int win_height = kwget(height, 480, args...);

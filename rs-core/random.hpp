@@ -806,6 +806,14 @@ namespace RS {
         }
     }
 
+    template <typename RNG1, typename RNG2>
+    void seed_from(RNG1& src, RNG2& dst) {
+        std::array<uint32_t, RNG2::state_size> array;
+        std::generate_n(array.data(), array.size(), std::ref(src));
+        std::seed_seq seq(array.begin(), array.end());
+        dst.seed(seq);
+    }
+
     template <typename RNG, typename RandomAccessIterator>
     void shuffle(RNG& rng, RandomAccessIterator i, RandomAccessIterator j) {
         size_t n = std::distance(i, j);

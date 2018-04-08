@@ -827,6 +827,26 @@ void test_core_random_shuffle() {
 
 }
 
+void test_core_random_seed_sequence() {
+
+    std::random_device src;
+    std::mt19937 dst1, dst2;
+    uint32_t x1 = 0, x2 = 0, y1 = 0, y2 = 0, z1 = 0, z2 = 0;
+
+    TRY(seed_from(src, dst1));
+    TRY(x1 = dst1());
+    TRY(y1 = dst1());
+    TRY(z1 = dst1());
+    TRY(seed_from(src, dst2));
+    TRY(x2 = dst2());
+    TRY(y2 = dst2());
+    TRY(z2 = dst2());
+    TEST_COMPARE(x1, !=, x2);
+    TEST_COMPARE(y1, !=, y2);
+    TEST_COMPARE(z1, !=, z2);
+
+}
+
 void test_core_random_text_generators() {
 
     #ifdef _MSC_VER

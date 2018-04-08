@@ -373,6 +373,13 @@ nothing if <code>ptr</code> is null or <code>n=0</code>.</p>
 </div>
 <div class="defns">
 <ul>
+<li><code>template &lt;typename RNG1, typename RNG2&gt; void</code> <strong><code>seed_from</code></strong><code>(RNG1&amp; src, RNG2&amp; dst)</code></li>
+</ul>
+<p>Seed one standard random engine from another, by constructing an intermediate
+<code>seed_seq</code>.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>template &lt;typename RNG, typename RandomAccessRange&gt; void</code> <strong><code>shuffle</code></strong><code>(RNG&amp; rng, RandomAccessRange&amp; range)</code></li>
 <li><code>template &lt;typename RNG, typename RandomAccessIterator&gt; void</code> <strong><code>shuffle</code></strong><code>(RNG&amp; rng, RandomAccessIterator i, RandomAccessIterator j)</code></li>
 </ul>

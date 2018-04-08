@@ -199,6 +199,7 @@ extern void test_core_random_unique_distribution();
 extern void test_core_random_weighted_choice_distribution();
 extern void test_core_random_bytes();
 extern void test_core_random_shuffle();
+extern void test_core_random_seed_sequence();
 extern void test_core_random_text_generators();
 extern void test_core_rational_basics();
 extern void test_core_rational_reduction();
@@ -484,6 +485,7 @@ int main() {
         { "core/random/weighted-choice-distribution", test_core_random_weighted_choice_distribution },
         { "core/random/bytes", test_core_random_bytes },
         { "core/random/shuffle", test_core_random_shuffle },
+        { "core/random/seed-sequence", test_core_random_seed_sequence },
         { "core/random/text-generators", test_core_random_text_generators },
         { "core/rational/basics", test_core_rational_basics },
         { "core/rational/reduction", test_core_rational_reduction },

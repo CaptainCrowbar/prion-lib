@@ -143,8 +143,9 @@ namespace RS {
         #else
 
             inline NamedMutex::NamedMutex(const Ustring& name) {
-                Ustring hash = hex(digest<Sha256>(name));
-                path = L"Local\\" + uconv<std::wstring>(hash);
+                auto hash = Sha256()(name);
+                Ustring xhash = hex(hash);
+                path = L"Local\\" + uconv<std::wstring>(xhash);
                 han = CreateMutexW(nullptr, false, path.data());
                 auto err = GetLastError();
                 if (! han)

@@ -5,39 +5,17 @@
 
 namespace RS {
 
-    // Keyword arguments
+    template <typename T, int ID> struct Kwptr { const T* ptr; };
+    template <typename T, int ID = 0> struct Kwarg { constexpr Kwptr<T, ID> operator=(const T& t) const noexcept { return {&t}; } };
 
-    namespace RS_Detail {
+    template <typename T, int ID> constexpr bool kwtest(Kwarg<T, ID>) { return false; }
+    template <typename T, int ID, typename... Args> constexpr bool kwtest(Kwarg<T, ID>, Kwptr<T, ID>, Args...) { return true; }
+    template <int ID, typename... Args> constexpr bool kwtest(Kwarg<bool, ID>, Kwarg<bool, ID>, Args...) { return true; }
+    template <typename T, int ID, typename Arg1, typename... Args> constexpr bool kwtest(Kwarg<T, ID> key, Arg1, Args... args) { return kwtest(key, args...); }
 
-        template <typename K, typename V, bool = std::is_convertible<K, V>::value> struct Kwcopy;
-        template <typename K, typename V> struct Kwcopy<K, V, true> { void operator()(const K& a, V& p) const { p = V(a); } };
-        template <typename K, typename V> struct Kwcopy<K, V, false> { void operator()(const K&, V&) const {} };
-
-        template <typename K> struct Kwparam {
-            const void* key;
-            K val;
-        };
-
-    }
-
-    template <typename K> struct Kwarg {
-        constexpr Kwarg() {}
-        template <typename A> RS_Detail::Kwparam<K> operator=(const A& a) const { return {this, K(a)}; }
-    };
-
-    template <typename K, typename V, typename K2, typename... Args>
-    bool kwget(const Kwarg<K>& k, V& v, const RS_Detail::Kwparam<K2>& p, const Args&... args) {
-        if (&k != p.key)
-            return kwget(k, v, args...);
-        RS_Detail::Kwcopy<K2, V>()(p.val, v);
-        return true;
-    }
-
-    template <typename K, typename V, typename... Args>
-    bool kwget(const Kwarg<K>& k, V& v, const Kwarg<bool>& p, const Args&... args) {
-        return kwget(k, v, p = true, args...);
-    }
-
-    template <typename K, typename V> bool kwget(const Kwarg<K>&, V&) { return false; }
+    template <typename T, int ID> T kwget(Kwarg<T, ID>, const T& def) { return def; }
+    template <typename T, int ID, typename... Args> T kwget(Kwarg<T, ID>, const T&, Kwptr<T, ID> p, Args...) { return *p.ptr; }
+    template <int ID, typename... Args> bool kwget(Kwarg<bool, ID>, bool, Kwarg<bool, ID>, Args...) { return true; }
+    template <typename T, int ID, typename Arg1, typename... Args> T kwget(Kwarg<T, ID> key, const T& def, Arg1, Args... args) { return kwget(key, def, args...); }
 
 }

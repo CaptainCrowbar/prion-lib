@@ -24,51 +24,48 @@
 <h2 id="keyword-arguments_1">Keyword arguments</h2>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename K&gt; struct</code> <strong><code>Kwarg</code></strong><ul>
-<li><code>template &lt;typename A&gt; ... Kwarg::</code><strong><code>operator=</code></strong><code>(const A&amp; arg) const</code></li>
+<li><code>template &lt;typename T, int ID = 0&gt; struct</code> <strong><code>Kwarg</code></strong><ul>
+<li><code>constexpr ... Kwarg::</code><strong><code>operator=</code></strong><code>(const T&amp; t) const noexcept</code></li>
 </ul>
 </li>
-<li><code>template &lt;typename K, typename V, typename... Args&gt; bool</code> <strong><code>kwget</code></strong><code>(const Kwarg&lt;K&gt;&amp; key, V&amp; var, const Args&amp;... args)</code></li>
+<li><code>template &lt;typename T, int ID, typename... Args&gt; constexpr bool</code> <strong><code>kwtest</code></strong><code>(Kwarg&lt;T, ID&gt; key, Args... args)</code></li>
+<li><code>template &lt;typename T, int ID, typename... Args&gt; T</code> <strong><code>kwget</code></strong><code>(Kwarg&lt;T, ID&gt; key, const T&amp; def, Args... args)</code></li>
 </ul>
 <p>This provides a simple implementation of variadic keyword arguments for C++
 functions.</p>
-<p>Define a <code>Kwarg&lt;K&gt;</code> object for each keyword argument, where <code>K</code> is the
-argument type. Functions that will take keyword arguments should be declared
-with a variadic argument pack, possibly preceded by ordinary positional
-arguments. The variadic arguments must be passed by reference, since the
-global <code>Kwarg</code> objects are identified by address.</p>
+<p>Define a <code>Kwarg&lt;T[,ID]&gt;</code> object for each keyword argument, where <code>T</code> is the
+argument type. The <code>ID</code> parameter is only needed to distinguish between
+keywords with the same argument type. Functions that will take keyword
+arguments should be declared with a variadic argument pack, possibly preceded
+by ordinary positional arguments.</p>
 <p>When calling the function, the keyword arguments should be supplied in the
-form <code>key=value</code>, where <code>key</code> is a <code>Kwarg&lt;K&gt;</code> object, and <code>value</code> is the
-argument value. The value type must be convertible to <code>K</code>. If <code>K</code> is <code>bool</code>,
-the keyword alone can be passed as an argument, with the value defaulting to
+form <code>key=value</code>, where <code>key</code> is a <code>Kwarg</code> object, and <code>value</code> is the argument
+value. The value type must be convertible to <code>T</code>. If <code>T</code> is <code>bool</code>, the
+keyword alone can be passed as an argument, with the value defaulting to
 <code>true</code>.</p>
-<p>In the function body, call <code>kwget()</code> for each possible keyword argument, with
-the corresponding <code>Kwarg&lt;K&gt;</code> object as the key, a reference to the variable
-that will receive the value, and the variadic arguments from the enclosing
-function. The variable passed by reference will be updated with the value
-supplied with the key, or left unchanged if no corresponding keyword argument
-was supplied. The return value indicates whether the variable was updated. If
-the same key appears more than once in the actual argument list, it is
-unspecified which value will be copied.</p>
+<p>In the function body, call <code>kwget()</code> or <code>kwtest()</code> for each possible keyword
+argument, with the corresponding <code>Kwarg</code> object as the key, a default value
+(for <code>kwget()</code>), and the variadic arguments from the enclosing function. The
+<code>kwget()</code> function returns the value attached to the keyword, or the default
+value if the keyword was not found in the argument list; <code>kwtest()</code> returns
+whether or not the keyword was present. If the same keyword appears more than
+once in the actual argument list, the first one found will be returned.</p>
 <p>Example:</p>
-<pre><code>constexpr Kwarg&lt;int&gt; win_width, win_height;
-constexpr Kwarg&lt;string&gt; win_title;
-constexpr Kwarg&lt;bool&gt; win_visible;
-
-class Window {
+<pre><code>class Window {
 public:
-    template &lt;typename... Args&gt; explicit Window(const Args&amp;... args) {
-        int width = 640, height = 480;
-        string title = "New Window";
-        bool visible = false;
-        kwget(win_width, width, args...);
-        kwget(win_height, height, args...);
-        kwget(win_title, title, args...);
-        kwget(win_visible, visible, args...);
+    static constexpr Kwarg&lt;int, 1&gt; width
+    static constexpr Kwarg&lt;int, 2&gt; height;
+    static constexpr Kwarg&lt;std::string&gt; title;
+    static constexpr Kwarg&lt;bool&gt; visible;
+    template &lt;typename... Args&gt; explicit Window(Args... args) {
+        int win_width = kwget(width, 640, args...);
+        int win_height = kwget(height, 480, args...);
+        string title_text = kwget(title, "New Window"s, args...);
+        bool is_visible = kwget(visible, false, args...);
         // ...
     }
 };
 
-Window app_window(win_title = "Hello World", win_width = 1024, win_height = 768, win_visible);
+Window app_window(Window::title="Hello World", Window::width=1000, Window::height=750, Window::visible);
 </code></pre></body>
 </html>

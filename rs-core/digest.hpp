@@ -8,21 +8,13 @@
 #include <type_traits>
 
 #if defined(__APPLE__)
-
     #include <CommonCrypto/CommonDigest.h>
-
 #elif defined(_XOPEN_SOURCE)
-
     #include <openssl/md5.h>
     #include <openssl/sha.h>
-
-    using SHA1_CTX = SHA_CTX;
-
 #else
-
     #include <windows.h>
     #include <wincrypt.h>
-
 #endif
 
 RS_LDLIB(cygwin: crypto);
@@ -267,23 +259,23 @@ namespace RS {
 
     #if defined(__APPLE__)
 
-        #define RS_HASH_FUNCTION_IMPLEMENTATION(unix_name, win_name, bits) \
-            CC_##unix_name##_CTX context; \
+        #define RS_HASH_FUNCTION_IMPLEMENTATION(unix_name, unix_ctx_name, win_name, bits) \
+            CC_##unix_ctx_name##_CTX context; \
             CC_##unix_name##_Init(&context); \
             CC_##unix_name##_Update(&context, ptr, uint32_t(len)); \
             CC_##unix_name##_Final(hash.data(), &context);
 
     #elif defined(_XOPEN_SOURCE)
 
-        #define RS_HASH_FUNCTION_IMPLEMENTATION(unix_name, win_name, bits) \
-            unix_name##_CTX context; \
+        #define RS_HASH_FUNCTION_IMPLEMENTATION(unix_name, unix_ctx_name, win_name, bits) \
+            unix_ctx_name##_CTX context; \
             unix_name##_Init(&context); \
             unix_name##_Update(&context, ptr, uint32_t(len)); \
             unix_name##_Final(hash.data(), &context);
 
     #else
 
-        #define RS_HASH_FUNCTION_IMPLEMENTATION(unix_name, win_name, bits) \
+        #define RS_HASH_FUNCTION_IMPLEMENTATION(unix_name, unix_ctx_name, win_name, bits) \
             const auto data = static_cast<const uint8_t*>(ptr); \
             DWORD hashlen = bits / 8; \
             HCRYPTHASH hchash = 0; \
@@ -297,21 +289,21 @@ namespace RS {
 
     #endif
 
-    #define RS_HASH_FUNCTION_CLASS(class_name, unix_name, win_name, bits) \
+    #define RS_HASH_FUNCTION_CLASS(class_name, unix_name, unix_ctx_name, win_name, bits) \
         class class_name: \
         public HashFunction<bits> { \
         public: \
             virtual std::array<uint8_t, bits / 8> hash(const void* ptr, size_t len) const noexcept { \
                 std::array<uint8_t, bits / 8> hash; \
-                RS_HASH_FUNCTION_IMPLEMENTATION(unix_name, win_name, bits); \
+                    RS_HASH_FUNCTION_IMPLEMENTATION(unix_name, unix_ctx_name, win_name, bits); \
                 return hash; \
             } \
         };
 
-    RS_HASH_FUNCTION_CLASS(Md5, MD5, MD5, 128);
-    RS_HASH_FUNCTION_CLASS(Sha1, SHA1, SHA1, 160);
-    RS_HASH_FUNCTION_CLASS(Sha256, SHA256, SHA_256, 256);
-    RS_HASH_FUNCTION_CLASS(Sha512, SHA512, SHA_512, 512);
+    RS_HASH_FUNCTION_CLASS(Md5, MD5, MD5, MD5, 128);
+    RS_HASH_FUNCTION_CLASS(Sha1, SHA1, SHA, SHA1, 160);
+    RS_HASH_FUNCTION_CLASS(Sha256, SHA256, SHA256, SHA_256, 256);
+    RS_HASH_FUNCTION_CLASS(Sha512, SHA512, SHA512, SHA_512, 512);
 
     #undef RS_HASH_FUNCTION_CLASS
     #undef RS_HASH_FUNCTION_IMPLEMENTATION

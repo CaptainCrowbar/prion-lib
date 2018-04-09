@@ -260,7 +260,7 @@ namespace RS {
     #if defined(__APPLE__)
 
         #define RS_HASH_FUNCTION_IMPLEMENTATION(unix_name, unix_ctx_name, win_name, bits) \
-            CC_##unix_ctx_name##_CTX context; \
+            CC_##unix_name##_CTX context; \
             CC_##unix_name##_Init(&context); \
             CC_##unix_name##_Update(&context, ptr, uint32_t(len)); \
             CC_##unix_name##_Final(hash.data(), &context);

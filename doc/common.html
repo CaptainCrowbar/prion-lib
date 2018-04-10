@@ -252,6 +252,15 @@ string of <code>n</code> null characters, instead of undefined behaviour.</p>
 <p>Returns the length of a null-terminated string (a generalized version of
 <code>strlen()</code>). This will return zero if the pointer is null.</p>
 </div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename S&gt; [string view]</code> <strong><code>make_view</code></strong><code>(const S&amp; s, size_t pos = 0, size_t len = npos) noexcept</code></li>
+</ul>
+<p>Returns a string view over the given string. The string argument may be an
+instantiation of <code>std:basic_string</code> or <code>std::basic_string_view</code>, or a pointer
+to a null terminated character array. The substring bounds are range checked
+and clamped to the actual size of the string.</p>
+</div>
 <h3 id="exceptions">Exceptions</h3>
 <div class="defns">
 <ul>

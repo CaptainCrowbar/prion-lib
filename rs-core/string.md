@@ -119,15 +119,6 @@ extremely high values.
 
 Returns a string containing `4*depth` spaces, for indentation.
 
-* `template <typename S> [string view]` **`make_view`**`(const S& s) noexcept`
-* `template <typename S> [string view]` **`make_view`**`(const S& s, size_t pos, size_t len) noexcept`
-
-Return a string view over the given string. The string argument may be an
-instantiation of `std:basic_string` or `std::basic_string_view`, or a pointer
-to a null terminated character array. Passing a null pointer will return an
-empty view. The second version returns a substring of the string argument; the
-bounds are range checked and clamped to the actual size of the string.
-
 ## String property functions ##
 
 * `bool` **`ascii_icase_equal`**`(std::string_view lhs, std::string_view rhs) noexcept`

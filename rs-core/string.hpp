@@ -29,20 +29,7 @@
 
 namespace RS {
 
-    // These are defined out of order so other functions can use them
-
-    template <typename C> basic_string_view<C> make_view(const std::basic_string<C>& s) noexcept { return s; }
-    template <typename C> basic_string_view<C> make_view(basic_string_view<C> s) noexcept { return s; }
-    template <typename C> basic_string_view<C> make_view(const C* s) noexcept { if (s) return s; else return {}; }
-
-    template <typename S>
-    auto make_view(const S& s, size_t pos, size_t len) noexcept {
-        auto v = make_view(s);
-        using SV = decltype(v);
-        pos = std::min(pos, v.size());
-        len = std::min(len, v.size() - pos);
-        return SV(v.data() + pos, len);
-    }
+    // Needed early
 
     template <typename InputRange>
     std::string join(const InputRange& range, string_view delim = {}, bool term = false) {

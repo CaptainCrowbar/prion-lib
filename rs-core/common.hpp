@@ -318,6 +318,18 @@ namespace RS {
         return n;
     }
 
+    template <typename S>
+    auto make_view(const S& s, size_t pos = 0, size_t len = npos) noexcept {
+        using C = std::decay_t<decltype(s[0])>;
+        using SV = basic_string_view<C>;
+        SV view(s);
+        if (pos == 0 && len == npos)
+            return view;
+        pos = std::min(pos, view.size());
+        len = std::min(len, view.size() - pos);
+        return SV(view.data() + pos, len);
+    }
+
     namespace RS_Detail {
 
         inline void append_hex_byte(uint8_t b, std::string& s) {

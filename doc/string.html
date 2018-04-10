@@ -152,17 +152,6 @@ extremely high values.</p>
 </ul>
 <p>Returns a string containing <code>4*depth</code> spaces, for indentation.</p>
 </div>
-<div class="defns">
-<ul>
-<li><code>template &lt;typename S&gt; [string view]</code> <strong><code>make_view</code></strong><code>(const S&amp; s) noexcept</code></li>
-<li><code>template &lt;typename S&gt; [string view]</code> <strong><code>make_view</code></strong><code>(const S&amp; s, size_t pos, size_t len) noexcept</code></li>
-</ul>
-<p>Return a string view over the given string. The string argument may be an
-instantiation of <code>std:basic_string</code> or <code>std::basic_string_view</code>, or a pointer
-to a null terminated character array. Passing a null pointer will return an
-empty view. The second version returns a substring of the string argument; the
-bounds are range checked and clamped to the actual size of the string.</p>
-</div>
 <h2 id="string-property-functions">String property functions</h2>
 <div class="defns">
 <ul>

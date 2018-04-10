@@ -171,6 +171,13 @@ string of `n` null characters, instead of undefined behaviour.
 Returns the length of a null-terminated string (a generalized version of
 `strlen()`). This will return zero if the pointer is null.
 
+* `template <typename S> [string view]` **`make_view`**`(const S& s, size_t pos = 0, size_t len = npos) noexcept`
+
+Returns a string view over the given string. The string argument may be an
+instantiation of `std:basic_string` or `std::basic_string_view`, or a pointer
+to a null terminated character array. The substring bounds are range checked
+and clamped to the actual size of the string.
+
 ### Exceptions ###
 
 * `void` **`rethrow`**`(std::exception_ptr p)`

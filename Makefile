@@ -57,7 +57,6 @@ library_path := -L$(BUILD)
 lib_prefix := lib
 lib_suffix := .a
 exe_suffix :=
-native_windows :=
 
 ifeq ($(build_host),cygwin)
 	exe_suffix := .exe
@@ -90,11 +89,10 @@ ifeq ($(cross_target),msvc)
 	RC := rc
 	RCFLAGS :=
 	rc_output := /fo
-	native_windows := yes
 endif
 
 ifeq ($(cross_target),cygwin)
-	cc_defines += -D_REENTRANT=1 -D_XOPEN_SOURCE=700
+	cc_defines += -DFMT_HEADER_ONLY=1 -D_REENTRANT=1 -D_XOPEN_SOURCE=700
 	cxx_specific_flags += -std=gnu++1z
 	ld_specific_flags += -Wl,--enable-auto-import
 endif
@@ -163,7 +161,7 @@ doc_pages := doc/style.css doc/index.html $(patsubst $(project_name)/%.md,doc/%.
 static_name := $(lib_prefix)$(project_name)$(lib_suffix)
 static_library := $(BUILD)/$(static_name)
 
-ifneq ($(native_windows),)
+ifeq ($(cross_target),msvc)
 	resource_files := $(wildcard resources/*.rc) $(wildcard resources/*.ico)
 	resource_object := $(patsubst resources/%.rc,$(BUILD)/%.o,$(firstword $(resource_files)))
 	app_objects += $(resource_object)
@@ -336,7 +334,7 @@ help-install: help-test
 	@echo "    symlinks   = Install the library using symlinks"
 	@echo "    uninstall  = Uninstall the library"
 
-ifeq ($(native_windows),yes)
+ifeq ($(cross_target),msvc)
 
 symlinks:
 	$(error make symlinks is not supported on $(cross_target), use make install)
@@ -370,7 +368,7 @@ help-install: help-test
 	@echo "    symlinks   = Install the application using symlinks"
 	@echo "    uninstall  = Uninstall the application"
 
-ifeq ($(native_windows),yes)
+ifeq ($(cross_target),msvc)
 
 symlinks:
 	$(error make symlinks is not supported on $(cross_target), use make install)
@@ -406,7 +404,7 @@ help-install: help-test
 	@echo "    symlinks   = Install the application using symlinks"
 	@echo "    uninstall  = Uninstall the application"
 
-ifeq ($(native_windows),yes)
+ifeq ($(cross_target),msvc)
 
 symlinks:
 	$(error make symlinks is not supported on $(cross_target), use make install)
@@ -444,11 +442,16 @@ endif
 
 # System specific link libraries
 
-ifeq ($(native_windows),)
+ifeq ($(cross_target),msvc)
+	LDLIBS += fmt.lib
+else
+	LDLIBS += -lpthread -lz
+	ifneq ($(cross_target),cygwin)
+		LDLIBS += -lfmt
+	endif
 	ifneq ($(cross_target),linux)
 		LDLIBS += -liconv
 	endif
-	LDLIBS += -lpthread -lz
 endif
 
 # Rules for building objects from source

@@ -44,14 +44,16 @@ Equivalent code:
     enum Foo { alpha = 1, bravo, charlie };
     constexpr bool enum_is_valid(Foo t) noexcept { ... }
     std::string enum_str(Foo t) { ... }
-    std::vector<Foo> enum_values<Foo>() { ... }
     std::ostream& operator<<(std::ostream& out, Foo t) { ... }
 
     enum class Bar { delta = 1, echo, foxtrot };
     constexpr bool enum_is_valid(Bar t) noexcept { ... }
     std::string enum_str(Bar t) { ... }
-    std::vector<Bar> enum_values<Bar>() { ... }
     std::ostream& operator<<(std::ostream& out, Bar t) { ... }
+
+The macros can be used in any namespace, and the functions that take an enum
+value as an argument will be in that namespace, but `enum_values()` is a
+single function template in `namespace RS`.
 
 * `#define` **`RS_LDLIB`**`([tag:] lib ...)`
 

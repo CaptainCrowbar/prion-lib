@@ -162,30 +162,34 @@
     #define RS_ATTR_UNUSED
 #endif
 
-namespace RS::RS_Detail {
+namespace RS {
 
-    template <typename EnumType>
-    std::string enum_str(EnumType t, const char* prefix, const char* names) {
-        static const std::vector<std::string> names_vec = [=] {
-            auto ptr = names;
-            std::vector<std::string> vec;
-            for (;;) {
-                if (*ptr == ' ')
-                    ++ptr;
-                auto next = std::strchr(ptr, ',');
-                if (! next)
-                    break;
-                vec.emplace_back(ptr, next - ptr);
-                ptr = next + 1;
-            }
-            vec.push_back(ptr);
-            return vec;
-        }();
-        using U = std::underlying_type_t<EnumType>;
-        if (t >= EnumType::RS_enum_begin && t < EnumType::RS_enum_end)
-            return prefix + names_vec[U(t) - U(EnumType::RS_enum_begin)];
-        else
-            return std::to_string(U(t));
+    namespace RS_Detail {
+
+        template <typename EnumType>
+        std::string enum_str(EnumType t, const char* prefix, const char* names) {
+            static const std::vector<std::string> names_vec = [=] {
+                auto ptr = names;
+                std::vector<std::string> vec;
+                for (;;) {
+                    if (*ptr == ' ')
+                        ++ptr;
+                    auto next = std::strchr(ptr, ',');
+                    if (! next)
+                        break;
+                    vec.emplace_back(ptr, next - ptr);
+                    ptr = next + 1;
+                }
+                vec.push_back(ptr);
+                return vec;
+            }();
+            using U = std::underlying_type_t<EnumType>;
+            if (t >= EnumType::RS_enum_begin && t < EnumType::RS_enum_end)
+                return prefix + names_vec[U(t) - U(EnumType::RS_enum_begin)];
+            else
+                return std::to_string(U(t));
+        }
+
     }
 
     template <typename EnumType>
@@ -207,7 +211,6 @@ namespace RS::RS_Detail {
     enum class_tag EnumType: IntType { RS_enum_begin = first_value, first_name = first_value, __VA_ARGS__, RS_enum_end }; \
     constexpr RS_ATTR_UNUSED bool enum_is_valid(EnumType t) noexcept { return t >= EnumType::RS_enum_begin && t < EnumType::RS_enum_end; } \
     inline RS_ATTR_UNUSED std::string enum_str(EnumType t) { return ::RS::RS_Detail::enum_str(t, name_prefix, #first_name "," #__VA_ARGS__); } \
-    inline RS_ATTR_UNUSED std::vector<EnumType> RS_enum_values(EnumType) { return ::RS::RS_Detail::enum_values<EnumType>(); } \
     inline RS_ATTR_UNUSED std::ostream& operator<<(std::ostream& out, EnumType t) { return out << enum_str(t); }
 
 #define RS_ENUM(EnumType, IntType, first_value, first_name, ...) \
@@ -321,7 +324,6 @@ namespace RS {
 
     template <typename T> constexpr auto as_signed(T t) noexcept { return static_cast<std::make_signed_t<T>>(t); }
     template <typename T> constexpr auto as_unsigned(T t) noexcept { return static_cast<std::make_unsigned_t<T>>(t); }
-    template <typename T> std::vector<T> enum_values() { return RS_enum_values(T()); }
 
     template <typename C>
     std::basic_string<C> cstr(const C* ptr) {

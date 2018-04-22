@@ -100,15 +100,16 @@ RS_ENUM_CLASS(Bar, 1, delta, echo, foxtrot)
 <pre><code>enum Foo { alpha = 1, bravo, charlie };
 constexpr bool enum_is_valid(Foo t) noexcept { ... }
 std::string enum_str(Foo t) { ... }
-std::vector&lt;Foo&gt; enum_values&lt;Foo&gt;() { ... }
 std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, Foo t) { ... }
 
 enum class Bar { delta = 1, echo, foxtrot };
 constexpr bool enum_is_valid(Bar t) noexcept { ... }
 std::string enum_str(Bar t) { ... }
-std::vector&lt;Bar&gt; enum_values&lt;Bar&gt;() { ... }
 std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, Bar t) { ... }
 </code></pre>
+<p>The macros can be used in any namespace, and the functions that take an enum
+value as an argument will be in that namespace, but <code>enum_values()</code> is a
+single function template in <code>namespace RS</code>.</p>
 </div>
 <div class="defns">
 <ul>

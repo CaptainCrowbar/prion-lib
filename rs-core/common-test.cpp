@@ -72,8 +72,11 @@ namespace {
     Ustring f2(Ustring s) { return '[' + s + ']'; }
     Ustring f2(int x, int y) { return decfmt(x * y); }
 
-    RS_ENUM(FooEnum, int16_t, 1, alpha, bravo, charlie)
-    RS_ENUM_CLASS(BarEnum, int32_t, 1, alpha, bravo, charlie)
+    RS_ENUM(FooEnum, int16_t, 1, alpha, bravo, charlie);
+    RS_ENUM_CLASS(BarEnum, int32_t, 1,
+        alpha,
+        bravo,
+        charlie);
 
     enum class ZapEnum: uint32_t {
         alpha = 1,
@@ -81,7 +84,7 @@ namespace {
         charlie = 4,
     };
 
-    RS_BITMASK_OPERATORS(ZapEnum)
+    RS_BITMASK_OPERATORS(ZapEnum);
 
     struct Adapt {
         int a = 10;

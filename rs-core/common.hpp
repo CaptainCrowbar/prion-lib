@@ -162,22 +162,53 @@
     #define RS_ATTR_UNUSED
 #endif
 
-#define RS_ENUM_IMPLEMENTATION(EnumType, IntType, class_tag, name_prefix, first_value, first_name, ...) \
-    enum class_tag EnumType: IntType { first_name = first_value, __VA_ARGS__, RS_enum_sentinel }; \
-    inline RS_ATTR_UNUSED std::ostream& operator<<(std::ostream& out, EnumType t) { \
-        ::RS::RS_Detail::write_enum(out, t, first_value, name_prefix, #first_name "," #__VA_ARGS__); \
-        return out; \
-    } \
-    constexpr RS_ATTR_UNUSED bool enum_is_valid(EnumType t) noexcept { \
-        return IntType(t) >= IntType(first_value) && IntType(t) < IntType(EnumType::RS_enum_sentinel); \
-    } \
-    inline RS_ATTR_UNUSED std::vector<EnumType> RS_enum_values(EnumType) { \
-        IntType n = IntType(EnumType::RS_enum_sentinel) - IntType(first_value); \
-        std::vector<EnumType> v(size_t(n), {}); \
-        for (IntType i = 0; i < n; ++i) \
-            v[i] = EnumType(first_value + i); \
-        return v; \
+namespace RS::RS_Detail {
+
+    template <typename EnumType>
+    std::string enum_str(EnumType t, const char* prefix, const char* names) {
+        static const std::vector<std::string> names_vec = [=] {
+            auto ptr = names;
+            std::vector<std::string> vec;
+            for (;;) {
+                if (*ptr == ' ')
+                    ++ptr;
+                auto next = std::strchr(ptr, ',');
+                if (! next)
+                    break;
+                vec.emplace_back(ptr, next - ptr);
+                ptr = next + 1;
+            }
+            vec.push_back(ptr);
+            return vec;
+        }();
+        using U = std::underlying_type_t<EnumType>;
+        if (t >= EnumType::RS_enum_begin && t < EnumType::RS_enum_end)
+            return prefix + names_vec[U(t) - U(EnumType::RS_enum_begin)];
+        else
+            return std::to_string(U(t));
     }
+
+    template <typename EnumType>
+    std::vector<EnumType> enum_values() {
+        static const std::vector<EnumType> enum_vec = [] {
+            using U = std::underlying_type_t<EnumType>;
+            U base = U(EnumType::RS_enum_begin), size = U(EnumType::RS_enum_end) - base;
+            std::vector<EnumType> vec(size, {});
+            for (U i = 0; i < size; ++i)
+                vec[i] = EnumType(base + i);
+            return vec;
+        }();
+        return enum_vec;
+    }
+
+}
+
+#define RS_ENUM_IMPLEMENTATION(EnumType, IntType, class_tag, name_prefix, first_value, first_name, ...) \
+    enum class_tag EnumType: IntType { RS_enum_begin = first_value, first_name = first_value, __VA_ARGS__, RS_enum_end }; \
+    constexpr RS_ATTR_UNUSED bool enum_is_valid(EnumType t) noexcept { return t >= EnumType::RS_enum_begin && t < EnumType::RS_enum_end; } \
+    inline RS_ATTR_UNUSED std::string enum_str(EnumType t) { return ::RS::RS_Detail::enum_str(t, name_prefix, #first_name "," #__VA_ARGS__); } \
+    inline RS_ATTR_UNUSED std::vector<EnumType> RS_enum_values(EnumType) { return ::RS::RS_Detail::enum_values<EnumType>(); } \
+    inline RS_ATTR_UNUSED std::ostream& operator<<(std::ostream& out, EnumType t) { return out << enum_str(t); }
 
 #define RS_ENUM(EnumType, IntType, first_value, first_name, ...) \
     RS_ENUM_IMPLEMENTATION(EnumType, IntType,, "", first_value, first_name, __VA_ARGS__)
@@ -383,22 +414,6 @@ namespace RS {
 
         template <typename T> Ustring decfmt(T x, size_t digits = 1) { return RS_Detail::int_to_string(x, 10, digits); }
         template <typename T> Ustring hexfmt(T x, size_t digits = 2 * sizeof(T)) { return RS_Detail::int_to_string(x, 16, digits); }
-
-        template <typename EnumType>
-        void write_enum(std::ostream& out, EnumType t, long first_value, const char* prefix, const char* names) {
-            using U = std::underlying_type_t<EnumType>;
-            size_t index = U(t) - first_value;
-            for (size_t i = 0; i < index; ++i) {
-                names = strchr(names, ',');
-                if (names == nullptr) {
-                    out << U(t);
-                    return;
-                }
-                names += strspn(names, " ,");
-            }
-            out << prefix;
-            out.write(names, ptrdiff_t(strcspn(names, " ,")));
-        }
 
     }
 

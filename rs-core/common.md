@@ -22,16 +22,17 @@ These define an enumeration, given the name of the enumeration type, the
 underlying integer type, the integer value of the first entry, and a list of
 value names. They will also define the following functions:
 
-* `std::ostream&` **`operator<<`**`(std::ostream& out, EnumType t)`
 * `constexpr bool` **`enum_is_valid`**`(EnumType t) noexcept`
+* `std::string` **`enum_str`**`(EnumType t)`
 * `std::vector<EnumType>` **`enum_values<EnumType>`**`()`
+* `std::ostream&` **`operator<<`**`(std::ostream& out, EnumType t)`
 
-The output operator prints the name of an enumeration constant (qualified with
-the class name if this is an `enum class`), or the integer value if the
-argument is not a named value. The `enum_is_valid()` function reports whether
-or not the argument is a named value of the enumeration. The
-`enum_values<T>()` function returns a `vector` containing a list of the
-enumeration's values.
+The `enum_str()` function and the output operator print the name of an
+enumeration constant (qualified with the class name if this is an `enum
+class`), or the integer value if the argument is not a named value. The
+`enum_is_valid()` function reports whether or not the argument is a named
+value of the enumeration. The `enum_values<T>()` function returns a vector
+containing a list of the enumeration's values.
 
 Example:
 
@@ -41,9 +42,16 @@ Example:
 Equivalent code:
 
     enum Foo { alpha = 1, bravo, charlie };
-    std::ostream& operator<<(std::ostream& out, Foo f) { ... }
+    constexpr bool enum_is_valid(Foo t) noexcept { ... }
+    std::string enum_str(Foo t) { ... }
+    std::vector<Foo> enum_values<Foo>() { ... }
+    std::ostream& operator<<(std::ostream& out, Foo t) { ... }
+
     enum class Bar { delta = 1, echo, foxtrot };
-    std::ostream& operator<<(std::ostream& out, Bar b) { ... }
+    constexpr bool enum_is_valid(Bar t) noexcept { ... }
+    std::string enum_str(Bar t) { ... }
+    std::vector<Bar> enum_values<Bar>() { ... }
+    std::ostream& operator<<(std::ostream& out, Bar t) { ... }
 
 * `#define` **`RS_LDLIB`**`([tag:] lib ...)`
 

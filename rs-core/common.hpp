@@ -177,7 +177,7 @@ namespace RS {
                     auto next = std::strchr(ptr, ',');
                     if (! next)
                         break;
-                    vec.push_back(prefix + std::string(ptr, next));
+                    vec.push_back(prefix + std::string(ptr, next - ptr));
                     ptr = next + 1;
                 }
                 vec.push_back(std::string(prefix) + ptr);

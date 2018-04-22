@@ -21,81 +21,82 @@ three named constants (for the three standard floating point types) and a
 variable template. The `value` argument must be a floating point literal with
 no type suffix.
 
-(This intentionally uses a different naming convention to
-[P0631](https://wg21.link/p0631), to avoid collisions if P0631 becomes part of
-the standard library.)
+The mathematical constants are the union of the Posix and
+[P0631](https://wg21.link/p0631) lists; spelling is mostly taken from P0631
+However, this intentionally uses a different suffix convention to avoid
+collisions if P0631 becomes part of the standard library.
 
 The values quoted for the following constants are approximate; the values
 actually supplied are accurate to at least `long double` precision where an
 exact value is defined, or to the best known accuracy for the empirical
 constants.
 
-* _Mathematical constants from Posix/P0631_
-    * **`e`** _= 2.7183_
-    * **`log2e`** _= log<sub>2</sub> e = 1.4427_
-    * **`log10e`** _= log<sub>10</sub> e = 0.4343_
-    * **`ln2`** _= log<sub>e</sub> 2 = 0.6931_
-    * **`ln10`** _= log<sub>e</sub> 10 = 2.3026_
-    * **`pi`** _= &pi; = 3.1416_
-    * **`pi_2`** _= &pi;/2 = 1.5708_
-    * **`pi_4`** _= &pi;/4 = 0.7854_
-    * **`one_pi`** _= 1/&pi; = 0.3183_
-    * **`two_pi`** _= 2/&pi; = 0.6366_
-    * **`two_sqrtpi`** _= 2/&radic;&pi; = 1.1284_
-    * **`sqrt2`** _= &radic;2 = 1.4142_
-    * **`one_sqrt2`** _= 1/&radic;2 = 0.7071_
-* _Other mathematical constants_
-    * **`sqrt3`** _= &radic;3 = 1.7321_
-    * **`sqrt5`** _= &radic;5 = 2.2361_
-    * **`sqrtpi`** _= &radic;&pi; = 1.7725_
-    * **`sqrt2pi`** _= &radic;(2&pi;) = 2.5066_
+* _Mathematical constants_
+    * **`e`**                _= e                         = 2.7183_
+    * **`ln2`**              _= log<sub>e</sub> 2         = 0.6931_
+    * **`ln10`**             _= log<sub>e</sub> 10        = 2.3026_
+    * **`log2e`**            _= log<sub>2</sub> e         = 1.4427_
+    * **`log10e`**           _= log<sub>10</sub> e        = 0.4343_
+    * **`pi`**               _= &pi;                      = 3.1416_
+    * **`pi_over_2`**        _= &pi;/2                    = 1.5708_
+    * **`pi_over_4`**        _= &pi;/4                    = 0.7854_
+    * **`inv_pi`**           _= 1/&pi;                    = 0.3183_
+    * **`inv_sqrtpi`**       _= 1/&radic;&pi;             = 0.5642_
+    * **`two_over_pi`**      _= 2/&pi;                    = 0.6366_
+    * **`two_over_sqrtpi`**  _= 2/&radic;&pi;             = 1.1284_
+    * **`sqrt2`**            _= &radic;2                  = 1.4142_
+    * **`sqrt3`**            _= &radic;3                  = 1.7321_
+    * **`inv_sqrt2`**        _= 1/&radic;2                = 0.7071_
+    * **`inv_sqrt3`**        _= 1/&radic;3                = 0.5774_
+    * **`egamma`**           _= &gamma; (Euler constant)  = 0.5772_
+    * **`phi`**              _= &phi; (golden ratio)      = 1.6180_
 * _Conversion factors_
-    * **`inch`** _= 0.0254 m_
-    * **`foot`** _= 0.3048 m_
-    * **`yard`** _= 0.9144 m_
-    * **`mile`** _= 1609 m_
-    * **`nautical_mile`** _= 1852 m_
-    * **`ounce`** _= 0.02835 kg_
-    * **`pound`** _= 0.4536 kg_
-    * **`short_ton`** _= 907.2 kg_
-    * **`long_ton`** _= 1016 kg_
-    * **`pound_force`** _= 4.448 N_
-    * **`erg`** _= 10<sup>-7</sup> J_
-    * **`foot_pound`** _= 1.356 J_
-    * **`calorie`** _= 4.184 J_
-    * **`kilocalorie`** _= 4184 J_
-    * **`ton_tnt`** _= 4.184&times;10<sup>9</sup> J_
-    * **`horsepower`** _= 745.7 W_
-    * **`mmHg`** _= 133.3 Pa_
-    * **`atmosphere`** _= 101300 Pa_
-    * **`zero_celsius`** _= 273.15 K_
+    * **`inch`**           _= 0.0254 m_
+    * **`foot`**           _= 0.3048 m_
+    * **`yard`**           _= 0.9144 m_
+    * **`mile`**           _= 1609 m_
+    * **`nautical_mile`**  _= 1852 m_
+    * **`ounce`**          _= 0.02835 kg_
+    * **`pound`**          _= 0.4536 kg_
+    * **`short_ton`**      _= 907.2 kg_
+    * **`long_ton`**       _= 1016 kg_
+    * **`pound_force`**    _= 4.448 N_
+    * **`erg`**            _= 10<sup>-7</sup> J_
+    * **`foot_pound`**     _= 1.356 J_
+    * **`calorie`**        _= 4.184 J_
+    * **`kilocalorie`**    _= 4184 J_
+    * **`ton_tnt`**        _= 4.184&times;10<sup>9</sup> J_
+    * **`horsepower`**     _= 745.7 W_
+    * **`mmHg`**           _= 133.3 Pa_
+    * **`atmosphere`**     _= 101300 Pa_
+    * **`zero_celsius`**   _= 273.15 K_
 * _Physical constants_
-    * **`atomic_mass_unit`** _= 1.661&times;10<sup>-27</sup> kg_
-    * **`avogadro_constant`** _= 6.022&times;10<sup>23</sup> mol<sup>-1</sup>_
-    * **`boltzmann_constant`** _= 1.381&times;10<sup>-23</sup> J K<sup>-1</sup>_
-    * **`elementary_charge`** _= 1.602&times;10<sup>-19</sup> C_
-    * **`gas_constant`** _= 8.314 J mol<sup>-1</sup> K<sup>-1</sup>_
-    * **`gravitational_constant`** _= 6.674&times;10<sup>-11</sup> m<sup>3</sup> kg<sup>-1</sup> s<sup>-2</sup>_
-    * **`planck_constant`** _= 6.626&times;10<sup>-34</sup> J s_
-    * **`speed_of_light`** _= 2.998&times;10<sup>8</sup> m s<sup>-1</sup>_
-    * **`stefan_boltzmann_constant`** _= 5.670&times;10<sup>-8</sup> W m<sup>-2</sup> K<sup>-4</sup>_
+    * **`atomic_mass_unit`**           _= 1.661&times;10<sup>-27</sup> kg_
+    * **`avogadro_constant`**          _= 6.022&times;10<sup>23</sup> mol<sup>-1</sup>_
+    * **`boltzmann_constant`**         _= 1.381&times;10<sup>-23</sup> J K<sup>-1</sup>_
+    * **`elementary_charge`**          _= 1.602&times;10<sup>-19</sup> C_
+    * **`gas_constant`**               _= 8.314 J mol<sup>-1</sup> K<sup>-1</sup>_
+    * **`gravitational_constant`**     _= 6.674&times;10<sup>-11</sup> m<sup>3</sup> kg<sup>-1</sup> s<sup>-2</sup>_
+    * **`planck_constant`**            _= 6.626&times;10<sup>-34</sup> J s_
+    * **`speed_of_light`**             _= 2.998&times;10<sup>8</sup> m s<sup>-1</sup>_
+    * **`stefan_boltzmann_constant`**  _= 5.670&times;10<sup>-8</sup> W m<sup>-2</sup> K<sup>-4</sup>_
 * _Astronomical constants_
-    * **`earth_mass`** _= 5.972&times;10<sup>24</sup> kg_
-    * **`earth_radius`** _= 6.371&times;10<sup>6</sup> m_
-    * **`earth_gravity`** _= 9.807 m s<sup>-2</sup>_
-    * **`jupiter_mass`** _= 1.899&times;10<sup>27</sup> kg_
-    * **`jupiter_radius`** _= 6.991&times;10<sup>7</sup> m_
-    * **`solar_mass`** _= 1.989&times;10<sup>30</sup> kg_
-    * **`solar_radius`** _= 6.963&times;10<sup>8</sup> m_
-    * **`solar_luminosity`** _= 3.846&times;10<sup>26</sup> W_
-    * **`solar_temperature`** _= 5778 K_
-    * **`astronomical_unit`** _= 1.496&times;10<sup>11</sup> m_
-    * **`light_year`** _= 9.461&times;10<sup>15</sup> m_
-    * **`parsec`** _= 3.086&times;10<sup>16</sup> m_
-    * **`julian_day`** _= 86400 s_
-    * **`julian_year`** _= 31557600 s_
-    * **`sidereal_year`** _= 31558150 s_
-    * **`tropical_year`** _= 31556925 s_
+    * **`earth_mass`**         _= 5.972&times;10<sup>24</sup> kg_
+    * **`earth_radius`**       _= 6.371&times;10<sup>6</sup> m_
+    * **`earth_gravity`**      _= 9.807 m s<sup>-2</sup>_
+    * **`jupiter_mass`**       _= 1.899&times;10<sup>27</sup> kg_
+    * **`jupiter_radius`**     _= 6.991&times;10<sup>7</sup> m_
+    * **`solar_mass`**         _= 1.989&times;10<sup>30</sup> kg_
+    * **`solar_radius`**       _= 6.963&times;10<sup>8</sup> m_
+    * **`solar_luminosity`**   _= 3.846&times;10<sup>26</sup> W_
+    * **`solar_temperature`**  _= 5778 K_
+    * **`astronomical_unit`**  _= 1.496&times;10<sup>11</sup> m_
+    * **`light_year`**         _= 9.461&times;10<sup>15</sup> m_
+    * **`parsec`**             _= 3.086&times;10<sup>16</sup> m_
+    * **`julian_day`**         _= 86400 s_
+    * **`julian_year`**        _= 31557600 s_
+    * **`sidereal_year`**      _= 31558150 s_
+    * **`tropical_year`**      _= 31556925 s_
 
 ## Arithmetic functions ##
 

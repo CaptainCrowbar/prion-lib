@@ -483,7 +483,7 @@ namespace RS {
         }
 
         inline double NormalDistributionProperties::pdf_z(double z) const noexcept {
-            return exp(- z * z / 2) / sqrt2pi_d;
+            return inv_sqrt2_d * inv_sqrtpi_d * exp(- z * z / 2);
         }
 
         inline double NormalDistributionProperties::cdf_z(double z) const noexcept {

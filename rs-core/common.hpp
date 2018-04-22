@@ -177,15 +177,15 @@ namespace RS {
                     auto next = std::strchr(ptr, ',');
                     if (! next)
                         break;
-                    vec.emplace_back(ptr, next - ptr);
+                    vec.push_back(prefix + std::string(ptr, next));
                     ptr = next + 1;
                 }
-                vec.push_back(ptr);
+                vec.push_back(std::string(prefix) + ptr);
                 return vec;
             }();
             using U = std::underlying_type_t<EnumType>;
             if (t >= EnumType::RS_enum_begin && t < EnumType::RS_enum_end)
-                return prefix + names_vec[U(t) - U(EnumType::RS_enum_begin)];
+                return names_vec[U(t) - U(EnumType::RS_enum_begin)];
             else
                 return std::to_string(U(t));
         }

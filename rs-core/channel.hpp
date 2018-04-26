@@ -59,7 +59,6 @@ namespace RS {
     protected:
         virtual bool do_wait_for(time_unit t) = 0;
     private:
-        friend class Dispatch;
         friend class EventChannel;
         template <typename T> friend class MessageChannel;
         friend class StreamChannel;

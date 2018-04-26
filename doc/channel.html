@@ -374,7 +374,8 @@ true:</p>
 <li>The callback function is null.</li>
 </ul>
 <p>The <code>drop()</code> function removes a channel from the dispatch set (without closing
-it).</p>
+it). If an event from this channel is currently being handled asynchronously, <code>drop()</code> will
+block until it finishes.</p>
 <p>The <code>run()</code> function runs until a channel is closed or a callback function
 throws an exception; it returns immediately if the dispatch set is empty.
 Asynchronous message handlers will continue to run in other threads regardless

@@ -300,7 +300,8 @@ true:
 * The callback function is null.
 
 The `drop()` function removes a channel from the dispatch set (without closing
-it).
+it). If an event from this channel is currently being handled asynchronously, `drop()` will
+block until it finishes.
 
 The `run()` function runs until a channel is closed or a callback function
 throws an exception; it returns immediately if the dispatch set is empty.

@@ -87,8 +87,15 @@ link library, the change will not be detected until dependencies are rebuilt.
     * `T(T&&) = delete;`
     * `T& operator=(const T&) = delete;`
     * `T& operator=(T&&) = delete;`
+* `#define` **`RS_NO_INSTANCE`**`(T)`
+    * `T() = delete;`
+    * `T(const T&) = delete;`
+    * `T(T&&) = delete;`
+    * `~T() = delete;`
+    * `T& operator=(const T&) = delete;`
+    * `T& operator=(T&&) = delete;`
 
-Convenience macros for defaulted or deleted copy and move operations.
+Convenience macros for defaulted or deleted life cycle operations.
 
 * `#define` **`RS_OVERLOAD`**`(f) [] (auto&&... args) { return f(std::forward<decltype(args)>(args)...); }`
 

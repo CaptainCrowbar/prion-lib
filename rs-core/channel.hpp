@@ -45,7 +45,7 @@ namespace RS {
         using time_unit = std::chrono::microseconds;
         virtual ~Channel() noexcept { drop(); }
         Channel(const Channel&) = delete;
-        Channel(Channel&& c) noexcept { owner = std::exchange(c.owner, nullptr); }
+        Channel(Channel&& c) = default;
         Channel& operator=(const Channel&) = delete;
         Channel& operator=(Channel&& c) noexcept;
         virtual void close() noexcept = 0;
@@ -63,16 +63,13 @@ namespace RS {
         friend class EventChannel;
         template <typename T> friend class MessageChannel;
         friend class StreamChannel;
-        Dispatch* owner = nullptr;
         Channel() = default;
         void drop() noexcept; // Defined after Dispatch
     };
 
         inline Channel& Channel::operator=(Channel&& c) noexcept {
-            if (&c != this) {
+            if (&c != this)
                 drop();
-                owner = std::exchange(c.owner, nullptr);
-            }
             return *this;
         }
 
@@ -630,11 +627,11 @@ namespace RS {
             return true;
         }
 
-    // Dispatch control class
+    // Global dispatch queue
 
     class Dispatch {
     public:
-        RS_NO_COPY_MOVE(Dispatch);
+        RS_NO_INSTANCE(Dispatch);
         enum class mode { sync = 1, async };
         enum class reason { empty = 1, closed, error };
         struct result_type {
@@ -643,15 +640,13 @@ namespace RS {
             void rethrow() const { if (error) std::rethrow_exception(error); }
             reason why() const noexcept { return error ? reason::error : channel ? reason::closed : reason::empty; }
         };
-        Dispatch() = default;
-        ~Dispatch() noexcept { stop(); }
-        template <typename F> void add(EventChannel& chan, mode m, F func);
-        template <typename T, typename F> void add(MessageChannel<T>& chan, mode m, F func);
-        template <typename F> void add(StreamChannel& chan, mode m, F func);
-        void drop(Channel& chan) noexcept;
-        bool empty() const noexcept { return tasks.empty(); }
-        result_type run() noexcept;
-        void stop() noexcept;
+        template <typename F> static void add(EventChannel& chan, mode m, F func);
+        template <typename T, typename F> static void add(MessageChannel<T>& chan, mode m, F func);
+        template <typename F> static void add(StreamChannel& chan, mode m, F func);
+        static void drop(Channel& chan) noexcept { tasks_ref().erase(&chan); }
+        static bool empty() noexcept { return tasks_ref().empty(); }
+        static result_type run() noexcept;
+        static void stop() noexcept;
     private:
         using callback = std::function<void()>;
         struct task_info {
@@ -661,8 +656,9 @@ namespace RS {
             std::atomic<bool> done;
             std::exception_ptr error;
         };
-        std::map<Channel*, task_info> tasks;
-        void add_task(Channel& chan, mode m, callback call);
+        using task_map = std::map<Channel*, task_info>;
+        static void add_task(Channel& chan, mode m, callback call);
+        static task_map& tasks_ref() noexcept;
     };
 
         inline std::ostream& operator<<(std::ostream& out, Dispatch::mode dm) {
@@ -715,25 +711,20 @@ namespace RS {
             add_task(chan, m, call);
         }
 
-        inline void Dispatch::drop(Channel& chan) noexcept {
-            tasks.erase(&chan);
-            chan.owner = nullptr;
-        }
-
         inline Dispatch::result_type Dispatch::run() noexcept {
             using namespace std::chrono;
             using namespace std::literals;
             static constexpr Channel::time_unit min_interval = 1us;
             static constexpr Channel::time_unit max_interval = 1ms;
             result_type rc;
-            if (tasks.empty())
+            if (tasks_ref().empty())
                 return rc;
             auto guard = scope_exit([&] { if (rc.channel) drop(*rc.channel); });
             int waits = 0;
             auto interval = min_interval;
             for (;;) {
                 int calls = 0;
-                for (auto& t: tasks) {
+                for (auto& t: tasks_ref()) {
                     rc.channel = t.first;
                     if (t.second.runmode == Dispatch::mode::sync) {
                         try {
@@ -767,15 +758,15 @@ namespace RS {
         }
 
         inline void Dispatch::stop() noexcept {
-            for (auto& t: tasks)
+            for (auto& t: tasks_ref())
                 t.first->close();
-            while (! tasks.empty())
+            while (! tasks_ref().empty())
                 run();
         }
 
         inline void Dispatch::add_task(Channel& chan, mode m, callback call) {
             using namespace std::chrono;
-            if (! chan.is_shared() && tasks.count(&chan))
+            if (! chan.is_shared() && tasks_ref().count(&chan))
                 throw std::invalid_argument("Dispatch channel is not shareable");
             if (m != Dispatch::mode::sync && m != Dispatch::mode::async)
                 throw std::invalid_argument("Invalid dispatch mode");
@@ -783,8 +774,7 @@ namespace RS {
                 throw std::invalid_argument("Invalid dispatch mode for channel");
             if (! call)
                 throw std::invalid_argument("Dispatch callback is null");
-            chan.owner = this;
-            auto& task = tasks[&chan];
+            auto& task = tasks_ref()[&chan];
             task.runmode = m;
             task.call = call;
             if (task.runmode == Dispatch::mode::async) {
@@ -807,11 +797,13 @@ namespace RS {
             }
         }
 
+        inline Dispatch::task_map& Dispatch::tasks_ref() noexcept {
+            static task_map map;
+            return map;
+        }
+
         inline void Channel::drop() noexcept {
-            if (owner) {
-                owner->drop(*this);
-                owner = nullptr;
-            }
+            Dispatch::drop(*this);
         }
 
 }

@@ -230,6 +230,13 @@ namespace RS {
     T(T&&) = delete; \
     T& operator=(const T&) = delete; \
     T& operator=(T&&) = delete;
+#define RS_NO_INSTANCE(T) \
+    T() = delete; \
+    T(const T&) = delete; \
+    T(T&&) = delete; \
+    ~T() = delete; \
+    T& operator=(const T&) = delete; \
+    T& operator=(T&&) = delete;
 
 // For internal use only
 // Must be used in the global namespace

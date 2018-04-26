@@ -269,30 +269,29 @@ whether it was written as a single block or multiple smaller blocks.
         * `std::exception_ptr result_type::`**`error`** `= nullptr`
         * `void result_type::`**`rethrow`**`() const`
         * `Dispatch::reason result_type::`**`why`**`() const noexcept`
-    * `Dispatch::`**`Dispatch`**`() noexcept`
-    * `Dispatch::`**`~Dispatch`**`() noexcept`
-    * `template <typename F> void Dispatch::`**`add`**`(EventChannel& chan, mode m, F func)`
-    * `template <typename T, typename F> void Dispatch::`**`add`**`(MessageChannel<T>& chan, mode m, F func)`
-    * `template <typename F> void Dispatch::`**`add`**`(StreamChannel& chan, mode m, F func)`
-    * `void Dispatch::`**`drop`**`(Channel& chan) noexcept`
-    * `bool Dispatch::`**`empty`**`() const noexcept`
-    * `result_type Dispatch::`**`run`**`() noexcept`
-    * `void Dispatch::`**`stop`**`() noexcept`
+    * `template <typename F> static void Dispatch::`**`add`**`(EventChannel& chan, mode m, F func)`
+    * `template <typename T, typename F> static void Dispatch::`**`add`**`(MessageChannel<T>& chan, mode m, F func)`
+    * `template <typename F> static void Dispatch::`**`add`**`(StreamChannel& chan, mode m, F func)`
+    * `static void Dispatch::`**`drop`**`(Channel& chan) noexcept`
+    * `static bool Dispatch::`**`empty`**`() noexcept`
+    * `static result_type Dispatch::`**`run`**`() noexcept`
+    * `static void Dispatch::`**`stop`**`() noexcept`
 
-The message dispatch manager class. Create one instance of this class
-(normally in the application's main thread), add channels and their associated
-callback functions to it, and call `run()` to run the dispatch loop. Behaviour
-is undefined if `run()` is called on more than one `Dispatch` object at the
-same time.
+The dispatch queue is a global singleton; the `Dispatch` class cannot be
+instantiated. Add channels and their associated callback functions to the
+queue using `add()`, and call `run()` to run the dispatch loop. Behaviour is
+undefined if `run()` is called from multiple threads at the same time;
+normally it should only be called from the main thread.
 
-`Dispatch` member functions must only be called synchronously (i.e. not from
-inside an asynchronous callback function). Channels can safely be destroyed
-while in a dispatch set (the `Dispatch` object will notice this and silently
-drop the channel), provided this is done synchronously.
+Dispatch functions must only be called synchronously (i.e. not from inside an
+asynchronous callback function). Channels can safely be destroyed while in a
+dispatch set (the dispatch queue will notice this and silently drop the
+channel), provided this is done synchronously.
 
 The `add()` functions start a synchronous or asynchronous task reading from
-the channel. They will throw `invalid_argument` if any of these conditions is
-true:
+the channel. Asynchronous handlers are started immediately in a separate
+thread; synchronous handlers will be executed when `run()` is called. They
+will throw `invalid_argument` if any of these conditions is true:
 
 * The same channel is added more than once, and the channel is not shareable (`Channel::is_shared()` is false).
 * The mode flag is not one of the `Dispatch::mode` enumeration values.
@@ -300,8 +299,9 @@ true:
 * The callback function is null.
 
 The `drop()` function removes a channel from the dispatch set (without closing
-it). If an event from this channel is currently being handled asynchronously, `drop()` will
-block until it finishes.
+it). If an event from this channel is currently being handled asynchronously,
+`drop()` will block until it finishes. Behaviour is undefined if `drop()` is
+called on a channel from inside that channel's callback.
 
 The `run()` function runs until a channel is closed or a callback function
 throws an exception; it returns immediately if the dispatch set is empty.
@@ -310,9 +310,10 @@ of whether the dispatch thread is currently calling `run()`.
 
 The return value from `run()` indicates which channel was responsible for
 ending the run and the exception it threw, if any; both members will be null
-if the dispatch set is empty. The result type's `rethrow()` function will
-rethrow the exception if it is not null, otherwise do nothing. The `why()`
-function returns a flag summarizing the reason for the run to stop.
+if the dispatch set was empty when `run()` was called. The result type's
+`rethrow()` function will rethrow the exception if it is not null, otherwise
+do nothing. The `why()` function returns a flag summarizing the reason for the
+run to stop.
 
-The `stop()` function closes all channels and waits for them to finish; the
-destructor calls this.
+The `stop()` function closes all channels and waits for any currently running
+event handlers to finish.

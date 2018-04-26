@@ -343,30 +343,29 @@ whether it was written as a single block or multiple smaller blocks.</p>
 <li><code>Dispatch::reason result_type::</code><strong><code>why</code></strong><code>() const noexcept</code></li>
 </ul>
 </li>
-<li><code>Dispatch::</code><strong><code>Dispatch</code></strong><code>() noexcept</code></li>
-<li><code>Dispatch::</code><strong><code>~Dispatch</code></strong><code>() noexcept</code></li>
-<li><code>template &lt;typename F&gt; void Dispatch::</code><strong><code>add</code></strong><code>(EventChannel&amp; chan, mode m, F func)</code></li>
-<li><code>template &lt;typename T, typename F&gt; void Dispatch::</code><strong><code>add</code></strong><code>(MessageChannel&lt;T&gt;&amp; chan, mode m, F func)</code></li>
-<li><code>template &lt;typename F&gt; void Dispatch::</code><strong><code>add</code></strong><code>(StreamChannel&amp; chan, mode m, F func)</code></li>
-<li><code>void Dispatch::</code><strong><code>drop</code></strong><code>(Channel&amp; chan) noexcept</code></li>
-<li><code>bool Dispatch::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
-<li><code>result_type Dispatch::</code><strong><code>run</code></strong><code>() noexcept</code></li>
-<li><code>void Dispatch::</code><strong><code>stop</code></strong><code>() noexcept</code></li>
+<li><code>template &lt;typename F&gt; static void Dispatch::</code><strong><code>add</code></strong><code>(EventChannel&amp; chan, mode m, F func)</code></li>
+<li><code>template &lt;typename T, typename F&gt; static void Dispatch::</code><strong><code>add</code></strong><code>(MessageChannel&lt;T&gt;&amp; chan, mode m, F func)</code></li>
+<li><code>template &lt;typename F&gt; static void Dispatch::</code><strong><code>add</code></strong><code>(StreamChannel&amp; chan, mode m, F func)</code></li>
+<li><code>static void Dispatch::</code><strong><code>drop</code></strong><code>(Channel&amp; chan) noexcept</code></li>
+<li><code>static bool Dispatch::</code><strong><code>empty</code></strong><code>() noexcept</code></li>
+<li><code>static result_type Dispatch::</code><strong><code>run</code></strong><code>() noexcept</code></li>
+<li><code>static void Dispatch::</code><strong><code>stop</code></strong><code>() noexcept</code></li>
 </ul>
 </li>
 </ul>
-<p>The message dispatch manager class. Create one instance of this class
-(normally in the application's main thread), add channels and their associated
-callback functions to it, and call <code>run()</code> to run the dispatch loop. Behaviour
-is undefined if <code>run()</code> is called on more than one <code>Dispatch</code> object at the
-same time.</p>
-<p><code>Dispatch</code> member functions must only be called synchronously (i.e. not from
-inside an asynchronous callback function). Channels can safely be destroyed
-while in a dispatch set (the <code>Dispatch</code> object will notice this and silently
-drop the channel), provided this is done synchronously.</p>
+<p>The dispatch queue is a global singleton; the <code>Dispatch</code> class cannot be
+instantiated. Add channels and their associated callback functions to the
+queue using <code>add()</code>, and call <code>run()</code> to run the dispatch loop. Behaviour is
+undefined if <code>run()</code> is called from multiple threads at the same time;
+normally it should only be called from the main thread.</p>
+<p>Dispatch functions must only be called synchronously (i.e. not from inside an
+asynchronous callback function). Channels can safely be destroyed while in a
+dispatch set (the dispatch queue will notice this and silently drop the
+channel), provided this is done synchronously.</p>
 <p>The <code>add()</code> functions start a synchronous or asynchronous task reading from
-the channel. They will throw <code>invalid_argument</code> if any of these conditions is
-true:</p>
+the channel. Asynchronous handlers are started immediately in a separate
+thread; synchronous handlers will be executed when <code>run()</code> is called. They
+will throw <code>invalid_argument</code> if any of these conditions is true:</p>
 <ul>
 <li>The same channel is added more than once, and the channel is not shareable (<code>Channel::is_shared()</code> is false).</li>
 <li>The mode flag is not one of the <code>Dispatch::mode</code> enumeration values.</li>
@@ -374,17 +373,19 @@ true:</p>
 <li>The callback function is null.</li>
 </ul>
 <p>The <code>drop()</code> function removes a channel from the dispatch set (without closing
-it). If an event from this channel is currently being handled asynchronously, <code>drop()</code> will
-block until it finishes.</p>
+it). If an event from this channel is currently being handled asynchronously,
+<code>drop()</code> will block until it finishes. Behaviour is undefined if <code>drop()</code> is
+called on a channel from inside that channel's callback.</p>
 <p>The <code>run()</code> function runs until a channel is closed or a callback function
 throws an exception; it returns immediately if the dispatch set is empty.
 Asynchronous message handlers will continue to run in other threads regardless
 of whether the dispatch thread is currently calling <code>run()</code>.</p>
 <p>The return value from <code>run()</code> indicates which channel was responsible for
 ending the run and the exception it threw, if any; both members will be null
-if the dispatch set is empty. The result type's <code>rethrow()</code> function will
-rethrow the exception if it is not null, otherwise do nothing. The <code>why()</code>
-function returns a flag summarizing the reason for the run to stop.</p>
-<p>The <code>stop()</code> function closes all channels and waits for them to finish; the
-destructor calls this.</p></body>
+if the dispatch set was empty when <code>run()</code> was called. The result type's
+<code>rethrow()</code> function will rethrow the exception if it is not null, otherwise
+do nothing. The <code>why()</code> function returns a flag summarizing the reason for the
+run to stop.</p>
+<p>The <code>stop()</code> function closes all channels and waits for any currently running
+event handlers to finish.</p></body>
 </html>

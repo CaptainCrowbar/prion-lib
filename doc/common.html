@@ -151,8 +151,17 @@ link library, the change will not be detected until dependencies are rebuilt.</p
 <li><code>T&amp; operator=(T&amp;&amp;) = delete;</code></li>
 </ul>
 </li>
+<li><code>#define</code> <strong><code>RS_NO_INSTANCE</code></strong><code>(T)</code><ul>
+<li><code>T() = delete;</code></li>
+<li><code>T(const T&amp;) = delete;</code></li>
+<li><code>T(T&amp;&amp;) = delete;</code></li>
+<li><code>~T() = delete;</code></li>
+<li><code>T&amp; operator=(const T&amp;) = delete;</code></li>
+<li><code>T&amp; operator=(T&amp;&amp;) = delete;</code></li>
 </ul>
-<p>Convenience macros for defaulted or deleted copy and move operations.</p>
+</li>
+</ul>
+<p>Convenience macros for defaulted or deleted life cycle operations.</p>
 </div>
 <div class="defns">
 <ul>

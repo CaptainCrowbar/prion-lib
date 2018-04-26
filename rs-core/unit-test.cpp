@@ -47,7 +47,7 @@ extern void test_core_channel_value();
 extern void test_core_channel_timer();
 extern void test_core_channel_throttle();
 extern void test_core_channel_polled();
-extern void test_core_channel_dispatcher();
+extern void test_core_channel_dispatch();
 extern void test_core_compact_array_construction();
 extern void test_core_compact_array_capacity();
 extern void test_core_compact_array_insertion();
@@ -333,7 +333,7 @@ int main() {
         { "core/channel/timer", test_core_channel_timer },
         { "core/channel/throttle", test_core_channel_throttle },
         { "core/channel/polled", test_core_channel_polled },
-        { "core/channel/dispatcher", test_core_channel_dispatcher },
+        { "core/channel/dispatch", test_core_channel_dispatch },
         { "core/compact-array/construction", test_core_compact_array_construction },
         { "core/compact-array/capacity", test_core_compact_array_capacity },
         { "core/compact-array/insertion", test_core_compact_array_insertion },

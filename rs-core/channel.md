@@ -23,48 +23,33 @@ By Ross Smith
     * `[abstract] class` **`StreamChannel`**`: public Channel`
         * `class` **`BufferChannel`**`: public StreamChannel`
 * `class` **`Dispatch`**
-* `[abstract] class` **`Polled`**
 
 ## Channel base classes ##
 
 ### Class Channel ###
 
-* `class` **`Channel`**
-    * `using Channel::`**`time_unit`** `= std::chrono::microseconds`
+* `class` **`Channel`**`: public Wait`
     * `virtual Channel::`**`~Channel`**`() noexcept`
     * `Channel::`**`Channel`**`(Channel&& c) noexcept`
     * `Channel& Channel::`**`operator=`**`(Channel&& c) noexcept`
     * `virtual void Channel::`**`close`**`() noexcept = 0`
     * `virtual bool Channel::`**`is_closed`**`() const noexcept = 0`
     * `virtual bool Channel::`**`is_async`**`() const noexcept` _= true_
-    * `virtual bool Channel::`**`is_shared`**`() const noexcept` _= false_
-    * `virtual bool Channel::`**`poll`**`()`
-    * `virtual void Channel::`**`wait`**`()`
-    * `template <typename R, typename P> bool Channel::`**`wait_for`**`(std::chrono::duration<R, P> t)`
-    * `template <typename C, typename D> bool Channel::`**`wait_until`**`(std::chrono::time_point<C, D> t)`
-    * `protected virtual bool Channel::`**`do_wait_for`**`(time_unit t) = 0`
 
 The base class for all readable message channels. All concrete channel classes
 must derive from one of the three intermediate classes below, not directly
 from Channel. Derived classes need to implement at least `close()`,
-`is_closed()`, and `do_wait_for()`, and may optionally implement `poll()` and
-`wait()` if more efficient implementations than the default call to
-`do_wait_for()` are available. The `close()` function must be async safe and
-idempotent.
-
-Any of the `wait()` functions will return true if the channel is either ready
-to read or closed, false if the wait timed out. The `poll()` function is
-equivalent to `wait_for()` with a zero timeout; `wait()` is equivalent to an
-infinite timeout (and returns nothing since it can never time out).
+`is_closed()`, and one of the `do_wait_*()` functions from
+[`Wait`](time.html); `close()` must be async safe and idempotent.
 
 If `is_async()` is false, the channel can only be used in a synchronous
 dispatch handler (see `Dispatch` below), usually because it calls an
 underlying native API that is only intended to be used from the main thread.
 
-If `is_shared()` is true, it is safe to call the wait functions (and `read()`
-where relevant) from multiple threads at the same time, provided it is
-acceptable for each message to be delivered to an unpredictable choice of
-thread.
+If `is_shared()` (from `Wait`) is true, it is safe to call the wait functions
+(and `read()` where relevant) from multiple threads at the same time, provided
+it is acceptable for each message to be delivered to an unpredictable choice
+of thread.
 
 The channel base classes implement move operations in case a derived class
 needs them, but derived channel types are usually not movable. Channel classes
@@ -140,23 +125,6 @@ returns the new data as a string; `read_to()` calls `read()` and appends the
 data to the string. The buffer size functions control the internal read limit
 for `read_all/str/to()`.
 
-### Class Polled ###
-
-* `class` **`Polled`**
-    * `static constexpr Channel::time_unit Polled::`**`default_interval`** `= 10ms`
-    * `virtual Polled::`**`~Polled`**`()`
-    * `virtual bool Polled::`**`poll`**`() = 0`
-    * `Channel::time_unit Polled::`**`interval`**`() const noexcept`
-    * `template <typename R, typename P> void Polled::`**`set_interval`**`(std::chrono::duration<R, P> t) noexcept`
-
-Mixin class for channels for which no easy timed wait operation exists,
-requiring a polled implementation. The `set_interval()` function clamps the
-argument to a minimum of zero.
-
-Polled channel classes should derive from both `Channel` and `Polled`,
-implementing `close()`, `is_closed()`, `poll()`, and `do_wait_for()`, which
-should just call `polled_wait()`.
-
 ## Concrete channel classes ##
 
 Member functions inherited from the channel base classes are not documented
@@ -178,8 +146,8 @@ Trivial event channels whose wait functions always succeed immediately
     * `template <typename R, typename P> explicit TimerChannel::`**`TimerChannel`**`(std::chrono::duration<R, P> t) noexcept`
     * `virtual bool TimerChannel::`**`is_shared`**`() const noexcept` _= true_
     * `void TimerChannel::`**`flush`**`() noexcept`
-    * `time_unit TimerChannel::`**`interval`**`() const noexcept`
-    * `time_unit TimerChannel::`**`next`**`() const noexcept`
+    * `duration TimerChannel::`**`interval`**`() const noexcept`
+    * `duration TimerChannel::`**`next`**`() const noexcept`
 
 An event channel that delivers one tick every interval, starting at one
 interval after the time of construction. Multiple ticks may be delivered at
@@ -195,7 +163,7 @@ These are async safe and can be called from any thread.
 * `class` **`ThrottleChannel`**`: public EventChannel`
     * `template <typename R, typename P> explicit ThrottleChannel::`**`ThrottleChannel`**`(std::chrono::duration<R, P> t) noexcept`
     * `virtual bool ThrottleChannel::`**`is_shared`**`() const noexcept` _= true_
-    * `time_unit ThrottleChannel::`**`interval`**`() const noexcept`
+    * `duration ThrottleChannel::`**`interval`**`() const noexcept`
 
 An event channel that throttles events to a maximum rate. The channel will
 block if the minimum interval has not yet elapsed since the last event;

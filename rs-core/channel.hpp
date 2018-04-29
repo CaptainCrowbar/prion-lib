@@ -30,7 +30,6 @@ namespace RS {
     class FalseChannel;
     template <typename T> class GeneratorChannel;
     template <typename T> class MessageChannel;
-    class Polled;
     template <typename T> class QueueChannel;
     class StreamChannel;
     class ThrottleChannel;
@@ -40,55 +39,24 @@ namespace RS {
 
     // Channel base classes
 
-    class Channel {
+    class Channel:
+    public Wait {
     public:
-        using time_unit = std::chrono::microseconds;
         virtual ~Channel() noexcept { drop(); }
         Channel(const Channel&) = delete;
         Channel(Channel&& c) = default;
         Channel& operator=(const Channel&) = delete;
-        Channel& operator=(Channel&& c) noexcept;
+        Channel& operator=(Channel&& c) noexcept { if (&c != this) drop(); return *this; }
         virtual void close() noexcept = 0;
         virtual bool is_closed() const noexcept = 0;
         virtual bool is_async() const noexcept { return true; }
-        virtual bool is_shared() const noexcept { return false; }
-        virtual bool poll() { return do_wait_for({}); }
-        virtual void wait();
-        template <typename R, typename P> bool wait_for(std::chrono::duration<R, P> t);
-        template <typename C, typename D> bool wait_until(std::chrono::time_point<C, D> t);
-    protected:
-        virtual bool do_wait_for(time_unit t) = 0;
     private:
         friend class EventChannel;
         template <typename T> friend class MessageChannel;
         friend class StreamChannel;
         Channel() = default;
-        void drop() noexcept; // Defined after Dispatch
+        void drop() noexcept;
     };
-
-        inline Channel& Channel::operator=(Channel&& c) noexcept {
-            if (&c != this)
-                drop();
-            return *this;
-        }
-
-        inline void Channel::wait() {
-            using namespace std::chrono;
-            static const auto t = duration_cast<time_unit>(1min);
-            while (! do_wait_for(t)) {}
-        }
-
-        template <typename R, typename P>
-        bool Channel::wait_for(std::chrono::duration<R, P> t) {
-            using namespace std::chrono;
-            auto u = duration_cast<time_unit>(t);
-            return do_wait_for(u);
-        }
-
-        template <typename C, typename D>
-        bool Channel::wait_until(std::chrono::time_point<C, D> t) {
-            return do_wait_for(t - C::now());
-        }
 
     class EventChannel:
     public Channel {
@@ -175,7 +143,7 @@ namespace RS {
         virtual bool is_closed() const noexcept { return ! open; }
         virtual bool is_shared() const noexcept { return true; }
     protected:
-        virtual bool do_wait_for(time_unit /*t*/) { return true; }
+        virtual bool do_wait_for(duration /*t*/) { return true; }
     private:
         std::atomic<bool> open{true};
     };
@@ -189,7 +157,7 @@ namespace RS {
         virtual bool is_closed() const noexcept { return ! open; }
         virtual bool is_shared() const noexcept { return true; }
     protected:
-        virtual bool do_wait_for(time_unit t);
+        virtual bool do_wait_for(duration t);
     private:
         mutable std::mutex mutex;
         std::condition_variable cv;
@@ -202,11 +170,11 @@ namespace RS {
             cv.notify_all();
         }
 
-        inline bool FalseChannel::do_wait_for(time_unit t) {
+        inline bool FalseChannel::do_wait_for(duration t) {
             auto lock = make_lock(mutex);
             if (! open)
                 return true;
-            else if (t <= time_unit())
+            else if (t <= duration())
                 return false;
             cv.wait_for(lock, t, [&] { return ! open; });
             return ! open;
@@ -221,24 +189,24 @@ namespace RS {
         virtual bool is_closed() const noexcept { return ! open; }
         virtual bool is_shared() const noexcept { return true; }
         void flush() noexcept;
-        time_unit interval() const noexcept { return delta; }
+        duration interval() const noexcept { return delta; }
         auto next() const noexcept { return next_tick; }
     protected:
-        virtual bool do_wait_for(time_unit t);
+        virtual bool do_wait_for(duration t);
     private:
         using clock_type = ReliableClock;
         using time_point = clock_type::time_point;
         mutable std::mutex mutex;
         std::condition_variable cv;
         time_point next_tick;
-        time_unit delta;
+        duration delta;
         bool open = true;
     };
 
         template <typename R, typename P>
         TimerChannel::TimerChannel(std::chrono::duration<R, P> t) noexcept {
             using namespace std::chrono;
-            delta = std::max(duration_cast<time_unit>(t), time_unit());
+            delta = std::max(duration_cast<duration>(t), duration());
             next_tick = clock_type::now() + delta;
         }
 
@@ -259,7 +227,7 @@ namespace RS {
             next_tick += delta * (skip + 1);
         }
 
-        inline bool TimerChannel::do_wait_for(time_unit t) {
+        inline bool TimerChannel::do_wait_for(duration t) {
             using namespace std::chrono;
             auto lock = make_lock(mutex);
             if (! open)
@@ -269,9 +237,9 @@ namespace RS {
                 next_tick += delta;
                 return true;
             }
-            if (t <= time_unit())
+            if (t <= duration())
                 return false;
-            auto remaining = duration_cast<time_unit>(next_tick - now);
+            auto remaining = duration_cast<duration>(next_tick - now);
             if (t < remaining) {
                 cv.wait_for(lock, t, [&] { return ! open; });
                 return ! open;
@@ -290,23 +258,23 @@ namespace RS {
         virtual void close() noexcept;
         virtual bool is_closed() const noexcept { return ! open; }
         virtual bool is_shared() const noexcept { return true; }
-        time_unit interval() const noexcept { return delta; }
+        duration interval() const noexcept { return delta; }
     protected:
-        virtual bool do_wait_for(time_unit t);
+        virtual bool do_wait_for(duration t);
     private:
         using clock_type = ReliableClock;
         using time_point = clock_type::time_point;
         mutable std::mutex mutex;
         std::condition_variable cv;
         time_point next = time_point::min();
-        time_unit delta;
+        duration delta;
         bool open = true;
     };
 
         template <typename R, typename P>
         ThrottleChannel::ThrottleChannel(std::chrono::duration<R, P> t) noexcept {
             using namespace std::chrono;
-            delta = std::max(duration_cast<time_unit>(t), time_unit());
+            delta = std::max(duration_cast<duration>(t), duration());
         }
 
         inline void ThrottleChannel::close() noexcept {
@@ -315,7 +283,7 @@ namespace RS {
             cv.notify_all();
         }
 
-        inline bool ThrottleChannel::do_wait_for(time_unit t) {
+        inline bool ThrottleChannel::do_wait_for(duration t) {
             using namespace std::chrono;
             auto lock = make_lock(mutex);
             if (! open)
@@ -325,9 +293,9 @@ namespace RS {
                 next = now + delta;
                 return true;
             }
-            if (t <= time_unit())
+            if (t <= duration())
                 return false;
-            auto remaining = duration_cast<time_unit>(next - now);
+            auto remaining = duration_cast<duration>(next - now);
             if (t < remaining) {
                 cv.wait_for(lock, t, [&] { return ! open; });
                 return ! open;
@@ -349,7 +317,7 @@ namespace RS {
         virtual bool is_closed() const noexcept { return ! gen; }
         virtual bool read(T& t);
     protected:
-        virtual bool do_wait_for(Channel::time_unit /*t*/) { return true; }
+        virtual bool do_wait_for(Wait::duration /*t*/) { return true; }
     private:
         std::mutex mutex;
         generator gen;
@@ -383,7 +351,7 @@ namespace RS {
         bool write(const T& t);
         bool write(T&& t);
     protected:
-        virtual bool do_wait_for(Channel::time_unit t);
+        virtual bool do_wait_for(Wait::duration t);
     private:
         std::mutex mutex;
         std::condition_variable cv;
@@ -437,9 +405,9 @@ namespace RS {
         }
 
         template <typename T>
-        bool QueueChannel<T>::do_wait_for(Channel::time_unit t) {
+        bool QueueChannel<T>::do_wait_for(Wait::duration t) {
             auto lock = make_lock(mutex);
-            if (open && queue.empty() && t > Channel::time_unit())
+            if (open && queue.empty() && t > Wait::duration())
                 cv.wait_for(lock, t, [&] { return ! open || ! queue.empty(); });
             return ! open || ! queue.empty();
         }
@@ -459,7 +427,7 @@ namespace RS {
         bool write(const T& t);
         bool write(T&& t);
     protected:
-        virtual bool do_wait_for(Channel::time_unit t);
+        virtual bool do_wait_for(Wait::duration t);
     private:
         std::mutex mutex;
         std::condition_variable cv;
@@ -511,9 +479,9 @@ namespace RS {
         }
 
         template <typename T>
-        bool ValueChannel<T>::do_wait_for(Channel::time_unit t) {
+        bool ValueChannel<T>::do_wait_for(Wait::duration t) {
             auto lock = make_lock(mutex);
-            if (status == 0 && t > Channel::time_unit())
+            if (status == 0 && t > Wait::duration())
                 cv.wait_for(lock, t, [&] { return status != 0; });
             return status;
         }
@@ -530,7 +498,7 @@ namespace RS {
         bool write(string_view src) { return write(src.data(), src.size()); }
         bool write(const void* src, size_t len);
     protected:
-        virtual bool do_wait_for(time_unit t);
+        virtual bool do_wait_for(duration t);
     private:
         std::mutex mutex;
         std::condition_variable cv;
@@ -582,48 +550,11 @@ namespace RS {
             ofs = 0;
         }
 
-        inline bool BufferChannel::do_wait_for(time_unit t) {
+        inline bool BufferChannel::do_wait_for(duration t) {
             auto lock = make_lock(mutex);
-            if (open && ofs == buf.size() && t > time_unit())
+            if (open && ofs == buf.size() && t > duration())
                 cv.wait_for(lock, t, [&] { return ! open || ofs < buf.size(); });
             return ! open || ofs < buf.size();
-        }
-
-    // Polling mixin class
-
-    class Polled {
-    public:
-        static constexpr Channel::time_unit default_interval = std::chrono::milliseconds(10);
-        virtual ~Polled() = default;
-        virtual bool poll() = 0;
-        Channel::time_unit interval() const noexcept { return delta; }
-        template <typename R, typename P> void set_interval(std::chrono::duration<R, P> t) noexcept;
-    protected:
-        Polled() = default;
-        bool polled_wait(Channel::time_unit t);
-    private:
-        Channel::time_unit delta = default_interval;
-    };
-
-        template <typename R, typename P>
-        void Polled::set_interval(std::chrono::duration<R, P> t) noexcept {
-            using namespace std::chrono;
-            delta = std::max(duration_cast<Channel::time_unit>(t), Channel::time_unit());
-        }
-
-        inline bool Polled::polled_wait(Channel::time_unit t) {
-            using namespace std::chrono;
-            if (t <= Channel::time_unit())
-                return poll();
-            auto deadline = ReliableClock::now() + t;
-            while (! poll()) {
-                auto now = ReliableClock::now();
-                if (now >= deadline)
-                    return false;
-                auto remaining = std::min(duration_cast<Channel::time_unit>(deadline - now), delta);
-                std::this_thread::sleep_for(remaining);
-            }
-            return true;
         }
 
     // Global dispatch queue
@@ -713,8 +644,8 @@ namespace RS {
         inline Dispatch::result_type Dispatch::run() noexcept {
             using namespace std::chrono;
             using namespace std::literals;
-            static constexpr Channel::time_unit min_interval = 1us;
-            static constexpr Channel::time_unit max_interval = 1ms;
+            static constexpr Wait::duration min_interval = 1us;
+            static constexpr Wait::duration max_interval = 1ms;
             result_type rc;
             if (tasks_ref().empty())
                 return rc;

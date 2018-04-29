@@ -600,7 +600,7 @@ namespace RS {
         bool write_to(string_view s, const SocketAddress& to) { return do_write(s.data(), s.size(), &to); }
         bool write_to(const void* src, size_t len, const SocketAddress& to) { return do_write(src, len, &to); }
     protected:
-        virtual bool do_wait_for(time_unit t); // Defined after SocketSet
+        virtual bool do_wait_for(duration t); // Defined after SocketSet
         void do_close() noexcept;
     private:
         SocketType sock = no_socket;
@@ -724,7 +724,7 @@ namespace RS {
         SocketAddress local() const { return sock.local(); }
         SocketType native() const noexcept { return sock.native(); }
     protected:
-        virtual bool do_wait_for(time_unit t) { return sock.wait_for(t); }
+        virtual bool do_wait_for(duration t) { return sock.wait_for(t); }
     private:
         Socket sock;
     };
@@ -785,7 +785,7 @@ namespace RS {
         void insert(TcpServer& s) { do_insert(s, s.native()); }
         size_t size() const noexcept { return channels.size(); }
     protected:
-        virtual bool do_wait_for(time_unit t);
+        virtual bool do_wait_for(duration t);
     private:
         friend class Socket;
         friend class TcpServer;
@@ -795,7 +795,7 @@ namespace RS {
         std::atomic<bool> open {true};
         void do_erase(Channel& c) noexcept;
         void do_insert(Channel& c, SocketType s);
-        static int do_select(SocketType* sockets, size_t n, time_unit t = {}, size_t* index = nullptr); // +1 = ready, 0 = timeout, -1 = socket closed
+        static int do_select(SocketType* sockets, size_t n, duration t = {}, size_t* index = nullptr); // +1 = ready, 0 = timeout, -1 = socket closed
     };
 
         inline bool SocketSet::read(Channel*& t) {
@@ -820,7 +820,7 @@ namespace RS {
             current = nullptr;
         }
 
-        inline bool SocketSet::do_wait_for(time_unit t) {
+        inline bool SocketSet::do_wait_for(duration t) {
             if (! open || current)
                 return true;
             size_t index = npos;
@@ -845,7 +845,7 @@ namespace RS {
             natives.push_back(s);
         }
 
-        inline int SocketSet::do_select(SocketType* sockets, size_t n, time_unit t, size_t* index) {
+        inline int SocketSet::do_select(SocketType* sockets, size_t n, duration t, size_t* index) {
             using namespace RS_Detail;
             if (index)
                 *index = npos;
@@ -860,7 +860,7 @@ namespace RS {
             }
             fd_set efds = rfds;
             timeval tv = {0, 0};
-            if (t > time_unit())
+            if (t > duration())
                 tv = duration_to_timeval(t);
             clear_error();
             auto rc = net_call(::select(last + 1, &rfds, nullptr, &efds, &tv));
@@ -880,7 +880,7 @@ namespace RS {
             return 1;
         }
 
-        inline bool Socket::do_wait_for(time_unit t) {
+        inline bool Socket::do_wait_for(duration t) {
             return sock == no_socket || SocketSet::do_select(&sock, 1, t);
         }
 

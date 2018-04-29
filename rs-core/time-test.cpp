@@ -18,6 +18,42 @@ using namespace RS;
 using namespace std::chrono;
 using namespace std::literals;
 
+namespace {
+
+    class TestWaitFor:
+    public Wait {
+    public:
+        TestWaitFor() = default;
+    protected:
+        virtual bool do_wait_for(duration t) final {
+            std::this_thread::sleep_for(t);
+            return true;
+        }
+    };
+
+    class TestWaitUntil:
+    public Wait {
+    public:
+        TestWaitUntil() = default;
+    protected:
+        virtual bool do_wait_until(time_point t) final {
+            std::this_thread::sleep_until(t);
+            return true;
+        }
+    };
+
+    class TestPoll:
+    public PollWait {
+    public:
+        TestPoll() = default;
+        virtual bool poll() final { return ++count >= 14; }
+        void reset() noexcept { count = 0; }
+    private:
+        int count = 0;
+    };
+
+}
+
 void test_core_time_date_types() {
 
     auto ds = Dseconds(1.25);
@@ -90,6 +126,116 @@ void test_core_time_general_operations() {
     TRY(tp = make_date(2000, 1, 2, 3, 4, 5, local_zone));
     TRY(n2 = int64_t(system_clock::to_time_t(tp)));
     TEST_COMPARE(std::abs(n2 - n1), <=, 86400);
+
+}
+
+void test_core_time_system_specific_conversions() {
+
+    using IntMsec = duration<int64_t, std::ratio<1, 1000>>;
+    using IntSec = duration<int64_t>;
+    using IntDays = duration<int64_t, std::ratio<86400>>;
+
+    IntMsec ims = {};
+    IntSec is = {};
+    IntDays id = {};
+    Dseconds fs = {};
+    timespec ts = {};
+    timeval tv = {};
+
+    ts = {0, 0};                 TRY(timespec_to_duration(ts, fs));   TEST_EQUAL(fs.count(), 0);
+    ts = {0, 0};                 TRY(timespec_to_duration(ts, id));   TEST_EQUAL(id.count(), 0);
+    ts = {0, 0};                 TRY(timespec_to_duration(ts, ims));  TEST_EQUAL(ims.count(), 0);
+    ts = {0, 0};                 TRY(timespec_to_duration(ts, is));   TEST_EQUAL(is.count(), 0);
+    ts = {0, 125'000'000};       TRY(timespec_to_duration(ts, fs));   TEST_EQUAL(fs.count(), 0.125);
+    ts = {0, 125'000'000};       TRY(timespec_to_duration(ts, id));   TEST_EQUAL(id.count(), 0);
+    ts = {0, 125'000'000};       TRY(timespec_to_duration(ts, ims));  TEST_EQUAL(ims.count(), 125);
+    ts = {0, 125'000'000};       TRY(timespec_to_duration(ts, is));   TEST_EQUAL(is.count(), 0);
+    ts = {86'400, 0};            TRY(timespec_to_duration(ts, fs));   TEST_EQUAL(fs.count(), 86'400);
+    ts = {86'400, 0};            TRY(timespec_to_duration(ts, id));   TEST_EQUAL(id.count(), 1);
+    ts = {86'400, 0};            TRY(timespec_to_duration(ts, ims));  TEST_EQUAL(ims.count(), 86'400'000);
+    ts = {86'400, 0};            TRY(timespec_to_duration(ts, is));   TEST_EQUAL(is.count(), 86'400);
+    ts = {86'400, 125'000'000};  TRY(timespec_to_duration(ts, fs));   TEST_EQUAL(fs.count(), 86'400.125);
+    ts = {86'400, 125'000'000};  TRY(timespec_to_duration(ts, id));   TEST_EQUAL(id.count(), 1);
+    ts = {86'400, 125'000'000};  TRY(timespec_to_duration(ts, ims));  TEST_EQUAL(ims.count(), 86'400'125);
+    ts = {86'400, 125'000'000};  TRY(timespec_to_duration(ts, is));   TEST_EQUAL(is.count(), 86'400);
+    tv = {0, 0};                 TRY(timeval_to_duration(tv, fs));    TEST_EQUAL(fs.count(), 0);
+    tv = {0, 0};                 TRY(timeval_to_duration(tv, id));    TEST_EQUAL(id.count(), 0);
+    tv = {0, 0};                 TRY(timeval_to_duration(tv, ims));   TEST_EQUAL(ims.count(), 0);
+    tv = {0, 0};                 TRY(timeval_to_duration(tv, is));    TEST_EQUAL(is.count(), 0);
+    tv = {0, 125'000};           TRY(timeval_to_duration(tv, fs));    TEST_EQUAL(fs.count(), 0.125);
+    tv = {0, 125'000};           TRY(timeval_to_duration(tv, id));    TEST_EQUAL(id.count(), 0);
+    tv = {0, 125'000};           TRY(timeval_to_duration(tv, ims));   TEST_EQUAL(ims.count(), 125);
+    tv = {0, 125'000};           TRY(timeval_to_duration(tv, is));    TEST_EQUAL(is.count(), 0);
+    tv = {86'400, 0};            TRY(timeval_to_duration(tv, fs));    TEST_EQUAL(fs.count(), 86'400);
+    tv = {86'400, 0};            TRY(timeval_to_duration(tv, id));    TEST_EQUAL(id.count(), 1);
+    tv = {86'400, 0};            TRY(timeval_to_duration(tv, ims));   TEST_EQUAL(ims.count(), 86'400'000);
+    tv = {86'400, 0};            TRY(timeval_to_duration(tv, is));    TEST_EQUAL(is.count(), 86'400);
+    tv = {86'400, 125'000};      TRY(timeval_to_duration(tv, fs));    TEST_EQUAL(fs.count(), 86'400.125);
+    tv = {86'400, 125'000};      TRY(timeval_to_duration(tv, id));    TEST_EQUAL(id.count(), 1);
+    tv = {86'400, 125'000};      TRY(timeval_to_duration(tv, ims));   TEST_EQUAL(ims.count(), 86'400'125);
+    tv = {86'400, 125'000};      TRY(timeval_to_duration(tv, is));    TEST_EQUAL(is.count(), 86'400);
+
+    fs = Dseconds(0);           TRY(ts = duration_to_timespec(fs));   TEST_EQUAL(ts.tv_sec, 0);       TEST_EQUAL(ts.tv_nsec, 0);
+    id = IntDays(0);            TRY(ts = duration_to_timespec(id));   TEST_EQUAL(ts.tv_sec, 0);       TEST_EQUAL(ts.tv_nsec, 0);
+    ims = IntMsec(0);           TRY(ts = duration_to_timespec(ims));  TEST_EQUAL(ts.tv_sec, 0);       TEST_EQUAL(ts.tv_nsec, 0);
+    is = IntSec(0);             TRY(ts = duration_to_timespec(is));   TEST_EQUAL(ts.tv_sec, 0);       TEST_EQUAL(ts.tv_nsec, 0);
+    fs = Dseconds(0.125);       TRY(ts = duration_to_timespec(fs));   TEST_EQUAL(ts.tv_sec, 0);       TEST_EQUAL(ts.tv_nsec, 125'000'000);
+    ims = IntMsec(125);         TRY(ts = duration_to_timespec(ims));  TEST_EQUAL(ts.tv_sec, 0);       TEST_EQUAL(ts.tv_nsec, 125'000'000);
+    fs = Dseconds(86'400);      TRY(ts = duration_to_timespec(fs));   TEST_EQUAL(ts.tv_sec, 86'400);  TEST_EQUAL(ts.tv_nsec, 0);
+    id = IntDays(1);            TRY(ts = duration_to_timespec(id));   TEST_EQUAL(ts.tv_sec, 86'400);  TEST_EQUAL(ts.tv_nsec, 0);
+    ims = IntMsec(86'400'000);  TRY(ts = duration_to_timespec(ims));  TEST_EQUAL(ts.tv_sec, 86'400);  TEST_EQUAL(ts.tv_nsec, 0);
+    is = IntSec(86'400);        TRY(ts = duration_to_timespec(is));   TEST_EQUAL(ts.tv_sec, 86'400);  TEST_EQUAL(ts.tv_nsec, 0);
+    fs = Dseconds(86'400.125);  TRY(ts = duration_to_timespec(fs));   TEST_EQUAL(ts.tv_sec, 86'400);  TEST_EQUAL(ts.tv_nsec, 125'000'000);
+    ims = IntMsec(86'400'125);  TRY(ts = duration_to_timespec(ims));  TEST_EQUAL(ts.tv_sec, 86'400);  TEST_EQUAL(ts.tv_nsec, 125'000'000);
+    fs = Dseconds(0);           TRY(tv = duration_to_timeval(fs));    TEST_EQUAL(tv.tv_sec, 0);       TEST_EQUAL(tv.tv_usec, 0);
+    id = IntDays(0);            TRY(tv = duration_to_timeval(id));    TEST_EQUAL(tv.tv_sec, 0);       TEST_EQUAL(tv.tv_usec, 0);
+    ims = IntMsec(0);           TRY(tv = duration_to_timeval(ims));   TEST_EQUAL(tv.tv_sec, 0);       TEST_EQUAL(tv.tv_usec, 0);
+    is = IntSec(0);             TRY(tv = duration_to_timeval(is));    TEST_EQUAL(tv.tv_sec, 0);       TEST_EQUAL(tv.tv_usec, 0);
+    fs = Dseconds(0.125);       TRY(tv = duration_to_timeval(fs));    TEST_EQUAL(tv.tv_sec, 0);       TEST_EQUAL(tv.tv_usec, 125'000);
+    ims = IntMsec(125);         TRY(tv = duration_to_timeval(ims));   TEST_EQUAL(tv.tv_sec, 0);       TEST_EQUAL(tv.tv_usec, 125'000);
+    fs = Dseconds(86'400);      TRY(tv = duration_to_timeval(fs));    TEST_EQUAL(tv.tv_sec, 86'400);  TEST_EQUAL(tv.tv_usec, 0);
+    id = IntDays(1);            TRY(tv = duration_to_timeval(id));    TEST_EQUAL(tv.tv_sec, 86'400);  TEST_EQUAL(tv.tv_usec, 0);
+    ims = IntMsec(86'400'000);  TRY(tv = duration_to_timeval(ims));   TEST_EQUAL(tv.tv_sec, 86'400);  TEST_EQUAL(tv.tv_usec, 0);
+    is = IntSec(86'400);        TRY(tv = duration_to_timeval(is));    TEST_EQUAL(tv.tv_sec, 86'400);  TEST_EQUAL(tv.tv_usec, 0);
+    fs = Dseconds(86'400.125);  TRY(tv = duration_to_timeval(fs));    TEST_EQUAL(tv.tv_sec, 86'400);  TEST_EQUAL(tv.tv_usec, 125'000);
+    ims = IntMsec(86'400'125);  TRY(tv = duration_to_timeval(ims));   TEST_EQUAL(tv.tv_sec, 86'400);  TEST_EQUAL(tv.tv_usec, 125'000);
+
+    #ifdef _WIN32
+
+        static constexpr int64_t epoch = 11'644'473'600ll;
+        static constexpr int64_t freq = 10'000'000ll;
+
+        int64_t n = 0;
+        FILETIME ft = {}, ft2 = {};
+        system_clock::time_point tp = {}, tp2 = {};
+        system_clock::duration d = {};
+
+        n = epoch * freq;
+        ft = {uint32_t(n), uint32_t(n >> 32)};
+        TRY(tp = filetime_to_timepoint(ft));
+        d = tp - system_clock::from_time_t(0);
+        TEST_EQUAL(d.count(), 0);
+        TRY(ft2 = timepoint_to_filetime(tp));
+        TEST_EQUAL(ft2.dwHighDateTime, ft.dwHighDateTime);
+        TEST_EQUAL(ft2.dwLowDateTime, ft.dwLowDateTime);
+
+        n += 86'400 * freq;
+        ft = {uint32_t(n), uint32_t(n >> 32)};
+        TRY(tp = filetime_to_timepoint(ft));
+        d = tp - system_clock::from_time_t(0);
+        TEST_EQUAL(duration_cast<IntMsec>(d).count(), 86'400'000);
+
+        tp = system_clock::from_time_t(0);
+        TRY(ft = timepoint_to_filetime(tp));
+        TRY(tp2 = filetime_to_timepoint(ft));
+        TEST_EQUAL(tp2.time_since_epoch().count(), tp.time_since_epoch().count());
+
+        tp = system_clock::from_time_t(1'234'567'890);
+        TRY(ft = timepoint_to_filetime(tp));
+        TRY(tp2 = filetime_to_timepoint(ft));
+        TEST_EQUAL(tp2.time_since_epoch().count(), tp.time_since_epoch().count());
+
+    #endif
 
 }
 
@@ -237,19 +383,57 @@ void test_core_time_parse_time() {
 
 }
 
-void test_core_time_backoff_wait() {
+void test_core_time_wait_base() {
 
-    Backoff b;
-    int x = 42;
+    TestWaitFor twf;
+    TestWaitUntil twu;
+    Timer<milliseconds> timer;
 
-    TEST_EQUAL(b.min().count(), 10'000);
-    TEST_EQUAL(b.max().count(), 10'000'000);
+    timer.reset();
+    TEST(twf.wait_for(100ms));
+    TEST_NEAR_EPSILON(timer.get().count(), 100, 50);
 
-    auto start = system_clock::now();
-    TEST(! b.wait_for([&] { return x == 0; }, 200ms));
-    auto stop = system_clock::now();
-    auto msec = duration_cast<milliseconds>(stop - start).count();
-    TEST_NEAR_EPSILON(msec, 200, 100);
+    timer.reset();
+    TEST(twu.wait_for(100ms));
+    TEST_NEAR_EPSILON(timer.get().count(), 100, 50);
+
+}
+
+void test_core_time_poll_base() {
+
+    TestPoll tp;
+    Timer<milliseconds> timer;
+
+    TEST_EQUAL(duration_cast<microseconds>(tp.min_interval()).count(), 10);
+    TEST_EQUAL(duration_cast<microseconds>(tp.max_interval()).count(), 10'000);
+    TRY(tp.set_interval(5us, 1s));
+    TEST_EQUAL(duration_cast<microseconds>(tp.min_interval()).count(), 5);
+    TEST_EQUAL(duration_cast<microseconds>(tp.max_interval()).count(), 1'000'000);
+    timer.reset();
+    TEST(tp.wait_for(1s));
+    TEST_NEAR_EPSILON(timer.get().count(), 82, 50);
+
+    tp.reset();
+    timer.reset();
+    TRY(tp.wait());
+    TEST_NEAR_EPSILON(timer.get().count(), 82, 50);
+
+}
+
+void test_core_time_poll_condition() {
+
+    bool flag = false;
+    PollCondition pc([&] { return flag; });
+    Timer<milliseconds> timer;
+
+    timer.reset();
+    TEST(! pc.wait_for(100ms));
+    TEST_NEAR_EPSILON(timer.get().count(), 100, 50);
+
+    flag = true;
+    timer.reset();
+    TEST(pc.wait_for(100ms));
+    TEST_NEAR_EPSILON(timer.get().count(), 0, 50);
 
 }
 
@@ -268,115 +452,5 @@ void test_core_time_timer() {
     std::this_thread::sleep_for(100ms);
     TRY(t = timer);
     TEST_NEAR_EPSILON(t.count(), 100, 50);
-
-}
-
-void test_core_time_system_specific_conversions() {
-
-    using IntMsec = duration<int64_t, std::ratio<1, 1000>>;
-    using IntSec = duration<int64_t>;
-    using IntDays = duration<int64_t, std::ratio<86400>>;
-
-    IntMsec ims = {};
-    IntSec is = {};
-    IntDays id = {};
-    Dseconds fs = {};
-    timespec ts = {};
-    timeval tv = {};
-
-    ts = {0, 0};                 TRY(timespec_to_duration(ts, fs));   TEST_EQUAL(fs.count(), 0);
-    ts = {0, 0};                 TRY(timespec_to_duration(ts, id));   TEST_EQUAL(id.count(), 0);
-    ts = {0, 0};                 TRY(timespec_to_duration(ts, ims));  TEST_EQUAL(ims.count(), 0);
-    ts = {0, 0};                 TRY(timespec_to_duration(ts, is));   TEST_EQUAL(is.count(), 0);
-    ts = {0, 125'000'000};       TRY(timespec_to_duration(ts, fs));   TEST_EQUAL(fs.count(), 0.125);
-    ts = {0, 125'000'000};       TRY(timespec_to_duration(ts, id));   TEST_EQUAL(id.count(), 0);
-    ts = {0, 125'000'000};       TRY(timespec_to_duration(ts, ims));  TEST_EQUAL(ims.count(), 125);
-    ts = {0, 125'000'000};       TRY(timespec_to_duration(ts, is));   TEST_EQUAL(is.count(), 0);
-    ts = {86'400, 0};            TRY(timespec_to_duration(ts, fs));   TEST_EQUAL(fs.count(), 86'400);
-    ts = {86'400, 0};            TRY(timespec_to_duration(ts, id));   TEST_EQUAL(id.count(), 1);
-    ts = {86'400, 0};            TRY(timespec_to_duration(ts, ims));  TEST_EQUAL(ims.count(), 86'400'000);
-    ts = {86'400, 0};            TRY(timespec_to_duration(ts, is));   TEST_EQUAL(is.count(), 86'400);
-    ts = {86'400, 125'000'000};  TRY(timespec_to_duration(ts, fs));   TEST_EQUAL(fs.count(), 86'400.125);
-    ts = {86'400, 125'000'000};  TRY(timespec_to_duration(ts, id));   TEST_EQUAL(id.count(), 1);
-    ts = {86'400, 125'000'000};  TRY(timespec_to_duration(ts, ims));  TEST_EQUAL(ims.count(), 86'400'125);
-    ts = {86'400, 125'000'000};  TRY(timespec_to_duration(ts, is));   TEST_EQUAL(is.count(), 86'400);
-    tv = {0, 0};                 TRY(timeval_to_duration(tv, fs));    TEST_EQUAL(fs.count(), 0);
-    tv = {0, 0};                 TRY(timeval_to_duration(tv, id));    TEST_EQUAL(id.count(), 0);
-    tv = {0, 0};                 TRY(timeval_to_duration(tv, ims));   TEST_EQUAL(ims.count(), 0);
-    tv = {0, 0};                 TRY(timeval_to_duration(tv, is));    TEST_EQUAL(is.count(), 0);
-    tv = {0, 125'000};           TRY(timeval_to_duration(tv, fs));    TEST_EQUAL(fs.count(), 0.125);
-    tv = {0, 125'000};           TRY(timeval_to_duration(tv, id));    TEST_EQUAL(id.count(), 0);
-    tv = {0, 125'000};           TRY(timeval_to_duration(tv, ims));   TEST_EQUAL(ims.count(), 125);
-    tv = {0, 125'000};           TRY(timeval_to_duration(tv, is));    TEST_EQUAL(is.count(), 0);
-    tv = {86'400, 0};            TRY(timeval_to_duration(tv, fs));    TEST_EQUAL(fs.count(), 86'400);
-    tv = {86'400, 0};            TRY(timeval_to_duration(tv, id));    TEST_EQUAL(id.count(), 1);
-    tv = {86'400, 0};            TRY(timeval_to_duration(tv, ims));   TEST_EQUAL(ims.count(), 86'400'000);
-    tv = {86'400, 0};            TRY(timeval_to_duration(tv, is));    TEST_EQUAL(is.count(), 86'400);
-    tv = {86'400, 125'000};      TRY(timeval_to_duration(tv, fs));    TEST_EQUAL(fs.count(), 86'400.125);
-    tv = {86'400, 125'000};      TRY(timeval_to_duration(tv, id));    TEST_EQUAL(id.count(), 1);
-    tv = {86'400, 125'000};      TRY(timeval_to_duration(tv, ims));   TEST_EQUAL(ims.count(), 86'400'125);
-    tv = {86'400, 125'000};      TRY(timeval_to_duration(tv, is));    TEST_EQUAL(is.count(), 86'400);
-
-    fs = Dseconds(0);           TRY(ts = duration_to_timespec(fs));   TEST_EQUAL(ts.tv_sec, 0);       TEST_EQUAL(ts.tv_nsec, 0);
-    id = IntDays(0);            TRY(ts = duration_to_timespec(id));   TEST_EQUAL(ts.tv_sec, 0);       TEST_EQUAL(ts.tv_nsec, 0);
-    ims = IntMsec(0);           TRY(ts = duration_to_timespec(ims));  TEST_EQUAL(ts.tv_sec, 0);       TEST_EQUAL(ts.tv_nsec, 0);
-    is = IntSec(0);             TRY(ts = duration_to_timespec(is));   TEST_EQUAL(ts.tv_sec, 0);       TEST_EQUAL(ts.tv_nsec, 0);
-    fs = Dseconds(0.125);       TRY(ts = duration_to_timespec(fs));   TEST_EQUAL(ts.tv_sec, 0);       TEST_EQUAL(ts.tv_nsec, 125'000'000);
-    ims = IntMsec(125);         TRY(ts = duration_to_timespec(ims));  TEST_EQUAL(ts.tv_sec, 0);       TEST_EQUAL(ts.tv_nsec, 125'000'000);
-    fs = Dseconds(86'400);      TRY(ts = duration_to_timespec(fs));   TEST_EQUAL(ts.tv_sec, 86'400);  TEST_EQUAL(ts.tv_nsec, 0);
-    id = IntDays(1);            TRY(ts = duration_to_timespec(id));   TEST_EQUAL(ts.tv_sec, 86'400);  TEST_EQUAL(ts.tv_nsec, 0);
-    ims = IntMsec(86'400'000);  TRY(ts = duration_to_timespec(ims));  TEST_EQUAL(ts.tv_sec, 86'400);  TEST_EQUAL(ts.tv_nsec, 0);
-    is = IntSec(86'400);        TRY(ts = duration_to_timespec(is));   TEST_EQUAL(ts.tv_sec, 86'400);  TEST_EQUAL(ts.tv_nsec, 0);
-    fs = Dseconds(86'400.125);  TRY(ts = duration_to_timespec(fs));   TEST_EQUAL(ts.tv_sec, 86'400);  TEST_EQUAL(ts.tv_nsec, 125'000'000);
-    ims = IntMsec(86'400'125);  TRY(ts = duration_to_timespec(ims));  TEST_EQUAL(ts.tv_sec, 86'400);  TEST_EQUAL(ts.tv_nsec, 125'000'000);
-    fs = Dseconds(0);           TRY(tv = duration_to_timeval(fs));    TEST_EQUAL(tv.tv_sec, 0);       TEST_EQUAL(tv.tv_usec, 0);
-    id = IntDays(0);            TRY(tv = duration_to_timeval(id));    TEST_EQUAL(tv.tv_sec, 0);       TEST_EQUAL(tv.tv_usec, 0);
-    ims = IntMsec(0);           TRY(tv = duration_to_timeval(ims));   TEST_EQUAL(tv.tv_sec, 0);       TEST_EQUAL(tv.tv_usec, 0);
-    is = IntSec(0);             TRY(tv = duration_to_timeval(is));    TEST_EQUAL(tv.tv_sec, 0);       TEST_EQUAL(tv.tv_usec, 0);
-    fs = Dseconds(0.125);       TRY(tv = duration_to_timeval(fs));    TEST_EQUAL(tv.tv_sec, 0);       TEST_EQUAL(tv.tv_usec, 125'000);
-    ims = IntMsec(125);         TRY(tv = duration_to_timeval(ims));   TEST_EQUAL(tv.tv_sec, 0);       TEST_EQUAL(tv.tv_usec, 125'000);
-    fs = Dseconds(86'400);      TRY(tv = duration_to_timeval(fs));    TEST_EQUAL(tv.tv_sec, 86'400);  TEST_EQUAL(tv.tv_usec, 0);
-    id = IntDays(1);            TRY(tv = duration_to_timeval(id));    TEST_EQUAL(tv.tv_sec, 86'400);  TEST_EQUAL(tv.tv_usec, 0);
-    ims = IntMsec(86'400'000);  TRY(tv = duration_to_timeval(ims));   TEST_EQUAL(tv.tv_sec, 86'400);  TEST_EQUAL(tv.tv_usec, 0);
-    is = IntSec(86'400);        TRY(tv = duration_to_timeval(is));    TEST_EQUAL(tv.tv_sec, 86'400);  TEST_EQUAL(tv.tv_usec, 0);
-    fs = Dseconds(86'400.125);  TRY(tv = duration_to_timeval(fs));    TEST_EQUAL(tv.tv_sec, 86'400);  TEST_EQUAL(tv.tv_usec, 125'000);
-    ims = IntMsec(86'400'125);  TRY(tv = duration_to_timeval(ims));   TEST_EQUAL(tv.tv_sec, 86'400);  TEST_EQUAL(tv.tv_usec, 125'000);
-
-    #ifdef _WIN32
-
-        static constexpr int64_t epoch = 11'644'473'600ll;
-        static constexpr int64_t freq = 10'000'000ll;
-
-        int64_t n = 0;
-        FILETIME ft = {}, ft2 = {};
-        system_clock::time_point tp = {}, tp2 = {};
-        system_clock::duration d = {};
-
-        n = epoch * freq;
-        ft = {uint32_t(n), uint32_t(n >> 32)};
-        TRY(tp = filetime_to_timepoint(ft));
-        d = tp - system_clock::from_time_t(0);
-        TEST_EQUAL(d.count(), 0);
-        TRY(ft2 = timepoint_to_filetime(tp));
-        TEST_EQUAL(ft2.dwHighDateTime, ft.dwHighDateTime);
-        TEST_EQUAL(ft2.dwLowDateTime, ft.dwLowDateTime);
-
-        n += 86'400 * freq;
-        ft = {uint32_t(n), uint32_t(n >> 32)};
-        TRY(tp = filetime_to_timepoint(ft));
-        d = tp - system_clock::from_time_t(0);
-        TEST_EQUAL(duration_cast<IntMsec>(d).count(), 86'400'000);
-
-        tp = system_clock::from_time_t(0);
-        TRY(ft = timepoint_to_filetime(tp));
-        TRY(tp2 = filetime_to_timepoint(ft));
-        TEST_EQUAL(tp2.time_since_epoch().count(), tp.time_since_epoch().count());
-
-        tp = system_clock::from_time_t(1'234'567'890);
-        TRY(ft = timepoint_to_filetime(tp));
-        TRY(tp2 = filetime_to_timepoint(ft));
-        TEST_EQUAL(tp2.time_since_epoch().count(), tp.time_since_epoch().count());
-
-    #endif
 
 }

@@ -29,7 +29,7 @@ namespace RS {
         virtual size_t read(void* dst, size_t maxlen);
         int status() const noexcept { return st; }
     protected:
-        virtual bool do_wait_for(time_unit t);
+        virtual bool do_wait_for(duration t);
     private:
         std::atomic<FILE*> fp;
         int st = -1;
@@ -73,11 +73,11 @@ namespace RS {
             fp = nullptr;
         }
 
-        inline bool StreamProcess::do_wait_for(time_unit t) {
+        inline bool StreamProcess::do_wait_for(duration t) {
             using namespace std::chrono;
             if (! fp)
                 return true;
-            if (t < time_unit())
+            if (t < duration())
                 t = {};
             int fd = RS_IO_FUNCTION(fileno)(fp);
             #ifdef _XOPEN_SOURCE
@@ -122,7 +122,7 @@ namespace RS {
         std::string read_all() { return buf + sp.read_all(); }
         int status() const noexcept { return sp.status(); }
     protected:
-        virtual bool do_wait_for(time_unit t);
+        virtual bool do_wait_for(duration t);
     private:
         StreamProcess sp;
         Ustring buf;
@@ -150,11 +150,11 @@ namespace RS {
             return true;
         }
 
-        inline bool TextProcess::do_wait_for(time_unit t) {
+        inline bool TextProcess::do_wait_for(duration t) {
             using namespace std::chrono;
-            t = std::max(t, time_unit());
+            t = std::max(t, duration());
             auto deadline = ReliableClock::now() + t;
-            time_unit delta = {};
+            duration delta = {};
             for (;;) {
                 sp.wait_for(delta);
                 if (sp.is_closed() || ! sp.read_to(buf))
@@ -165,7 +165,7 @@ namespace RS {
                 auto now = ReliableClock::now();
                 if (now > deadline)
                     return false;
-                delta = duration_cast<time_unit>(deadline - now);
+                delta = duration_cast<duration>(deadline - now);
             }
         }
 

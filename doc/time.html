@@ -24,10 +24,11 @@ values that do not represent a valid date.</p>
 <li><a href="#time-and-date-types">Time and date types</a></li>
 <li><a href="#constants">Constants</a></li>
 <li><a href="#general-time-and-date-operations">General time and date operations</a></li>
+<li><a href="#system-specific-time-and-date-conversions">System specific time and date conversions</a></li>
 <li><a href="#time-and-date-formatting">Time and date formatting</a></li>
 <li><a href="#time-and-date-parsing">Time and date parsing</a></li>
+<li><a href="#timing-base-classes">Timing base classes</a></li>
 <li><a href="#timing-utilities">Timing utilities</a></li>
-<li><a href="#system-specific-time-and-date-conversions">System specific time and date conversions</a></li>
 </ul>
 </li>
 </ul>
@@ -95,6 +96,67 @@ number of seconds.</p>
 <p>Converts a broken down date into a time point. Behaviour if any of the date
 arguments are invalid follows the same rules as <code>mktime()</code>. This will throw
 <code>std::invalid_argument</code> if an invalid combination of flags is passed.</p>
+</div>
+<h2 id="system-specific-time-and-date-conversions">System specific time and date conversions</h2>
+<div class="defns">
+<ul>
+<li><em>Unix</em><ul>
+<li><code>template &lt;typename R, typename P&gt; timespec</code> <strong><code>duration_to_timespec</code></strong><code>(const duration&lt;R, P&gt;&amp; d) noexcept</code></li>
+<li><code>template &lt;typename R, typename P&gt; timeval</code> <strong><code>duration_to_timeval</code></strong><code>(const duration&lt;R, P&gt;&amp; d) noexcept</code></li>
+<li><code>timespec</code> <strong><code>timepoint_to_timespec</code></strong><code>(const system_clock::time_point&amp; tp) noexcept</code></li>
+<li><code>timeval</code> <strong><code>timepoint_to_timeval</code></strong><code>(const system_clock::time_point&amp; tp) noexcept</code></li>
+<li><code>template &lt;typename R, typename P&gt; void</code> <strong><code>timespec_to_duration</code></strong><code>(const timespec&amp; ts, duration&lt;R, P&gt;&amp; d) noexcept</code></li>
+<li><code>system_clock::time_point</code> <strong><code>timespec_to_timepoint</code></strong><code>(const timespec&amp; ts) noexcept</code></li>
+<li><code>template &lt;typename R, typename P&gt; void</code> <strong><code>timeval_to_duration</code></strong><code>(const timeval&amp; tv, duration&lt;R, P&gt;&amp; d) noexcept</code></li>
+<li><code>system_clock::time_point</code> <strong><code>timeval_to_timepoint</code></strong><code>(const timeval&amp; tv) noexcept</code></li>
+</ul>
+</li>
+<li><em>Windows</em><ul>
+<li><code>system_clock::time_point</code> <strong><code>filetime_to_timepoint</code></strong><code>(const FILETIME&amp; ft) noexcept</code></li>
+<li><code>FILETIME</code> <strong><code>timepoint_to_filetime</code></strong><code>(const system_clock::time_point&amp; tp) noexcept</code></li>
+</ul>
+</li>
+</ul>
+<p>Conversion functions between C++ chrono types and system API types. Some of
+these return their result through a reference argument to avoid having to
+explicitly specify the duration type. Behaviour is undefined if the value
+being represented is out of range for either the source or destination type.</p>
+<p>The Windows functions are only defined on Win32 builds; the Unix functions are
+always defined (since the relevant time structures are defined in the Windows
+API).</p>
+<p>For reference, the system time types are:</p>
+<ul>
+<li><em>Unix</em><ul>
+<li><code>#include &lt;time.h&gt;</code><ul>
+<li><code>struct</code> <strong><code>timespec</code></strong><ul>
+<li><code>time_t timespec::</code><strong><code>tv_sec</code></strong> <code>// seconds</code></li>
+<li><code>long timespec::</code><strong><code>tv_nsec</code></strong> <code>// nanoseconds</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>#include &lt;sys/time.h&gt;</code><ul>
+<li><code>struct</code> <strong><code>timeval</code></strong><ul>
+<li><code>time_t timeval::</code><strong><code>tv_sec</code></strong> <code>// seconds</code></li>
+<li><code>suseconds_t timeval::</code><strong><code>tv_usec</code></strong> <code>// microseconds</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><em>Windows</em><ul>
+<li><code>#include &lt;windows.h&gt;</code><ul>
+<li><code>struct</code> <strong><code>FILETIME</code></strong><ul>
+<li><code>DWORD FILETIME::</code><strong><code>dwLowDateTime</code></strong> <code>// low 32 bits</code></li>
+<li><code>DWORD FILETIME::</code><strong><code>dwHighDateTime</code></strong> <code>// high 32 bits</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 </div>
 <h2 id="time-and-date-formatting">Time and date formatting</h2>
 <div class="defns">
@@ -245,37 +307,69 @@ time cannot be represented by the duration type, or if the second version of
 <code>parse_time()</code> is called with a return type that is not an instantiation of
 <code>std::chrono::duration</code>.</p>
 </div>
-<h2 id="timing-utilities">Timing utilities</h2>
+<h2 id="timing-base-classes">Timing base classes</h2>
 <div class="defns">
 <ul>
-<li><code>class</code> <strong><code>Backoff</code></strong><ul>
-<li><code>Backoff::</code><strong><code>Backoff</code></strong><code>() noexcept</code></li>
-<li><code>template &lt;typename R1, typename P1, typename R2, typename P2&gt; Backoff::</code><strong><code>Backoff</code></strong><code>(duration&lt;R1, P1&gt; min_interval, duration&lt;R2, P2&gt; max_interval) noexcept</code></li>
-<li><code>Backoff::</code><strong><code>~Backoff</code></strong><code>() noexcept</code></li>
-<li><code>Backoff::</code><strong><code>Backoff</code></strong><code>(const Backoff&amp; b) noexcept</code></li>
-<li><code>Backoff::</code><strong><code>Backoff</code></strong><code>(Backoff&amp;&amp; b) noexcept</code></li>
-<li><code>Backoff&amp; Backoff::</code><strong><code>operator=</code></strong><code>(const Backoff&amp; b) noexcept</code></li>
-<li><code>Backoff&amp; Backoff::</code><strong><code>operator=</code></strong><code>(Backoff&amp;&amp; b) noexcept</code></li>
-<li><code>[duration type] Backoff::</code><strong><code>min</code></strong><code>() const noexcept</code></li>
-<li><code>[duration type] Backoff::</code><strong><code>max</code></strong><code>() const noexcept</code></li>
-<li><code>template &lt;typename Predicate&gt; void Backoff::</code><strong><code>wait</code></strong><code>(Predicate pred) const</code></li>
-<li><code>template &lt;typename Predicate, typename R, typename P&gt; bool Backoff::</code><strong><code>wait_for</code></strong><code>(Predicate pred, duration&lt;R, P&gt; timeout) const</code></li>
-<li><code>template &lt;typename Predicate, typename C, typename D&gt; bool Backoff::</code><strong><code>wait_until</code></strong><code>(Predicate pred, time_point&lt;C, D&gt; timeout) const</code></li>
+<li><code>class</code> <strong><code>Wait</code></strong><ul>
+<li><code>using Wait::</code><strong><code>clock_type</code></strong><code>= ReliableClock</code></li>
+<li><code>using Wait::</code><strong><code>duration</code></strong><code>= clock_type::duration</code></li>
+<li><code>using Wait::</code><strong><code>time_point</code></strong><code>= clock_type::time_point</code></li>
+<li><code>virtual Wait::</code><strong><code>~Wait()</code></strong> <code>noexcept = 0</code></li>
+<li><code>virtual bool Wait::</code><strong><code>is_shared</code></strong><code>() const noexcept</code></li>
+<li><code>virtual bool Wait::</code><strong><code>poll</code></strong><code>()</code></li>
+<li><code>virtual void Wait::</code><strong><code>wait</code></strong><code>()</code></li>
+<li><code>template &lt;typename R, typename P&gt; bool Wait::</code><strong><code>wait_for</code></strong><code>(std::chrono::duration&lt;R, P&gt; t)</code></li>
+<li><code>template &lt;typename C, typename D&gt; bool Wait::</code><strong><code>wait_until</code></strong><code>(std::chrono::time_point&lt;C, D&gt; t)</code></li>
+<li><code>protected Wait::</code><strong><code>Wait</code></strong><code>() noexcept</code></li>
+<li><code>protected virtual bool Wait::</code><strong><code>do_wait_for</code></strong><code>(duration t)</code></li>
+<li><code>protected virtual bool Wait::</code><strong><code>do_wait_until</code></strong><code>(time_point t)</code></li>
 </ul>
 </li>
 </ul>
-<p>This implements a backoff wait algorithm. The constructor takes a minimum and
-maximum poll interval, defaulting to 10 microseconds and 10 milliseconds
-respectively. The <code>min()</code> and <code>max()</code> query functions return the intervals
-expressed in an unspecified duration type (the same type for both functions).
-When one of the wait functions is called, after testing the predicate, it will
-wait for the minimum interval before testing again, doubling the interval
-after each test until the maximum interval is reached, after which it will
-continue testing at that interval. The <code>wait()</code> function will return when the
-predicate is true; the other wait functions will return true when the
-predicate is true, or false when the timeout expires, whichever comes first.
-All of the wait functions will propagate any exceptions thrown by the
-predicate.</p>
+<p>A general purpose base class for waitable objects. A derived class must
+implement at least one of <code>do_wait_for()</code> or <code>do_wait_until()</code>, whichever is
+more convenient for the particular class (the default implementations call
+each other); optionally it may also implement either or both of <code>poll()</code> or
+<code>wait()</code>, if a more efficient implementation than the default (calling
+<code>do_wait_*()</code>) is available.</p>
+<p>The <code>is_shared()</code> method indicates whether or not it is safe for multiple
+threads to wait on the same object simultaneously; this is false by default.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>PollWait</code></strong><code>: public Wait</code><ul>
+<li><code>virtual bool PollWait::</code><strong><code>poll</code></strong><code>() override = 0</code></li>
+<li><code>virtual void PollWait::</code><strong><code>wait</code></strong><code>() override</code></li>
+<li><code>duration PollWait::</code><strong><code>min_interval</code></strong><code>() const noexcept</code></li>
+<li><code>duration PollWait::</code><strong><code>max_interval</code></strong><code>() const noexcept</code></li>
+<li><code>template &lt;typename R, typename P&gt; void PollWait::</code><strong><code>set_interval</code></strong><code>(std::chrono::duration&lt;R, P&gt; t)</code></li>
+<li><code>template &lt;typename R1, typename P1, typename R2, typename P2&gt; void PollWait::</code><strong><code>set_interval</code></strong><code>(std::chrono::duration&lt;R1, P1&gt; t1, std::chrono::duration&lt;R2, P2&gt; t2)</code></li>
+<li><code>protected PollWait::</code><strong><code>PollWait</code></strong><code>() noexcept</code></li>
+</ul>
+</li>
+</ul>
+<p>An intermediate base class for waitable objects that must be implemented by
+polling when no more efficient implementation is available. This implements a
+backoff strategy, starting out by waiting for the minimum interval, increasing
+the interval on each wait until the maximum interval is reached. A derived
+class must implement <code>poll()</code>; it may also implement <code>wait()</code> if a more
+efficient implementation is available (this is intended for situations where
+polling and indefinite wait APIs are available, but no wait with timeout is
+provided).</p>
+<p>The <code>set_interval()</code> functions set the minimum and maximum wait times; the
+first version sets both intervals to the same value, producing a fixed wait
+time. The default minimum and maximum intervals are 10 microseconds and 10
+milliseconds respectively.</p>
+</div>
+<h2 id="timing-utilities">Timing utilities</h2>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>PollCondition</code></strong><code>: public PollWait</code><ul>
+<li><code>template &lt;typename Predicate&gt; explicit PollCondition::</code><strong><code>PollCondition</code></strong><code>(Predicate p)</code></li>
+</ul>
+</li>
+</ul>
+<p>A simple wait class that polls until a condition is true.</p>
 </div>
 <div class="defns">
 <ul>
@@ -303,66 +397,5 @@ predicate.</p>
 <p>Another simple timer (not specialized for debugging). The template argument
 must be an instantiation of <code>std::chrono::duration</code>. The timer is started on
 construction, and restarted when <code>reset()</code> is called; <code>get()</code> or the
-conversion operator return the time since the last start.</p>
-</div>
-<h2 id="system-specific-time-and-date-conversions">System specific time and date conversions</h2>
-<div class="defns">
-<ul>
-<li><em>Unix</em><ul>
-<li><code>template &lt;typename R, typename P&gt; timespec</code> <strong><code>duration_to_timespec</code></strong><code>(const duration&lt;R, P&gt;&amp; d) noexcept</code></li>
-<li><code>template &lt;typename R, typename P&gt; timeval</code> <strong><code>duration_to_timeval</code></strong><code>(const duration&lt;R, P&gt;&amp; d) noexcept</code></li>
-<li><code>timespec</code> <strong><code>timepoint_to_timespec</code></strong><code>(const system_clock::time_point&amp; tp) noexcept</code></li>
-<li><code>timeval</code> <strong><code>timepoint_to_timeval</code></strong><code>(const system_clock::time_point&amp; tp) noexcept</code></li>
-<li><code>template &lt;typename R, typename P&gt; void</code> <strong><code>timespec_to_duration</code></strong><code>(const timespec&amp; ts, duration&lt;R, P&gt;&amp; d) noexcept</code></li>
-<li><code>system_clock::time_point</code> <strong><code>timespec_to_timepoint</code></strong><code>(const timespec&amp; ts) noexcept</code></li>
-<li><code>template &lt;typename R, typename P&gt; void</code> <strong><code>timeval_to_duration</code></strong><code>(const timeval&amp; tv, duration&lt;R, P&gt;&amp; d) noexcept</code></li>
-<li><code>system_clock::time_point</code> <strong><code>timeval_to_timepoint</code></strong><code>(const timeval&amp; tv) noexcept</code></li>
-</ul>
-</li>
-<li><em>Windows</em><ul>
-<li><code>system_clock::time_point</code> <strong><code>filetime_to_timepoint</code></strong><code>(const FILETIME&amp; ft) noexcept</code></li>
-<li><code>FILETIME</code> <strong><code>timepoint_to_filetime</code></strong><code>(const system_clock::time_point&amp; tp) noexcept</code></li>
-</ul>
-</li>
-</ul>
-<p>Conversion functions between C++ chrono types and system API types. Some of
-these return their result through a reference argument to avoid having to
-explicitly specify the duration type. Behaviour is undefined if the value
-being represented is out of range for either the source or destination type.</p>
-<p>The Windows functions are only defined on Win32 builds; the Unix functions are
-always defined (since the relevant time structures are defined in the Windows
-API).</p>
-<p>For reference, the system time types are:</p>
-<ul>
-<li><em>Unix</em><ul>
-<li><code>#include &lt;time.h&gt;</code><ul>
-<li><code>struct</code> <strong><code>timespec</code></strong><ul>
-<li><code>time_t timespec::</code><strong><code>tv_sec</code></strong> <code>// seconds</code></li>
-<li><code>long timespec::</code><strong><code>tv_nsec</code></strong> <code>// nanoseconds</code></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><code>#include &lt;sys/time.h&gt;</code><ul>
-<li><code>struct</code> <strong><code>timeval</code></strong><ul>
-<li><code>time_t timeval::</code><strong><code>tv_sec</code></strong> <code>// seconds</code></li>
-<li><code>suseconds_t timeval::</code><strong><code>tv_usec</code></strong> <code>// microseconds</code></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><em>Windows</em><ul>
-<li><code>#include &lt;windows.h&gt;</code><ul>
-<li><code>struct</code> <strong><code>FILETIME</code></strong><ul>
-<li><code>DWORD FILETIME::</code><strong><code>dwLowDateTime</code></strong> <code>// low 32 bits</code></li>
-<li><code>DWORD FILETIME::</code><strong><code>dwHighDateTime</code></strong> <code>// high 32 bits</code></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul></body>
+conversion operator return the time since the last start.</p></body>
 </html>

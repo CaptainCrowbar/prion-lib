@@ -22,7 +22,6 @@
 <li><a href="#class-eventchannel">Class EventChannel</a></li>
 <li><a href="#class-messagechannel">Class MessageChannel</a></li>
 <li><a href="#class-streamchannel">Class StreamChannel</a></li>
-<li><a href="#class-polled">Class Polled</a></li>
 </ul>
 </li>
 <li><a href="#concrete-channel-classes">Concrete channel classes</a><ul>
@@ -64,48 +63,34 @@
 </ul>
 </li>
 <li><code>class</code> <strong><code>Dispatch</code></strong></li>
-<li><code>[abstract] class</code> <strong><code>Polled</code></strong></li>
 </ul>
 </div>
 <h2 id="channel-base-classes">Channel base classes</h2>
 <h3 id="class-channel">Class Channel</h3>
 <div class="defns">
 <ul>
-<li><code>class</code> <strong><code>Channel</code></strong><ul>
-<li><code>using Channel::</code><strong><code>time_unit</code></strong> <code>= std::chrono::microseconds</code></li>
+<li><code>class</code> <strong><code>Channel</code></strong><code>: public Wait</code><ul>
 <li><code>virtual Channel::</code><strong><code>~Channel</code></strong><code>() noexcept</code></li>
 <li><code>Channel::</code><strong><code>Channel</code></strong><code>(Channel&amp;&amp; c) noexcept</code></li>
 <li><code>Channel&amp; Channel::</code><strong><code>operator=</code></strong><code>(Channel&amp;&amp; c) noexcept</code></li>
 <li><code>virtual void Channel::</code><strong><code>close</code></strong><code>() noexcept = 0</code></li>
 <li><code>virtual bool Channel::</code><strong><code>is_closed</code></strong><code>() const noexcept = 0</code></li>
 <li><code>virtual bool Channel::</code><strong><code>is_async</code></strong><code>() const noexcept</code> <em>= true</em></li>
-<li><code>virtual bool Channel::</code><strong><code>is_shared</code></strong><code>() const noexcept</code> <em>= false</em></li>
-<li><code>virtual bool Channel::</code><strong><code>poll</code></strong><code>()</code></li>
-<li><code>virtual void Channel::</code><strong><code>wait</code></strong><code>()</code></li>
-<li><code>template &lt;typename R, typename P&gt; bool Channel::</code><strong><code>wait_for</code></strong><code>(std::chrono::duration&lt;R, P&gt; t)</code></li>
-<li><code>template &lt;typename C, typename D&gt; bool Channel::</code><strong><code>wait_until</code></strong><code>(std::chrono::time_point&lt;C, D&gt; t)</code></li>
-<li><code>protected virtual bool Channel::</code><strong><code>do_wait_for</code></strong><code>(time_unit t) = 0</code></li>
 </ul>
 </li>
 </ul>
 <p>The base class for all readable message channels. All concrete channel classes
 must derive from one of the three intermediate classes below, not directly
 from Channel. Derived classes need to implement at least <code>close()</code>,
-<code>is_closed()</code>, and <code>do_wait_for()</code>, and may optionally implement <code>poll()</code> and
-<code>wait()</code> if more efficient implementations than the default call to
-<code>do_wait_for()</code> are available. The <code>close()</code> function must be async safe and
-idempotent.</p>
-<p>Any of the <code>wait()</code> functions will return true if the channel is either ready
-to read or closed, false if the wait timed out. The <code>poll()</code> function is
-equivalent to <code>wait_for()</code> with a zero timeout; <code>wait()</code> is equivalent to an
-infinite timeout (and returns nothing since it can never time out).</p>
+<code>is_closed()</code>, and one of the <code>do_wait_*()</code> functions from
+<a href="time.html"><code>Wait</code></a>; <code>close()</code> must be async safe and idempotent.</p>
 <p>If <code>is_async()</code> is false, the channel can only be used in a synchronous
 dispatch handler (see <code>Dispatch</code> below), usually because it calls an
 underlying native API that is only intended to be used from the main thread.</p>
-<p>If <code>is_shared()</code> is true, it is safe to call the wait functions (and <code>read()</code>
-where relevant) from multiple threads at the same time, provided it is
-acceptable for each message to be delivered to an unpredictable choice of
-thread.</p>
+<p>If <code>is_shared()</code> (from <code>Wait</code>) is true, it is safe to call the wait functions
+(and <code>read()</code> where relevant) from multiple threads at the same time, provided
+it is acceptable for each message to be delivered to an unpredictable choice
+of thread.</p>
 <p>The channel base classes implement move operations in case a derived class
 needs them, but derived channel types are usually not movable. Channel classes
 are never copyable.</p>
@@ -185,25 +170,6 @@ returns the new data as a string; <code>read_to()</code> calls <code>read()</cod
 data to the string. The buffer size functions control the internal read limit
 for <code>read_all/str/to()</code>.</p>
 </div>
-<h3 id="class-polled">Class Polled</h3>
-<div class="defns">
-<ul>
-<li><code>class</code> <strong><code>Polled</code></strong><ul>
-<li><code>static constexpr Channel::time_unit Polled::</code><strong><code>default_interval</code></strong> <code>= 10ms</code></li>
-<li><code>virtual Polled::</code><strong><code>~Polled</code></strong><code>()</code></li>
-<li><code>virtual bool Polled::</code><strong><code>poll</code></strong><code>() = 0</code></li>
-<li><code>Channel::time_unit Polled::</code><strong><code>interval</code></strong><code>() const noexcept</code></li>
-<li><code>template &lt;typename R, typename P&gt; void Polled::</code><strong><code>set_interval</code></strong><code>(std::chrono::duration&lt;R, P&gt; t) noexcept</code></li>
-</ul>
-</li>
-</ul>
-<p>Mixin class for channels for which no easy timed wait operation exists,
-requiring a polled implementation. The <code>set_interval()</code> function clamps the
-argument to a minimum of zero.</p>
-<p>Polled channel classes should derive from both <code>Channel</code> and <code>Polled</code>,
-implementing <code>close()</code>, <code>is_closed()</code>, <code>poll()</code>, and <code>do_wait_for()</code>, which
-should just call <code>polled_wait()</code>.</p>
-</div>
 <h2 id="concrete-channel-classes">Concrete channel classes</h2>
 <p>Member functions inherited from the channel base classes are not documented
 again here unless they have significantly different semantics.</p>
@@ -229,8 +195,8 @@ again here unless they have significantly different semantics.</p>
 <li><code>template &lt;typename R, typename P&gt; explicit TimerChannel::</code><strong><code>TimerChannel</code></strong><code>(std::chrono::duration&lt;R, P&gt; t) noexcept</code></li>
 <li><code>virtual bool TimerChannel::</code><strong><code>is_shared</code></strong><code>() const noexcept</code> <em>= true</em></li>
 <li><code>void TimerChannel::</code><strong><code>flush</code></strong><code>() noexcept</code></li>
-<li><code>time_unit TimerChannel::</code><strong><code>interval</code></strong><code>() const noexcept</code></li>
-<li><code>time_unit TimerChannel::</code><strong><code>next</code></strong><code>() const noexcept</code></li>
+<li><code>duration TimerChannel::</code><strong><code>interval</code></strong><code>() const noexcept</code></li>
+<li><code>duration TimerChannel::</code><strong><code>next</code></strong><code>() const noexcept</code></li>
 </ul>
 </li>
 </ul>
@@ -248,7 +214,7 @@ These are async safe and can be called from any thread.</p>
 <li><code>class</code> <strong><code>ThrottleChannel</code></strong><code>: public EventChannel</code><ul>
 <li><code>template &lt;typename R, typename P&gt; explicit ThrottleChannel::</code><strong><code>ThrottleChannel</code></strong><code>(std::chrono::duration&lt;R, P&gt; t) noexcept</code></li>
 <li><code>virtual bool ThrottleChannel::</code><strong><code>is_shared</code></strong><code>() const noexcept</code> <em>= true</em></li>
-<li><code>time_unit ThrottleChannel::</code><strong><code>interval</code></strong><code>() const noexcept</code></li>
+<li><code>duration ThrottleChannel::</code><strong><code>interval</code></strong><code>() const noexcept</code></li>
 </ul>
 </li>
 </ul>

@@ -24,9 +24,9 @@ namespace RS {
         template <typename F> void insert(F&& f);
         size_t pending() const noexcept { return queued; }
         void clear() noexcept;
-        void wait();
-        template <typename R, typename P> bool wait_for(std::chrono::duration<R, P> timeout);
-        template <typename C, typename D> bool wait_until(std::chrono::time_point<C, D> timeout);
+        void wait() { poll.wait(); }
+        template <typename R, typename P> bool wait_for(std::chrono::duration<R, P> timeout) { return poll.wait_for(timeout); }
+        template <typename C, typename D> bool wait_until(std::chrono::time_point<C, D> timeout) { return poll.wait_until(timeout); }
     private:
         using callback = std::function<void()>;
         struct worker {
@@ -39,15 +39,15 @@ namespace RS {
         std::atomic<size_t> queued;
         std::atomic<size_t> stop;
         std::vector<worker> workers;
+        PollCondition poll;
         static size_t adjust_threads(size_t n) noexcept;
-        static const Backoff& backoff() noexcept;
     };
 
         inline ThreadPool::ThreadPool(size_t threads):
-        hold(0), index(0), queued(0), stop(0), workers(adjust_threads(threads)) {
+        hold(0), index(0), queued(0), stop(0), workers(adjust_threads(threads)), poll([this] { return ! queued; }) {
             for (size_t i = 0, n = workers.size(); i < n; ++i)
                 workers[i].thread = std::thread([i,n,this] {
-                    auto delta = backoff().min();
+                    auto delta = poll.min_interval();
                     while (! stop) {
                         callback call;
                         {
@@ -71,10 +71,10 @@ namespace RS {
                         if (call) {
                             try { call(); } catch (...) {}
                             --queued;
-                            delta = backoff().min();
+                            delta = poll.min_interval();
                         } else {
                             std::this_thread::sleep_for(delta);
-                            delta = std::min(2 * delta, backoff().max());
+                            delta = std::min(2 * delta, poll.max_interval());
                         }
                     }
                 });
@@ -110,29 +110,10 @@ namespace RS {
             --hold;
         }
 
-        inline void ThreadPool::wait() {
-            backoff().wait([this] { return ! queued; });
-        }
-
-        template <typename R, typename P>
-        bool ThreadPool::wait_for(std::chrono::duration<R, P> timeout) {
-            return backoff().wait_for([this] { return ! queued; }, timeout);
-        }
-
-        template <typename C, typename D>
-        bool ThreadPool::wait_until(std::chrono::time_point<C, D> timeout) {
-            return backoff().wait_until([this] { return ! queued; }, timeout);
-        }
-
         inline size_t ThreadPool::adjust_threads(size_t n) noexcept {
             if (n == 0)
                 n = std::thread::hardware_concurrency();
             return n ? n : 1;
-        }
-
-        inline const Backoff& ThreadPool::backoff() noexcept {
-            static const Backoff b;
-            return b;
         }
 
 }

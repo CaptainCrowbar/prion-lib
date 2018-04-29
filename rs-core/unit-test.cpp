@@ -46,7 +46,6 @@ extern void test_core_channel_queue();
 extern void test_core_channel_value();
 extern void test_core_channel_timer();
 extern void test_core_channel_throttle();
-extern void test_core_channel_polled();
 extern void test_core_channel_dispatch();
 extern void test_core_compact_array_construction();
 extern void test_core_compact_array_capacity();
@@ -247,13 +246,15 @@ extern void test_core_thread_pool_timing();
 extern void test_core_time_date_types();
 extern void test_core_time_convert_time_point();
 extern void test_core_time_general_operations();
+extern void test_core_time_system_specific_conversions();
 extern void test_core_time_format_date();
 extern void test_core_time_format_time();
 extern void test_core_time_parse_date();
 extern void test_core_time_parse_time();
-extern void test_core_time_backoff_wait();
+extern void test_core_time_wait_base();
+extern void test_core_time_poll_base();
+extern void test_core_time_poll_condition();
 extern void test_core_time_timer();
-extern void test_core_time_system_specific_conversions();
 extern void test_core_topological_order_algorithm();
 extern void test_core_topological_order_reverse();
 extern void test_core_url_parse_http();
@@ -332,7 +333,6 @@ int main() {
         { "core/channel/value", test_core_channel_value },
         { "core/channel/timer", test_core_channel_timer },
         { "core/channel/throttle", test_core_channel_throttle },
-        { "core/channel/polled", test_core_channel_polled },
         { "core/channel/dispatch", test_core_channel_dispatch },
         { "core/compact-array/construction", test_core_compact_array_construction },
         { "core/compact-array/capacity", test_core_compact_array_capacity },
@@ -533,13 +533,15 @@ int main() {
         { "core/time/date-types", test_core_time_date_types },
         { "core/time/convert-time-point", test_core_time_convert_time_point },
         { "core/time/general-operations", test_core_time_general_operations },
+        { "core/time/system-specific-conversions", test_core_time_system_specific_conversions },
         { "core/time/format-date", test_core_time_format_date },
         { "core/time/format-time", test_core_time_format_time },
         { "core/time/parse-date", test_core_time_parse_date },
         { "core/time/parse-time", test_core_time_parse_time },
-        { "core/time/backoff-wait", test_core_time_backoff_wait },
+        { "core/time/wait-base", test_core_time_wait_base },
+        { "core/time/poll-base", test_core_time_poll_base },
+        { "core/time/poll-condition", test_core_time_poll_condition },
         { "core/time/timer", test_core_time_timer },
-        { "core/time/system-specific-conversions", test_core_time_system_specific_conversions },
         { "core/topological-order/algorithm", test_core_topological_order_algorithm },
         { "core/topological-order/reverse", test_core_topological_order_reverse },
         { "core/url/parse-http", test_core_url_parse_http },

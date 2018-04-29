@@ -32,7 +32,7 @@ namespace RS {
         virtual bool is_async() const noexcept { return false; }
         static Ustring name(int s);
     protected:
-        virtual bool do_wait_for(time_unit t);
+        virtual bool do_wait_for(duration t);
     private:
         #ifdef _XOPEN_SOURCE
             signal_list signals;
@@ -87,9 +87,9 @@ namespace RS {
 
         #if defined(__CYGWIN__) || defined(__APPLE__)
 
-            inline bool PosixSignal::do_wait_for(time_unit t) {
+            inline bool PosixSignal::do_wait_for(duration t) {
                 using namespace std::chrono;
-                static const time_unit delta = milliseconds(10);
+                static const duration delta = milliseconds(10);
                 sigset_t pending;
                 for (;;) {
                     if (! open || ! queue.empty())
@@ -106,11 +106,11 @@ namespace RS {
                         sigwait(&mask, &s);
                         queue.push_back(s);
                         return true;
-                    } else if (t <= time_unit()) {
+                    } else if (t <= duration()) {
                         return false;
                     } else if (t < delta) {
                         std::this_thread::sleep_for(t);
-                        t = time_unit();
+                        t = duration();
                     } else {
                         std::this_thread::sleep_for(delta);
                         t -= delta;
@@ -120,10 +120,10 @@ namespace RS {
 
         #else
 
-            inline bool PosixSignal::do_wait_for(time_unit t) {
+            inline bool PosixSignal::do_wait_for(duration t) {
                 if (! open || ! queue.empty())
                     return true;
-                t = std::max(t, time_unit());
+                t = std::max(t, duration());
                 auto ts = duration_to_timespec(t);
                 int s = sigtimedwait(&newmask, nullptr, &ts);
                 if (! open)
@@ -153,9 +153,9 @@ namespace RS {
             return false;
         }
 
-        inline bool PosixSignal::do_wait_for(time_unit t) {
+        inline bool PosixSignal::do_wait_for(duration t) {
             auto lock = make_lock(mutex);
-            if (t > time_unit())
+            if (t > duration())
                 cv.wait_for(lock, t, [&] { return ! open; });
             return ! open;
         }

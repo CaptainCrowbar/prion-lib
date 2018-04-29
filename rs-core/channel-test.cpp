@@ -18,42 +18,6 @@ using namespace std::literals;
 
 namespace {
 
-    class TestPoll:
-    public MessageChannel<int>,
-    public Polled {
-    public:
-        virtual void close() noexcept {
-            open = false;
-        }
-        virtual bool is_closed() const noexcept {
-            return ! open;
-        }
-        virtual bool poll() {
-            auto lock = make_lock(mutex);
-            return ! open || ! queue.empty();
-        }
-        virtual bool read(int& t) {
-            auto lock = make_lock(mutex);
-            if (! open || queue.empty())
-                return false;
-            t = queue.front();
-            queue.pop_front();
-            return true;
-        }
-        void write(int n) {
-            auto lock = make_lock(mutex);
-            queue.push_back(n);
-        }
-    protected:
-        virtual bool do_wait_for(time_unit t) {
-            return polled_wait(t);
-        }
-    private:
-        std::mutex mutex;
-        std::deque<int> queue;
-        std::atomic<bool> open{true};
-    };
-
     class TestException:
     public std::runtime_error {
     public:
@@ -261,34 +225,6 @@ void test_core_channel_throttle() {
     auto t2 = ReliableClock::now();
     auto ms = duration_cast<milliseconds>(t2 - t1);
     TEST_NEAR_EPSILON(ms.count(), 250, 50);
-
-    TRY(chan.close());
-    TEST(chan.wait_for(10ms));
-    TEST(chan.is_closed());
-
-}
-
-void test_core_channel_polled() {
-
-    TestPoll chan;
-    int i = 0;
-
-    TEST(! chan.poll());
-    TEST(! chan.wait_for(10ms));
-
-    TRY(chan.write(1));
-    TRY(chan.write(2));
-    TRY(chan.write(3));
-    TEST(chan.wait_for(10ms));
-    TEST(chan.read(i));
-    TEST_EQUAL(i, 1);
-    TEST(chan.wait_for(10ms));
-    TEST(chan.read(i));
-    TEST_EQUAL(i, 2);
-    TEST(chan.wait_for(10ms));
-    TEST(chan.read(i));
-    TEST_EQUAL(i, 3);
-    TEST(! chan.wait_for(10ms));
 
     TRY(chan.close());
     TEST(chan.wait_for(10ms));

@@ -6,10 +6,12 @@
 #include <chrono>
 #include <cmath>
 #include <cstdlib>
+#include <functional>
 #include <ratio>
 #include <stdexcept>
 #include <thread>
 #include <type_traits>
+#include <utility>
 
 namespace RS {
 
@@ -105,6 +107,95 @@ namespace RS {
         system_clock::time_point::rep extra(int64_t(fsec * system_clock::time_point::duration(seconds(1)).count()));
         return system_clock::from_time_t(t) + system_clock::time_point::duration(extra);
     }
+
+    // System specific time and date conversions
+
+    template <typename R, typename P>
+    timespec duration_to_timespec(const std::chrono::duration<R, P>& d) noexcept {
+        using namespace RS::Literals;
+        using namespace std::chrono;
+        static constexpr int64_t G = 1'000'000'000ll;
+        int64_t nsec = duration_cast<nanoseconds>(d).count();
+        return {time_t(nsec / G), long(nsec % G)};
+    }
+
+    template <typename R, typename P>
+    timeval duration_to_timeval(const std::chrono::duration<R, P>& d) noexcept {
+        using namespace RS::Literals;
+        using namespace std::chrono;
+        #ifdef _XOPEN_SOURCE
+            using sec_type = time_t;
+            using usec_type = suseconds_t;
+        #else
+            using sec_type = long;
+            using usec_type = long;
+        #endif
+        static constexpr int64_t M = 1'000'000;
+        int64_t usec = duration_cast<microseconds>(d).count();
+        return {sec_type(usec / M), usec_type(usec % M)};
+    }
+
+    inline timespec timepoint_to_timespec(const std::chrono::system_clock::time_point& tp) noexcept {
+        using namespace std::chrono;
+        return duration_to_timespec(tp - system_clock::time_point());
+    }
+
+    inline timeval timepoint_to_timeval(const std::chrono::system_clock::time_point& tp) noexcept {
+        using namespace std::chrono;
+        return duration_to_timeval(tp - system_clock::time_point());
+    }
+
+    template <typename R, typename P>
+    void timespec_to_duration(const timespec& ts, std::chrono::duration<R, P>& d) noexcept {
+        using namespace std::chrono;
+        using D = duration<R, P>;
+        d = duration_cast<D>(seconds(ts.tv_sec)) + duration_cast<D>(nanoseconds(ts.tv_nsec));
+    }
+
+    template <typename R, typename P>
+    void timeval_to_duration(const timeval& tv, std::chrono::duration<R, P>& d) noexcept {
+        using namespace std::chrono;
+        using D = duration<R, P>;
+        d = duration_cast<D>(seconds(tv.tv_sec)) + duration_cast<D>(microseconds(tv.tv_usec));
+    }
+
+    inline std::chrono::system_clock::time_point timespec_to_timepoint(const timespec& ts) noexcept {
+        using namespace std::chrono;
+        system_clock::duration d;
+        timespec_to_duration(ts, d);
+        return system_clock::time_point() + d;
+    }
+
+    inline std::chrono::system_clock::time_point timeval_to_timepoint(const timeval& tv) noexcept {
+        using namespace std::chrono;
+        system_clock::duration d;
+        timeval_to_duration(tv, d);
+        return system_clock::time_point() + d;
+    }
+
+    #ifdef _WIN32
+
+        inline std::chrono::system_clock::time_point filetime_to_timepoint(const FILETIME& ft) noexcept {
+            using namespace std::chrono;
+            static constexpr int64_t filetime_freq = 10'000'000;        // FILETIME ticks (100 ns) per second
+            static constexpr int64_t windows_epoch = 11'644'473'600ll;  // Windows epoch (1601) to Unix epoch (1970) in seconds
+            int64_t ticks = (int64_t(ft.dwHighDateTime) << 32) + int64_t(ft.dwLowDateTime);
+            int64_t sec = ticks / filetime_freq - windows_epoch;
+            int64_t nsec = 100ll * (ticks % filetime_freq);
+            return system_clock::from_time_t(time_t(sec)) + duration_cast<system_clock::duration>(nanoseconds(nsec));
+        }
+
+        inline FILETIME timepoint_to_filetime(const std::chrono::system_clock::time_point& tp) noexcept {
+            using namespace std::chrono;
+            static constexpr uint64_t filetime_freq = 10'000'000;        // FILETIME ticks (100 ns) per second
+            static constexpr uint64_t windows_epoch = 11'644'473'600ll;  // Windows epoch (1601) to Unix epoch (1970) in seconds
+            auto unix_time = tp - system_clock::from_time_t(0);
+            uint64_t nsec = duration_cast<nanoseconds>(unix_time).count();
+            uint64_t ticks = nsec / 100ll + filetime_freq * windows_epoch;
+            return {uint32_t(ticks & 0xfffffffful), uint32_t(ticks >> 32)};
+        }
+
+    #endif
 
     // Time and date formatting
 
@@ -343,61 +434,80 @@ namespace RS {
         return time;
     }
 
-    // Timing utilities
+    // Timing base classes
 
-    class Backoff {
+    class Wait {
     public:
-        Backoff() = default;
-        template <typename R1, typename P1, typename R2, typename P2> Backoff(std::chrono::duration<R1, P1> min_interval, std::chrono::duration<R2, P2> max_interval) noexcept;
-        auto min() const noexcept { return min_wait; }
-        auto max() const noexcept { return max_wait; }
-        template <typename Predicate> void wait(Predicate pred) const;
-        template <typename Predicate, typename R, typename P> bool wait_for(Predicate pred, std::chrono::duration<R, P> timeout) const;
-        template <typename Predicate, typename C, typename D> bool wait_until(Predicate pred, std::chrono::time_point<C, D> timeout) const;
+        using clock_type = ReliableClock;
+        using duration = clock_type::duration;
+        using time_point = clock_type::time_point;
+        virtual ~Wait() noexcept = 0;
+        virtual bool is_shared() const noexcept { return false; }
+        virtual bool poll() { return do_wait_for({}); }
+        virtual void wait() { while (! do_wait_for(std::chrono::seconds(1))) {} }
+        template <typename R, typename P> bool wait_for(std::chrono::duration<R, P> t) { return do_wait_for(std::chrono::duration_cast<duration>(t)); }
+        template <typename C, typename D> bool wait_until(std::chrono::time_point<C, D> t) { return do_wait_until(convert_time_point<time_point>(t)); }
+    protected:
+        Wait() noexcept {}
+        virtual bool do_wait_for(duration t) { return do_wait_until(clock_type::now() + t); }
+        virtual bool do_wait_until(time_point t) { return do_wait_for(t - clock_type::now()); }
+    };
+
+        inline Wait::~Wait() noexcept {}
+
+    class PollWait:
+    public Wait {
+    public:
+        virtual bool poll() override = 0;
+        virtual void wait() override;
+        duration min_interval() const noexcept { return min_wait; }
+        duration max_interval() const noexcept { return max_wait; }
+        template <typename R, typename P> void set_interval(std::chrono::duration<R, P> t) { set_interval(t, t); }
+        template <typename R1, typename P1, typename R2, typename P2> void set_interval(std::chrono::duration<R1, P1> t1, std::chrono::duration<R2, P2> t2);
+    protected:
+        PollWait() noexcept {}
+        virtual bool do_wait_until(time_point t) final;
     private:
-        using duration = std::chrono::nanoseconds;
         duration min_wait = std::chrono::microseconds(10);
         duration max_wait = std::chrono::milliseconds(10);
     };
 
+        inline void PollWait::wait() {
+            duration delta = min_wait;
+            while (! poll()) {
+                std::this_thread::sleep_for(delta);
+                delta = std::min(2 * delta, max_wait);
+            }
+        }
+
         template <typename R1, typename P1, typename R2, typename P2>
-        Backoff::Backoff(std::chrono::duration<R1, P1> min_interval, std::chrono::duration<R2, P2> max_interval) noexcept {
-            using namespace std::chrono;
-            min_wait = duration_cast<duration>(min_interval);
-            max_wait = duration_cast<duration>(max_interval);
+        void PollWait::set_interval(std::chrono::duration<R1, P1> t1, std::chrono::duration<R2, P2> t2) {
+            min_wait = std::max(std::chrono::duration_cast<duration>(t1), duration(1));
+            max_wait = std::max(std::chrono::duration_cast<duration>(t2), min_wait);
         }
 
-        template <typename Predicate>
-        void Backoff::wait(Predicate pred) const {
+        inline bool PollWait::do_wait_until(time_point t) {
             duration delta = min_wait;
-            while (! pred()) {
-                std::this_thread::sleep_for(delta);
-                delta = std::min(2 * delta, max_wait);
-            }
-        }
-
-        template <typename Predicate, typename R, typename P>
-        bool Backoff::wait_for(Predicate pred, std::chrono::duration<R, P> timeout) const {
-            return wait_until(pred, ReliableClock::now() + timeout);
-        }
-
-        template <typename Predicate, typename C, typename D>
-        bool Backoff::wait_until(Predicate pred, std::chrono::time_point<C, D> timeout) const {
-            using namespace std::chrono;
-            duration delta = min_wait;
-            auto deadline = time_point_cast<duration>(timeout);
-            for (;;) {
-                if (pred())
-                    return true;
-                auto now = time_point_cast<duration>(C::now());
-                if (now >= deadline)
+            while (! poll()) {
+                duration remain = t - clock_type::now();
+                if (remain <= duration())
                     return false;
-                auto remain = deadline - now;
-                delta = std::min(delta, remain);
-                std::this_thread::sleep_for(delta);
+                std::this_thread::sleep_for(std::min(delta, remain));
                 delta = std::min(2 * delta, max_wait);
             }
+            return true;
         }
+
+    // Timing utilities
+
+    class PollCondition:
+    public PollWait {
+    public:
+        template <typename Predicate> explicit PollCondition(Predicate p): pred(p) {}
+        virtual bool poll() final { return pred(); }
+    private:
+        std::function<bool()> pred;
+    };
 
     class Stopwatch {
     public:
@@ -442,94 +552,5 @@ namespace RS {
     private:
         ReliableClock::time_point start;
     };
-
-    // System specific time and date conversions
-
-    template <typename R, typename P>
-    timespec duration_to_timespec(const std::chrono::duration<R, P>& d) noexcept {
-        using namespace RS::Literals;
-        using namespace std::chrono;
-        static constexpr int64_t G = 1'000'000'000ll;
-        int64_t nsec = duration_cast<nanoseconds>(d).count();
-        return {time_t(nsec / G), long(nsec % G)};
-    }
-
-    template <typename R, typename P>
-    timeval duration_to_timeval(const std::chrono::duration<R, P>& d) noexcept {
-        using namespace RS::Literals;
-        using namespace std::chrono;
-        #ifdef _XOPEN_SOURCE
-            using sec_type = time_t;
-            using usec_type = suseconds_t;
-        #else
-            using sec_type = long;
-            using usec_type = long;
-        #endif
-        static constexpr int64_t M = 1'000'000;
-        int64_t usec = duration_cast<microseconds>(d).count();
-        return {sec_type(usec / M), usec_type(usec % M)};
-    }
-
-    inline timespec timepoint_to_timespec(const std::chrono::system_clock::time_point& tp) noexcept {
-        using namespace std::chrono;
-        return duration_to_timespec(tp - system_clock::time_point());
-    }
-
-    inline timeval timepoint_to_timeval(const std::chrono::system_clock::time_point& tp) noexcept {
-        using namespace std::chrono;
-        return duration_to_timeval(tp - system_clock::time_point());
-    }
-
-    template <typename R, typename P>
-    void timespec_to_duration(const timespec& ts, std::chrono::duration<R, P>& d) noexcept {
-        using namespace std::chrono;
-        using D = duration<R, P>;
-        d = duration_cast<D>(seconds(ts.tv_sec)) + duration_cast<D>(nanoseconds(ts.tv_nsec));
-    }
-
-    template <typename R, typename P>
-    void timeval_to_duration(const timeval& tv, std::chrono::duration<R, P>& d) noexcept {
-        using namespace std::chrono;
-        using D = duration<R, P>;
-        d = duration_cast<D>(seconds(tv.tv_sec)) + duration_cast<D>(microseconds(tv.tv_usec));
-    }
-
-    inline std::chrono::system_clock::time_point timespec_to_timepoint(const timespec& ts) noexcept {
-        using namespace std::chrono;
-        system_clock::duration d;
-        timespec_to_duration(ts, d);
-        return system_clock::time_point() + d;
-    }
-
-    inline std::chrono::system_clock::time_point timeval_to_timepoint(const timeval& tv) noexcept {
-        using namespace std::chrono;
-        system_clock::duration d;
-        timeval_to_duration(tv, d);
-        return system_clock::time_point() + d;
-    }
-
-    #ifdef _WIN32
-
-        inline std::chrono::system_clock::time_point filetime_to_timepoint(const FILETIME& ft) noexcept {
-            using namespace std::chrono;
-            static constexpr int64_t filetime_freq = 10'000'000;        // FILETIME ticks (100 ns) per second
-            static constexpr int64_t windows_epoch = 11'644'473'600ll;  // Windows epoch (1601) to Unix epoch (1970) in seconds
-            int64_t ticks = (int64_t(ft.dwHighDateTime) << 32) + int64_t(ft.dwLowDateTime);
-            int64_t sec = ticks / filetime_freq - windows_epoch;
-            int64_t nsec = 100ll * (ticks % filetime_freq);
-            return system_clock::from_time_t(time_t(sec)) + duration_cast<system_clock::duration>(nanoseconds(nsec));
-        }
-
-        inline FILETIME timepoint_to_filetime(const std::chrono::system_clock::time_point& tp) noexcept {
-            using namespace std::chrono;
-            static constexpr uint64_t filetime_freq = 10'000'000;        // FILETIME ticks (100 ns) per second
-            static constexpr uint64_t windows_epoch = 11'644'473'600ll;  // Windows epoch (1601) to Unix epoch (1970) in seconds
-            auto unix_time = tp - system_clock::from_time_t(0);
-            uint64_t nsec = duration_cast<nanoseconds>(unix_time).count();
-            uint64_t ticks = nsec / 100ll + filetime_freq * windows_epoch;
-            return {uint32_t(ticks & 0xfffffffful), uint32_t(ticks >> 32)};
-        }
-
-    #endif
 
 }

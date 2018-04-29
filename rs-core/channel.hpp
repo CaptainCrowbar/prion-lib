@@ -25,7 +25,6 @@ namespace RS {
 
     class BufferChannel;
     class Channel;
-    class Dispatch;
     class EventChannel;
     class FalseChannel;
     template <typename T> class GeneratorChannel;
@@ -37,11 +36,18 @@ namespace RS {
     class TrueChannel;
     template <typename T> class ValueChannel;
 
-    // Channel base classes
+    // Channel base class
 
     class Channel:
     public Wait {
     public:
+        enum class mode { async, sync };
+        enum class reason { closed, empty, error };
+        struct dispatch_result {
+            Channel* channel = nullptr;
+            std::exception_ptr error;
+            reason why = reason::empty;
+        };
         virtual ~Channel() noexcept { drop(); }
         Channel(const Channel&) = delete;
         Channel(Channel&& c) = default;
@@ -50,21 +56,154 @@ namespace RS {
         virtual void close() noexcept = 0;
         virtual bool is_closed() const noexcept = 0;
         virtual bool is_async() const noexcept { return true; }
-    private:
-        friend class EventChannel;
-        template <typename T> friend class MessageChannel;
-        friend class StreamChannel;
+        void drop() noexcept { global_tasks().erase(this); }
+        static bool empty_dispatch() noexcept { return global_tasks().empty(); }
+        static dispatch_result run_dispatch() noexcept;
+        static void stop_dispatch() noexcept;
+    protected:
+        using dispatch_callback = std::function<void()>;
         Channel() = default;
-        void drop() noexcept;
+        static void global_dispatch(Channel& chan, mode m, dispatch_callback call);
+    private:
+        struct dispatch_task {
+            mode runmode;
+            dispatch_callback call;
+            std::future<void> thread;
+            std::atomic<bool> done;
+            std::exception_ptr error;
+        };
+        using dispatch_map = std::map<Channel*, dispatch_task>;
+        static dispatch_map& global_tasks() noexcept;
     };
+
+        inline std::ostream& operator<<(std::ostream& out, Channel::mode m) {
+            switch (m) {
+                case Channel::mode::sync:   out << "sync"; break;
+                case Channel::mode::async:  out << "async"; break;
+                default:                    out << int(m); break;
+            }
+            return out;
+        }
+
+        inline std::ostream& operator<<(std::ostream& out, Channel::reason r) {
+            switch (r) {
+                case Channel::reason::empty:   out << "empty"; break;
+                case Channel::reason::closed:  out << "closed"; break;
+                case Channel::reason::error:   out << "error"; break;
+                default:                       out << int(r); break;
+            }
+            return out;
+        }
+
+        inline Channel::dispatch_result Channel::run_dispatch() noexcept {
+            using namespace std::chrono;
+            using namespace std::literals;
+            static constexpr duration min_interval = 1us;
+            static constexpr duration max_interval = 1ms;
+            dispatch_result rc;
+            if (global_tasks().empty())
+                return rc;
+            auto guard = scope_exit([&] { if (rc.channel) rc.channel->drop(); });
+            int waits = 0;
+            auto interval = min_interval;
+            for (;;) {
+                int calls = 0;
+                for (auto& t: global_tasks()) {
+                    rc.channel = t.first;
+                    if (t.second.runmode == Channel::mode::sync) {
+                        try {
+                            if (t.first->poll()) {
+                                if (t.first->is_closed()) {
+                                    rc.why = reason::closed;
+                                    return rc;
+                                }
+                                t.second.call();
+                                ++calls;
+                            }
+                        }
+                        catch (...) {
+                            rc.error = std::current_exception();
+                            rc.why = reason::error;
+                            return rc;
+                        }
+                    } else if (t.second.done) {
+                        rc.error = t.second.error;
+                        rc.why = rc.error ? reason::error : reason::closed;
+                        return rc;
+                    }
+                }
+                if (calls == 0) {
+                    if (++waits == 1)
+                        interval = min_interval;
+                    else
+                        interval = std::min(2 * interval, max_interval);
+                    std::this_thread::sleep_for(interval);
+                } else {
+                    waits = 0;
+                    std::this_thread::yield();
+                }
+            }
+        }
+
+        inline void Channel::stop_dispatch() noexcept {
+            for (auto& t: global_tasks())
+                t.first->close();
+            while (! global_tasks().empty())
+                run_dispatch();
+        }
+
+        inline void Channel::global_dispatch(Channel& chan, mode m, dispatch_callback call) {
+            using namespace std::chrono;
+            if (! chan.is_shared() && global_tasks().count(&chan))
+                throw std::invalid_argument("Channel is not shareable");
+            if (m != Channel::mode::sync && m != Channel::mode::async)
+                throw std::invalid_argument("Invalid dispatch mode");
+            if (m == Channel::mode::async && ! chan.is_async())
+                throw std::invalid_argument("Invalid dispatch mode for channel");
+            auto& task = global_tasks()[&chan];
+            task.runmode = m;
+            task.call = call;
+            if (task.runmode == Channel::mode::async) {
+                auto payload = [&] () noexcept {
+                    try {
+                        for (;;) {
+                            if (! chan.wait_for(seconds(1)))
+                                continue;
+                            if (chan.is_closed())
+                                break;
+                            task.call();
+                        }
+                    }
+                    catch (...) {
+                        task.error = std::current_exception();
+                    }
+                    task.done = true;
+                };
+                task.thread = std::async(std::launch::async, payload);
+            }
+        }
+
+        inline Channel::dispatch_map& Channel::global_tasks() noexcept {
+            static dispatch_map map;
+            return map;
+        }
+
+    // Intermediate base classes
 
     class EventChannel:
     public Channel {
     public:
         using callback = std::function<void()>;
+        void dispatch(mode m, callback func);
     protected:
         EventChannel() = default;
     };
+
+        inline void EventChannel::dispatch(mode m, callback func) {
+            if (! func)
+                throw std::invalid_argument("Channel callback is null");
+            global_dispatch(*this, m, func);
+        }
 
     template <typename T>
     class MessageChannel:
@@ -73,10 +212,22 @@ namespace RS {
         using callback = std::function<void(const T&)>;
         using value_type = T;
         virtual bool read(T& t) = 0;
+        void dispatch(mode m, callback func);
         Optional<T> read_opt();
     protected:
         MessageChannel() = default;
     };
+
+        template <typename T>
+        void MessageChannel<T>::dispatch(mode m, typename MessageChannel::callback func) {
+            if (! func)
+                throw std::invalid_argument("Channel callback is null");
+            auto call = [this,func,t=T()] () mutable {
+                if (read(t))
+                    func(t);
+            };
+            global_dispatch(*this, m, call);
+        }
 
         template <typename T>
         Optional<T> MessageChannel<T>::read_opt() {
@@ -94,15 +245,26 @@ namespace RS {
         static constexpr size_t default_buffer = 16384;
         virtual size_t read(void* dst, size_t maxlen) = 0;
         size_t buffer() const noexcept { return bytes; }
-        void set_buffer(size_t n) noexcept { bytes = n; }
+        void dispatch(mode m, callback func);
         std::string read_all();
         std::string read_str();
         size_t read_to(std::string& dst);
+        void set_buffer(size_t n) noexcept { bytes = n; }
     protected:
         StreamChannel() = default;
     private:
         size_t bytes = default_buffer;
     };
+
+        inline void StreamChannel::dispatch(mode m, callback func) {
+            if (! func)
+                throw std::invalid_argument("Channel callback is null");
+            auto call = [this,func,s=std::string()] () mutable {
+                if (read_to(s))
+                    func(s);
+            };
+            global_dispatch(*this, m, call);
+        }
 
         inline std::string StreamChannel::read_all() {
             using namespace std::chrono;
@@ -555,185 +717,6 @@ namespace RS {
             if (open && ofs == buf.size() && t > duration())
                 cv.wait_for(lock, t, [&] { return ! open || ofs < buf.size(); });
             return ! open || ofs < buf.size();
-        }
-
-    // Global dispatch queue
-
-    class Dispatch {
-    public:
-        RS_NO_INSTANCE(Dispatch);
-        enum class mode { sync = 1, async };
-        enum class reason { empty = 1, closed, error };
-        struct result_type {
-            Channel* channel = nullptr;
-            std::exception_ptr error;
-            void rethrow() const { if (error) std::rethrow_exception(error); }
-            reason why() const noexcept { return error ? reason::error : channel ? reason::closed : reason::empty; }
-        };
-        template <typename F> static void add(EventChannel& chan, mode m, F func);
-        template <typename T, typename F> static void add(MessageChannel<T>& chan, mode m, F func);
-        template <typename F> static void add(StreamChannel& chan, mode m, F func);
-        static void drop(Channel& chan) noexcept { tasks_ref().erase(&chan); }
-        static bool empty() noexcept { return tasks_ref().empty(); }
-        static result_type run() noexcept;
-        static void stop() noexcept;
-    private:
-        using callback = std::function<void()>;
-        struct task_info {
-            mode runmode;
-            callback call;
-            std::future<void> thread;
-            std::atomic<bool> done;
-            std::exception_ptr error;
-        };
-        using task_map = std::map<Channel*, task_info>;
-        static void add_task(Channel& chan, mode m, callback call);
-        static task_map& tasks_ref() noexcept;
-    };
-
-        inline std::ostream& operator<<(std::ostream& out, Dispatch::mode dm) {
-            switch (dm) {
-                case Dispatch::mode::sync:   out << "sync"; break;
-                case Dispatch::mode::async:  out << "async"; break;
-                default:                     out << int(dm); break;
-            }
-            return out;
-        }
-
-        inline std::ostream& operator<<(std::ostream& out, Dispatch::reason dr) {
-            switch (dr) {
-                case Dispatch::reason::empty:   out << "empty"; break;
-                case Dispatch::reason::closed:  out << "closed"; break;
-                case Dispatch::reason::error:   out << "error"; break;
-                default:                        out << int(dr); break;
-            }
-            return out;
-        }
-
-        template <typename F>
-        void Dispatch::add(EventChannel& chan, mode m, F func) {
-            EventChannel::callback handler(func);
-            if (handler)
-                add_task(chan, m, handler);
-        }
-
-        template <typename T, typename F>
-        void Dispatch::add(MessageChannel<T>& chan, mode m, F func) {
-            typename MessageChannel<T>::callback handler(func);
-            if (! handler)
-                return;
-            auto call = [&chan,handler,t=T()] () mutable {
-                if (chan.read(t))
-                    handler(t);
-            };
-            add_task(chan, m, call);
-        }
-
-        template <typename F>
-        void Dispatch::add(StreamChannel& chan, mode m, F func) {
-            StreamChannel::callback handler(func);
-            if (! handler)
-                return;
-            auto call = [&chan,handler,s=std::string()] () mutable {
-                if (chan.read_to(s))
-                    handler(s);
-            };
-            add_task(chan, m, call);
-        }
-
-        inline Dispatch::result_type Dispatch::run() noexcept {
-            using namespace std::chrono;
-            using namespace std::literals;
-            static constexpr Wait::duration min_interval = 1us;
-            static constexpr Wait::duration max_interval = 1ms;
-            result_type rc;
-            if (tasks_ref().empty())
-                return rc;
-            auto guard = scope_exit([&] { if (rc.channel) drop(*rc.channel); });
-            int waits = 0;
-            auto interval = min_interval;
-            for (;;) {
-                int calls = 0;
-                for (auto& t: tasks_ref()) {
-                    rc.channel = t.first;
-                    if (t.second.runmode == Dispatch::mode::sync) {
-                        try {
-                            if (t.first->poll()) {
-                                if (t.first->is_closed())
-                                    return rc;
-                                t.second.call();
-                                ++calls;
-                            }
-                        }
-                        catch (...) {
-                            rc.error = std::current_exception();
-                            return rc;
-                        }
-                    } else if (t.second.done) {
-                        rc.error = t.second.error;
-                        return rc;
-                    }
-                }
-                if (calls == 0) {
-                    if (++waits == 1)
-                        interval = min_interval;
-                    else
-                        interval = std::min(2 * interval, max_interval);
-                    std::this_thread::sleep_for(interval);
-                } else {
-                    waits = 0;
-                    std::this_thread::yield();
-                }
-            }
-        }
-
-        inline void Dispatch::stop() noexcept {
-            for (auto& t: tasks_ref())
-                t.first->close();
-            while (! tasks_ref().empty())
-                run();
-        }
-
-        inline void Dispatch::add_task(Channel& chan, mode m, callback call) {
-            using namespace std::chrono;
-            if (! chan.is_shared() && tasks_ref().count(&chan))
-                throw std::invalid_argument("Dispatch channel is not shareable");
-            if (m != Dispatch::mode::sync && m != Dispatch::mode::async)
-                throw std::invalid_argument("Invalid dispatch mode");
-            if (m == Dispatch::mode::async && ! chan.is_async())
-                throw std::invalid_argument("Invalid dispatch mode for channel");
-            if (! call)
-                throw std::invalid_argument("Dispatch callback is null");
-            auto& task = tasks_ref()[&chan];
-            task.runmode = m;
-            task.call = call;
-            if (task.runmode == Dispatch::mode::async) {
-                auto payload = [&] () noexcept {
-                    try {
-                        for (;;) {
-                            if (! chan.wait_for(seconds(1)))
-                                continue;
-                            if (chan.is_closed())
-                                break;
-                            task.call();
-                        }
-                    }
-                    catch (...) {
-                        task.error = std::current_exception();
-                    }
-                    task.done = true;
-                };
-                task.thread = std::async(std::launch::async, payload);
-            }
-        }
-
-        inline Dispatch::task_map& Dispatch::tasks_ref() noexcept {
-            static task_map map;
-            return map;
-        }
-
-        inline void Channel::drop() noexcept {
-            Dispatch::drop(*this);
         }
 
 }

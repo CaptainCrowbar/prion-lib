@@ -22,29 +22,32 @@ By Ross Smith
         * `template <typename T> class` **`ValueChannel`**`: public MessageChannel<T>`
     * `[abstract] class` **`StreamChannel`**`: public Channel`
         * `class` **`BufferChannel`**`: public StreamChannel`
-* `class` **`Dispatch`**
 
-## Channel base classes ##
-
-### Class Channel ###
+## Channel base class ##
 
 * `class` **`Channel`**`: public Wait`
-    * `virtual Channel::`**`~Channel`**`() noexcept`
-    * `Channel::`**`Channel`**`(Channel&& c) noexcept`
-    * `Channel& Channel::`**`operator=`**`(Channel&& c) noexcept`
-    * `virtual void Channel::`**`close`**`() noexcept = 0`
-    * `virtual bool Channel::`**`is_closed`**`() const noexcept = 0`
-    * `virtual bool Channel::`**`is_async`**`() const noexcept` _= true_
 
 The base class for all readable message channels. All concrete channel classes
 must derive from one of the three intermediate classes below, not directly
-from Channel. Derived classes need to implement at least `close()`,
-`is_closed()`, and one of the `do_wait_*()` functions from
-[`Wait`](time.html); `close()` must be async safe and idempotent.
+from Channel. Functions for handling global message dispatch are static
+methods of this class.
+
+### Channel instance methods ###
+
+* `virtual Channel::`**`~Channel`**`() noexcept`
+* `Channel::`**`Channel`**`(Channel&& c) noexcept`
+* `Channel& Channel::`**`operator=`**`(Channel&& c) noexcept`
+* `virtual void Channel::`**`close`**`() noexcept = 0`
+* `virtual bool Channel::`**`is_closed`**`() const noexcept = 0`
+* `virtual bool Channel::`**`is_async`**`() const noexcept` _= true_
+
+Derived classes need to implement at least `close()`, `is_closed()`, and one
+of the `do_wait_*()` functions from [`Wait`](time.html); `close()` must be
+async safe and idempotent.
 
 If `is_async()` is false, the channel can only be used in a synchronous
-dispatch handler (see `Dispatch` below), usually because it calls an
-underlying native API that is only intended to be used from the main thread.
+dispatch handler, usually because it calls an underlying native API that is
+only intended to be used from the main thread.
 
 If `is_shared()` (from `Wait`) is true, it is safe to call the wait functions
 (and `read()` where relevant) from multiple threads at the same time, provided
@@ -55,22 +58,90 @@ The channel base classes implement move operations in case a derived class
 needs them, but derived channel types are usually not movable. Channel classes
 are never copyable.
 
+### Global dispatch methods ###
+
+* `enum class Channel::`**`mode`**
+    * `Channel::mode::`**`async`**
+    * `Channel::mode::`**`sync`**
+* `enum class Channel::`**`reason`**
+    * `Channel::reason::`**`closed`**
+    * `Channel::reason::`**`empty`**
+    * `Channel::reason::`**`error`**
+* `struct Channel::`**`dispatch_result`**
+    * `Channel* dispatch_result::`**`channel`**
+    * `std::exception_ptr dispatch_result::`**`error`**
+    * `Channel::reason dispatch_result::`**`why`**
+* `void Channel::`**`drop`**`() noexcept`
+* `static bool Channel::`**`empty_dispatch`**`() noexcept`
+* `static dispatch_result Channel::`**`run_dispatch`**`() noexcept`
+* `static void Channel::`**`stop_dispatch`**`() noexcept`
+
+In addition to the functions listed above, each of the intermediate base
+classes below has a `dispatch()` function that takes a callback function and a
+dispatch mode flag (the callback function type varies with the channel type,
+so there is no common virtual dispatch function in the `Channel` class). Add
+channels and their associated callback functions to the queue using their
+respective `dispatch()` functions, and then call `run_dispatch()` to start the
+dispatch loop. Behaviour is undefined if `run_dispatch()` is called from
+multiple threads at the same time; normally it should only be called from the
+main thread.
+
+Dispatch functions must only be called synchronously (i.e. not from inside an
+asynchronous callback function). Channels can safely be destroyed while in a
+dispatch set (the dispatch queue will notice this and silently drop the
+channel), provided this is done synchronously.
+
+The `dispatch()` functions start a synchronous or asynchronous task reading
+from the channel. Asynchronous handlers are started immediately in a separate
+thread; synchronous handlers will be executed when `run_dispatch()` is called.
+A `dispatch()` function will throw `std::invalid_argument` if any of these
+conditions is true:
+
+* The callback function is null.
+* The mode flag is not one of the `Channel::mode` enumeration values.
+* The channel is synchronous (`Channel::is_async()` is false), but the mode is `Channel::mode::async`.
+* The same channel is added more than once, and the channel is not shareable (`Channel::is_shared()` is false).
+
+The `drop()` function removes a channel from the dispatch set (without closing
+it). If an event from this channel is currently being handled asynchronously,
+`drop()` will block until it finishes. Behaviour is undefined if `drop()` is
+called from inside that channel's callback.
+
+The `run_dispatch()` function runs until a channel is closed or a callback
+function throws an exception; it returns immediately if the dispatch set is
+empty. Asynchronous message handlers will continue to run in other threads
+regardless of whether the dispatch thread is currently calling
+`run_dispatch()`.
+
+The `dispatch_result` structure returned from `run_dispatch()` indicates why
+the dispatch loop was stopped:
+
+* `Channel::reason::`**`closed`** - A channel was closed; `channel` points to the closed channel, `error` is null.
+* `Channel::reason::`**`empty`** - The dispatch set was empty when `run_dispatch()` was called; `channel` and `error` are null.
+* `Channel::reason::`**`error`** - A message handler callback threw an exception; `channel` indicates which channel, `error` holds the exception.
+
+The `empty_dispatch()` function returns true if the dispatch list is currently
+empty. The `stop_dispatch()` function closes all channels and waits for any
+currently running event handlers to finish.
+
+## Intermediate base classes ##
+
 ### Class EventChannel ###
 
 * `class` **`EventChannel`**`: public Channel`
     * `using EventChannel::`**`callback`** `= std::function<void()>`
+    * `void EventChannel::`**`dispatch`**`(mode m, callback func)`
     * `protected EventChannel::`**`EventChannel`**`()`
 
 Intermediate base class for event channels (channels that carry no information
-beyond the fact that an event has happened). The `callback` function type is
-the callback type expected to be passed to `Dispatch::add()` (see below) when
-an event channel is added to the dispatch set.
+beyond the fact that an event has happened).
 
 ### Class MessageChannel ###
 
 * `template <typename T> class` **`MessageChannel`**`: public Channel`
     * `using MessageChannel::`**`callback`** `= std::function<void(const T&)>`
     * `using MessageChannel::`**`value_type`** `= T`
+    * `void MessageChannel::`**`dispatch`**`(mode m, callback func)`
     * `virtual bool MessageChannel::`**`read`**`(T& t) = 0`
     * `Optional<T> MessageChannel::`**`read_opt`**`()`
     * `protected MessageChannel::`**`MessageChannel`**`()`
@@ -81,7 +152,7 @@ function will be applied to each incoming message object. The message type `T`
 must be at least movable or copyable; if `read_opt()` is called it must also
 be default constructible. Derived classes may impose additional restrictions.
 
-A message channel type should implement `read()` as well as the usual
+A concrete message channel class must implement `read()` as well as the usual
 `Channel` members. The `read()` function should return true on a successful
 read, false if the channel is closed. It will normally be called only after a
 successful wait; if no data is immediately available, `read()` may block or
@@ -98,10 +169,11 @@ or an empty value on failure.
     * `static constexpr size_t StreamChannel::`**`default_buffer`** `= 16384`
     * `virtual size_t StreamChannel::`**`read`**`(void* dst, size_t maxlen) = 0`
     * `size_t StreamChannel::`**`buffer`**`() const noexcept`
-    * `void StreamChannel::`**`set_buffer`**`(size_t n) noexcept`
+    * `void StreamChannel::`**`dispatch`**`(mode m, callback func)`
     * `std::string StreamChannel::`**`read_all`**`()`
     * `std::string StreamChannel::`**`read_str`**`()`
     * `size_t StreamChannel::`**`read_to`**`(std::string& dst)`
+    * `void StreamChannel::`**`set_buffer`**`(size_t n) noexcept`
     * `protected StreamChannel::`**`StreamChannel`**`()`
 
 Intermediate base class for byte stream channels. When a stream channel is
@@ -112,7 +184,7 @@ before each callback. Data will never be removed from the buffer by the
 dispatch manager; the callback function is responsible for removing any data
 it has consumed.
 
-Stream channels should implement `read()` as well as the usual `Channel`
+Stream channels must implement `read()` as well as the usual `Channel`
 members. The `read()` function should return the number of bytes read on
 success, or zero if the channel is closed; if no data is available it may
 block or return zero. If `dst` is null or `maxlen` is zero, `read()` should
@@ -221,67 +293,3 @@ comparable.
 A byte stream buffer channel. Message boundaries are not preserved; calling
 `read()` will extract all pending data up to the length limit, regardless of
 whether it was written as a single block or multiple smaller blocks.
-
-## Dispatch control class ##
-
-* `class` **`Dispatch`**
-    * `enum class Dispatch::`**`mode`**
-        * `Dispatch::mode::`**`sync`**
-        * `Dispatch::mode::`**`async`**
-    * `enum class Dispatch::`**`reason`**
-        * `Dispatch::reason::`**`empty`** _- The dispatch set is empty_
-        * `Dispatch::reason::`**`closed`** _- A channel was closed_
-        * `Dispatch::reason::`**`error`** _- A message handler callback threw an exception_
-    * `struct Dispatch::`**`result_type`**
-        * `Channel* result_type::`**`channel`** `= nullptr`
-        * `std::exception_ptr result_type::`**`error`** `= nullptr`
-        * `void result_type::`**`rethrow`**`() const`
-        * `Dispatch::reason result_type::`**`why`**`() const noexcept`
-    * `template <typename F> static void Dispatch::`**`add`**`(EventChannel& chan, mode m, F func)`
-    * `template <typename T, typename F> static void Dispatch::`**`add`**`(MessageChannel<T>& chan, mode m, F func)`
-    * `template <typename F> static void Dispatch::`**`add`**`(StreamChannel& chan, mode m, F func)`
-    * `static void Dispatch::`**`drop`**`(Channel& chan) noexcept`
-    * `static bool Dispatch::`**`empty`**`() noexcept`
-    * `static result_type Dispatch::`**`run`**`() noexcept`
-    * `static void Dispatch::`**`stop`**`() noexcept`
-
-The dispatch queue is a global singleton; the `Dispatch` class cannot be
-instantiated. Add channels and their associated callback functions to the
-queue using `add()`, and call `run()` to run the dispatch loop. Behaviour is
-undefined if `run()` is called from multiple threads at the same time;
-normally it should only be called from the main thread.
-
-Dispatch functions must only be called synchronously (i.e. not from inside an
-asynchronous callback function). Channels can safely be destroyed while in a
-dispatch set (the dispatch queue will notice this and silently drop the
-channel), provided this is done synchronously.
-
-The `add()` functions start a synchronous or asynchronous task reading from
-the channel. Asynchronous handlers are started immediately in a separate
-thread; synchronous handlers will be executed when `run()` is called. They
-will throw `invalid_argument` if any of these conditions is true:
-
-* The same channel is added more than once, and the channel is not shareable (`Channel::is_shared()` is false).
-* The mode flag is not one of the `Dispatch::mode` enumeration values.
-* The channel is synchronous (`Channel::is_async()` is false), but the mode is `async`.
-* The callback function is null.
-
-The `drop()` function removes a channel from the dispatch set (without closing
-it). If an event from this channel is currently being handled asynchronously,
-`drop()` will block until it finishes. Behaviour is undefined if `drop()` is
-called on a channel from inside that channel's callback.
-
-The `run()` function runs until a channel is closed or a callback function
-throws an exception; it returns immediately if the dispatch set is empty.
-Asynchronous message handlers will continue to run in other threads regardless
-of whether the dispatch thread is currently calling `run()`.
-
-The return value from `run()` indicates which channel was responsible for
-ending the run and the exception it threw, if any; both members will be null
-if the dispatch set was empty when `run()` was called. The result type's
-`rethrow()` function will rethrow the exception if it is not null, otherwise
-do nothing. The `why()` function returns a flag summarizing the reason for the
-run to stop.
-
-The `stop()` function closes all channels and waits for any currently running
-event handlers to finish.

@@ -479,7 +479,6 @@ namespace RS {
         rep.resize(i + 1);
     }
 
-    inline std::ostream& operator<<(std::ostream& out, const Nat& x) { return out << x.str(); }
     inline Nat abs(const Nat& x) { return x; }
     inline int sign_of(const Nat& x) noexcept { return x.sign(); }
     inline Nat quo(const Nat& lhs, const Nat& rhs) { return lhs / rhs; }
@@ -487,6 +486,8 @@ namespace RS {
     inline Ustring bin(const Nat& x, size_t digits = 1) { return x.str(2, digits); }
     inline Ustring dec(const Nat& x, size_t digits = 1) { return x.str(10, digits); }
     inline Ustring hex(const Nat& x, size_t digits = 1) { return x.str(16, digits); }
+    inline Ustring to_str(const Nat& x) { return x.str(); }
+    inline std::ostream& operator<<(std::ostream& out, const Nat& x) { return out << x.str(); }
 
     // Signed integers
 
@@ -637,7 +638,6 @@ namespace RS {
         z.neg = bool(x) && bool(y) && x.neg != y.neg;
     }
 
-    inline std::ostream& operator<<(std::ostream& out, const Int& x) { return out << x.str(); }
     inline Int abs(const Int& x) { return x.abs(); }
     inline int sign_of(const Int& x) noexcept{ return x.sign(); }
     inline Int quo(const Int& lhs, const Int& rhs) { return lhs / rhs; }
@@ -645,6 +645,8 @@ namespace RS {
     inline Ustring bin(const Int& x, size_t digits = 1) { return x.str(2, digits); }
     inline Ustring dec(const Int& x, size_t digits = 1) { return x.str(10, digits); }
     inline Ustring hex(const Int& x, size_t digits = 1) { return x.str(16, digits); }
+    inline Ustring to_str(const Int& x) { return x.str(); }
+    inline std::ostream& operator<<(std::ostream& out, const Int& x) { return out << x.str(); }
 
     // Related types
 

@@ -263,6 +263,7 @@ ifneq ($(app_sources),)
 app: $(app_target)
 
 run: app
+	@rm -f *.stackdump
 	$(app_target)
 
 help-app: help-prefix
@@ -286,9 +287,8 @@ ifneq ($(test_sources),)
 tests: $(test_target)
 
 check: all
-	@rm -rf __test_*
+	@rm -rf __test_* *.stackdump
 	$(test_target)
-	@rm -rf __test_*
 
 help-test: help-app
 	@echo "    tests      = Build the unit tests"

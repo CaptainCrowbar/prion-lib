@@ -241,23 +241,9 @@ namespace RS {
     template <typename T1, typename T2> bool operator>(const T1& x, const Rational<T2>& y) { return y < x; }
     template <typename T1, typename T2> bool operator<=(const T1& x, const Rational<T2>& y) { return ! (y < x); }
     template <typename T1, typename T2> bool operator>=(const T1& x, const Rational<T2>& y) { return ! (x < y); }
-
-    template <typename T>
-    std::ostream& operator<<(std::ostream& o, const Rational<T>& r) {
-        o << r.num();
-        if (! r.is_integer())
-            o << '/' << r.den();
-        return o;
-    }
-
-    template <typename T>
-    Rational<T> abs(const Rational<T>& r) {
-        return r.abs();
-    }
-
-    template <typename T>
-    int sign_of(const Rational<T>& r) noexcept {
-        return r.sign();
-    }
+    template <typename T> Rational<T> abs(const Rational<T>& r) { return r.abs(); }
+    template <typename T> int sign_of(const Rational<T>& r) noexcept { return r.sign(); }
+    template <typename T> Ustring to_str(const Rational<T>& r) { return r.str(); }
+    template <typename T> std::ostream& operator<<(std::ostream& o, const Rational<T>& r) { return o << r.str(); }
 
 }

@@ -1,7 +1,6 @@
 #include "rs-core/stack.hpp"
 #include "rs-core/string.hpp"
 #include "rs-core/unit-test.hpp"
-#include <ostream>
 
 using namespace RS;
 
@@ -15,7 +14,7 @@ namespace {
         TopTail(TopTail&& t): sp(t.sp), ch(t.ch) { t.sp = nullptr; }
         TopTail& operator=(TopTail&& t) { if (&t != this) { term(); sp = t.sp; ch = t.ch; t.sp = nullptr; } return *this; }
         char get() const noexcept { return ch; }
-        friend std::ostream& operator<<(std::ostream& out, const TopTail& t) { return out << t.ch; }
+        friend Ustring to_str(const TopTail& t) { return {t.ch}; }
     private:
         Ustring* sp;
         char ch;
@@ -28,8 +27,8 @@ namespace {
 
 void test_core_stack_class() {
 
-    Stack<TopTail> st;
     Ustring s;
+    Stack<TopTail> st;
 
     TEST(st.empty());
     TEST_EQUAL(to_str(st), "[]");

@@ -80,12 +80,13 @@ could be.
 * `bool` **`operator>`**`(const Nat& lhs, const Nat& rhs) noexcept`
 * `bool` **`operator<=`**`(const Nat& lhs, const Nat& rhs) noexcept`
 * `bool` **`operator>=`**`(const Nat& lhs, const Nat& rhs) noexcept`
-* `std::ostream&` **`operator<<`**`(std::ostream& out, const Nat& x)`
 * `Nat` **`abs`**`(const Nat& x)`
 * `int` **`sign_of`**`(const Nat& x) noexcept`
 * `Ustring` **`bin`**`(const Nat& x, size_t digits = 1)`
 * `Ustring` **`dec`**`(const Nat& x, size_t digits = 1)`
 * `Ustring` **`hex`**`(const Nat& x, size_t digits = 1)`
+* `Ustring` **`to_str`**`(const Nat& x)`
+* `std::ostream&` **`operator<<`**`(std::ostream& out, const Nat& x)`
 
 An arbitrary precision unsigned integer (natural number). Most of its methods
 are conventional arithmetic operations with their natural behaviour.
@@ -117,7 +118,7 @@ significant end. If the index is too big for the stored value,
 `flip_bit()` will extend the value to include any bits newly set to 1.
 
 The `str()` function will throw `std::invalid_argument` if the base is less
-than 2 or greater than 36.
+than 2 or greater than 36. The output operator and `to_str()` call `str(10)`.
 
 The `read_be/le()` and `write_be/le()` functions read and write an integer
 from a block of bytes, in big or little endian order. The write functions will
@@ -176,12 +177,13 @@ is undefined if `n<1`.
 * `bool` **`operator>`**`(const Int& lhs, const Int& rhs) noexcept`
 * `bool` **`operator<=`**`(const Int& lhs, const Int& rhs) noexcept`
 * `bool` **`operator>=`**`(const Int& lhs, const Int& rhs) noexcept`
-* `std::ostream&` **`operator<<`**`(std::ostream& out, const Int& x)`
 * `Int` **`abs`**`(const Int& x)`
 * `int` **`sign_of`**`(const Int& x) noexcept`
 * `Ustring` **`bin`**`(const Int& x, size_t digits = 1)`
 * `Ustring` **`dec`**`(const Int& x, size_t digits = 1)`
 * `Ustring` **`hex`**`(const Int& x, size_t digits = 1)`
+* `Ustring` **`to_str`**`(const Int& x)`
+* `std::ostream&` **`operator<<`**`(std::ostream& out, const Int& x)`
 
 An arbitrary precision signed integer. Most of its operations do the same
 thing as the corresponding functions on `Nat` or plain `int`.

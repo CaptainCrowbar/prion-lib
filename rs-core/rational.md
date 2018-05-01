@@ -128,6 +128,7 @@ original number if it is not an exact integer.
 * `Ustring Rational::`**`str`**`() const`
 * `Ustring Rational::`**`mixed`**`() const`
 * `Ustring Rational::`**`simple`**`() const`
+* `Ustring` **`to_str`**`(const Rational& r)`
 * `std::ostream&` **`operator<<`**`(std::ostream& o, const Rational& r)`
 
 Convert a rational number to a string. The `mixed()` format expresses the

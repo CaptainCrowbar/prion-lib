@@ -101,12 +101,13 @@ could be.</p>
 <li><code>bool</code> <strong><code>operator&gt;</code></strong><code>(const Nat&amp; lhs, const Nat&amp; rhs) noexcept</code></li>
 <li><code>bool</code> <strong><code>operator&lt;=</code></strong><code>(const Nat&amp; lhs, const Nat&amp; rhs) noexcept</code></li>
 <li><code>bool</code> <strong><code>operator&gt;=</code></strong><code>(const Nat&amp; lhs, const Nat&amp; rhs) noexcept</code></li>
-<li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const Nat&amp; x)</code></li>
 <li><code>Nat</code> <strong><code>abs</code></strong><code>(const Nat&amp; x)</code></li>
 <li><code>int</code> <strong><code>sign_of</code></strong><code>(const Nat&amp; x) noexcept</code></li>
 <li><code>Ustring</code> <strong><code>bin</code></strong><code>(const Nat&amp; x, size_t digits = 1)</code></li>
 <li><code>Ustring</code> <strong><code>dec</code></strong><code>(const Nat&amp; x, size_t digits = 1)</code></li>
 <li><code>Ustring</code> <strong><code>hex</code></strong><code>(const Nat&amp; x, size_t digits = 1)</code></li>
+<li><code>Ustring</code> <strong><code>to_str</code></strong><code>(const Nat&amp; x)</code></li>
+<li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const Nat&amp; x)</code></li>
 </ul>
 <p>An arbitrary precision unsigned integer (natural number). Most of its methods
 are conventional arithmetic operations with their natural behaviour.</p>
@@ -130,7 +131,7 @@ significant end. If the index is too big for the stored value,
 <code>get_bit/byte()</code> will return zero or false, while <code>set_bit/byte()</code> and
 <code>flip_bit()</code> will extend the value to include any bits newly set to 1.</p>
 <p>The <code>str()</code> function will throw <code>std::invalid_argument</code> if the base is less
-than 2 or greater than 36.</p>
+than 2 or greater than 36. The output operator and <code>to_str()</code> call <code>str(10)</code>.</p>
 <p>The <code>read_be/le()</code> and <code>write_be/le()</code> functions read and write an integer
 from a block of bytes, in big or little endian order. The write functions will
 truncate the integer if it is too big to fit in the specified number of bytes.</p>
@@ -190,12 +191,13 @@ is undefined if <code>n&lt;1</code>.</p>
 <li><code>bool</code> <strong><code>operator&gt;</code></strong><code>(const Int&amp; lhs, const Int&amp; rhs) noexcept</code></li>
 <li><code>bool</code> <strong><code>operator&lt;=</code></strong><code>(const Int&amp; lhs, const Int&amp; rhs) noexcept</code></li>
 <li><code>bool</code> <strong><code>operator&gt;=</code></strong><code>(const Int&amp; lhs, const Int&amp; rhs) noexcept</code></li>
-<li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const Int&amp; x)</code></li>
 <li><code>Int</code> <strong><code>abs</code></strong><code>(const Int&amp; x)</code></li>
 <li><code>int</code> <strong><code>sign_of</code></strong><code>(const Int&amp; x) noexcept</code></li>
 <li><code>Ustring</code> <strong><code>bin</code></strong><code>(const Int&amp; x, size_t digits = 1)</code></li>
 <li><code>Ustring</code> <strong><code>dec</code></strong><code>(const Int&amp; x, size_t digits = 1)</code></li>
 <li><code>Ustring</code> <strong><code>hex</code></strong><code>(const Int&amp; x, size_t digits = 1)</code></li>
+<li><code>Ustring</code> <strong><code>to_str</code></strong><code>(const Int&amp; x)</code></li>
+<li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const Int&amp; x)</code></li>
 </ul>
 <p>An arbitrary precision signed integer. Most of its operations do the same
 thing as the corresponding functions on <code>Nat</code> or plain <code>int</code>.</p>

@@ -64,6 +64,7 @@ static) before doing anything else.
 * `bool` **`operator<=`**`(IPv4 lhs, IPv4 rhs) noexcept`
 * `bool` **`operator>=`**`(IPv4 lhs, IPv4 rhs) noexcept`
 * `std::ostream&` **`operator<<`**`(std::ostream& out, IPv4 ip)`
+* `Ustring` **`to_str`**`(IPv4 ip)`
 * `struct` **`std::hash<IPv4>`**
 
 A class holding an IPv4 address. The default constructor sets the address to
@@ -103,6 +104,7 @@ structure (which is assumed to contain an IPv4 address).
 * `bool` **`operator<=`**`(IPv6 lhs, IPv6 rhs) noexcept`
 * `bool` **`operator>=`**`(IPv6 lhs, IPv6 rhs) noexcept`
 * `std::ostream&` **`operator<<`**`(std::ostream& out, IPv6 ip)`
+* `Ustring` **`to_str`**`(IPv6 ip)`
 * `struct` **`std::hash<IPv6>`**
 
 A class holding an IPv6 address. Most of the functions have the obvious
@@ -144,7 +146,8 @@ semantics based on the corresponding function in the `IPv4` class.
 * `bool` **`operator>`**`(const SocketAddress& lhs, const SocketAddress& rhs) noexcept`
 * `bool` **`operator<=`**`(const SocketAddress& lhs, const SocketAddress& rhs) noexcept`
 * `bool` **`operator>=`**`(const SocketAddress& lhs, const SocketAddress& rhs) noexcept`
-* `std::ostream&` **`operator<<`**`(std::ostream& out, const SocketAddress& ip)`
+* `std::ostream&` **`operator<<`**`(std::ostream& out, const SocketAddress& sa)`
+* `Ustring` **`to_str`**`(const SocketAddress& sa)`
 * `struct` **`std::hash<SocketAddress>`**
 
 A class that holds a complete endpoint address, wrapping the Posix

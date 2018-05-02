@@ -36,6 +36,7 @@ By Ross Smith
 * `bool` **`operator<=`**`(const Uuid& lhs, const Uuid& rhs) noexcept`
 * `bool` **`operator>=`**`(const Uuid& lhs, const Uuid& rhs) noexcept`
 * `std::ostream&` **`operator<<`**`(std::ostream& o, const Uuid& u)`
+* `Ustring` **`to_str`**`(const Uuid& u)`
 * `class std::`**`hash`**`<Uuid>`
 
 This class holds a standard 16 byte universally unique identifier (UUID).

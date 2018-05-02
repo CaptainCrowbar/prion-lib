@@ -210,8 +210,8 @@ namespace RS {
 #define RS_ENUM_IMPLEMENTATION(EnumType, IntType, class_tag, name_prefix, first_value, first_name, ...) \
     enum class_tag EnumType: IntType { RS_enum_begin = first_value, first_name = first_value, __VA_ARGS__, RS_enum_end }; \
     constexpr RS_ATTR_UNUSED bool enum_is_valid(EnumType t) noexcept { return t >= EnumType::RS_enum_begin && t < EnumType::RS_enum_end; } \
-    inline RS_ATTR_UNUSED std::string enum_str(EnumType t) { return ::RS::RS_Detail::enum_str(t, name_prefix, #first_name "," #__VA_ARGS__); } \
-    inline RS_ATTR_UNUSED std::ostream& operator<<(std::ostream& out, EnumType t) { return out << enum_str(t); }
+    inline RS_ATTR_UNUSED std::string to_str(EnumType t) { return ::RS::RS_Detail::enum_str(t, name_prefix, #first_name "," #__VA_ARGS__); } \
+    inline RS_ATTR_UNUSED std::ostream& operator<<(std::ostream& out, EnumType t) { return out << to_str(t); }
 
 #define RS_ENUM(EnumType, IntType, first_value, first_name, ...) \
     RS_ENUM_IMPLEMENTATION(EnumType, IntType,, "", first_value, first_name, __VA_ARGS__)

@@ -42,6 +42,7 @@ namespace RS::Meta {
     template <typename... TS> constexpr bool operator<=(Typelist<TS...>, Typelist<TS...>) noexcept { return true; }
     template <typename... TS> constexpr bool operator>=(Typelist<TS...>, Typelist<TS...>) noexcept { return true; }
     inline std::ostream& operator<<(std::ostream& out, Nil) { return out << "nil"; }
+    inline std::string to_str(Nil) { return "nil"; }
 
     // Utilities
 

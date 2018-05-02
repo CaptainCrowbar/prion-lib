@@ -100,6 +100,7 @@ static) before doing anything else.</p>
 <li><code>bool</code> <strong><code>operator&lt;=</code></strong><code>(IPv4 lhs, IPv4 rhs) noexcept</code></li>
 <li><code>bool</code> <strong><code>operator&gt;=</code></strong><code>(IPv4 lhs, IPv4 rhs) noexcept</code></li>
 <li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, IPv4 ip)</code></li>
+<li><code>Ustring</code> <strong><code>to_str</code></strong><code>(IPv4 ip)</code></li>
 <li><code>struct</code> <strong><code>std::hash&lt;IPv4&gt;</code></strong></li>
 </ul>
 <p>A class holding an IPv4 address. The default constructor sets the address to
@@ -142,6 +143,7 @@ structure (which is assumed to contain an IPv4 address).</p>
 <li><code>bool</code> <strong><code>operator&lt;=</code></strong><code>(IPv6 lhs, IPv6 rhs) noexcept</code></li>
 <li><code>bool</code> <strong><code>operator&gt;=</code></strong><code>(IPv6 lhs, IPv6 rhs) noexcept</code></li>
 <li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, IPv6 ip)</code></li>
+<li><code>Ustring</code> <strong><code>to_str</code></strong><code>(IPv6 ip)</code></li>
 <li><code>struct</code> <strong><code>std::hash&lt;IPv6&gt;</code></strong></li>
 </ul>
 <p>A class holding an IPv6 address. Most of the functions have the obvious
@@ -186,7 +188,8 @@ semantics based on the corresponding function in the <code>IPv4</code> class.</p
 <li><code>bool</code> <strong><code>operator&gt;</code></strong><code>(const SocketAddress&amp; lhs, const SocketAddress&amp; rhs) noexcept</code></li>
 <li><code>bool</code> <strong><code>operator&lt;=</code></strong><code>(const SocketAddress&amp; lhs, const SocketAddress&amp; rhs) noexcept</code></li>
 <li><code>bool</code> <strong><code>operator&gt;=</code></strong><code>(const SocketAddress&amp; lhs, const SocketAddress&amp; rhs) noexcept</code></li>
-<li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const SocketAddress&amp; ip)</code></li>
+<li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const SocketAddress&amp; sa)</code></li>
+<li><code>Ustring</code> <strong><code>to_str</code></strong><code>(const SocketAddress&amp; sa)</code></li>
 <li><code>struct</code> <strong><code>std::hash&lt;SocketAddress&gt;</code></strong></li>
 </ul>
 <p>A class that holds a complete endpoint address, wrapping the Posix

@@ -76,25 +76,6 @@ namespace RS {
         static dispatch_map& global_tasks() noexcept;
     };
 
-        inline std::ostream& operator<<(std::ostream& out, Channel::mode m) {
-            switch (m) {
-                case Channel::mode::sync:   out << "sync"; break;
-                case Channel::mode::async:  out << "async"; break;
-                default:                    out << int(m); break;
-            }
-            return out;
-        }
-
-        inline std::ostream& operator<<(std::ostream& out, Channel::reason r) {
-            switch (r) {
-                case Channel::reason::empty:   out << "empty"; break;
-                case Channel::reason::closed:  out << "closed"; break;
-                case Channel::reason::error:   out << "error"; break;
-                default:                       out << int(r); break;
-            }
-            return out;
-        }
-
         inline Channel::dispatch_result Channel::run_dispatch() noexcept {
             using namespace std::chrono;
             using namespace std::literals;
@@ -186,6 +167,31 @@ namespace RS {
         inline Channel::dispatch_map& Channel::global_tasks() noexcept {
             static dispatch_map map;
             return map;
+        }
+
+        inline std::string to_str(Channel::mode m) {
+            switch (m) {
+                case Channel::mode::sync:   return "sync";
+                case Channel::mode::async:  return "async";
+                default:                    return std::to_string(int(m));
+            }
+        }
+
+        inline std::string to_str(Channel::reason r) {
+            switch (r) {
+                case Channel::reason::empty:   return "empty";
+                case Channel::reason::closed:  return "closed";
+                case Channel::reason::error:   return "error";
+                default:                       return std::to_string(int(r));
+            }
+        }
+
+        inline std::ostream& operator<<(std::ostream& out, Channel::mode m) {
+            return out << to_str(m);
+        }
+
+        inline std::ostream& operator<<(std::ostream& out, Channel::reason r) {
+            return out << to_str(r);
         }
 
     // Intermediate base classes

@@ -226,6 +226,7 @@ namespace RS {
         inline bool operator<=(IPv4 lhs, IPv4 rhs) noexcept { return lhs.value() <= rhs.value(); }
         inline bool operator>=(IPv4 lhs, IPv4 rhs) noexcept { return lhs.value() >= rhs.value(); }
         inline std::ostream& operator<<(std::ostream& out, IPv4 ip) { return out << ip.str(); }
+        inline Ustring to_str(IPv4 ip) { return ip.str(); }
 
     class IPv6 {
     public:
@@ -295,6 +296,7 @@ namespace RS {
         inline bool operator<=(IPv6 lhs, IPv6 rhs) noexcept { return ! (rhs < lhs); }
         inline bool operator>=(IPv6 lhs, IPv6 rhs) noexcept { return ! (lhs < rhs); }
         inline std::ostream& operator<<(std::ostream& out, IPv6 ip) { return out << ip.str(); }
+        inline Ustring to_str(IPv6 ip) { return ip.str(); }
 
     class SocketAddress {
     private:
@@ -418,15 +420,14 @@ namespace RS {
             current_size = n;
         }
 
-        inline bool operator==(const SocketAddress& lhs, const SocketAddress& rhs) noexcept
-            { return mem_compare(lhs.native(), lhs.size(), rhs.native(), rhs.size()) == 0; }
+        inline bool operator==(const SocketAddress& lhs, const SocketAddress& rhs) noexcept { return mem_compare(lhs.native(), lhs.size(), rhs.native(), rhs.size()) == 0; }
         inline bool operator!=(const SocketAddress& lhs, const SocketAddress& rhs) noexcept { return ! (lhs == rhs); }
-        inline bool operator<(const SocketAddress& lhs, const SocketAddress& rhs) noexcept
-            { return mem_compare(lhs.native(), lhs.size(), rhs.native(), rhs.size()) < 0; }
+        inline bool operator<(const SocketAddress& lhs, const SocketAddress& rhs) noexcept { return mem_compare(lhs.native(), lhs.size(), rhs.native(), rhs.size()) < 0; }
         inline bool operator>(const SocketAddress& lhs, const SocketAddress& rhs) noexcept { return rhs < lhs; }
         inline bool operator<=(const SocketAddress& lhs, const SocketAddress& rhs) noexcept { return ! (rhs < lhs); }
         inline bool operator>=(const SocketAddress& lhs, const SocketAddress& rhs) noexcept { return ! (lhs < rhs); }
-        inline std::ostream& operator<<(std::ostream& out, const SocketAddress& s) { return out << s.str(); }
+        inline std::ostream& operator<<(std::ostream& out, const SocketAddress& sa) { return out << sa.str(); }
+        inline Ustring to_str(const SocketAddress& sa) { return sa.str(); }
 
         inline Ustring SocketAddress::str() const {
             if (*this == SocketAddress())

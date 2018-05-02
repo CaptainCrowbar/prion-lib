@@ -16,6 +16,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <system_error>
 #include <type_traits>
 #include <typeindex>
@@ -32,7 +33,7 @@ namespace RS {
     // Needed early
 
     template <typename InputRange>
-    std::string join(const InputRange& range, string_view delim = {}, bool term = false) {
+    std::string join(const InputRange& range, std::string_view delim = {}, bool term = false) {
         std::string result;
         for (auto& s: range) {
             result += make_view(s);
@@ -62,19 +63,19 @@ namespace RS {
     constexpr char ascii_tolower(char c) noexcept { return ascii_isupper(c) ? char(c + 32) : c; }
     constexpr char ascii_toupper(char c) noexcept { return ascii_islower(c) ? char(c - 32) : c; }
 
-    inline std::string ascii_lowercase(string_view s) {
+    inline std::string ascii_lowercase(std::string_view s) {
         Ustring r(s);
         std::transform(r.begin(), r.end(), r.begin(), ascii_tolower);
         return r;
     }
 
-    inline std::string ascii_uppercase(string_view s) {
+    inline std::string ascii_uppercase(std::string_view s) {
         Ustring r(s);
         std::transform(r.begin(), r.end(), r.begin(), ascii_toupper);
         return r;
     }
 
-    inline std::string ascii_titlecase(string_view s) {
+    inline std::string ascii_titlecase(std::string_view s) {
         Ustring r(s);
         bool was_alpha = false;
         for (char& c: r) {
@@ -87,7 +88,7 @@ namespace RS {
         return r;
     }
 
-    inline std::string ascii_sentencecase(string_view s) {
+    inline std::string ascii_sentencecase(std::string_view s) {
         Ustring r(s);
         bool new_sentence = true, was_break = false;
         for (char& c: r) {
@@ -180,7 +181,7 @@ namespace RS {
         struct UtfConvert {
             S operator()(SV sv) const {
                 auto u = UtfConvert<SV, std::u32string>()(sv);
-                return UtfConvert<u32string_view, S>()(u);
+                return UtfConvert<std::u32string_view, S>()(u);
             }
         };
 
@@ -325,7 +326,7 @@ namespace RS {
 
         template <typename C>
         struct UtfValidate<C, 1> {
-            size_t operator()(basic_string_view<C> sv) const noexcept {
+            size_t operator()(std::basic_string_view<C> sv) const noexcept {
                 auto ptr = reinterpret_cast<const uint8_t*>(sv.data());
                 size_t units = sv.size(), i = 0;
                 while (i < units) {
@@ -360,7 +361,7 @@ namespace RS {
 
         template <typename C>
         struct UtfValidate<C, 2> {
-            size_t operator()(basic_string_view<C> sv) const noexcept {
+            size_t operator()(std::basic_string_view<C> sv) const noexcept {
                 auto ptr = reinterpret_cast<const uint16_t*>(sv.data());
                 size_t units = sv.size(), i = 0;
                 while (i < units) {
@@ -380,7 +381,7 @@ namespace RS {
 
         template <typename C>
         struct UtfValidate<C, 4> {
-            size_t operator()(basic_string_view<C> sv) const noexcept {
+            size_t operator()(std::basic_string_view<C> sv) const noexcept {
                 auto ptr = reinterpret_cast<const uint32_t*>(sv.data());
                 size_t units = sv.size(), i = 0;
                 for (; i < units; ++i)
@@ -435,7 +436,7 @@ namespace RS {
 
     // String property functions
 
-    inline bool ascii_icase_equal(string_view lhs, string_view rhs) noexcept {
+    inline bool ascii_icase_equal(std::string_view lhs, std::string_view rhs) noexcept {
         if (lhs.size() != rhs.size())
             return false;
         for (size_t i = 0, n = lhs.size(); i < n; ++i)
@@ -444,7 +445,7 @@ namespace RS {
         return true;
     }
 
-    inline bool ascii_icase_less(string_view lhs, string_view rhs) noexcept {
+    inline bool ascii_icase_less(std::string_view lhs, std::string_view rhs) noexcept {
         for (size_t i = 0, n = std::min(lhs.size(), rhs.size()); i < n; ++i) {
             char a = ascii_toupper(lhs[i]), b = ascii_toupper(rhs[i]);
             if (a != b)
@@ -453,17 +454,17 @@ namespace RS {
         return lhs.size() < rhs.size();
     }
 
-    inline bool starts_with(string_view str, string_view prefix) noexcept {
+    inline bool starts_with(std::string_view str, std::string_view prefix) noexcept {
         return str.size() >= prefix.size()
             && memcmp(str.data(), prefix.data(), prefix.size()) == 0;
     }
 
-    inline bool ends_with(string_view str, string_view suffix) noexcept {
+    inline bool ends_with(std::string_view str, std::string_view suffix) noexcept {
         return str.size() >= suffix.size()
             && memcmp(str.data() + str.size() - suffix.size(), suffix.data(), suffix.size()) == 0;
     }
 
-    inline bool string_is_ascii(string_view str) noexcept {
+    inline bool string_is_ascii(std::string_view str) noexcept {
         return std::find_if(str.begin(), str.end(), [] (char c) { return c & 0x80; }) == str.end();
     }
 
@@ -471,7 +472,7 @@ namespace RS {
 
     namespace RS_Detail {
 
-        inline Ustring quote_string(string_view str, bool check_utf8) {
+        inline Ustring quote_string(std::string_view str, bool check_utf8) {
             bool allow_8bit = check_utf8 && uvalid(str);
             Ustring result = "\"";
             for (auto c: str) {
@@ -501,7 +502,7 @@ namespace RS {
 
     }
 
-    inline std::string add_prefix(string_view s, string_view prefix) {
+    inline std::string add_prefix(std::string_view s, std::string_view prefix) {
         if (starts_with(s, prefix))
             return std::string(s);
         std::string r(prefix);
@@ -509,7 +510,7 @@ namespace RS {
         return r;
     }
 
-    inline std::string add_suffix(string_view s, string_view suffix) {
+    inline std::string add_suffix(std::string_view s, std::string_view suffix) {
         if (ends_with(s, suffix))
             return std::string(s);
         std::string r(s);
@@ -517,14 +518,14 @@ namespace RS {
         return r;
     }
 
-    inline std::string drop_prefix(string_view s, string_view prefix) {
+    inline std::string drop_prefix(std::string_view s, std::string_view prefix) {
         if (starts_with(s, prefix))
             return std::string(s.data() + prefix.size(), s.size() - prefix.size());
         else
             return std::string(s);
     }
 
-    inline std::string drop_suffix(string_view s, string_view suffix) {
+    inline std::string drop_suffix(std::string_view s, std::string_view suffix) {
         if (ends_with(s, suffix))
             return std::string(s.data(), s.size() - suffix.size());
         else
@@ -548,7 +549,7 @@ namespace RS {
         return result;
     }
 
-    inline std::string linearize(string_view str) {
+    inline std::string linearize(std::string_view str) {
         std::string result;
         size_t i = 0, j = 0, size = str.size();
         while (j < size) {
@@ -572,21 +573,21 @@ namespace RS {
             str.resize(p);
     }
 
-    inline std::string pad_left(string_view str, size_t len, char pad = ' ') {
+    inline std::string pad_left(std::string_view str, size_t len, char pad = ' ') {
         std::string s(str);
         if (len > s.size())
             s.insert(0, len - s.size(), pad);
         return s;
     }
 
-    inline std::string pad_right(string_view str, size_t len, char pad = ' ') {
+    inline std::string pad_right(std::string_view str, size_t len, char pad = ' ') {
         std::string s(str);
         if (len > s.size())
             s.append(len - s.size(), pad);
         return s;
     }
 
-    inline std::pair<string_view, string_view> partition_at(string_view str, string_view delim) {
+    inline std::pair<std::string_view, std::string_view> partition_at(std::string_view str, std::string_view delim) {
         if (delim.empty())
             return {str, {}};
         size_t p = str.find(delim);
@@ -596,23 +597,23 @@ namespace RS {
             return {make_view(str, 0, p), make_view(str, p + delim.size(), npos)};
     }
 
-    inline std::pair<string_view, string_view> partition_by(string_view str, string_view delims = ascii_whitespace) {
+    inline std::pair<std::string_view, std::string_view> partition_by(std::string_view str, std::string_view delims = ascii_whitespace) {
         if (delims.empty())
             return {str, {}};
         size_t p = str.find_first_of(delims);
         if (p == npos)
             return {str, {}};
-        string_view v1 = make_view(str, 0, p), v2;
+        std::string_view v1 = make_view(str, 0, p), v2;
         size_t q = str.find_first_not_of(delims, p);
         if (q != npos)
             v2 = make_view(str, q, npos);
         return {v1, v2};
     }
 
-    inline Ustring quote(string_view str) { return RS_Detail::quote_string(str, true); }
-    inline Ustring bquote(string_view str) { return RS_Detail::quote_string(str, false); }
+    inline Ustring quote(std::string_view str) { return RS_Detail::quote_string(str, true); }
+    inline Ustring bquote(std::string_view str) { return RS_Detail::quote_string(str, false); }
 
-    inline std::string repeat(string_view s, size_t n, string_view delim = {}) {
+    inline std::string repeat(std::string_view s, size_t n, std::string_view delim = {}) {
         if (n == 0)
             return {};
         std::string r(s);
@@ -632,7 +633,7 @@ namespace RS {
         return r;
     }
 
-    inline std::string replace(string_view s, string_view target, string_view subst, size_t n = npos) {
+    inline std::string replace(std::string_view s, std::string_view target, std::string_view subst, size_t n = npos) {
         if (target.empty() || n == 0)
             return std::string(s);
         std::string r;
@@ -650,7 +651,7 @@ namespace RS {
     }
 
     template <typename OutputIterator>
-    void split(string_view src, OutputIterator dst, string_view delim = ascii_whitespace) {
+    void split(std::string_view src, OutputIterator dst, std::string_view delim = ascii_whitespace) {
         if (src.empty())
             return;
         if (delim.empty()) {
@@ -672,14 +673,14 @@ namespace RS {
         }
     }
 
-    inline Strings splitv(string_view src, string_view delim = ascii_whitespace) {
+    inline Strings splitv(std::string_view src, std::string_view delim = ascii_whitespace) {
         Strings v;
         split(src, append(v), delim);
         return v;
     }
 
     template <typename OutputIterator>
-    void split_lines(string_view src, OutputIterator dst) {
+    void split_lines(std::string_view src, OutputIterator dst) {
         if (src.empty())
             return;
         size_t i = 0, j = 0, size = src.size();
@@ -698,13 +699,13 @@ namespace RS {
         }
     }
 
-    inline Strings splitv_lines(string_view src) {
+    inline Strings splitv_lines(std::string_view src) {
         Strings v;
         split_lines(src, append(v));
         return v;
     }
 
-    inline std::string trim(string_view str, string_view chars = ascii_whitespace) {
+    inline std::string trim(std::string_view str, std::string_view chars = ascii_whitespace) {
         size_t pos = str.find_first_not_of(chars);
         if (pos == npos)
             return {};
@@ -712,7 +713,7 @@ namespace RS {
             return std::string(str.substr(pos, str.find_last_not_of(chars) + 1 - pos));
     }
 
-    inline std::string trim_left(string_view str, string_view chars = ascii_whitespace) {
+    inline std::string trim_left(std::string_view str, std::string_view chars = ascii_whitespace) {
         size_t pos = str.find_first_not_of(chars);
         if (pos == npos)
             return {};
@@ -720,11 +721,11 @@ namespace RS {
             return std::string(str.substr(pos, npos));
     }
 
-    inline std::string trim_right(string_view str, string_view chars = ascii_whitespace) {
+    inline std::string trim_right(std::string_view str, std::string_view chars = ascii_whitespace) {
         return std::string(str.substr(0, str.find_last_not_of(chars) + 1));
     }
 
-    inline std::string unqualify(string_view str, string_view delims = ".:") {
+    inline std::string unqualify(std::string_view str, std::string_view delims = ".:") {
         if (delims.empty())
             return std::string(str);
         size_t pos = str.find_last_of(delims);
@@ -825,7 +826,7 @@ namespace RS {
         return result;
     }
 
-    inline Ustring hexdump(string_view str, size_t block = 0) {
+    inline Ustring hexdump(std::string_view str, size_t block = 0) {
         return hexdump(str.data(), str.size(), block);
     }
 
@@ -922,7 +923,7 @@ namespace RS {
         template <> struct ObjectToString<char> { Ustring operator()(char t) const { return {t}; } };
 
         template <> struct ObjectToString<std::u16string> { Ustring operator()(const std::u16string& t) const { return uconv<Ustring>(t); } };
-        template <> struct ObjectToString<u16string_view> { Ustring operator()(u16string_view t) const { return uconv<Ustring>(t); } };
+        template <> struct ObjectToString<std::u16string_view> { Ustring operator()(std::u16string_view t) const { return uconv<Ustring>(t); } };
         template <> struct ObjectToString<char16_t*> { Ustring operator()(char16_t* t) const { return t ? uconv<Ustring>(std::u16string(t)) : Ustring(); } };
         template <> struct ObjectToString<const char16_t*> { Ustring operator()(const char16_t* t) const { return t ? uconv<Ustring>(std::u16string(t)) : Ustring(); } };
         template <size_t N> struct ObjectToString<char16_t[N], 'X'> { Ustring operator()(const char16_t* t) const { return uconv<Ustring>(std::u16string(t, N - 1)); } };
@@ -930,7 +931,7 @@ namespace RS {
         template <> struct ObjectToString<char16_t> { Ustring operator()(char16_t t) const { return uconv<Ustring>(std::u16string{t}); } };
 
         template <> struct ObjectToString<std::u32string> { Ustring operator()(const std::u32string& t) const { return uconv<Ustring>(t); } };
-        template <> struct ObjectToString<u32string_view> { Ustring operator()(u32string_view t) const { return uconv<Ustring>(t); } };
+        template <> struct ObjectToString<std::u32string_view> { Ustring operator()(std::u32string_view t) const { return uconv<Ustring>(t); } };
         template <> struct ObjectToString<char32_t*> { Ustring operator()(char32_t* t) const { return t ? uconv<Ustring>(std::u32string(t)) : Ustring(); } };
         template <> struct ObjectToString<const char32_t*> { Ustring operator()(const char32_t* t) const { return t ? uconv<Ustring>(std::u32string(t)) : Ustring(); } };
         template <size_t N> struct ObjectToString<char32_t[N], 'X'> { Ustring operator()(const char32_t* t) const { return uconv<Ustring>(std::u32string(t, N - 1)); } };
@@ -938,7 +939,7 @@ namespace RS {
         template <> struct ObjectToString<char32_t> { Ustring operator()(char32_t t) const { return uconv<Ustring>(std::u32string{t}); } };
 
         template <> struct ObjectToString<std::wstring> { Ustring operator()(const std::wstring& t) const { return uconv<Ustring>(t); } };
-        template <> struct ObjectToString<wstring_view> { Ustring operator()(wstring_view t) const { return uconv<Ustring>(t); } };
+        template <> struct ObjectToString<std::wstring_view> { Ustring operator()(std::wstring_view t) const { return uconv<Ustring>(t); } };
         template <> struct ObjectToString<wchar_t*> { Ustring operator()(wchar_t* t) const { return t ? uconv<Ustring>(std::wstring(t)) : Ustring(); } };
         template <> struct ObjectToString<const wchar_t*> { Ustring operator()(const wchar_t* t) const { return t ? uconv<Ustring>(std::wstring(t)) : Ustring(); } };
         template <size_t N> struct ObjectToString<wchar_t[N], 'X'> { Ustring operator()(const wchar_t* t) const { return uconv<Ustring>(std::wstring(t, N - 1)); } };
@@ -995,22 +996,22 @@ namespace RS {
 
     // String parsing functions
 
-    inline unsigned long long binnum(string_view str) noexcept {
+    inline unsigned long long binnum(std::string_view str) noexcept {
         std::string s(str);
         return std::strtoull(s.data(), nullptr, 2);
     }
 
-    inline long long decnum(string_view str) noexcept {
+    inline long long decnum(std::string_view str) noexcept {
         std::string s(str);
         return std::strtoll(s.data(), nullptr, 10);
     }
 
-    inline unsigned long long hexnum(string_view str) noexcept {
+    inline unsigned long long hexnum(std::string_view str) noexcept {
         std::string s(str);
         return std::strtoull(s.data(), nullptr, 16);
     }
 
-    inline double fpnum(string_view str) noexcept {
+    inline double fpnum(std::string_view str) noexcept {
         std::string s(str);
         return std::strtod(s.data(), nullptr);
     }
@@ -1075,7 +1076,7 @@ namespace RS {
     class Tag {
     public:
         Tag() = default;
-        Tag(std::ostream& out, string_view element) {
+        Tag(std::ostream& out, std::string_view element) {
             std::string content = trim_right(element, "\n");
             size_t lfs = element.size() - content.size();
             content = trim(content, "\t\n\f\r <>");
@@ -1128,13 +1129,13 @@ namespace RS {
     };
 
     template <typename T>
-    void tagged(std::ostream& out, string_view element, const T& t) {
+    void tagged(std::ostream& out, std::string_view element, const T& t) {
         Tag html(out, element);
         out << t;
     }
 
     template <typename... Args>
-    void tagged(std::ostream& out, string_view element, const Args&... args) {
+    void tagged(std::ostream& out, std::string_view element, const Args&... args) {
         Tag html(out, element);
         tagged(out, args...);
     }

@@ -4,6 +4,7 @@
 #include "rs-core/string.hpp"
 #include <algorithm>
 #include <string>
+#include <string_view>
 
 namespace RS {
 
@@ -12,8 +13,8 @@ namespace RS {
         virtual ~Encoding() = default;
         virtual void encode_bytes(const void* src, size_t len, Ustring& dst, size_t width = npos) const = 0;
         virtual size_t decode_bytes(const char* src, size_t len, std::string& dst) const = 0;
-        void encode(string_view src, Ustring& dst, size_t width = npos) const { encode_bytes(src.data(), src.size(), dst, width); }
-        Ustring encode(string_view src, size_t width = npos) const { Ustring dst; encode_bytes(src.data(), src.size(), dst, width); return dst; }
+        void encode(std::string_view src, Ustring& dst, size_t width = npos) const { encode_bytes(src.data(), src.size(), dst, width); }
+        Ustring encode(std::string_view src, size_t width = npos) const { Ustring dst; encode_bytes(src.data(), src.size(), dst, width); return dst; }
         size_t decode(Uview src, std::string& dst) const { return decode_bytes(src.data(), src.size(), dst); }
         std::string decode(Uview src) const { std::string dst; decode_bytes(src.data(), src.size(), dst); return dst; }
     protected:

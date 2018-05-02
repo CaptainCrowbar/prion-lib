@@ -96,7 +96,7 @@ referenced data.</p>
 <p>The <code>hex()</code> function returns the blob's data in hex form; if a nonzero block
 size is supplied, a line feed will be inserted after each block.</p>
 <p>The <code>str()</code> function copies the entire blob into a string. There is also an
-implicit conversion to <code>string_view</code>.</p>
+implicit conversion to <code>std::string_view</code>.</p>
 <p>The comparison operators perform bytewise comparison by calling <code>memcmp()</code>.</p>
 <p>The <code>from_hex()</code> function translates a hexadecimal string into bytes. The
 argument string must contain zero or more contiguous blocks of hex digits,

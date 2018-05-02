@@ -64,6 +64,7 @@
 #include <shared_mutex>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <thread>
 #include <tuple>
 #include <type_traits>
@@ -91,36 +92,6 @@
     #include <sys/select.h>
     #include <sys/time.h>
     #include <unistd.h>
-#endif
-
-// Temporary measure until all my compilers support std::string_view
-
-#if defined(__GNUC__) && ! defined(__clang__) && __GNUC__ < 7
-
-    #include <experimental/string_view>
-
-    using std::experimental::basic_string_view;
-    using std::experimental::string_view;
-    using std::experimental::u16string_view;
-    using std::experimental::u32string_view;
-    using std::experimental::wstring_view;
-
-    template <typename C>
-    inline std::basic_string<C>& operator+=(std::basic_string<C>& lhs, basic_string_view<C> rhs) {
-        lhs.append(rhs.data(), rhs.size());
-        return lhs;
-    }
-
-#else
-
-    #include <string_view>
-
-    using std::basic_string_view;
-    using std::string_view;
-    using std::u16string_view;
-    using std::u32string_view;
-    using std::wstring_view;
-
 #endif
 
 // GNU brain damage
@@ -269,7 +240,7 @@ namespace RS {
     #endif
 
     using Ustring = std::string;
-    using Uview = string_view;
+    using Uview = std::string_view;
     using Strings = std::vector<std::string>;
     using NativeString = std::basic_string<NativeCharacter>;
     using WstringEquivalent = std::basic_string<WcharEquivalent>;
@@ -361,7 +332,7 @@ namespace RS {
     template <typename S>
     auto make_view(const S& s, size_t pos = 0, size_t len = npos) noexcept {
         using C = std::decay_t<decltype(s[0])>;
-        using SV = basic_string_view<C>;
+        using SV = std::basic_string_view<C>;
         SV view(s);
         if (pos == 0 && len == npos)
             return view;

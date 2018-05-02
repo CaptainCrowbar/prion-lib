@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cerrno>
 #include <string>
+#include <string_view>
 #include <system_error>
 #include <zlib.h>
 
@@ -40,11 +41,11 @@ namespace RS {
     }
 
     struct Zlib {
-        static std::string compress(string_view src, int level = Z_DEFAULT_COMPRESSION);
-        static std::string uncompress(string_view src);
+        static std::string compress(std::string_view src, int level = Z_DEFAULT_COMPRESSION);
+        static std::string uncompress(std::string_view src);
     };
 
-        inline std::string Zlib::compress(string_view src, int level) {
+        inline std::string Zlib::compress(std::string_view src, int level) {
             if (src.empty())
                 return {};
             auto dstlen = ::compressBound(uLong(src.size()));
@@ -60,7 +61,7 @@ namespace RS {
             return dst;
         }
 
-        inline std::string Zlib::uncompress(string_view src) {
+        inline std::string Zlib::uncompress(std::string_view src) {
             if (src.empty())
                 return {};
             auto block = uLong(5 * src.size());

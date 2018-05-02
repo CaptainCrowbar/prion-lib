@@ -16,6 +16,7 @@
 #include <ostream>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <thread>
 #include <utility>
 
@@ -663,7 +664,7 @@ namespace RS {
         virtual bool is_closed() const noexcept { return ! open; }
         virtual size_t read(void* dst, size_t maxlen);
         void clear() noexcept;
-        bool write(string_view src) { return write(src.data(), src.size()); }
+        bool write(std::string_view src) { return write(src.data(), src.size()); }
         bool write(const void* src, size_t len);
     protected:
         virtual bool do_wait_for(duration t);

@@ -87,7 +87,7 @@ The `hex()` function returns the blob's data in hex form; if a nonzero block
 size is supplied, a line feed will be inserted after each block.
 
 The `str()` function copies the entire blob into a string. There is also an
-implicit conversion to `string_view`.
+implicit conversion to `std::string_view`.
 
 The comparison operators perform bytewise comparison by calling `memcmp()`.
 

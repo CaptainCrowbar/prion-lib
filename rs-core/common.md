@@ -151,7 +151,7 @@ function gives the same result as the underlying integer type's hash.
 
 Use `Ustring` or `Uview` for strings that are expected to be in UTF-8 (or
 ASCII, since any ASCII string is also valid UTF-8), while plain `std::string`
-or `std::string_view` is used where the string is expected to be in some non-
+or `std::string_view` is used where the string is expected to be in some other
 Unicode encoding, or where the string is being used simply as an array of
 bytes rather than encoded text.
 

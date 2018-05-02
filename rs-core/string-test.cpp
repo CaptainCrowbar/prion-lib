@@ -6,6 +6,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <typeindex>
 #include <typeinfo>
@@ -581,7 +582,7 @@ void test_core_string_manipulation() {
 
     std::string s, s1, s2;
     std::wstring ws;
-    string_view sv1, sv2;
+    std::string_view sv1, sv2;
     Strings sv;
 
     s = "";            TRY(s = add_prefix(s, ""));       TEST_EQUAL(s, "");

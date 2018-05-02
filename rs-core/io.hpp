@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <system_error>
 #include <utility>
 #include <vector>
@@ -70,8 +71,8 @@ namespace RS {
         size_t read_n(std::string& s, size_t maxlen = 1024);
         std::string read_str(size_t maxlen);
         void write_line() { putc('\n'); }
-        void write_line(string_view str);
-        size_t write_str(string_view str);
+        void write_line(std::string_view str);
+        size_t write_str(std::string_view str);
     protected:
         static constexpr const char* null_device =
             #ifdef _XOPEN_SOURCE
@@ -146,7 +147,7 @@ namespace RS {
             return s;
         }
 
-        inline void IO::write_line(string_view str) {
+        inline void IO::write_line(std::string_view str) {
             if (str.empty())
                 putc('\n');
             else if (str.back() == '\n')
@@ -155,7 +156,7 @@ namespace RS {
                 write_str(std::string(str) + '\n');
         }
 
-        inline size_t IO::write_str(string_view str) {
+        inline size_t IO::write_str(std::string_view str) {
             static constexpr char dummy = '\0';
             const char* ptr = str.empty() ? &dummy : str.data();
             size_t ofs = 0, len = str.size();

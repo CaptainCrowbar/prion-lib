@@ -11,6 +11,7 @@
 #include <ostream>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <system_error>
 #include <utility>
 #include <vector>
@@ -43,11 +44,11 @@ namespace RS {
         static constexpr uint32_t require = 4;
         File() = default;
         File(const std::string& name): path(name) { normalize(); }
-        File(string_view name): path(name) { normalize(); }
+        File(std::string_view name): path(name) { normalize(); }
         File(const char* name): path(name ? name : "") { normalize(); }
         #ifndef _XOPEN_SOURCE
             File(const std::wstring& name): path(uconv<std::string>(name)) { normalize(); }
-            File(wstring_view name): path(uconv<std::string>(name)) { normalize(); }
+            File(std::wstring_view name): path(uconv<std::string>(name)) { normalize(); }
             File(const wchar_t* name): path(name ? uconv<std::string>(name) : "") { normalize(); }
         #endif
         // File name operations
@@ -57,9 +58,9 @@ namespace RS {
         bool is_absolute() const noexcept;
         File parent() const;
         File leaf() const;
-        string_view base() const;
-        string_view ext() const;
-        File change_ext(string_view new_ext) const;
+        std::string_view base() const;
+        std::string_view ext() const;
+        File change_ext(std::string_view new_ext) const;
         #if defined(_XOPEN_SOURCE) && ! defined(__CYGWIN__)
             std::string native() const { return path; }
         #else
@@ -79,7 +80,7 @@ namespace RS {
         void remove(uint32_t flags = 0) const;
         // I/O operations
         std::string load(size_t limit = npos, uint32_t flags = 0) const;
-        void save(string_view content, uint32_t flags = 0) const { save(content.data(), content.size(), flags); }
+        void save(std::string_view content, uint32_t flags = 0) const { save(content.data(), content.size(), flags); }
         void save(const void* ptr, size_t len, uint32_t flags = 0) const;
         // Metadata operations
         std::chrono::system_clock::time_point atime() const;
@@ -120,7 +121,7 @@ namespace RS {
         return make_view(path, pos, npos);
     }
 
-    inline string_view File::base() const {
+    inline std::string_view File::base() const {
         size_t start = path.find_last_of('/') + 1;
         size_t dot = path.find_last_of('.');
         if (dot > start + 1 && dot != npos)
@@ -129,7 +130,7 @@ namespace RS {
             return make_view(path, start, npos);
     }
 
-    inline string_view File::ext() const {
+    inline std::string_view File::ext() const {
         size_t start = path.find_last_of('/') + 1;
         size_t dot = path.find_last_of('.');
         if (dot > start + 1 && dot != npos)
@@ -138,7 +139,7 @@ namespace RS {
             return {};
     }
 
-    inline File File::change_ext(string_view new_ext) const {
+    inline File File::change_ext(std::string_view new_ext) const {
         if (path.empty() || path.back() == '/')
             throw std::invalid_argument("Can't change file extension on " + quote(path));
         std::string result = path;
@@ -258,10 +259,10 @@ namespace RS {
 
     namespace Literals {
 
-        inline File operator""_file(const char* p, size_t n) { return File(string_view(p, n)); }
+        inline File operator""_file(const char* p, size_t n) { return File(std::string_view(p, n)); }
 
         #ifndef _XOPEN_SOURCE
-            inline File operator""_file(const wchar_t* p, size_t n) { return File(wstring_view(p, n)); }
+            inline File operator""_file(const wchar_t* p, size_t n) { return File(std::wstring_view(p, n)); }
         #endif
 
     }

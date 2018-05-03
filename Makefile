@@ -10,12 +10,18 @@
 
 # Project identity
 
-LIBROOT ?= ..
 project_name := $(shell ls */*.{c,h,cpp,hpp} 2>/dev/null | sed -E 's!/.*!!'| uniq -c | sort | tail -n 1 | sed -E 's!^[ 0-9]+!!')
 project_tag := $(shell echo "$$PWD" | sed -E 's!^([^/]*/)*([^/]*-)?!!')
 dependency_file := dependencies.make
 install_prefix := /usr/local
-scripts_dir := $(LIBROOT)/core-lib/scripts
+
+ifneq ($(wildcard scripts),)
+	scripts_dir := scripts
+else ifdef LIBROOT
+	scripts_dir := $(LIBROOT)/core-lib/scripts
+else
+	scripts_dir := ../core-lib/scripts
+endif
 
 # Toolset identity
 
@@ -175,16 +181,12 @@ ifeq ($(project_tag),lib)
 	else
 		install_type := object-lib
 	endif
+else ifeq ($(project_tag),engine)
+	install_type := object-lib
+else ifneq ($(app_sources),)
+	install_type := application
 else
-	ifeq ($(project_tag),engine)
-		install_type := object-lib
-	else
-		ifneq ($(app_sources),)
-			install_type := application
-		else
-			install_type := nothing
-		endif
-	endif
+	install_type := nothing
 endif
 
 app_name := $(project_name)$(exe_suffix)

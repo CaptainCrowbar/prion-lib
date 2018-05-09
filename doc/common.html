@@ -606,6 +606,17 @@ suitable <code>insert()</code> method.</p>
 </div>
 <div class="defns">
 <ul>
+<li><code>template &lt;typename Range&gt; [value type]</code> <strong><code>at_index</code></strong><code>(const Range&amp; r, size_t index)</code></li>
+<li><code>template &lt;typename Range, typename T&gt; [value type]</code> <strong><code>at_index</code></strong><code>(const Range&amp; r, size_t index, const T&amp; def)</code></li>
+</ul>
+<p>Safe array access, returning the element at the given index, or the default
+value (implicitly converted to the range's value type) if the index is out of
+bounds. If no default value is supplied, a default constructed object of the
+value type is returned. The array type can be any range with random access
+iterators.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>template &lt;typename Range1, typename Range2&gt; int</code> <strong><code>compare_3way</code></strong><code>(const Range1&amp; r1, const Range2&amp; r2)</code></li>
 <li><code>template &lt;typename Range1, typename Range2, typename Compare&gt; int</code> <strong><code>compare_3way</code></strong><code>(const Range1&amp; r1, const Range2&amp; r2, Compare cmp)</code></li>
 </ul>

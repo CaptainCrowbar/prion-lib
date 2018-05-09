@@ -902,6 +902,7 @@ void test_core_common_generic_algorithms() {
     Ustring s1, s2;
     std::vector<int> v1, v2, v3, v4;
     int n = 0;
+    char c = 0;
 
     s1 = "Hello";
     TRY(std::copy(s1.begin(), s1.end(), append(s2)));
@@ -926,6 +927,17 @@ void test_core_common_generic_algorithms() {
     set1 = {7, 8, 9};
     TRY(std::copy(set1.begin(), set1.end(), overwrite(set2)));
     TEST_EQUAL(make_str(set2), "[7,8,9]");
+
+    s1 = "Hello";
+
+    TRY(c = at_index(s1, 0));          TEST_EQUAL(c, 'H');
+    TRY(c = at_index(s1, 4));          TEST_EQUAL(c, 'o');
+    TRY(c = at_index(s1, 5));          TEST_EQUAL(c, '\0');
+    TRY(c = at_index(s1, npos));       TEST_EQUAL(c, '\0');
+    TRY(c = at_index(s1, 0, '*'));     TEST_EQUAL(c, 'H');
+    TRY(c = at_index(s1, 4, '*'));     TEST_EQUAL(c, 'o');
+    TRY(c = at_index(s1, 5, '*'));     TEST_EQUAL(c, '*');
+    TRY(c = at_index(s1, npos, '*'));  TEST_EQUAL(c, '*');
 
     s1 = "";               s2 = "";               TRY(n = compare_3way(s1, s2));                    TEST_EQUAL(n, 0);
     s1 = "";               s2 = "hello";          TRY(n = compare_3way(s1, s2));                    TEST_EQUAL(n, -1);

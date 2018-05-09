@@ -691,6 +691,22 @@ namespace RS {
     template <typename Container> AppendIterator<Container> append(Container& con) { return AppendIterator<Container>(con); }
     template <typename Container> AppendIterator<Container> overwrite(Container& con) { con.clear(); return AppendIterator<Container>(con); }
 
+    template <typename Range, typename T>
+    Meta::RangeValue<Range> at_index(const Range& r, size_t index, const T& def) {
+        using std::begin;
+        using std::end;
+        auto b = begin(r), e = end(r);
+        if (index < size_t(e - b))
+            return b[index];
+        else
+            return def;
+    }
+
+    template <typename Range>
+    auto at_index(const Range& r, size_t index) {
+        return at_index(r, index, Meta::RangeValue<Range>());
+    }
+
     template <typename Range1, typename Range2, typename Compare>
     int compare_3way(const Range1& r1, const Range2& r2, Compare cmp) {
         using std::begin;

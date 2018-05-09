@@ -455,6 +455,15 @@ generic version calls `con.insert(con.end(), t)`; overloads (found by argument
 dependent lookup) can be used for container-like types that do not have a
 suitable `insert()` method.
 
+* `template <typename Range> [value type]` **`at_index`**`(const Range& r, size_t index)`
+* `template <typename Range, typename T> [value type]` **`at_index`**`(const Range& r, size_t index, const T& def)`
+
+Safe array access, returning the element at the given index, or the default
+value (implicitly converted to the range's value type) if the index is out of
+bounds. If no default value is supplied, a default constructed object of the
+value type is returned. The array type can be any range with random access
+iterators.
+
 * `template <typename Range1, typename Range2> int` **`compare_3way`**`(const Range1& r1, const Range2& r2)`
 * `template <typename Range1, typename Range2, typename Compare> int` **`compare_3way`**`(const Range1& r1, const Range2& r2, Compare cmp)`
 

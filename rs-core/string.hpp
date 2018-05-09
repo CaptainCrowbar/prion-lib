@@ -746,7 +746,7 @@ namespace RS {
         using namespace std::literals;
         static const Ustring modes = "EFGZefgz";
         if (modes.find(mode) == npos)
-            throw std::invalid_argument("Invalid floating point mode: " + quote(Ustring{mode}));
+            throw std::invalid_argument("Invalid floating point mode: " + quote(Ustring(1, mode)));
         if (t == 0) {
             switch (mode) {
                 case 'E': case 'e':  return prec < 1 ? "0"s + mode + '0' : "0."s + Ustring(prec, '0') + mode + "0";

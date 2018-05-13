@@ -880,11 +880,9 @@ result would be out of range for the return type.</p>
 <li><code>template &lt;typename T&gt; constexpr T</code> <strong><code>lcm</code></strong><code>(T a, T b) noexcept</code></li>
 </ul>
 <p>Return the greatest common divisor or lowest common multiple of two numbers.
-The argument type must be an integer. If one argument is zero, <code>gcd()</code> will
-return the other one, and <code>lcm()</code> will return zero. The return value is always
-positive (if not zero), regardless of the signs of the arguments. If the
-correct result for <code>lcm()</code> would be outside the range of <code>T</code>, behaviour is
-undefined if <code>T</code> is signed, unspecified if <code>T</code> is unsigned.</p>
+These give the same results as <code>std::gcd/lcm()</code>, but without checking that <code>T</code>
+is a primitive integral type, so these will work with user defined integer
+types.</p>
 </div>
 <div class="defns">
 <ul>

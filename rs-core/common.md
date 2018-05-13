@@ -684,11 +684,9 @@ result would be out of range for the return type.
 * `template <typename T> constexpr T` **`lcm`**`(T a, T b) noexcept`
 
 Return the greatest common divisor or lowest common multiple of two numbers.
-The argument type must be an integer. If one argument is zero, `gcd()` will
-return the other one, and `lcm()` will return zero. The return value is always
-positive (if not zero), regardless of the signs of the arguments. If the
-correct result for `lcm()` would be outside the range of `T`, behaviour is
-undefined if `T` is signed, unspecified if `T` is unsigned.
+These give the same results as `std::gcd/lcm()`, but without checking that `T`
+is a primitive integral type, so these will work with user defined integer
+types.
 
 * `template <typename T> T` **`int_power`**`(T x, T y) noexcept`
 

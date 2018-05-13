@@ -220,6 +220,11 @@ void test_core_common_preprocessor_macros() {
 
     std::vector<int> iv = {1, 2, 3, 4, 5}, iv2 = {2, 3, 5, 7, 11};
     Strings result, sv = {"Neddie", "Eccles", "Bluebottle"};
+    FooEnum f = {};
+    BarEnum b = {};
+    ZapEnum x = {}, y = {}, z = {};
+    std::vector<FooEnum> vf;
+    std::vector<BarEnum> vb;
 
     TRY(std::transform(iv.begin(), iv.end(), overwrite(result), RS_OVERLOAD(f1)));
     TEST_EQUAL_RANGE(result, (Strings{"*", "**", "***", "****", "*****"}));
@@ -235,9 +240,6 @@ void test_core_common_preprocessor_macros() {
     for (size_t i = 0; i < iv.size() && i < iv2.size(); ++i)
         TRY(*out++ = of2(iv[i], iv2[i]));
     TEST_EQUAL_RANGE(result, (Strings{"2", "6", "15", "28", "55"}));
-
-    std::vector<FooEnum> vf;
-    std::vector<BarEnum> vb;
 
     TEST_TYPE(std::underlying_type_t<FooEnum>, int16_t);
     TEST_TYPE(std::underlying_type_t<BarEnum>, int32_t);
@@ -290,7 +292,27 @@ void test_core_common_preprocessor_macros() {
     TEST_EQUAL(vb.size(), 3);
     TEST_EQUAL(make_str(vb), "[BarEnum::alpha,BarEnum::bravo,BarEnum::charlie]");
 
-    ZapEnum x = ZapEnum::alpha, y = ZapEnum::bravo, z = ZapEnum(0);
+    TEST(str_to_enum("alpha", f));    TEST_EQUAL(f, alpha);
+    TEST(str_to_enum("bravo", f));    TEST_EQUAL(f, bravo);
+    TEST(str_to_enum("charlie", f));  TEST_EQUAL(f, charlie);
+    TEST(! str_to_enum("delta", f));
+    TEST(str_to_enum("FooEnum::alpha", f));    TEST_EQUAL(f, alpha);
+    TEST(str_to_enum("FooEnum::bravo", f));    TEST_EQUAL(f, bravo);
+    TEST(str_to_enum("FooEnum::charlie", f));  TEST_EQUAL(f, charlie);
+    TEST(! str_to_enum("FooEnum::delta", f));
+
+    TEST(str_to_enum("alpha", b));    TEST_EQUAL(b, BarEnum::alpha);
+    TEST(str_to_enum("bravo", b));    TEST_EQUAL(b, BarEnum::bravo);
+    TEST(str_to_enum("charlie", b));  TEST_EQUAL(b, BarEnum::charlie);
+    TEST(! str_to_enum("delta", b));
+    TEST(str_to_enum("BarEnum::alpha", b));    TEST_EQUAL(b, BarEnum::alpha);
+    TEST(str_to_enum("BarEnum::bravo", b));    TEST_EQUAL(b, BarEnum::bravo);
+    TEST(str_to_enum("BarEnum::charlie", b));  TEST_EQUAL(b, BarEnum::charlie);
+    TEST(! str_to_enum("BarEnum::delta", b));
+
+    x = ZapEnum::alpha;
+    y = ZapEnum::bravo;
+    z = ZapEnum(0);
 
     TEST(x);    TEST(bool(x));
     TEST(y);    TEST(bool(y));
@@ -298,7 +320,7 @@ void test_core_common_preprocessor_macros() {
 
     TRY(z = ~ x);             TEST_EQUAL(uint32_t(z), 0xfffffffe);
     TRY(z = ~ y);             TEST_EQUAL(uint32_t(z), 0xfffffffd);
-    TRY(z = ~ ZapEnum(0));        TEST_EQUAL(uint32_t(z), 0xffffffff);
+    TRY(z = ~ ZapEnum(0));    TEST_EQUAL(uint32_t(z), 0xffffffff);
     TRY(z = x & y);           TEST_EQUAL(uint32_t(z), 0);
     TRY(z = x | y);           TEST_EQUAL(uint32_t(z), 3);
     TRY(z = x ^ y);           TEST_EQUAL(uint32_t(z), 3);

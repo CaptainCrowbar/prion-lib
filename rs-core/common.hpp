@@ -138,7 +138,7 @@ namespace RS {
     namespace RS_Detail {
 
         template <typename EnumType>
-        std::string enum_str(EnumType t, const char* prefix, const char* names) {
+        const std::vector<std::string> enum_str_list(const char* names) {
             static const std::vector<std::string> names_vec = [=] {
                 auto ptr = names;
                 std::vector<std::string> vec;
@@ -148,15 +148,36 @@ namespace RS {
                     auto next = std::strchr(ptr, ',');
                     if (! next)
                         break;
-                    vec.push_back(prefix + std::string(ptr, next - ptr));
+                    vec.push_back(std::string(ptr, next - ptr));
                     ptr = next + 1;
                 }
-                vec.push_back(std::string(prefix) + ptr);
+                vec.push_back(ptr);
                 return vec;
             }();
+            return names_vec;
+        }
+
+        template <typename EnumType>
+        bool enum_from_str(std::string_view s, EnumType& t, const char* prefix, const char* names) {
+            using U = std::underlying_type_t<EnumType>;
+            size_t psize = std::strlen(prefix);
+            if (psize < s.size() && std::memcmp(s.data(), prefix, psize) == 0)
+                s = std::string_view(s.data() + psize, s.size() - psize);
+            auto& names_vec = enum_str_list<EnumType>(names);
+            for (auto& name: names_vec) {
+                if (s == name) {
+                    t = EnumType(U(EnumType::RS_enum_begin) + U(&name - names_vec.data()));
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        template <typename EnumType>
+        std::string enum_to_str(EnumType t, const char* prefix, const char* names) {
             using U = std::underlying_type_t<EnumType>;
             if (t >= EnumType::RS_enum_begin && t < EnumType::RS_enum_end)
-                return names_vec[U(t) - U(EnumType::RS_enum_begin)];
+                return prefix + enum_str_list<EnumType>(names)[U(t) - U(EnumType::RS_enum_begin)];
             else
                 return std::to_string(U(t));
         }
@@ -181,7 +202,8 @@ namespace RS {
 #define RS_ENUM_IMPLEMENTATION(EnumType, IntType, class_tag, name_prefix, first_value, first_name, ...) \
     enum class_tag EnumType: IntType { RS_enum_begin = first_value, first_name = first_value, __VA_ARGS__, RS_enum_end }; \
     constexpr RS_ATTR_UNUSED bool enum_is_valid(EnumType t) noexcept { return t >= EnumType::RS_enum_begin && t < EnumType::RS_enum_end; } \
-    inline RS_ATTR_UNUSED std::string to_str(EnumType t) { return ::RS::RS_Detail::enum_str(t, name_prefix, #first_name "," #__VA_ARGS__); } \
+    inline RS_ATTR_UNUSED bool str_to_enum(std::string_view s, EnumType& t) noexcept { return ::RS::RS_Detail::enum_from_str(s, t, #EnumType "::", #first_name "," #__VA_ARGS__); } \
+    inline RS_ATTR_UNUSED std::string to_str(EnumType t) { return ::RS::RS_Detail::enum_to_str(t, name_prefix, #first_name "," #__VA_ARGS__); } \
     inline RS_ATTR_UNUSED std::ostream& operator<<(std::ostream& out, EnumType t) { return out << to_str(t); }
 
 #define RS_ENUM(EnumType, IntType, first_value, first_name, ...) \

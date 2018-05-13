@@ -994,6 +994,46 @@ namespace RS {
         return result;
     }
 
+    template <typename Range>
+    Ustring format_list(const Range& r, std::string_view prefix, std::string_view delimiter, std::string_view suffix) {
+        Ustring s(prefix);
+        for (auto&& t: r) {
+            s += to_str(t);
+            s += delimiter;
+        }
+        if (s.size() > prefix.size())
+            s.resize(s.size() - delimiter.size());
+        s += suffix;
+        return s;
+
+    }
+
+    template <typename Range>
+    Ustring format_list(const Range& r) {
+        return format_list(r, "[", ",", "]");
+    }
+
+    template <typename Range>
+    Ustring format_map(const Range& r, std::string_view prefix, std::string_view infix, std::string_view delimiter, std::string_view suffix) {
+        Ustring s(prefix);
+        for (auto&& kv: r) {
+            s += to_str(kv.first);
+            s += infix;
+            s += to_str(kv.second);
+            s += delimiter;
+        }
+        if (s.size() > prefix.size())
+            s.resize(s.size() - delimiter.size());
+        s += suffix;
+        return s;
+
+    }
+
+    template <typename Range>
+    Ustring format_map(const Range& r) {
+        return format_map(r, "{", ":", ",", "}");
+    }
+
     // String parsing functions
 
     inline unsigned long long binnum(std::string_view str) noexcept {

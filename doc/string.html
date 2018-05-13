@@ -328,6 +328,28 @@ copied unchanged (so <code>"$$"</code> will produce a literal dollar sign).</p>
 </div>
 <div class="defns">
 <ul>
+<li><code>template &lt;typename Range&gt; Ustring</code> <strong><code>format_list</code></strong><code>(const Range&amp; r)</code></li>
+<li><code>template &lt;typename Range&gt; Ustring</code> <strong><code>format_list</code></strong><code>(const Range&amp; r, std::string_view prefix, std::string_view delimiter, std::string_view suffix)</code></li>
+<li><code>template &lt;typename Range&gt; Ustring</code> <strong><code>format_map</code></strong><code>(const Range&amp; r)</code></li>
+<li><code>template &lt;typename Range&gt; Ustring</code> <strong><code>format_map</code></strong><code>(const Range&amp; r, std::string_view prefix, std::string_view infix, std::string_view delimiter, std::string_view suffix)</code></li>
+</ul>
+<p>Format a range as a delimited list. The <code>format_list()</code> function writes the
+elements in sequence, with <code>prefix</code> and <code>suffix</code> at the beginning and end, and
+with a <code>delimiter</code> between each pair of elements; individual elements are
+formatted using <code>to_str()</code> (see below). The <code>format_map()</code> function expects
+the range's value type to be a pair (or something with <code>first</code> and <code>second</code>
+members); the elements of each pair are separated with the <code>infix</code> string, and
+the range is otherwise formatted in the same way as <code>format_list()</code>. The
+default formats are based on JSON syntax:</p>
+<!-- TEXT -->
+
+<ul>
+<li><code>format_list(r) = format_list(r, "[", ",", "]")</code></li>
+<li><code>format_map(r) = format_map(r, "{", ":", ",", "}")</code></li>
+</ul>
+</div>
+<div class="defns">
+<ul>
 <li><code>template &lt;typename T&gt; Ustring</code> <strong><code>fp_format</code></strong><code>(T t, char mode = 'g', int prec = 6)</code></li>
 </ul>
 <p>Simple floating point formatting, by calling <code>snprintf()</code>. <code>T</code> must be an
@@ -368,19 +390,17 @@ if the argument is less than 1.</p>
 <p>Formats an object as a string. This uses the following rules for formatting
 various types:</p>
 <ul>
-<li><code>std::string</code>, <code>std::string_view</code>, <code>char</code>, character pointers, and anything
-with an implicit conversion to <code>std::string</code> or <code>std::string_view</code> - The
-string content is simply copied directly without using an output stream; a
-null character pointer is treated as an empty string.</li>
+<li>Strings and string-like types - The string content is simply copied verbatim; a null character pointer is treated as an empty string.</li>
 <li>Unicode string and character types - Converted to UTF-8 using <code>uconv()</code>.</li>
+<li>Ranges (other than strings) - Serialized in the same format as <code>format_list()</code> above (or <code>format_map()</code> if the value type is a pair).</li>
 <li>Integer types - Formatted using <code>dec()</code>.</li>
 <li>Floating point types - Formatted using <code>fp_format()</code>.</li>
 <li><code>bool</code> - Written as <code>"true"</code> or <code>"false"</code>.</li>
-<li>Ranges (other than strings) - Serialized in a format similar to a JSON array
-(e.g. <code>"[1,2,3]"</code>), or an object (e.g. <code>"{1:a,2:b,3:c}"</code>) if the range's value
-type is a pair; <code>to_str()</code> is called recursively on each range element.</li>
-<li>Otherwise, the type's output operator will be called.</li>
+<li>Otherwise - Call the type's output operator, or fail to compile if it does not have one.</li>
 </ul>
+<p>"String-like types" are defined as <code>std::string</code>, <code>std::string_view</code>, <code>char</code>,
+character pointers, and anything with an implicit conversion to <code>std::string</code>
+or <code>std::string_view</code>.</p>
 </div>
 <h2 id="string-parsing-functions">String parsing functions</h2>
 <div class="defns">

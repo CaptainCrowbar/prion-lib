@@ -986,6 +986,26 @@ void test_core_string_formatting() {
     TEST_EQUAL(to_str(iv), "[]");
     TEST_EQUAL(to_str(sv), "[]");
     TEST_EQUAL(to_str(ism), "{}");
+    TEST_EQUAL(format_list(iv), "[]");
+    TEST_EQUAL(format_list(sv), "[]");
+    TEST_EQUAL(format_map(ism), "{}");
+    TEST_EQUAL(format_list(iv, "<", "/", ">"), "<>");
+    TEST_EQUAL(format_list(sv, "<", "/", ">"), "<>");
+    TEST_EQUAL(format_map(ism, "<", "=", "/", ">"), "<>");
+
+    iv.push_back(1);
+    sv.push_back("hello");
+    ism[1] = "hello";
+
+    TEST_EQUAL(to_str(iv), "[1]");
+    TEST_EQUAL(to_str(sv), "[hello]");
+    TEST_EQUAL(to_str(ism), "{1:hello}");
+    TEST_EQUAL(format_list(iv), "[1]");
+    TEST_EQUAL(format_list(sv), "[hello]");
+    TEST_EQUAL(format_map(ism), "{1:hello}");
+    TEST_EQUAL(format_list(iv, "<", "/", ">"), "<1>");
+    TEST_EQUAL(format_list(sv, "<", "/", ">"), "<hello>");
+    TEST_EQUAL(format_map(ism, "<", "=", "/", ">"), "<1=hello>");
 
     iv = {1,2,3};
     sv = {"hello","world","goodbye"};
@@ -994,6 +1014,12 @@ void test_core_string_formatting() {
     TEST_EQUAL(to_str(iv), "[1,2,3]");
     TEST_EQUAL(to_str(sv), "[hello,world,goodbye]");
     TEST_EQUAL(to_str(ism), "{1:hello,2:world,3:goodbye}");
+    TEST_EQUAL(format_list(iv), "[1,2,3]");
+    TEST_EQUAL(format_list(sv), "[hello,world,goodbye]");
+    TEST_EQUAL(format_map(ism), "{1:hello,2:world,3:goodbye}");
+    TEST_EQUAL(format_list(iv, "<", "/", ">"), "<1/2/3>");
+    TEST_EQUAL(format_list(sv, "<", "/", ">"), "<hello/world/goodbye>");
+    TEST_EQUAL(format_map(ism, "<", "=", "/", ">"), "<1=hello/2=world/3=goodbye>");
 
     TRY(s = fmt(""));                               TEST_EQUAL(s, "");
     TRY(s = fmt("Hello world"));                    TEST_EQUAL(s, "Hello world");

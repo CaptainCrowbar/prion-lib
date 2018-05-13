@@ -258,6 +258,24 @@ be replaced with an empty string. If a dollar sign is not followed by a bare
 or braced number, the dollar sign is discarded and the next character is
 copied unchanged (so `"$$"` will produce a literal dollar sign).
 
+* `template <typename Range> Ustring` **`format_list`**`(const Range& r)`
+* `template <typename Range> Ustring` **`format_list`**`(const Range& r, std::string_view prefix, std::string_view delimiter, std::string_view suffix)`
+* `template <typename Range> Ustring` **`format_map`**`(const Range& r)`
+* `template <typename Range> Ustring` **`format_map`**`(const Range& r, std::string_view prefix, std::string_view infix, std::string_view delimiter, std::string_view suffix)`
+
+Format a range as a delimited list. The `format_list()` function writes the
+elements in sequence, with `prefix` and `suffix` at the beginning and end, and
+with a `delimiter` between each pair of elements; individual elements are
+formatted using `to_str()` (see below). The `format_map()` function expects
+the range's value type to be a pair (or something with `first` and `second`
+members); the elements of each pair are separated with the `infix` string, and
+the range is otherwise formatted in the same way as `format_list()`. The
+default formats are based on JSON syntax:
+
+<!-- TEXT -->
+* `format_list(r) = format_list(r, "[", ",", "]")`
+* `format_map(r) = format_map(r, "{", ":", ",", "}")`
+
 * `template <typename T> Ustring` **`fp_format`**`(T t, char mode = 'g', int prec = 6)`
 
 Simple floating point formatting, by calling `snprintf()`. `T` must be an
@@ -290,18 +308,17 @@ Convert a boolean to `"true/false"` or `"yes/no"`.
 Formats an object as a string. This uses the following rules for formatting
 various types:
 
-* `std::string`, `std::string_view`, `char`, character pointers, and anything
-with an implicit conversion to `std::string` or `std::string_view` - The
-string content is simply copied directly without using an output stream; a
-null character pointer is treated as an empty string.
+* Strings and string-like types - The string content is simply copied verbatim; a null character pointer is treated as an empty string.
 * Unicode string and character types - Converted to UTF-8 using `uconv()`.
+* Ranges (other than strings) - Serialized in the same format as `format_list()` above (or `format_map()` if the value type is a pair).
 * Integer types - Formatted using `dec()`.
 * Floating point types - Formatted using `fp_format()`.
 * `bool` - Written as `"true"` or `"false"`.
-* Ranges (other than strings) - Serialized in a format similar to a JSON array
-(e.g. `"[1,2,3]"`), or an object (e.g. `"{1:a,2:b,3:c}"`) if the range's value
-type is a pair; `to_str()` is called recursively on each range element.
-* Otherwise, the type's output operator will be called.
+* Otherwise - Call the type's output operator, or fail to compile if it does not have one.
+
+"String-like types" are defined as `std::string`, `std::string_view`, `char`,
+character pointers, and anything with an implicit conversion to `std::string`
+or `std::string_view`.
 
 ## String parsing functions ##
 

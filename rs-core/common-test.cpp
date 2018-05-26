@@ -950,6 +950,12 @@ void test_core_common_generic_algorithms() {
     TRY(std::copy(set1.begin(), set1.end(), overwrite(set2)));
     TEST_EQUAL(make_str(set2), "[7,8,9]");
 
+    s1.clear();
+
+    TRY("Hello"s >> append(s1));       TEST_EQUAL(s1, "Hello");
+    TRY("World"s >> append(s1));       TEST_EQUAL(s1, "HelloWorld");
+    TRY("Goodbye"s >> overwrite(s1));  TEST_EQUAL(s1, "Goodbye");
+
     s1 = "Hello";
 
     TRY(c = at_index(s1, 0));          TEST_EQUAL(c, 'H');

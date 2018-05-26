@@ -2,6 +2,7 @@
 #include "rs-core/string.hpp"
 #include "rs-core/unit-test.hpp"
 #include <forward_list>
+#include <iterator>
 #include <list>
 #include <map>
 #include <memory>
@@ -1349,5 +1350,131 @@ void test_core_meta_associated_types() {
     TEST_TYPE(RangeValue<std::vector<int>>, int);
     TEST_TYPE(RangeValue<Irange<int*>>, int);
     TEST_TYPE(RangeValue<Irange<const int*>>, int);
+
+}
+
+void test_core_meta_iterator_utilities() {
+
+    using istream_iter  = std::istream_iterator<char>;             // input iterator
+    using flist_iter    = std::forward_list<int>::iterator;        // forward iterator
+    using flist_citer   = std::forward_list<int>::const_iterator;  // forward iterator
+    using list_iter     = std::list<int>::iterator;                // bidirectional iterator
+    using list_citer    = std::list<int>::const_iterator;          // bidirectional iterator
+    using string_iter   = std::string::iterator;                   // random access iterator
+    using string_citer  = std::string::const_iterator;             // random access iterator
+    using char_ptr      = char*;                                   // random access iterator
+    using char_cptr     = const char*;                             // random access iterator
+
+    TEST((category_is_equal<std::input_iterator_tag, std::input_iterator_tag>));                    TEST((! category_is_less<std::input_iterator_tag, std::input_iterator_tag>));
+    TEST((! category_is_equal<std::input_iterator_tag, std::forward_iterator_tag>));                TEST((category_is_less<std::input_iterator_tag, std::forward_iterator_tag>));
+    TEST((! category_is_equal<std::input_iterator_tag, std::bidirectional_iterator_tag>));          TEST((category_is_less<std::input_iterator_tag, std::bidirectional_iterator_tag>));
+    TEST((! category_is_equal<std::input_iterator_tag, std::random_access_iterator_tag>));          TEST((category_is_less<std::input_iterator_tag, std::random_access_iterator_tag>));
+    TEST((! category_is_equal<std::forward_iterator_tag, std::input_iterator_tag>));                TEST((! category_is_less<std::forward_iterator_tag, std::input_iterator_tag>));
+    TEST((category_is_equal<std::forward_iterator_tag, std::forward_iterator_tag>));                TEST((! category_is_less<std::forward_iterator_tag, std::forward_iterator_tag>));
+    TEST((! category_is_equal<std::forward_iterator_tag, std::bidirectional_iterator_tag>));        TEST((category_is_less<std::forward_iterator_tag, std::bidirectional_iterator_tag>));
+    TEST((! category_is_equal<std::forward_iterator_tag, std::random_access_iterator_tag>));        TEST((category_is_less<std::forward_iterator_tag, std::random_access_iterator_tag>));
+    TEST((! category_is_equal<std::bidirectional_iterator_tag, std::input_iterator_tag>));          TEST((! category_is_less<std::bidirectional_iterator_tag, std::input_iterator_tag>));
+    TEST((! category_is_equal<std::bidirectional_iterator_tag, std::forward_iterator_tag>));        TEST((! category_is_less<std::bidirectional_iterator_tag, std::forward_iterator_tag>));
+    TEST((category_is_equal<std::bidirectional_iterator_tag, std::bidirectional_iterator_tag>));    TEST((! category_is_less<std::bidirectional_iterator_tag, std::bidirectional_iterator_tag>));
+    TEST((! category_is_equal<std::bidirectional_iterator_tag, std::random_access_iterator_tag>));  TEST((category_is_less<std::bidirectional_iterator_tag, std::random_access_iterator_tag>));
+    TEST((! category_is_equal<std::random_access_iterator_tag, std::input_iterator_tag>));          TEST((! category_is_less<std::random_access_iterator_tag, std::input_iterator_tag>));
+    TEST((! category_is_equal<std::random_access_iterator_tag, std::forward_iterator_tag>));        TEST((! category_is_less<std::random_access_iterator_tag, std::forward_iterator_tag>));
+    TEST((! category_is_equal<std::random_access_iterator_tag, std::bidirectional_iterator_tag>));  TEST((! category_is_less<std::random_access_iterator_tag, std::bidirectional_iterator_tag>));
+    TEST((category_is_equal<std::random_access_iterator_tag, std::random_access_iterator_tag>));    TEST((! category_is_less<std::random_access_iterator_tag, std::random_access_iterator_tag>));
+
+    TEST((category_is_equal<istream_iter, istream_iter>));   TEST((! category_is_less<istream_iter, istream_iter>));
+    TEST((! category_is_equal<istream_iter, flist_iter>));   TEST((category_is_less<istream_iter, flist_iter>));
+    TEST((! category_is_equal<istream_iter, list_iter>));    TEST((category_is_less<istream_iter, list_iter>));
+    TEST((! category_is_equal<istream_iter, string_iter>));  TEST((category_is_less<istream_iter, string_iter>));
+    TEST((! category_is_equal<flist_iter, istream_iter>));   TEST((! category_is_less<flist_iter, istream_iter>));
+    TEST((category_is_equal<flist_iter, flist_iter>));       TEST((! category_is_less<flist_iter, flist_iter>));
+    TEST((! category_is_equal<flist_iter, list_iter>));      TEST((category_is_less<flist_iter, list_iter>));
+    TEST((! category_is_equal<flist_iter, string_iter>));    TEST((category_is_less<flist_iter, string_iter>));
+    TEST((! category_is_equal<list_iter, istream_iter>));    TEST((! category_is_less<list_iter, istream_iter>));
+    TEST((! category_is_equal<list_iter, flist_iter>));      TEST((! category_is_less<list_iter, flist_iter>));
+    TEST((category_is_equal<list_iter, list_iter>));         TEST((! category_is_less<list_iter, list_iter>));
+    TEST((! category_is_equal<list_iter, string_iter>));     TEST((category_is_less<list_iter, string_iter>));
+    TEST((! category_is_equal<string_iter, istream_iter>));  TEST((! category_is_less<string_iter, istream_iter>));
+    TEST((! category_is_equal<string_iter, flist_iter>));    TEST((! category_is_less<string_iter, flist_iter>));
+    TEST((! category_is_equal<string_iter, list_iter>));     TEST((! category_is_less<string_iter, list_iter>));
+    TEST((category_is_equal<string_iter, string_iter>));     TEST((! category_is_less<string_iter, string_iter>));
+
+    TEST_TYPE(GetIteratorCategory<std::input_iterator_tag>, std::input_iterator_tag);
+    TEST_TYPE(GetIteratorCategory<std::output_iterator_tag>, std::output_iterator_tag);
+    TEST_TYPE(GetIteratorCategory<std::forward_iterator_tag>, std::forward_iterator_tag);
+    TEST_TYPE(GetIteratorCategory<std::bidirectional_iterator_tag>, std::bidirectional_iterator_tag);
+    TEST_TYPE(GetIteratorCategory<std::random_access_iterator_tag>, std::random_access_iterator_tag);
+    TEST_TYPE(GetIteratorCategory<istream_iter>, std::input_iterator_tag);
+    TEST_TYPE(GetIteratorCategory<flist_iter>, std::forward_iterator_tag);
+    TEST_TYPE(GetIteratorCategory<flist_citer>, std::forward_iterator_tag);
+    TEST_TYPE(GetIteratorCategory<list_iter>, std::bidirectional_iterator_tag);
+    TEST_TYPE(GetIteratorCategory<list_citer>, std::bidirectional_iterator_tag);
+    TEST_TYPE(GetIteratorCategory<string_iter>, std::random_access_iterator_tag);
+    TEST_TYPE(GetIteratorCategory<string_citer>, std::random_access_iterator_tag);
+    TEST_TYPE(GetIteratorCategory<char_ptr>, std::random_access_iterator_tag);
+    TEST_TYPE(GetIteratorCategory<char_cptr>, std::random_access_iterator_tag);
+    TEST_TYPE(GetIteratorCategory<std::forward_list<int>>, std::forward_iterator_tag);
+    TEST_TYPE(GetIteratorCategory<std::list<int>>, std::bidirectional_iterator_tag);
+    TEST_TYPE(GetIteratorCategory<std::string>, std::random_access_iterator_tag);
+
+    TEST(is_iterator_category<std::input_iterator_tag>);
+    TEST(is_iterator_category<std::output_iterator_tag>);
+    TEST(is_iterator_category<std::forward_iterator_tag>);
+    TEST(is_iterator_category<std::bidirectional_iterator_tag>);
+    TEST(is_iterator_category<std::random_access_iterator_tag>);
+    TEST(! is_iterator_category<istream_iter>);
+    TEST(! is_iterator_category<flist_iter>);
+    TEST(! is_iterator_category<flist_citer>);
+    TEST(! is_iterator_category<list_iter>);
+    TEST(! is_iterator_category<list_citer>);
+    TEST(! is_iterator_category<string_iter>);
+    TEST(! is_iterator_category<string_citer>);
+    TEST(! is_iterator_category<char_ptr>);
+    TEST(! is_iterator_category<char_cptr>);
+
+    { using T = MinCategory<std::input_iterator_tag, std::forward_iterator_tag, std::bidirectional_iterator_tag, std::random_access_iterator_tag>;  TEST_TYPE(T, std::input_iterator_tag); }
+    { using T = MinCategory<std::forward_iterator_tag, std::bidirectional_iterator_tag, std::random_access_iterator_tag>;                           TEST_TYPE(T, std::forward_iterator_tag); }
+    { using T = MinCategory<std::bidirectional_iterator_tag, std::random_access_iterator_tag>;                                                      TEST_TYPE(T, std::bidirectional_iterator_tag); }
+    { using T = MinCategory<std::random_access_iterator_tag>;                                                                                       TEST_TYPE(T, std::random_access_iterator_tag); }
+
+    { using T = MinCategory<istream_iter>;  TEST_TYPE(T, std::input_iterator_tag); }
+    { using T = MinCategory<flist_iter>;    TEST_TYPE(T, std::forward_iterator_tag); }
+    { using T = MinCategory<flist_citer>;   TEST_TYPE(T, std::forward_iterator_tag); }
+    { using T = MinCategory<list_iter>;     TEST_TYPE(T, std::bidirectional_iterator_tag); }
+    { using T = MinCategory<list_citer>;    TEST_TYPE(T, std::bidirectional_iterator_tag); }
+    { using T = MinCategory<string_iter>;   TEST_TYPE(T, std::random_access_iterator_tag); }
+    { using T = MinCategory<string_citer>;  TEST_TYPE(T, std::random_access_iterator_tag); }
+    { using T = MinCategory<char_ptr>;      TEST_TYPE(T, std::random_access_iterator_tag); }
+    { using T = MinCategory<char_cptr>;     TEST_TYPE(T, std::random_access_iterator_tag); }
+
+    { using T = MinCategory<istream_iter, flist_iter>;   TEST_TYPE(T, std::input_iterator_tag); }
+    { using T = MinCategory<flist_iter, flist_citer>;    TEST_TYPE(T, std::forward_iterator_tag); }
+    { using T = MinCategory<flist_citer, list_iter>;     TEST_TYPE(T, std::forward_iterator_tag); }
+    { using T = MinCategory<list_iter, list_citer>;      TEST_TYPE(T, std::bidirectional_iterator_tag); }
+    { using T = MinCategory<list_citer, string_iter>;    TEST_TYPE(T, std::bidirectional_iterator_tag); }
+    { using T = MinCategory<string_iter, string_citer>;  TEST_TYPE(T, std::random_access_iterator_tag); }
+    { using T = MinCategory<string_citer, char_ptr>;     TEST_TYPE(T, std::random_access_iterator_tag); }
+    { using T = MinCategory<char_ptr, char_cptr>;        TEST_TYPE(T, std::random_access_iterator_tag); }
+
+    { using T = MinCategory<istream_iter, flist_iter, flist_citer>;  TEST_TYPE(T, std::input_iterator_tag); }
+    { using T = MinCategory<flist_iter, flist_citer, list_iter>;     TEST_TYPE(T, std::forward_iterator_tag); }
+    { using T = MinCategory<flist_citer, list_iter, list_citer>;     TEST_TYPE(T, std::forward_iterator_tag); }
+    { using T = MinCategory<list_iter, list_citer, string_iter>;     TEST_TYPE(T, std::bidirectional_iterator_tag); }
+    { using T = MinCategory<list_citer, string_iter, string_citer>;  TEST_TYPE(T, std::bidirectional_iterator_tag); }
+    { using T = MinCategory<string_iter, string_citer, char_ptr>;    TEST_TYPE(T, std::random_access_iterator_tag); }
+    { using T = MinCategory<string_citer, char_ptr, char_cptr>;      TEST_TYPE(T, std::random_access_iterator_tag); }
+
+    { using T = MinCategory<istream_iter, flist_iter, flist_citer, list_iter>;  TEST_TYPE(T, std::input_iterator_tag); }
+    { using T = MinCategory<flist_iter, flist_citer, list_iter, list_citer>;    TEST_TYPE(T, std::forward_iterator_tag); }
+    { using T = MinCategory<flist_citer, list_iter, list_citer, string_iter>;   TEST_TYPE(T, std::forward_iterator_tag); }
+    { using T = MinCategory<list_iter, list_citer, string_iter, string_citer>;  TEST_TYPE(T, std::bidirectional_iterator_tag); }
+    { using T = MinCategory<list_citer, string_iter, string_citer, char_ptr>;   TEST_TYPE(T, std::bidirectional_iterator_tag); }
+    { using T = MinCategory<string_iter, string_citer, char_ptr, char_cptr>;    TEST_TYPE(T, std::random_access_iterator_tag); }
+
+    { using T = MinCategory<istream_iter, flist_iter, flist_citer, list_iter, list_citer>;   TEST_TYPE(T, std::input_iterator_tag); }
+    { using T = MinCategory<flist_iter, flist_citer, list_iter, list_citer, string_iter>;    TEST_TYPE(T, std::forward_iterator_tag); }
+    { using T = MinCategory<flist_citer, list_iter, list_citer, string_iter, string_citer>;  TEST_TYPE(T, std::forward_iterator_tag); }
+    { using T = MinCategory<list_iter, list_citer, string_iter, string_citer, char_ptr>;     TEST_TYPE(T, std::bidirectional_iterator_tag); }
+    { using T = MinCategory<list_citer, string_iter, string_citer, char_ptr, char_cptr>;     TEST_TYPE(T, std::bidirectional_iterator_tag); }
 
 }

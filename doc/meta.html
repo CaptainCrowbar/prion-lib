@@ -33,6 +33,7 @@
 <li><a href="#function-detection">Function detection</a></li>
 <li><a href="#type-categories">Type categories</a></li>
 <li><a href="#associated-types">Associated types</a></li>
+<li><a href="#iterator-utilities">Iterator utilities</a></li>
 </ul>
 </li>
 </ul>
@@ -859,5 +860,51 @@ have no way to check their semantics.</p>
 </ul>
 <p>These return the types associated with an iterator or range. They are
 extracted by checking the return type of <code>begin()</code>, and do not require a
-specialization of <code>iterator_traits</code> to exist.</p></body>
+specialization of <code>iterator_traits</code> to exist.</p>
+</div>
+<h3 id="iterator-utilities">Iterator utilities</h3>
+<p>Types named <code>IRC</code> (or <code>IRC</code> followed by a number) may be an iterator type
+(with a valid instantiation of <code>std::iterator_traits</code>), a range type (for
+which <code>std::begin()</code> and <code>std::end()</code> are valid), or one of the five standard
+iterator category tag types.</p>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename IRC1, typename IRC2&gt; struct</code> <strong><code>CategoryIsEqual</code></strong></li>
+<li><code>template &lt;typename IRC1, typename IRC2&gt; struct</code> <strong><code>CategoryIsLess</code></strong></li>
+<li><code>template &lt;typename IRC1, typename IRC2&gt; constexpr bool</code> <strong><code>category_is_equal</code></strong></li>
+<li><code>template &lt;typename IRC1, typename IRC2&gt; constexpr bool</code> <strong><code>category_is_less</code></strong></li>
+</ul>
+<p>Predicate metafunctions comparing iterator categories:</p>
+<!-- TEXT -->
+
+<ul>
+<li><code>(input, output) &lt; forward &lt; bidirectional &lt; random access</code></li>
+</ul>
+<p>Comparing an input iterator with an output iterator will return false for both
+the equality and less-than predicates.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename IRC&gt; using</code> <strong><code>GetIteratorCategory</code></strong> <code>= [see below]</code></li>
+</ul>
+<p>If the type is one of the five standard iterator category tag types, this will
+return that type; if it's an iterator type, this will return its iterator
+category; if it's is a range type, this will return the category of its
+iterators; otherwise, it will fail to compile.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; struct</code> <strong><code>IsIteratorCategory</code></strong></li>
+<li><code>template &lt;typename T&gt; constexpr bool</code> <strong><code>is_iterator_category</code></strong></li>
+</ul>
+<p>True if <code>T</code> is one of the five standard iterator category tag types.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename... IRCs&gt; using</code> <strong><code>MinCategory</code></strong> <code>= [see below]</code></li>
+</ul>
+<p>Returns the minimum iterator category that all of the listed iterators meet.
+The return type is one of the standard iterator category tag types. Behaviour
+is undefined if the argument list is empty or if both input and output
+iterators are present.</p></body>
 </html>

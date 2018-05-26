@@ -321,3 +321,42 @@ Notes on specific predicates:
 These return the types associated with an iterator or range. They are
 extracted by checking the return type of `begin()`, and do not require a
 specialization of `iterator_traits` to exist.
+
+### Iterator utilities ###
+
+Types named `IRC` (or `IRC` followed by a number) may be an iterator type
+(with a valid instantiation of `std::iterator_traits`), a range type (for
+which `std::begin()` and `std::end()` are valid), or one of the five standard
+iterator category tag types.
+
+* `template <typename IRC1, typename IRC2> struct` **`CategoryIsEqual`**
+* `template <typename IRC1, typename IRC2> struct` **`CategoryIsLess `**
+* `template <typename IRC1, typename IRC2> constexpr bool` **`category_is_equal`**
+* `template <typename IRC1, typename IRC2> constexpr bool` **`category_is_less`**
+
+Predicate metafunctions comparing iterator categories:
+
+<!-- TEXT -->
+* `(input, output) < forward < bidirectional < random access`
+
+Comparing an input iterator with an output iterator will return false for both
+the equality and less-than predicates.
+
+* `template <typename IRC> using` **`GetIteratorCategory`** `= [see below]`
+
+If the type is one of the five standard iterator category tag types, this will
+return that type; if it's an iterator type, this will return its iterator
+category; if it's is a range type, this will return the category of its
+iterators; otherwise, it will fail to compile.
+
+* `template <typename T> struct` **`IsIteratorCategory`**
+* `template <typename T> constexpr bool` **`is_iterator_category`**
+
+True if `T` is one of the five standard iterator category tag types.
+
+* `template <typename... IRCs> using` **`MinCategory`** `= [see below]`
+
+Returns the minimum iterator category that all of the listed iterators meet.
+The return type is one of the standard iterator category tag types. Behaviour
+is undefined if the argument list is empty or if both input and output
+iterators are present.

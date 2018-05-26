@@ -150,6 +150,7 @@ extern void test_core_meta_operator_detection();
 extern void test_core_meta_function_detection();
 extern void test_core_meta_type_categories();
 extern void test_core_meta_associated_types();
+extern void test_core_meta_iterator_utilities();
 extern void test_core_mp_integer_unsigned_conversion();
 extern void test_core_mp_integer_unsigned_arithmetic();
 extern void test_core_mp_integer_unsigned_bit_operations();
@@ -437,6 +438,7 @@ int main() {
         { "core/meta/function-detection", test_core_meta_function_detection },
         { "core/meta/type-categories", test_core_meta_type_categories },
         { "core/meta/associated-types", test_core_meta_associated_types },
+        { "core/meta/iterator-utilities", test_core_meta_iterator_utilities },
         { "core/mp-integer/unsigned-conversion", test_core_mp_integer_unsigned_conversion },
         { "core/mp-integer/unsigned-arithmetic", test_core_mp_integer_unsigned_arithmetic },
         { "core/mp-integer/unsigned-bit-operations", test_core_mp_integer_unsigned_bit_operations },

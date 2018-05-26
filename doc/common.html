@@ -590,14 +590,24 @@ byte order.</p>
 <h3 id="generic-algorithms">Generic algorithms</h3>
 <div class="defns">
 <ul>
+<li><code>template &lt;typename Iterator&gt; void</code> <strong><code>advance_by</code></strong><code>(Iterator&amp; i, ptrdiff_t n, Iterator end)</code></li>
+</ul>
+<p>Advances an iterator by the given number of steps, or until it reaches <code>end</code>,
+whichever comes first. This will take <code>O(1)</code> time if the iterator is random
+access, otherwise <code>O(n)</code>.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>template &lt;typename Container&gt; [output iterator]</code> <strong><code>append</code></strong><code>(Container&amp; con)</code></li>
 <li><code>template &lt;typename Container&gt; [output iterator]</code> <strong><code>overwrite</code></strong><code>(Container&amp; con)</code></li>
+<li><code>template &lt;typename Range, typename Container&gt; const Range&amp;</code> <strong><code>operator&gt;&gt;</code></strong><code>(const Range&amp; lhs, [append iterator] rhs)</code></li>
 </ul>
-<p>These create output iterators that will append elements to a standard
-container (see <code>append_to()</code> below). The <code>append()</code> function is similar to
-<code>std::back_inserter()</code> (but supports containers without <code>push_back()</code>), while
-<code>overwrite()</code> will first clear the container and then return the append
-iterator.</p>
+<p>The <code>append()</code> and <code>overwrite()</code> functions create output iterators that will
+append elements to a standard container (see <code>append_to()</code> below). The
+<code>append()</code> function is similar to <code>std::back_inserter()</code> (but supports
+containers without <code>push_back()</code>), while <code>overwrite()</code> will first clear the
+container and then return the append iterator. There is also an operator that
+can be used to copy any range into a container.</p>
 </div>
 <div class="defns">
 <ul>

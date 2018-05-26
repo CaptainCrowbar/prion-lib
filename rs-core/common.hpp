@@ -693,6 +693,17 @@ namespace RS {
 
     // Generic algorithms
 
+    template <typename Iterator>
+    void advance_by(Iterator& i, ptrdiff_t n, Iterator end) {
+        using category = typename std::iterator_traits<Iterator>::iterator_category;
+        if (std::is_same<category, std::random_access_iterator_tag>::value) {
+            n = std::min(n, std::distance(i, end));
+            std::advance(i, n);
+        } else {
+            for (; i != end && n > 0; ++i, --n) {}
+        }
+    }
+
     template <typename Container, typename T>
     void append_to(Container& con, const T& t) {
         con.insert(con.end(), t);
@@ -712,6 +723,14 @@ namespace RS {
 
     template <typename Container> AppendIterator<Container> append(Container& con) { return AppendIterator<Container>(con); }
     template <typename Container> AppendIterator<Container> overwrite(Container& con) { con.clear(); return AppendIterator<Container>(con); }
+
+    template <typename Range, typename Container>
+    const Range& operator>>(const Range& lhs, AppendIterator<Container> rhs) {
+        using std::begin;
+        using std::end;
+        std::copy(begin(lhs), end(lhs), rhs);
+        return lhs;
+    }
 
     template <typename Range, typename T>
     Meta::RangeValue<Range> at_index(const Range& r, size_t index, const T& def) {

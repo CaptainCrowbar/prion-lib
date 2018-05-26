@@ -5,6 +5,7 @@
 #include <functional>
 #include <iterator>
 #include <ostream>
+#include <string>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -217,11 +218,14 @@ namespace RS::Meta {
             ReturnT<Nil> {};
 
         template <typename TL, template <typename, typename> class BP, template <typename, typename> class BF> struct PartialReduce;
-        template <typename T1, typename T2, template <typename, typename> class BP, template <typename, typename> class BF, bool Match, typename... TS> struct PartialReduceHelper:
+        template <typename T1, typename T2, template <typename, typename> class BP, template <typename, typename> class BF, bool Match, typename... TS>
+            struct PartialReduceHelper:
             PartialReduce<Typelist<BF<T1, T2>, TS...>, BP, BF> {};
-        template <typename T1, typename T2, template <typename, typename> class BP, template <typename, typename> class BF, typename... TS> struct PartialReduceHelper<T1, T2, BP, BF, false, TS...>:
+        template <typename T1, typename T2, template <typename, typename> class BP, template <typename, typename> class BF, typename... TS>
+            struct PartialReduceHelper<T1, T2, BP, BF, false, TS...>:
             Prefix<T1, typename PartialReduce<Typelist<T2, TS...>, BP, BF>::type> {};
-        template <typename T1, typename T2, typename... TS, template <typename, typename> class BP, template <typename, typename> class BF> struct PartialReduce<Typelist<T1, T2, TS...>, BP, BF>:
+        template <typename T1, typename T2, typename... TS, template <typename, typename> class BP, template <typename, typename> class BF>
+            struct PartialReduce<Typelist<T1, T2, TS...>, BP, BF>:
             PartialReduceHelper<T1, T2, BP, BF, BP<T1, T2>::value, TS...> {};
         template <typename T, template <typename, typename> class BP, template <typename, typename> class BF> struct PartialReduce<Typelist<T>, BP, BF>:
             ReturnT<Typelist<T>> {};
@@ -285,7 +289,8 @@ namespace RS::Meta {
             ReturnT<Nil> {};
 
         template <typename TL1, typename TL2, template <typename, typename> class BF> struct Zip;
-        template <typename T1, typename... Types1, typename T2, typename... Types2, template <typename, typename> class BF> struct Zip<Typelist<T1, Types1...>, Typelist<T2, Types2...>, BF>:
+        template <typename T1, typename... Types1, typename T2, typename... Types2, template <typename, typename> class BF>
+            struct Zip<Typelist<T1, Types1...>, Typelist<T2, Types2...>, BF>:
             Prefix<BF<T1, T2>, typename Zip<Typelist<Types1...>, Typelist<Types2...>, BF>::type> {};
         template <typename TL, template <typename, typename> class BF> struct Zip<TL, Nil, BF>:
             ReturnT<Nil> {};
@@ -713,6 +718,42 @@ namespace RS::Meta {
     template <typename T> constexpr bool is_container = IsContainer<T>::value;
     template <typename T> constexpr bool is_insertable_container = IsInsertableContainer<T>::value;
     template <typename T> constexpr bool is_swappable = IsSwappable<T>::value;
+
+    // Iterator utilities
+
+    using IteratorCategoryList = Typelist<
+        std::input_iterator_tag,
+        std::output_iterator_tag,
+        std::forward_iterator_tag,
+        std::bidirectional_iterator_tag,
+        std::random_access_iterator_tag
+    >;
+
+    template <typename T> struct IsIteratorCategory: std::false_type {};
+    template <> struct IsIteratorCategory<std::input_iterator_tag>: std::true_type {};
+    template <> struct IsIteratorCategory<std::output_iterator_tag>: std::true_type {};
+    template <> struct IsIteratorCategory<std::forward_iterator_tag>: std::true_type {};
+    template <> struct IsIteratorCategory<std::bidirectional_iterator_tag>: std::true_type {};
+    template <> struct IsIteratorCategory<std::random_access_iterator_tag>: std::true_type {};
+    template <typename T> constexpr bool is_iterator_category = IsIteratorCategory<T>::value;
+
+    template <typename T, char = is_iterator<T> ? 'I' : is_range<T> ? 'R' : is_iterator_category<T> ? 'C' : 'X'> struct GetIteratorCategoryType;
+    template <typename IRC> struct GetIteratorCategoryType<IRC, 'C'> { using type = IRC; };
+    template <typename IRC> struct GetIteratorCategoryType<IRC, 'I'> { using type = typename std::iterator_traits<IRC>::iterator_category; };
+    template <typename IRC> struct GetIteratorCategoryType<IRC, 'R'> { using type = typename std::iterator_traits<RangeIterator<IRC>>::iterator_category; };
+    template <typename IRC> using GetIteratorCategory = typename GetIteratorCategoryType<IRC>::type;
+
+    template <typename IRC1, typename IRC2> struct CategoryIsEqual: std::is_same<GetIteratorCategory<IRC1>, GetIteratorCategory<IRC2>> {};
+    template <typename IRC1, typename IRC2> struct CategoryIsLess {
+        static constexpr int index1 = find_type<IteratorCategoryList, GetIteratorCategory<IRC1>>;
+        static constexpr int index2 = find_type<IteratorCategoryList, GetIteratorCategory<IRC2>>;
+        static constexpr bool value = index1 + index2 != 1 && (index1 < index2);
+    };
+    template <typename IRC1, typename IRC2> constexpr bool category_is_equal = CategoryIsEqual<IRC1, IRC2>::value;
+    template <typename IRC1, typename IRC2> constexpr bool category_is_less = CategoryIsLess<IRC1, IRC2>::value;
+
+    template <typename... IRCs> struct MinCategoryType { using type = GetIteratorCategory<MinType<Typelist<IRCs...>, CategoryIsLess>>; };
+    template <typename... IRCs> using MinCategory = typename MinCategoryType<IRCs...>::type;
 
 }
 

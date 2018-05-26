@@ -443,14 +443,22 @@ Powers of 2<sup>10</sup>.
 
 ### Generic algorithms ###
 
+* `template <typename Iterator> void` **`advance_by`**`(Iterator& i, ptrdiff_t n, Iterator end)`
+
+Advances an iterator by the given number of steps, or until it reaches `end`,
+whichever comes first. This will take `O(1)` time if the iterator is random
+access, otherwise `O(n)`.
+
 * `template <typename Container> [output iterator]` **`append`**`(Container& con)`
 * `template <typename Container> [output iterator]` **`overwrite`**`(Container& con)`
+* `template <typename Range, typename Container> const Range&` **`operator>>`**`(const Range& lhs, [append iterator] rhs)`
 
-These create output iterators that will append elements to a standard
-container (see `append_to()` below). The `append()` function is similar to
-`std::back_inserter()` (but supports containers without `push_back()`), while
-`overwrite()` will first clear the container and then return the append
-iterator.
+The `append()` and `overwrite()` functions create output iterators that will
+append elements to a standard container (see `append_to()` below). The
+`append()` function is similar to `std::back_inserter()` (but supports
+containers without `push_back()`), while `overwrite()` will first clear the
+container and then return the append iterator. There is also an operator that
+can be used to copy any range into a container.
 
 * `template <typename Container, typename T> void` **`append_to`**`(Container& con, const T& t)`
 

@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Range Algorithms</title>
+<link type="text/css" rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<h1 id="range-algorithms">Range Algorithms</h1>
+<p>By Ross Smith</p>
+<ul>
+<li><code>#include "rs-core/range.hpp"</code> <em>-- Includes all of the headers listed below</em><ul>
+<li><code>#include "rs-core/range-core.hpp"</code> <em>-- Core algorithms</em></li>
+<li><code>#include "rs-core/range-aggregation.hpp"</code> <em>-- Aggregation algorithms combine multiple input elements into each output element</em></li>
+<li><code>#include "rs-core/range-combination.hpp"</code> <em>-- Combination algorithms generate their output range from multiple input ranges</em></li>
+<li><code>#include "rs-core/range-expansion.hpp"</code> <em>-- Expansion algorithms return multiple output elements from each input element</em></li>
+<li><code>#include "rs-core/range-generation.hpp"</code> <em>-- Generation algorithms create an output range with no input range</em></li>
+<li><code>#include "rs-core/range-permutation.hpp"</code> <em>-- Permutation algorithms return a permutation of the input range</em></li>
+<li><code>#include "rs-core/range-reduction.hpp"</code> <em>-- Reduction algorithms take an input range and return a scalar result</em></li>
+<li><code>#include "rs-core/range-selection.hpp"</code> <em>-- Selection algorithms return a subset of the input range</em></li>
+<li><code>#include "rs-core/range-transformation.hpp"</code> <em>-- Transformation algorithms apply a one-to-one mapping from the input range to the output</em></li>
+</ul>
+</li>
+</ul>
+<p>Apart from the <code>append()</code> and <code>overwrite()</code> functions (from <code>rs-core/common</code>),
+all of the algorithms here are in <code>namespace RS::Range</code>.</p>
+<h2 id="contents">Contents</h2>
+<div class="toc">
+<ul>
+<li><a href="#range-algorithms">Range Algorithms</a><ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#introduction">Introduction</a><ul>
+<li><a href="#forward-algorithms">Forward algorithms</a></li>
+<li><a href="#reflex-algorithms">Reflex algorithms</a></li>
+<li><a href="#composite-algorithms">Composite algorithms</a></li>
+</ul>
+</li>
+<li><a href="#algorithms-reference-table">Algorithms reference table</a></li>
+<li><a href="#algorithm-details">Algorithm details</a><ul>
+<li><a href="#core-algorithms">Core algorithms</a></li>
+<li><a href="#aggregation-algorithms">Aggregation algorithms</a></li>
+<li><a href="#combination-algorithms">Combination algorithms</a></li>
+<li><a href="#expansion-algorithms">Expansion algorithms</a></li>
+<li><a href="#generation-algorithms">Generation algorithms</a></li>
+<li><a href="#permutation-algorithms">Permutation algorithms</a></li>
+<li><a href="#reduction-algorithms">Reduction algorithms</a></li>
+<li><a href="#selection-algorithms">Selection algorithms</a></li>
+<li><a href="#transformation-algorithms">Transformation algorithms</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="introduction">Introduction</h2>
+<h3 id="forward-algorithms">Forward algorithms</h3>
+<p>Forward algorithms take the form:</p>
+<!-- TEXT -->
+
+<ul>
+<li><code>range &gt;&gt; algorithm -&gt; new_range</code></li>
+</ul>
+<p>Example (sort a vector of strings into alphabetical order, remove duplicates,
+and copy the first 10 into the output vector):</p>
+<pre><code>vector&lt;string&gt; v1, v2;
+v1 &gt;&gt; sort &gt;&gt; unique &gt;&gt; take(10) &gt;&gt; append(v2);
+</code></pre>
+<p>Most algorithms take a range as input and return another range. Some also take
+additional parameters, passed as function arguments to the algorithm. If an
+algorithm takes no arguments, its name can be used alone with no function
+parentheses.</p>
+<p>Usually the output range is a virtual range composed of iterators that either
+point back into the original input range or generate their values on the fly.
+When the output is described as a temporary range, the actual return value is
+a pair of iterators that carry a shared, reference counted handle to a new
+container constructed by the algorithm. The container will exist as long as
+the iterators (or their copies) exist.</p>
+<p>The algorithm descriptions below indicate the minimum range category (input,
+forward, bidirectional, or random access) required of the input, and the
+category or categories of the output range. If the output is just described as
+a range with no information about category, then the output range has the same
+category as the input. An output range with a conditional category has that
+category only if the input range has at least the same category; otherwise,
+the output range has the same category as the input range. For example, a
+conditional bidirectional range (<code>CBR</code>) will be bidirectional if the input
+range is bidirectional or random access, but will only be input or forward if
+the input range is input or forward.</p>
+<h3 id="reflex-algorithms">Reflex algorithms</h3>
+<p>Reflex algorithms take the form:</p>
+<!-- TEXT -->
+
+<ul>
+<li><code>range&amp; &lt;&lt; algorithm -&gt; range&amp;</code></li>
+</ul>
+<p>Example:</p>
+<pre><code>vector&lt;string&gt; v;
+v &lt;&lt; sort &lt;&lt; unique &lt;&lt; take(10);
+</code></pre>
+<p>A reflex algorithm is one that writes its output back into its input range or
+container, instead of returning a new range. Using an algorithm in reflex form
+requires that its output elements have the same type as its input elements, or
+an assignment compatible type. The collection operated on by a reflex
+algorithm can be a writeable range if there is a one to one mapping from input
+to output elements; otherwise, it must be an STL compatible container. The
+return value from a reflex algorithm is always a reference to the updated
+input range.</p>
+<h3 id="composite-algorithms">Composite algorithms</h3>
+<p>Composite algorithms take the form</p>
+<!-- TEXT -->
+
+<ul>
+<li><code>composite = algorithm1 * algorithm2 * ...</code></li>
+</ul>
+<p>Example:</p>
+<pre><code>vector&lt;string&gt; v1, v2;
+auto top10 = sort * unique * take(10);
+v1 &gt;&gt; top10 &gt;&gt; append(v2);
+</code></pre>
+<p>Algorithms can be composed using the binary <code>*</code> operator; the algorithms in a
+composite are applied from left to right. Composite algorithms can be used in
+forward mode, or in reflex mode if all of their component algorithms have
+reflex forms.</p>
+<h2 id="algorithms-reference-table">Algorithms reference table</h2>
+<!-- TEXT -->
+
+<ul>
+<li>Range categories:<ul>
+<li><code>R</code> = Range (unrestricted)</li>
+<li><code>IR</code> = Input range (single pass)</li>
+<li><code>FR</code> = Forward range</li>
+<li><code>BR</code> = Bidirectional range</li>
+<li><code>RR</code> = Random access range</li>
+</ul>
+</li>
+<li>Range modifiers:<ul>
+<li><code>CR</code> = Conditional range (see below)</li>
+<li><code>NR</code> = Nested range (each element is itself a range)</li>
+<li><code>OR</code> = Ordered range (assumed to be sorted on a comparison predicate)</li>
+<li><code>PR</code> = Pair range (each element is a <code>std::pair</code>, or other type with <code>first</code> and <code>second</code> members)</li>
+<li><code>TR</code> = Temporary range (see below)</li>
+</ul>
+</li>
+<li>Function types:<ul>
+<li><code>GF</code> = Generator function: <code>f()-&gt;x</code></li>
+<li><code>UF</code> = Unary function: <code>f(x)-&gt;y</code></li>
+<li><code>BF</code> = Binary function: <code>f(x,y)-&gt;z</code></li>
+<li><code>UP</code> = Unary predicate: <code>f(x)-&gt;bool</code></li>
+<li><code>BP</code> = Binary predicate: <code>f(x,y)-&gt;bool</code></li>
+<li><code>EP</code> = Equality predicate (binary predicate with equality semantics)</li>
+<li><code>CP</code> = Comparison predicate (binary predicate with less-than semantics)</li>
+<li><code>RD</code> = Random distribution: <code>f(rng&amp;)-&gt;x</code></li>
+<li><code>RNG</code> = Random number engine: <code>f()-&gt;i</code></li>
+</ul>
+</li>
+<li>Other types:<ul>
+<li><code>C</code> = Container type (STL compatible)</li>
+<li><code>FP</code> = Floating point type</li>
+<li><code>N</code> = Integer type</li>
+<li><code>T</code> = Value type</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Forward algorithm</th>
+<th>Reflex algorithm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Core</td>
+<td><code>R &gt;&gt;</code> <strong><code>append</code></strong><code>(C&amp;) -&gt; R</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>collect</code></strong> <code>-&gt; TRR</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>each</code></strong><code>(UF) -&gt; R</code></td>
+<td><code>R&amp; &lt;&lt;</code> <strong><code>each</code></strong><code>(UF)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>PR &gt;&gt;</code> <strong><code>each_pair</code></strong><code>(BF) -&gt; R</code></td>
+<td><code>PR&amp; &lt;&lt;</code> <strong><code>each_pair</code></strong><code>(BF)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>overwrite</code></strong><code>(C&amp;) -&gt; R</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>passthrough</code></strong> <code>-&gt; R</code></td>
+<td><code>R&amp; &lt;&lt;</code> <strong><code>passthrough</code></strong></td>
+</tr>
+<tr>
+<td>Aggregation</td>
+<td><code>R &gt;&gt;</code> <strong><code>adjacent_difference</code></strong><code>[(BF)] -&gt; CFR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>adjacent_difference</code></strong><code>[(BF)]</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>census</code></strong><code>[(EP)] -&gt; CFPR</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>FR &gt;&gt;</code> <strong><code>group</code></strong><code>[(EP)] -&gt; FNR</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>FR &gt;&gt;</code> <strong><code>group_by</code></strong><code>(UF) -&gt; FNR</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>FR &gt;&gt;</code> <strong><code>group_k</code></strong><code>(N) -&gt; FNR</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>partial_sum</code></strong><code>[(BF)] -&gt; CFR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>partial_sum</code></strong><code>[(BF)]</code></td>
+</tr>
+<tr>
+<td>Combination</td>
+<td><code>R &gt;&gt;</code> <strong><code>compare</code></strong><code>(R[,CP]) -&gt; bool</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>compare_3way</code></strong><code>(R[,CP]) -&gt; int</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>concat</code></strong><code>(R) -&gt; CFR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>concat</code></strong><code>(R)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>inner_product</code></strong><code>(R[,T,BF,BF]) -&gt; T</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>interleave</code></strong><code>(R) -&gt; CFR</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>is_equal</code></strong><code>(R[,EP]) -&gt; bool</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>is_equivalent</code></strong><code>(R[,CP]) -&gt; bool</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>OR &gt;&gt;</code> <strong><code>merge</code></strong><code>(R[,CP]) -&gt; CFOR</code></td>
+<td><code>OC&amp; &lt;&lt;</code> <strong><code>merge</code></strong><code>(R[,CP])</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>FR &gt;&gt;</code> <strong><code>outer_product</code></strong><code>(FR[,BF]) -&gt; FR</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>prefix</code></strong><code>(R) -&gt; CFR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>prefix</code></strong><code>(R)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>FR &gt;&gt;</code> <strong><code>self_cross</code></strong><code>[(BF)] -&gt; FR</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>OR &gt;&gt;</code> <strong><code>set_difference</code></strong><code>(OR[,CP]) -&gt; CFOR</code></td>
+<td><code>OC&amp; &lt;&lt;</code> <strong><code>set_difference</code></strong><code>(OR[,CP])</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>OR &gt;&gt;</code> <strong><code>set_difference_from</code></strong><code>(OR[,CP]) -&gt; CFOR</code></td>
+<td><code>OC&amp; &lt;&lt;</code> <strong><code>set_difference_from</code></strong><code>(OR[,CP])</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>OR &gt;&gt;</code> <strong><code>set_intersection</code></strong><code>(OR[,CP]) -&gt; CFOR</code></td>
+<td><code>OC&amp; &lt;&lt;</code> <strong><code>set_intersection</code></strong><code>(OR[,CP])</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>OR &gt;&gt;</code> <strong><code>set_symmetric_difference</code></strong><code>(OR[,CP]) -&gt; CFOR</code></td>
+<td><code>OC&amp; &lt;&lt;</code> <strong><code>set_symmetric_difference</code></strong><code>(OR[,CP])</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>OR &gt;&gt;</code> <strong><code>set_union</code></strong><code>(OR[,CP]) -&gt; CFOR</code></td>
+<td><code>OC&amp; &lt;&lt;</code> <strong><code>set_union</code></strong><code>(OR[,CP])</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>zip</code></strong><code>(R[,BF]) -&gt; CFR</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Expansion</td>
+<td><code>FR &gt;&gt;</code> <strong><code>combinations</code></strong><code>(N) -&gt; INR</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>flat_map</code></strong><code>(UF) -&gt; CFR</code></td>
+<td><code>FR&amp; &lt;&lt;</code> <strong><code>flat_map</code></strong><code>(UF)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>NR &gt;&gt;</code> <strong><code>flatten</code></strong> <code>-&gt; CFR</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>insert_after</code></strong><code>(T) -&gt; CFR</code></td>
+<td><code>FR&amp; &lt;&lt;</code> <strong><code>insert_after</code></strong><code>(T)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>insert_around</code></strong><code>(T,T) -&gt; CFR</code></td>
+<td><code>FR&amp; &lt;&lt;</code> <strong><code>insert_around</code></strong><code>(T,T)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>insert_before</code></strong><code>(T) -&gt; CFR</code></td>
+<td><code>FR&amp; &lt;&lt;</code> <strong><code>insert_before</code></strong><code>(T)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>insert_between</code></strong><code>(T) -&gt; CFR</code></td>
+<td><code>FR&amp; &lt;&lt;</code> <strong><code>insert_between</code></strong><code>(T)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>permutations</code></strong><code>[(CP)] -&gt; INR</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>FR &gt;&gt;</code> <strong><code>repeat</code></strong><code>[(N)] -&gt; CBR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>repeat</code></strong><code>[(N)]</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>FR &gt;&gt;</code> <strong><code>subsets</code></strong><code>(N) -&gt; INR</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Generation</td>
+<td><strong><code>epsilon</code></strong><code>&lt;T&gt;() -&gt; RR</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><strong><code>fill</code></strong><code>(T[,N]) -&gt; RR</code></td>
+<td><code>R&amp; &lt;&lt;</code> <strong><code>fill</code></strong><code>(T[,N])</code></td>
+</tr>
+<tr>
+<td></td>
+<td><strong><code>generate</code></strong><code>(GF[,N]) -&gt; IR</code></td>
+<td><code>R&amp; &lt;&lt;</code> <strong><code>generate</code></strong><code>(GF[,N])</code></td>
+</tr>
+<tr>
+<td></td>
+<td><strong><code>iota</code></strong><code>(T[,T|UF[,N]]) -&gt; FR</code></td>
+<td><code>R&amp; &lt;&lt;</code> <strong><code>iota</code></strong><code>(T[,T|UF[,N]])</code></td>
+</tr>
+<tr>
+<td></td>
+<td><strong><code>random</code></strong><code>(RD,RNG[,N]) -&gt; IR</code></td>
+<td><code>R&amp; &lt;&lt;</code> <strong><code>random</code></strong><code>(RD,RNG[,N])</code></td>
+</tr>
+<tr>
+<td></td>
+<td><strong><code>single</code></strong><code>(T) -&gt; RR</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Permutation</td>
+<td><code>R &gt;&gt;</code> <strong><code>next_permutation</code></strong><code>[(CP)] -&gt; TRR</code></td>
+<td><code>BR&amp; &lt;&lt;</code> <strong><code>next_permutation</code></strong><code>[(CP)]</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>prev_permutation</code></strong><code>[(CP)] -&gt; TRR</code></td>
+<td><code>BR&amp; &lt;&lt;</code> <strong><code>prev_permutation</code></strong><code>[(CP)]</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>BR &gt;&gt;</code> <strong><code>reverse</code></strong> <code>-&gt; BR</code></td>
+<td><code>BR&amp; &lt;&lt;</code> <strong><code>reverse</code></strong></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>shuffle</code></strong><code>(RNG) -&gt; TRR</code></td>
+<td><code>RR&amp; &lt;&lt;</code> <strong><code>shuffle</code></strong><code>(RNG)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>sort</code></strong><code>[(CP)] -&gt; TRR</code></td>
+<td><code>RR&amp; &lt;&lt;</code> <strong><code>sort</code></strong><code>[(CP)]</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>stable_sort</code></strong><code>[(CP)] -&gt; TRR</code></td>
+<td><code>RR&amp; &lt;&lt;</code> <strong><code>stable_sort</code></strong><code>[(CP)]</code></td>
+</tr>
+<tr>
+<td>Reduction</td>
+<td><code>R &gt;&gt;</code> <strong><code>all_of</code></strong><code>(UP) -&gt; bool</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>any_of</code></strong><code>(UP) -&gt; bool</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>count</code></strong><code>[(T)] -&gt; size_t</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>count_if</code></strong><code>(UP) -&gt; size_t</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>fold_left</code></strong><code>(T,BF) -&gt; T</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>BR &gt;&gt;</code> <strong><code>fold_right</code></strong><code>(T,BF) -&gt; T</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>is_empty</code></strong> <code>-&gt; bool</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>is_nonempty</code></strong> <code>-&gt; bool</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>is_sorted</code></strong><code>[(CP)] -&gt; bool</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>max</code></strong><code>[(CP)] -&gt; T</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>min</code></strong><code>[(CP)] -&gt; T</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>min_max</code></strong><code>[(CP)] -&gt; pair</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>none_of</code></strong><code>(UP) -&gt; bool</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>product</code></strong><code>[(T)] -&gt; T</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>reduce</code></strong><code>(BF) -&gt; T</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>statistics</code></strong> <code>-&gt; Statistics</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>sum</code></strong><code>[(T)] -&gt; T</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Selection</td>
+<td><code>R &gt;&gt;</code> <strong><code>after</code></strong><code>(T) -&gt; CFR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>after</code></strong><code>(T)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>after_if</code></strong><code>(UP) -&gt; CFR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>after_if</code></strong><code>(UP)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>before</code></strong><code>(T) -&gt; CFR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>before</code></strong><code>(T)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>before_if</code></strong><code>(UP) -&gt; CFR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>before_if</code></strong><code>(UP)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>filter</code></strong><code>(UP) -&gt; CFR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>filter</code></strong><code>(UP)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>filter_out</code></strong><code>(UP) -&gt; CFR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>filter_out</code></strong><code>(UP)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>from</code></strong><code>(T) -&gt; CFR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>from</code></strong><code>(T)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>from_if</code></strong><code>(UP) -&gt; CFR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>from_if</code></strong><code>(UP)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>not_null</code></strong> <code>-&gt; CFR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>not_null</code></strong></td>
+</tr>
+<tr>
+<td></td>
+<td><code>RR &gt;&gt;</code> <strong><code>sample_k</code></strong><code>(N,RNG) -&gt; TRR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>sample_k</code></strong><code>(N,RNG)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>sample_p</code></strong><code>(FP,RNG) -&gt; CFR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>sample_p</code></strong><code>(FP,RNG)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>RR &gt;&gt;</code> <strong><code>sample_replace</code></strong><code>(N,RNG) -&gt; TRR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>sample_replace</code></strong><code>(N,RNG)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>skip</code></strong><code>(N) -&gt; CFR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>skip</code></strong><code>(N)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>stride</code></strong><code>([N,]N) -&gt; CFR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>stride</code></strong><code>([N,]N)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>take</code></strong><code>(N) -&gt; CFR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>take</code></strong><code>(N)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>unique</code></strong><code>[(EP)] -&gt; CFR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>unique</code></strong><code>[(EP)]</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>until</code></strong><code>(T) -&gt; CFR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>until</code></strong><code>(T)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>until_if</code></strong><code>(UP) -&gt; CFR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>until_if</code></strong><code>(UP)</code></td>
+</tr>
+<tr>
+<td>Transformation</td>
+<td><code>R &gt;&gt;</code> <strong><code>const_ptr</code></strong><code>&lt;T&gt;() -&gt; R</code></td>
+<td><code>FR&amp; &lt;&lt;</code> <strong><code>const_ptr</code></strong><code>&lt;T&gt;()</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>construct</code></strong><code>&lt;T&gt;() -&gt; R</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>convert</code></strong><code>&lt;T&gt;() -&gt; R</code></td>
+<td><code>FR&amp; &lt;&lt;</code> <strong><code>convert</code></strong><code>&lt;T&gt;()</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>dereference</code></strong> <code>-&gt; R</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>dynamic_ptr</code></strong><code>&lt;T&gt;() -&gt; R</code></td>
+<td><code>FR&amp; &lt;&lt;</code> <strong><code>dynamic_ptr</code></strong><code>&lt;T&gt;()</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>indexed</code></strong><code>[(N[,N])] -&gt; CFR</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>initialize</code></strong><code>&lt;T&gt;() -&gt; R</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>iterators</code></strong> <code>-&gt; R</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>keys</code></strong> <code>-&gt; R</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>map</code></strong><code>(UF) -&gt; R</code></td>
+<td><code>FR&amp; &lt;&lt;</code> <strong><code>map</code></strong><code>(UF)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>PR &gt;&gt;</code> <strong><code>map_pairs</code></strong><code>(BF) -&gt; R</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>reinterpret_ptr</code></strong><code>&lt;T&gt;() -&gt; R</code></td>
+<td><code>FR&amp; &lt;&lt;</code> <strong><code>reinterpret_ptr</code></strong><code>&lt;T&gt;()</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>replace</code></strong><code>(T,T) -&gt; R</code></td>
+<td><code>FR&amp; &lt;&lt;</code> <strong><code>replace</code></strong><code>(T,T)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>replace_if</code></strong><code>(UP,T) -&gt; R</code></td>
+<td><code>FR&amp; &lt;&lt;</code> <strong><code>replace_if</code></strong><code>(UP,T)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>static_ptr</code></strong><code>&lt;T&gt;() -&gt; R</code></td>
+<td><code>FR&amp; &lt;&lt;</code> <strong><code>static_ptr</code></strong><code>&lt;T&gt;()</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>PR &gt;&gt;</code> <strong><code>swap_pairs</code></strong> <code>-&gt; PR</code></td>
+<td><code>PC&amp; &lt;&lt;</code> <strong><code>swap_pairs</code></strong></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>stringify</code></strong> <code>-&gt; R</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>values</code></strong> <code>-&gt; R</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="algorithm-details">Algorithm details</h2>
+<p>In the descriptions, <code>n</code> is the length of the input range (which may be
+infinite in some cases); <code>n2</code> is the length of the second input range (for
+combination algorithms); <code>x</code> and <code>y</code> are input element values.</p>
+<h3 id="core-algorithms">Core algorithms</h3>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>append</code></strong><code>(Container&amp; c) -&gt; Range2</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>overwrite</code></strong><code>(Container&amp; c) -&gt; Range2</code></li>
+</ul>
+<p>Copy a range onto the end of a container; <code>overwrite()</code> clears the container
+first.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>collect</code></strong> <code>-&gt; TemporaryRandomAccessRange</code></li>
+</ul>
+<p>Copy a virtual range into a concrete one. This is mainly useful for turning a
+lower category into a random access range needed by the next stage in the
+chain. Behaviour is undefined if the input range is infinite.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>each</code></strong><code>(UnaryFunction f) -&gt; Range2</code></li>
+<li><code>PairRange r &gt;&gt;</code> <strong><code>each_pair</code></strong><code>(BinaryFunction f) -&gt; Range2</code></li>
+<li><code>Range&amp; r &lt;&lt;</code> <strong><code>each</code></strong><code>(UnaryFunction f)</code></li>
+<li><code>PairRange&amp; r &lt;&lt;</code> <strong><code>each_pair</code></strong><code>(BinaryFunction f)</code></li>
+</ul>
+<p>Call a function on each element of a range, returning a reference to the input
+range. The <code>each_pair()</code> algorithm calls <code>f(x.first,x.second)</code> for each
+element.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>passthrough</code></strong> <code>-&gt; Range2</code></li>
+<li><code>Range&amp; r &lt;&lt;</code> <strong><code>passthrough</code></strong></li>
+</ul>
+<p>An empty do-nothing algorithm that just passes on its input range.</p>
+</div>
+<h3 id="aggregation-algorithms">Aggregation algorithms</h3>
+<p><em>Aggregation algorithms combine multiple input elements into each output element</em></p>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>adjacent_difference</code></strong><code>(BinaryFunction f = std::minus) -&gt; ConditionalForwardRange</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>adjacent_difference</code></strong><code>(BinaryFunction f = std::minus)</code></li>
+</ul>
+<p>Return <code>f(x,y)</code> for each pair of adjacent input elements. The output range
+will be empty if the input contains less than two elements.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>census</code></strong><code>(EqualityPredicate p = std::equal_to) -&gt; ConditinalForwardPairRange</code></li>
+</ul>
+<p>Return a <code>(value,count)</code> pair for each subsequence of adjacent equal values in
+the input range.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>ForwardRange r &gt;&gt;</code> <strong><code>group</code></strong><code>(EqualityPredicate p = std::equal_to) -&gt; ForwardNestedRange</code></li>
+<li><code>ForwardRange r &gt;&gt;</code> <strong><code>group_by</code></strong><code>(UnaryFunction f) -&gt; ForwardNestedRange</code></li>
+<li><code>ForwardRange r &gt;&gt;</code> <strong><code>group_k</code></strong><code>(size_t k) -&gt; ForwardNestedRange</code></li>
+</ul>
+<p>Return a subrange (in the form of an <code>Irange</code> object containing an iterator
+pair) for each group of elements in the input range. The <code>group()</code> algorithm
+groups elements that are equal according to an equality predicate;
+<code>group_by()</code> groups elements that return the same value for the given
+function; <code>group_k()</code> groups elements in blocks of <code>k</code> without regard to their
+value (the last group will be smaller if the length of the input range is not
+a multiple of <code>k</code>).</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>partial_sum</code></strong><code>(BinaryFunction f = std::plus) -&gt; ConditionalForwardRange</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>partial_sum</code></strong><code>(BinaryFunction f = std::plus)</code></li>
+</ul>
+<p>Return a sequence of partial sums of the input range. The output range is the
+same length as the input.</p>
+</div>
+<h3 id="combination-algorithms">Combination algorithms</h3>
+<p><em>Combination algorithms generate their output range from multiple input ranges</em></p>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>compare</code></strong><code>(Range2 r2, ComparisonPredicate p = std::less) -&gt; bool</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>compare_3way</code></strong><code>(Range2 r2, ComparisonPredicate p = std::less) -&gt; int</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>is_equal</code></strong><code>(Range2 r2, EqualityPredicate p = std::equal_to) -&gt; bool</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>is_equivalent</code></strong><code>(Range2 r2, ComparisonPredicate p = std::less) -&gt; bool</code></li>
+</ul>
+<p>Lexicographical comparison of two ranges. The <code>is_equal()</code>, <code>compare()</code>, and
+<code>compare_3way()</code> algorithms are equivalent to <code>std::equal()</code>,
+<code>std::lexicographical_compare()</code>, and <code>std::lexicographical_compare_3way()</code>
+respectively; <code>is_equivalent()</code> performs an equality comparison using the
+equivalence relation defined by the comparison predicate.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>concat</code></strong><code>(Range2 r2) -&gt; ConditionalForwardRange</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>prefix</code></strong><code>(Range2 r2) -&gt; ConditionalForwardRange</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>concat</code></strong><code>(Range2 r2)</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>prefix</code></strong><code>(Range2 r2)</code></li>
+</ul>
+<p>Concatenate two ranges; <code>concat()</code> returns <code>r</code> followed by <code>r2</code>, while
+<code>prefix()</code> returns <code>r2</code> followed by <code>r</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>inner_product</code></strong><code>(Range2 r2, T init = T(), BinaryFunction1 f1 = std::multiplies, BinaryFunction2 f2 = std::plus) -&gt; T</code></li>
+</ul>
+<p>Calculates the inner product of two ranges, following the same conventions as
+<code>std::inner_product()</code>. If the two ranges have different lengths, the extra
+elements in the longer range are ignored.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>interleave</code></strong><code>(Range2 r2) -&gt; ConditionalForwardRange</code></li>
+</ul>
+<p>Returns a range containing alternating elements of <code>r</code> and <code>r2</code>, starting with
+the first element of <code>r</code>. If the two ranges have different lengths, the extra
+elements in the longer range will be returned consecutively once the shorter
+range is exhausted.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>OrderedRange r &gt;&gt;</code> <strong><code>merge</code></strong><code>(OrderedRange2 r2, ComparisonPredicate p = std::less) -&gt; ConditionalForwardOrderedRange</code></li>
+<li><code>OrderedContainer&amp; c &lt;&lt;</code> <strong><code>merge</code></strong><code>(OrderedRange2 r2, ComparisonPredicate p = std::less)</code></li>
+</ul>
+<p>Merge two ordered ranges.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>ForwardRange r &gt;&gt;</code> <strong><code>outer_product</code></strong><code>(ForwardRange2 r2, BinaryFunction f = std::make_pair) -&gt; ForwardRange3</code></li>
+<li><code>ForwardRange r &gt;&gt;</code> <strong><code>self_cross</code></strong><code>(BinaryFunction f = std::make_pair) -&gt; ForwardRange2</code></li>
+</ul>
+<p>Return the outer product of two ranges, as a range containing <code>f(x,y)</code> for
+every possible pair of elements from the two ranges, with the second argument
+varying faster than the first; the output has <code>n*n2</code> elements. The
+<code>self_cross()</code> algorithm returns the cross product of the input range with
+itself.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>OrderedRange r &gt;&gt;</code> <strong><code>set_difference</code></strong><code>(OrderedRange2 r2, ComparisonPredicate p = std::less) -&gt; ConditionalForwardOrderedRange</code></li>
+<li><code>OrderedRange r &gt;&gt;</code> <strong><code>set_difference_from</code></strong><code>(OrderedRange2 r2, ComparisonPredicate p = std::less) -&gt; ConditionalForwardOrderedRange</code></li>
+<li><code>OrderedRange r &gt;&gt;</code> <strong><code>set_intersection</code></strong><code>(OrderedRange2 r2, ComparisonPredicate p = std::less) -&gt; ConditionalForwardOrderedRange</code></li>
+<li><code>OrderedRange r &gt;&gt;</code> <strong><code>set_symmetric_difference</code></strong><code>(OrderedRange2 r2, ComparisonPredicate p = std::less) -&gt; ConditionalForwardOrderedRange</code></li>
+<li><code>OrderedRange r &gt;&gt;</code> <strong><code>set_union</code></strong><code>(OrderedRange2 r2, ComparisonPredicate p = std::less) -&gt; ConditionalForwardOrderedRange</code></li>
+<li><code>OrderedContainer&amp; c &lt;&lt;</code> <strong><code>set_difference</code></strong><code>(OrderedRange2 r2, ComparisonPredicate p = std::less)</code></li>
+<li><code>OrderedContainer&amp; c &lt;&lt;</code> <strong><code>set_difference_from</code></strong><code>(OrderedRange2 r2, ComparisonPredicate p = std::less)</code></li>
+<li><code>OrderedContainer&amp; c &lt;&lt;</code> <strong><code>set_intersection</code></strong><code>(OrderedRange2 r2, ComparisonPredicate p = std::less)</code></li>
+<li><code>OrderedContainer&amp; c &lt;&lt;</code> <strong><code>set_symmetric_difference</code></strong><code>(OrderedRange2 r2, ComparisonPredicate p = std::less)</code></li>
+<li><code>OrderedContainer&amp; c &lt;&lt;</code> <strong><code>set_union</code></strong><code>(OrderedRange2 r2, ComparisonPredicate p = std::less)</code></li>
+</ul>
+<p>Set operations on two ordered ranges. These perform the same operations as the
+similarly named standard algorithms; <code>set_difference_from()</code> returns <code>r2-r</code>,
+while <code>set_difference()</code> returns <code>r-r2</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>zip</code></strong><code>(Range2 r2, BinaryFunction f = std::make_pair) -&gt; ConditionalForwardRange</code></li>
+</ul>
+<p>Returns a range consisting of <code>f(x,y)</code> for each pair of elements, taking one
+argument from each range. If the two ranges have different lengths, the extra
+elements in the longer range are ignored.</p>
+</div>
+<h3 id="expansion-algorithms">Expansion algorithms</h3>
+<p><em>Expansion algorithms return multiple output elements from each input element</em></p>
+<div class="defns">
+<ul>
+<li><code>ForwardRange r &gt;&gt;</code> <strong><code>combinations</code></strong><code>(size_t k) -&gt; InputNestedRange</code></li>
+</ul>
+<p>The output consists of all possible sequences of <code>k</code> elements (not necessarily
+distinct) from the input range. The output contains <code>n<sup>k</sup></code>
+elements, each a range of length <code>k</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>flat_map</code></strong><code>(UnaryFunction f) -&gt; ConditionalForwardRange</code></li>
+<li><code>ForwardRange&amp; r &lt;&lt;</code> <strong><code>flat_map</code></strong><code>(UnaryFunction f)</code></li>
+</ul>
+<p>Calls <code>f(x)</code> on each element, expecting the function to return some form of
+container or range; the individual elements are then returned in the output
+range.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>NestedRange r &gt;&gt;</code> <strong><code>flatten</code></strong> <code>-&gt; ConditionalForwardRange</code></li>
+</ul>
+<p>The elements of the input range are expected to be ranges themselves; the
+output range is assembled by concatenating them.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>insert_after</code></strong><code>(T t) -&gt; ConditionalForwardRange</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>insert_around</code></strong><code>(T t1, T t2) -&gt; ConditionalForwardRange</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>insert_before</code></strong><code>(T t) -&gt; ConditionalForwardRange</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>insert_between</code></strong><code>(T t) -&gt; ConditionalForwardRange</code></li>
+<li><code>ForwardRange&amp; r &lt;&lt;</code> <strong><code>insert_after</code></strong><code>(T t)</code></li>
+<li><code>ForwardRange&amp; r &lt;&lt;</code> <strong><code>insert_around</code></strong><code>(T t1, T t2)</code></li>
+<li><code>ForwardRange&amp; r &lt;&lt;</code> <strong><code>insert_before</code></strong><code>(T t)</code></li>
+<li><code>ForwardRange&amp; r &lt;&lt;</code> <strong><code>insert_between</code></strong><code>(T t)</code></li>
+</ul>
+<p>Insert new elements into a range. The <code>insert_before()</code> and <code>insert_after()</code>
+functions add <code>t</code> before or after each input element, yielding a range of
+length <code>2n</code>; <code>insert_between()</code> adds <code>t</code> between adjacent elements, yielding a
+range of length <code>2n-1</code> (or <code>n</code> if <code>n&lt;2</code>); <code>insert_around()</code> adds <code>t1</code> before
+and <code>t2</code> after each element, yielding a range of length <code>3n</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>permutations</code></strong><code>(ComparisonPredicate p = std::less) -&gt; InputNestedRange</code></li>
+</ul>
+<p>Generates all permutations of the input range, in lexicographical order,
+starting with a copy of the input; the output contains <code>n!</code> elements, each a
+collection of the same size as the input.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>ForwardRange r &gt;&gt;</code> <strong><code>repeat</code></strong><code>(size_t k = npos) -&gt; ConditionalBidirectionalRange</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>repeat</code></strong><code>(size_t k = npos)</code></li>
+</ul>
+<p>Repeats the input range <code>k</code> times.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>ForwardRange r &gt;&gt;</code> <strong><code>subsets</code></strong><code>(size_t k) -&gt; InputNestedRange</code></li>
+</ul>
+<p>Generates all subsets of the input range, in ascending order of size; the
+output contains <code>2<sup>n</sup></code> elements, each a collection of
+<code>0-k</code> elements.</p>
+</div>
+<h3 id="generation-algorithms">Generation algorithms</h3>
+<p><em>Generation algorithms create an output range with no input range</em></p>
+<div class="defns">
+<ul>
+<li><strong><code>epsilon</code></strong><code>&lt;T&gt;() -&gt; RandomAccessRange</code></li>
+</ul>
+<p>Returns an empty range.</p>
+</div>
+<div class="defns">
+<ul>
+<li><strong><code>fill</code></strong><code>(T t, size_t k = npos) -&gt; RandomAccessRange</code></li>
+<li><code>Range&amp; r &lt;&lt;</code> <strong><code>fill</code></strong><code>(T t, size_t k = npos)</code></li>
+</ul>
+<p>Returns a range containing <code>k</code> copies of <code>t</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><strong><code>generate</code></strong><code>(GeneratorFunction f, size_t n = npos) -&gt; InputRange</code></li>
+<li><code>Range&amp; r &lt;&lt;</code> <strong><code>generate</code></strong><code>(GeneratorFunction f, size_t n = npos)</code></li>
+</ul>
+<p>Returns a range of length <code>n</code>, generated by calling <code>f()</code> for each element.</p>
+</div>
+<div class="defns">
+<ul>
+<li><strong><code>iota</code></strong><code>(T init) -&gt; ForwardRange</code></li>
+<li><strong><code>iota</code></strong><code>(T init, UnaryFunction f, size_t n = npos) -&gt; ForwardRange</code></li>
+<li><strong><code>iota</code></strong><code>(T init, T delta, size_t n = npos) -&gt; ForwardRange</code></li>
+<li><code>Range&amp; r &lt;&lt;</code> <strong><code>iota</code></strong><code>(T init)</code></li>
+<li><code>Range&amp; r &lt;&lt;</code> <strong><code>iota</code></strong><code>(T init, UnaryFunction f, size_t n = npos)</code></li>
+<li><code>Range&amp; r &lt;&lt;</code> <strong><code>iota</code></strong><code>(T init, T delta, size_t n = npos)</code></li>
+</ul>
+<p>Generate a sequence starting with the <code>init</code> value. The first version calls
+<code>++x</code> on each element to generate the next one; the second calls <code>f(x)</code>; the
+third calls <code>x+delta</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><strong><code>random</code></strong><code>(RandomDistributon d, RandomEngine&amp; rng, size_t n = npos) -&gt; InputRange</code></li>
+<li><code>Range&amp; r &lt;&lt;</code> <strong><code>random</code></strong><code>(RandomDistributon d, RandomEngine&amp; rng, size_t n = npos)</code></li>
+</ul>
+<p>Generate a sequence of random values, obtained by calling <code>d(rng)</code> for each
+element.</p>
+</div>
+<div class="defns">
+<ul>
+<li><strong><code>single</code></strong><code>(T t) -&gt; RandomAccessRange</code></li>
+</ul>
+<p>Returns a range containing a single element.</p>
+</div>
+<h3 id="permutation-algorithms">Permutation algorithms</h3>
+<p><em>Permutation algorithms return a permutation of the input range</em></p>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>next_permutation</code></strong><code>(ComparisonPredicate p = std::less) -&gt; TemporaryRandomAccessRange</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>prev_permutation</code></strong><code>(ComparisonPredicate p = std::less) -&gt; TemporaryRandomAccessRange</code></li>
+<li><code>BidirectionalRange&amp; r &lt;&lt;</code> <strong><code>next_permutation</code></strong><code>(ComparisonPredicate p = std::less)</code></li>
+<li><code>BidirectionalRange&amp; r &lt;&lt;</code> <strong><code>prev_permutation</code></strong><code>(ComparisonPredicate p = std::less)</code></li>
+</ul>
+<p>Return the next or previous permutation of the input range, in lexicographical
+order.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>BidirectionalRange r &gt;&gt;</code> <strong><code>reverse</code></strong> <code>-&gt; BidirectionalRange2</code></li>
+<li><code>BidirectionalRange&amp; r &lt;&lt;</code> <strong><code>reverse</code></strong></li>
+</ul>
+<p>Reverse the input range.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>shuffle</code></strong><code>(RandomEngine&amp; rng) -&gt; TemporaryRandomAccessRange</code></li>
+<li><code>RandomAccessRange&amp; r &lt;&lt;</code> <strong><code>shuffle</code></strong><code>(RandomEngine&amp; rng)</code></li>
+</ul>
+<p>Shuffle the input range into a random order.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>sort</code></strong><code>(ComparisonPredicate p = std::less) -&gt; TemporaryRandomAccessRange</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>stable_sort</code></strong><code>(ComparisonPredicate p = std::less) -&gt; TemporaryRandomAccessRange</code></li>
+<li><code>RandomAccessRange&amp; r &lt;&lt;</code> <strong><code>sort</code></strong><code>(ComparisonPredicate p = std::less)</code></li>
+<li><code>RandomAccessRange&amp; r &lt;&lt;</code> <strong><code>stable_sort</code></strong><code>(ComparisonPredicate p = std::less)</code></li>
+</ul>
+<p>Sort the input range according to the comparison predicate.</p>
+</div>
+<h3 id="reduction-algorithms">Reduction algorithms</h3>
+<p><em>Reduction algorithms take an input range and return a scalar result</em></p>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>all_of</code></strong><code>(UnaryPredicate p) -&gt; bool</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>any_of</code></strong><code>(UnaryPredicate p) -&gt; bool</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>none_of</code></strong><code>(UnaryPredicate p) -&gt; bool</code></li>
+</ul>
+<p>True if the predicate returns true for all elements of the input range, for at
+least one of them, or for none of them, respectively. If the range is empty,
+<code>all_of()</code> and <code>none_of()</code> are both true, and <code>any_of()</code> is false.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>count</code></strong> <code>-&gt; size_t</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>count</code></strong><code>(T t) -&gt; size_t</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>count_if</code></strong><code>(UnaryPredicate p) -&gt; size_t</code></li>
+</ul>
+<p>The first version returns the length of the input range. The other versions
+return the number of elements equal to the given value or matching the given
+predicate.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>fold_left</code></strong><code>(T t, BinaryFunction f) -&gt; T</code></li>
+<li><code>BidirectionalRange r &gt;&gt;</code> <strong><code>fold_right</code></strong><code>(T t, BinaryFunction f) -&gt; T</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>product</code></strong><code>(T init = 1) -&gt; T</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>reduce</code></strong><code>(BinaryFunction f) -&gt; T</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>sum</code></strong><code>(T init = T()) -&gt; T</code></li>
+</ul>
+<p>The <code>fold_left()</code> and <code>fold_right()</code> algorithms perform a left to right or
+right to left fold on the input range, starting with the given initial value
+and calling <code>t=f(t,x)</code> or <code>t=f(x,t)</code>, respectively, for each element. The
+<code>reduce()</code> algorithm performs a fold in unspecified order (possibly in
+parallel); if the range is empty, <code>reduce()</code> returns a default constructed
+object of its value type; if the range contains only one element; <code>reduce()</code>
+returns that element without calling the function. The <code>sum()</code> and <code>product()</code>
+algorithms are convenience functions for left folds using the addition or
+multiplication operators.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>is_empty</code></strong> <code>-&gt; bool</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>is_nonempty</code></strong> <code>-&gt; bool</code></li>
+</ul>
+<p>True if the range is or is not empty.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>is_sorted</code></strong><code>(ComparisonPredicate p = std::less) -&gt; bool</code></li>
+</ul>
+<p>True if the range is sorted according to the comparison predicate.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>max</code></strong><code>(ComparisonPredicate p = std::less) -&gt; ValueType</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>min</code></strong><code>(ComparisonPredicate p = std::less) -&gt; ValueType</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>min_max</code></strong><code>(ComparisonPredicate p = std::less) -&gt; std::pair&lt;ValueType&gt;</code></li>
+</ul>
+<p>Return the maximum and minimum values in the range, according to the
+comparison predicate.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>statistics</code></strong> <code>-&gt; Statistics</code></li>
+</ul>
+<p>Compiles statistics on the range, whose value type must be either an
+arithmetic type or a pair of arithmetic types.</p>
+</div>
+<h3 id="selection-algorithms">Selection algorithms</h3>
+<p><em>Selection algorithms return a subset of the input range</em></p>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>after</code></strong><code>(T t) -&gt; ConditionalForwardRange</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>after_if</code></strong><code>(UnaryPredicate p) -&gt; ConditionalForwardRange</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>before</code></strong><code>(T t) -&gt; ConditionalForwardRange</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>before_if</code></strong><code>(UnaryPredicate p) -&gt; ConditionalForwardRange</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>from</code></strong><code>(T t) -&gt; ConditionalForwardRange</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>from_if</code></strong><code>(UnaryPredicate p) -&gt; ConditionalForwardRange</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>until</code></strong><code>(T t) -&gt; ConditionalForwardRange</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>until_if</code></strong><code>(UnaryPredicate p) -&gt; ConditionalForwardRange</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>after</code></strong><code>(T t)</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>after_if</code></strong><code>(UnaryPredicate p)</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>before</code></strong><code>(T t)</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>before_if</code></strong><code>(UnaryPredicate p)</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>from</code></strong><code>(T t)</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>from_if</code></strong><code>(UnaryPredicate p)</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>until</code></strong><code>(T t)</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>until_if</code></strong><code>(UnaryPredicate p)</code></li>
+</ul>
+<p>Return part of a range based on the first element matching the given value or
+predicate. The <code>before[_if]()</code> algorithm returns all elements up to, but not
+including, the first matching element; <code>until[_if]()</code> returns all elements up
+to, and including, the first matching element; <code>from[_if]()</code> returns all
+elements starting from, and including, the first matching element;
+<code>after[_if]()</code> returns all elements after, but not including, the first
+matching element.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>filter</code></strong><code>(UnaryPredicate p) -&gt; ConditionalForwardRange</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>filter_out</code></strong><code>(UnaryPredicate p) -&gt; ConditionalForwardRange</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>filter</code></strong><code>(UnaryPredicate p)</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>filter_out</code></strong><code>(UnaryPredicate p)</code></li>
+</ul>
+<p>Select all elements matching, or not matching, the predicate.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>not_null</code></strong> <code>-&gt; ConditionalForwardRange</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>not_null</code></strong></li>
+</ul>
+<p>Filters out all null elements (elements for which <code>static_cast&lt;bool&gt;(x)</code> is
+false).</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>RandomAccessRange r &gt;&gt;</code> <strong><code>sample_k</code></strong><code>(size_t k, RandomEngine&amp; rng) -&gt; TemporaryRandomAccessRange</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>sample_p</code></strong><code>(double p, RandomEngine&amp; rng) -&gt; ConditionalForwardRange</code></li>
+<li><code>RandomAccessRange r &gt;&gt;</code> <strong><code>sample_replace</code></strong><code>(size_t k, RandomEngine&amp; rng) -&gt; TemporaryRandomAccessRange</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>sample_k</code></strong><code>(size_t k, RandomEngine&amp; rng)</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>sample_p</code></strong><code>(double p, RandomEngine&amp; rng)</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>sample_replace</code></strong><code>(size_t k, RandomEngine&amp; rng)</code></li>
+</ul>
+<p>These return various kinds of random sample of elements from the input range.
+The <code>sample_k()</code> algorithm selects a sample of <code>k</code> elements; behaviour is
+undefined if <code>k&gt;n</code>. The <code>sample_p()</code> algorithm selects each element with
+probability <code>p</code>; behaviour is undefined if <code>p&lt;0</code> or <code>p&gt;1</code>. The
+<code>sample_replace()</code> algorithm selects a random element <code>k</code> times, with
+replacement. For the first two the elements in the output range are in the
+same order as they were in the input.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>skip</code></strong><code>(size_t k) -&gt; ConditionalForwardRange</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>take</code></strong><code>(size_t k) -&gt; ConditionalForwardRange</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>skip</code></strong><code>(size_t k)</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>take</code></strong><code>(size_t k)</code></li>
+</ul>
+<p>Skip the first <code>k</code> elements, returning all elements after those, or return
+only the first <code>k</code> elements. If <code>n&lt;=k</code>, <code>skip()</code> returns nothing and <code>take()</code>
+returns the input range unchanged.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>stride</code></strong><code>(size_t step) -&gt; ConditionalForwardRange</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>stride</code></strong><code>(size_t skip, size_t step) -&gt; ConditionalForwardRange</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>stride</code></strong><code>(size_t step)</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>stride</code></strong><code>(size_t skip, size_t step)</code></li>
+</ul>
+<p>Return one element for every <code>step</code> elements in the input range. Optionally,
+the number of elements to skip before the first accepted element can be
+specified; by default, the last element of each group is returned (equivalent
+to <code>skip=step-1</code>).</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>unique</code></strong><code>(EqualityPredicate p = std::equal_to) -&gt; ConditionalForwardRange</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>unique</code></strong><code>(EqualityPredicate p = std::equal_to)</code></li>
+</ul>
+<p>Return one element from each group of adjacent equal elements, according to
+the equality predicate.</p>
+</div>
+<h3 id="transformation-algorithms">Transformation algorithms</h3>
+<p><em>Transformation algorithms apply a one-to-one mapping from the input range to the output</em></p>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>const_ptr</code></strong><code>&lt;T&gt;() -&gt; Range2</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>dynamic_ptr</code></strong><code>&lt;T&gt;() -&gt; Range2</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>reinterpret_ptr</code></strong><code>&lt;T&gt;() -&gt; Range2</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>static_ptr</code></strong><code>&lt;T&gt;() -&gt; Range2</code></li>
+<li><code>ForwardRange&amp; r &lt;&lt;</code> <strong><code>const_ptr</code></strong><code>&lt;T&gt;()</code></li>
+<li><code>ForwardRange&amp; r &lt;&lt;</code> <strong><code>dynamic_ptr</code></strong><code>&lt;T&gt;()</code></li>
+<li><code>ForwardRange&amp; r &lt;&lt;</code> <strong><code>reinterpret_ptr</code></strong><code>&lt;T&gt;()</code></li>
+<li><code>ForwardRange&amp; r &lt;&lt;</code> <strong><code>static_ptr</code></strong><code>&lt;T&gt;()</code></li>
+</ul>
+<p>These require the value type of the input range to be a pointer, and will
+apply one of the standard cast operators (<code>const_cast</code>, <code>dynamic_cast</code>,
+<code>reinterpret_cast</code>, or <code>static_cast</code>) to convert it to a <code>T*</code>. For all except
+<code>reinterpret_ptr()</code>, these will also work with shared pointers.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>construct</code></strong><code>&lt;T&gt;() -&gt; Range2</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>initialize</code></strong><code>&lt;T&gt;() -&gt; Range2</code></li>
+</ul>
+<p>Each element of the output range is created by constructing a <code>T</code> using the
+corresponding element of the input range to supply the constructor arguments;
+if the input value type is a pair or tuple, its fields will be passed as
+separate arguments. The two algorithms do the same thing, except that
+<code>construct()</code> calls <code>T(args...)</code>, while <code>initialize()</code> calls <code>T{args...}</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>convert</code></strong><code>&lt;T&gt;() -&gt; Range2</code></li>
+<li><code>ForwardRange&amp; r &lt;&lt;</code> <strong><code>convert</code></strong><code>&lt;T&gt;()</code></li>
+</ul>
+<p>Output elements are generated by calling <code>static_cast&lt;T&gt;(x)</code> on the input
+elements.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>dereference</code></strong> <code>-&gt; Range2</code></li>
+</ul>
+<p>Output elements are generated by calling <code>*x</code> on the input elements.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>indexed</code></strong><code>(int init = 0, int delta = 1) -&gt; ConditionalForwardRange</code></li>
+</ul>
+<p>Each output element is a pair <code>(i,x)</code>, where <code>x</code> is the input element and <code>i</code>
+is its index. Indexing starts from zero by default; optionally the initial
+value and increment can be supplied.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>iterators</code></strong> <code>-&gt; Range2</code></li>
+</ul>
+<p>The output is the range of iterators from the input range.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>keys</code></strong> <code>-&gt; Range2</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>values</code></strong> <code>-&gt; Range2</code></li>
+</ul>
+<p>The input value type is expected to be a pair or pair-like type; the output is
+the <code>first</code> (<code>keys()</code>) or <code>second</code> (<code>values()</code>) member from each input value.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>map</code></strong><code>(UnaryFunction f) -&gt; Range2</code></li>
+<li><code>PairRange r &gt;&gt;</code> <strong><code>map_pairs</code></strong><code>(BinaryFunction f) -&gt; Range</code></li>
+<li><code>ForwardRange&amp; r &lt;&lt;</code> <strong><code>map</code></strong><code>(UnaryFunction f)</code></li>
+</ul>
+<p>Each output element is generated by calling <code>f(x)</code> on the input element, or
+<code>f(x.first,x.second)</code> for <code>map_pairs()</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>replace</code></strong><code>(T1 t1, T2 t2) -&gt; Range2</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>replace_if</code></strong><code>(UnaryPredicate p, T t2) -&gt; Range2</code></li>
+<li><code>ForwardRange&amp; r &lt;&lt;</code> <strong><code>replace</code></strong><code>(T1 t1, T2 t2)</code></li>
+<li><code>ForwardRange&amp; r &lt;&lt;</code> <strong><code>replace_if</code></strong><code>(UnaryPredicate p, T t2)</code></li>
+</ul>
+<p>Input elements equal to <code>t1</code>, or matching the predicate, are replaced with
+<code>t2</code>; other input elements are passed through unchanged.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>stringify</code></strong> <code>-&gt; Range2</code></li>
+</ul>
+<p>Converts each element to a string (using <code>to_str()</code>).</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>PairRange r &gt;&gt;</code> <strong><code>swap_pairs</code></strong> <code>-&gt; PairRange2</code></li>
+<li><code>PairContainer&amp; c &lt;&lt;</code> <strong><code>swap_pairs</code></strong></li>
+</ul>
+<p>Swaps the <code>first</code> and <code>second</code> member of each pair.</p></body>
+</html>

@@ -28,8 +28,9 @@
     * [`"rs-core/stack.hpp"`](stack.html) - Deterministic stack
     * [`"rs-core/topological-order.hpp"`](topological-order.html) - Topological order
 * _Functional programming_
-    * [`"rs-core/algorithm.hpp"`](algorithm.html) -- Algorithms
+    * [`"rs-core/algorithm.hpp"`](algorithm.html) -- Miscellaneous algorithms
     * [`"rs-core/cache.hpp"`](cache.html) -- Function memoization
+    * [`"rs-core/range.hpp"`](range.html) -- Range algorithms
 * _Input/output_
     * [`"rs-core/file.hpp"`](file.html) - File class
     * [`"rs-core/io.hpp"`](io.html) - I/O utilities

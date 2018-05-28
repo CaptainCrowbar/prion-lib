@@ -201,6 +201,70 @@ extern void test_core_random_bytes();
 extern void test_core_random_shuffle();
 extern void test_core_random_seed_sequence();
 extern void test_core_random_text_generators();
+extern void test_core_range_aggregation_adjacent_difference();
+extern void test_core_range_aggregation_census();
+extern void test_core_range_aggregation_group();
+extern void test_core_range_aggregation_partial_sum();
+extern void test_core_range_combination_compare();
+extern void test_core_range_combination_concat();
+extern void test_core_range_combination_inner_product();
+extern void test_core_range_combination_interleave();
+extern void test_core_range_combination_merge();
+extern void test_core_range_combination_outer_product();
+extern void test_core_range_combination_set_difference();
+extern void test_core_range_combination_set_difference_from();
+extern void test_core_range_combination_set_intersection();
+extern void test_core_range_combination_set_symmetric_difference();
+extern void test_core_range_combination_set_union();
+extern void test_core_range_combination_zip();
+extern void test_core_range_core_passthrough();
+extern void test_core_range_core_collect();
+extern void test_core_range_core_each();
+extern void test_core_range_core_combinator();
+extern void test_core_range_expansion_combinations();
+extern void test_core_range_expansion_flat_map();
+extern void test_core_range_expansion_flatten();
+extern void test_core_range_expansion_insert_algorithms();
+extern void test_core_range_expansion_permutations();
+extern void test_core_range_expansion_repeat();
+extern void test_core_range_expansion_subsets();
+extern void test_core_range_generation_epsilon();
+extern void test_core_range_generation_fill();
+extern void test_core_range_generation_generate();
+extern void test_core_range_generation_iota();
+extern void test_core_range_generation_random();
+extern void test_core_range_generation_single();
+extern void test_core_range_permutation_permutations();
+extern void test_core_range_permutation_reverse();
+extern void test_core_range_permutation_shuffle();
+extern void test_core_range_permutation_sort();
+extern void test_core_range_reduction_all_any_none();
+extern void test_core_range_reduction_count();
+extern void test_core_range_reduction_fold();
+extern void test_core_range_reduction_is_empty();
+extern void test_core_range_reduction_is_sorted();
+extern void test_core_range_reduction_min_max();
+extern void test_core_range_reduction_reduce();
+extern void test_core_range_reduction_statistics();
+extern void test_core_range_reduction_sum_product();
+extern void test_core_range_selection_before_etc();
+extern void test_core_range_selection_filter();
+extern void test_core_range_selection_not_null();
+extern void test_core_range_selection_sample();
+extern void test_core_range_selection_skip_take();
+extern void test_core_range_selection_stride();
+extern void test_core_range_selection_unique();
+extern void test_core_range_transformation_pointer_casts();
+extern void test_core_range_transformation_construct();
+extern void test_core_range_transformation_convert();
+extern void test_core_range_transformation_dereference();
+extern void test_core_range_transformation_indexed();
+extern void test_core_range_transformation_iterators();
+extern void test_core_range_transformation_keys_values();
+extern void test_core_range_transformation_map();
+extern void test_core_range_transformation_replace();
+extern void test_core_range_transformation_stringify();
+extern void test_core_range_transformation_swap_pairs();
 extern void test_core_rational_basics();
 extern void test_core_rational_reduction();
 extern void test_core_rational_arithmetic();
@@ -489,6 +553,70 @@ int main() {
         { "core/random/shuffle", test_core_random_shuffle },
         { "core/random/seed-sequence", test_core_random_seed_sequence },
         { "core/random/text-generators", test_core_random_text_generators },
+        { "core/range-aggregation/adjacent-difference", test_core_range_aggregation_adjacent_difference },
+        { "core/range-aggregation/census", test_core_range_aggregation_census },
+        { "core/range-aggregation/group", test_core_range_aggregation_group },
+        { "core/range-aggregation/partial-sum", test_core_range_aggregation_partial_sum },
+        { "core/range-combination/compare", test_core_range_combination_compare },
+        { "core/range-combination/concat", test_core_range_combination_concat },
+        { "core/range-combination/inner-product", test_core_range_combination_inner_product },
+        { "core/range-combination/interleave", test_core_range_combination_interleave },
+        { "core/range-combination/merge", test_core_range_combination_merge },
+        { "core/range-combination/outer-product", test_core_range_combination_outer_product },
+        { "core/range-combination/set-difference", test_core_range_combination_set_difference },
+        { "core/range-combination/set-difference-from", test_core_range_combination_set_difference_from },
+        { "core/range-combination/set-intersection", test_core_range_combination_set_intersection },
+        { "core/range-combination/set-symmetric-difference", test_core_range_combination_set_symmetric_difference },
+        { "core/range-combination/set-union", test_core_range_combination_set_union },
+        { "core/range-combination/zip", test_core_range_combination_zip },
+        { "core/range-core/passthrough", test_core_range_core_passthrough },
+        { "core/range-core/collect", test_core_range_core_collect },
+        { "core/range-core/each", test_core_range_core_each },
+        { "core/range-core/combinator", test_core_range_core_combinator },
+        { "core/range-expansion/combinations", test_core_range_expansion_combinations },
+        { "core/range-expansion/flat-map", test_core_range_expansion_flat_map },
+        { "core/range-expansion/flatten", test_core_range_expansion_flatten },
+        { "core/range-expansion/insert-algorithms", test_core_range_expansion_insert_algorithms },
+        { "core/range-expansion/permutations", test_core_range_expansion_permutations },
+        { "core/range-expansion/repeat", test_core_range_expansion_repeat },
+        { "core/range-expansion/subsets", test_core_range_expansion_subsets },
+        { "core/range-generation/epsilon", test_core_range_generation_epsilon },
+        { "core/range-generation/fill", test_core_range_generation_fill },
+        { "core/range-generation/generate", test_core_range_generation_generate },
+        { "core/range-generation/iota", test_core_range_generation_iota },
+        { "core/range-generation/random", test_core_range_generation_random },
+        { "core/range-generation/single", test_core_range_generation_single },
+        { "core/range-permutation/permutations", test_core_range_permutation_permutations },
+        { "core/range-permutation/reverse", test_core_range_permutation_reverse },
+        { "core/range-permutation/shuffle", test_core_range_permutation_shuffle },
+        { "core/range-permutation/sort", test_core_range_permutation_sort },
+        { "core/range-reduction/all-any-none", test_core_range_reduction_all_any_none },
+        { "core/range-reduction/count", test_core_range_reduction_count },
+        { "core/range-reduction/fold", test_core_range_reduction_fold },
+        { "core/range-reduction/is-empty", test_core_range_reduction_is_empty },
+        { "core/range-reduction/is-sorted", test_core_range_reduction_is_sorted },
+        { "core/range-reduction/min-max", test_core_range_reduction_min_max },
+        { "core/range-reduction/reduce", test_core_range_reduction_reduce },
+        { "core/range-reduction/statistics", test_core_range_reduction_statistics },
+        { "core/range-reduction/sum-product", test_core_range_reduction_sum_product },
+        { "core/range-selection/before-etc", test_core_range_selection_before_etc },
+        { "core/range-selection/filter", test_core_range_selection_filter },
+        { "core/range-selection/not-null", test_core_range_selection_not_null },
+        { "core/range-selection/sample", test_core_range_selection_sample },
+        { "core/range-selection/skip-take", test_core_range_selection_skip_take },
+        { "core/range-selection/stride", test_core_range_selection_stride },
+        { "core/range-selection/unique", test_core_range_selection_unique },
+        { "core/range-transformation/pointer-casts", test_core_range_transformation_pointer_casts },
+        { "core/range-transformation/construct", test_core_range_transformation_construct },
+        { "core/range-transformation/convert", test_core_range_transformation_convert },
+        { "core/range-transformation/dereference", test_core_range_transformation_dereference },
+        { "core/range-transformation/indexed", test_core_range_transformation_indexed },
+        { "core/range-transformation/iterators", test_core_range_transformation_iterators },
+        { "core/range-transformation/keys-values", test_core_range_transformation_keys_values },
+        { "core/range-transformation/map", test_core_range_transformation_map },
+        { "core/range-transformation/replace", test_core_range_transformation_replace },
+        { "core/range-transformation/stringify", test_core_range_transformation_stringify },
+        { "core/range-transformation/swap-pairs", test_core_range_transformation_swap_pairs },
         { "core/rational/basics", test_core_rational_basics },
         { "core/rational/reduction", test_core_rational_reduction },
         { "core/rational/arithmetic", test_core_rational_arithmetic },

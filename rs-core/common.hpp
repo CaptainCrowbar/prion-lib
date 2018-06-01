@@ -1159,12 +1159,9 @@ namespace RS {
         template <typename T>
         struct Divide<T, false, 'F'> {
             std::pair<T, T> operator()(T x, T y) const noexcept {
-                using std::abs;
-                using std::floor;
-                using std::fmod;
-                auto q = floor(x / y), r = fmod(x, y);
+                auto q = std::floor(x / y), r = std::fmod(x, y);
                 if (r < T(0))
-                    r += abs(y);
+                    r += std::abs(y);
                 if (y < T(0) && r != T(0))
                     q += T(1);
                 return {q, r};
@@ -1175,11 +1172,10 @@ namespace RS {
         struct Divide<T, true, Mode> {
             std::pair<T, T> operator()(T x, T y) const noexcept {
                 static_assert(Mode != 'U', "Symmetric division on unsigned type");
-                using std::abs;
                 auto qr = Divide<T>()(x, y);
-                if (qr.second > abs(y) / T(2)) {
+                if (qr.second > std::abs(y) / T(2)) {
                     qr.first += y > T(0) ? T(1) : T(-1);
-                    qr.second -= abs(y);
+                    qr.second -= std::abs(y);
                 }
                 return qr;
             }
@@ -1322,7 +1318,7 @@ namespace RS {
     template <typename T>
     T int_sqrt(T t) noexcept {
         if (std::numeric_limits<T>::digits < std::numeric_limits<double>::digits)
-            return T(floor(sqrt(double(t))));
+            return T(std::floor(std::sqrt(double(t))));
         auto u = as_unsigned(t);
         using U = decltype(u);
         U result = 0, test = U(1) << (8 * sizeof(U) - 2);

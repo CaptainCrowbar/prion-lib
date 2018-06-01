@@ -7,6 +7,8 @@
 #include <atomic>
 #include <cmath>
 #include <cstddef>
+#include <cstdlib>
+#include <cstring>
 #include <iterator>
 #include <limits>
 #include <memory>
@@ -22,7 +24,6 @@
 #include <typeindex>
 #include <typeinfo>
 #include <utility>
-#include <vector>
 
 #ifdef __GNUC__
     #include <cxxabi.h>
@@ -1070,10 +1071,10 @@ namespace RS {
         if (ascii_isspace(*endp))
             ++endp;
         if (n && ascii_isalpha(*endp)) {
-            auto pp = strchr(prefixes, ascii_toupper(*endp));
+            auto pp = std::strchr(prefixes, ascii_toupper(*endp));
             if (pp) {
                 int64_t steps = pp - prefixes + 1;
-                double limit = log10(double(limits::max()) / double(std::abs(n))) / 3;
+                double limit = std::log10(double(limits::max()) / double(std::abs(n))) / 3;
                 if (double(steps) > limit)
                     throw std::range_error("Out of range: " + quote(s));
                 n *= int_power(int64_t(1000), steps);
@@ -1099,10 +1100,10 @@ namespace RS {
         if (x != 0 && ascii_isalpha(c)) {
             if (c == 'K')
                 c = 'k';
-            auto pp = strchr(prefixes, c);
+            auto pp = std::strchr(prefixes, c);
             if (pp) {
                 auto steps = pp - prefixes - 8;
-                double limit = log10(limits::max() / fabs(x)) / 3;
+                double limit = std::log10(limits::max() / fabs(x)) / 3;
                 if (double(steps) > limit)
                     throw std::range_error("Out of range: " + quote(s));
                 x *= std::pow(1000.0, steps);

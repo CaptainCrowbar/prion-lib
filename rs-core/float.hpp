@@ -10,7 +10,6 @@
 #include <deque>
 #include <functional>
 #include <numeric>
-#include <stdexcept>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -298,7 +297,7 @@ namespace RS {
         template <typename T>
         T default_epsilon() noexcept {
             static_assert(std::is_floating_point<T>::value);
-            return T(std::pow(T(10), - std::min(int(sizeof(T)), 8)));
+            return std::pow(T(10), - std::min(T(sizeof(T)), T(8)));
         }
 
     }

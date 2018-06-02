@@ -6,7 +6,9 @@
 #include "rs-core/string.hpp"
 #include "rs-core/vector.hpp"
 #include <algorithm>
+#include <array>
 #include <cmath>
+#include <cstdlib>
 #include <functional>
 #include <initializer_list>
 #include <iterator>
@@ -330,7 +332,7 @@ namespace RS {
 
         inline double BinomialDistributionProperties::pdf(int x) const noexcept {
             if (x >= 0 && x <= tests)
-                return xbinomial(tests, x) * pow(prob, x) * pow(1 - prob, tests - x);
+                return xbinomial(tests, x) * std::pow(prob, double(x)) * std::pow(1.0 - prob, double(tests - x));
             else
                 return 0;
         }
@@ -381,7 +383,7 @@ namespace RS {
             double s = 1, t = 0;
             for (int i = 0, j = x - 1; i < num; ++i, j -= fac, s = - s)
                 t += s * xbinomial(j, num - 1) * xbinomial(num, i);
-            return t * pow(double(fac), - num);
+            return t * std::pow(double(fac), - double(num));
         }
 
         inline double DiceProperties::ccdf(int x) const noexcept {
@@ -392,7 +394,7 @@ namespace RS {
             double s = 1, t = 0;
             for (int i = 0, j = num * (fac + 1) - x; i < num; ++i, j -= fac, s = - s)
                 t += s * xbinomial(j, num) * xbinomial(num, i);
-            return t * pow(double(fac), - num);
+            return t * std::pow(double(fac), - double(num));
         }
 
     class UniformRealProperties {

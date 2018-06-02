@@ -1121,7 +1121,7 @@ namespace RS {
                 double limit = std::log10(limits::max() / fabs(x)) / 3;
                 if (double(steps) > limit)
                     throw std::range_error("Out of range: " + quote(s));
-                x *= std::pow(1000.0, steps);
+                x *= std::pow(1000.0, double(steps));
             }
         }
         return x;

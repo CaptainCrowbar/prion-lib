@@ -191,6 +191,13 @@ otherwise return the string unchanged.</p>
 </div>
 <div class="defns">
 <ul>
+<li><code>template &lt;typename... Args&gt; std::string</code> <strong><code>catstr</code></strong><code>(Args... args)</code></li>
+</ul>
+<p>Generalized string concatenation. The arguments can be any of <code>char</code>, <code>const
+char*</code>, <code>std::string</code>, or <code>std::string_view</code>.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>Ustring</code> <strong><code>indent</code></strong><code>(Uview str, size_t depth)</code></li>
 </ul>
 <p>Inserts <code>4*depth</code> spaces of indentation on every non-empty line.</p>

@@ -150,6 +150,11 @@ was not already there, or return the string unchanged if it was. The
 `drop_prefix/suffix()` functions remove a prefix or suffix if it was present,
 otherwise return the string unchanged.
 
+* `template <typename... Args> std::string` **`catstr`**`(Args... args)`
+
+Generalized string concatenation. The arguments can be any of `char`, `const
+char*`, `std::string`, or `std::string_view`.
+
 * `Ustring` **`indent`**`(Uview str, size_t depth)`
 
 Inserts `4*depth` spaces of indentation on every non-empty line.

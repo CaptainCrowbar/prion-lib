@@ -473,6 +473,14 @@ namespace RS {
 
     namespace RS_Detail {
 
+        inline void catstr_helper(std::string&) noexcept {}
+
+        template <typename T, typename... Args>
+        void catstr_helper(std::string& dst, const T& t, const Args&... args) {
+            dst += t;
+            catstr_helper(dst, args...);
+        }
+
         inline Ustring quote_string(std::string_view str, bool check_utf8) {
             bool allow_8bit = check_utf8 && uvalid(str);
             Ustring result = "\"";
@@ -517,6 +525,13 @@ namespace RS {
         std::string r(s);
         r += suffix;
         return r;
+    }
+
+    template <typename... Args>
+    std::string catstr(const Args&... args) {
+        std::string s;
+        RS_Detail::catstr_helper(s, args...);
+        return s;
     }
 
     inline std::string drop_prefix(std::string_view s, std::string_view prefix) {

@@ -613,6 +613,15 @@ void test_core_string_manipulation() {
     s = "HelloWorld";  TRY(s = drop_suffix(s, "Hello"));  TEST_EQUAL(s, "HelloWorld");
     s = "HelloWorld";  TRY(s = drop_suffix(s, "World"));  TEST_EQUAL(s, "Hello");
 
+    s1 = "Hello";
+    s2 = "world";
+
+    TRY(s = catstr());                    TEST_EQUAL(s, "");
+    TRY(s = catstr('x'));                 TEST_EQUAL(s, "x");
+    TRY(s = catstr("Hello"));             TEST_EQUAL(s, "Hello");
+    TRY(s = catstr(s1));                  TEST_EQUAL(s, "Hello");
+    TRY(s = catstr(s1, ' ', s2, "!\n"));  TEST_EQUAL(s, "Hello world!\n");
+
     TRY(s = indent("", 2));
     TEST_EQUAL(s, "");
     TRY(s = indent("\n\n", 2));

@@ -773,6 +773,18 @@ void test_core_common_version_number() {
     TEST_EQUAL(v1.str(), "1.2.3beta");
     TEST_EQUAL(v1.to32(), 0x01020300);
 
+    TRY(v1 = Version("1.2.3 beta"));
+    TEST_EQUAL(v1[0], 1);
+    TEST_EQUAL(v1[1], 2);
+    TEST_EQUAL(v1[2], 3);
+    TEST_EQUAL(v1.major(), 1);
+    TEST_EQUAL(v1.minor(), 2);
+    TEST_EQUAL(v1.patch(), 3);
+    TEST_EQUAL(v1.suffix(), "");
+    TEST_EQUAL(v1.size(), 3);
+    TEST_EQUAL(v1.str(), "1.2.3");
+    TEST_EQUAL(v1.to32(), 0x01020300);
+
     TRY(v1 = Version("beta"));
     TEST_EQUAL(v1[0], 0);
     TEST_EQUAL(v1[1], 0);

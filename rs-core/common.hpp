@@ -1873,16 +1873,17 @@ namespace RS {
         int compare(const Version& v) const noexcept;
         void trim() { while (! ver.empty() && ver.back() == 0) ver.pop_back(); }
         static bool is_digit(char c) noexcept { return c >= '0' && c <= '9'; }
+        static bool is_space(char c) noexcept { return (c >= '\t' && c <= '\r') || c == ' '; }
     };
 
         inline Version::Version(const Ustring& s) {
-            auto i = s.begin(), end = s.end();
+            auto i = s.begin(), j = i, end = s.end();
             while (i != end) {
-                auto j = std::find_if_not(i, end, is_digit);
+                j = std::find_if_not(i, end, is_digit);
                 if (i == j)
                     break;
                 Ustring part(i, j);
-                ver.push_back(unsigned(strtoul(part.data(), nullptr, 10)));
+                ver.push_back(unsigned(std::strtoul(part.data(), nullptr, 10)));
                 i = j;
                 if (i == end || *i != '.')
                     break;
@@ -1890,7 +1891,8 @@ namespace RS {
                 if (i == end || ! is_digit(*i))
                     break;
             }
-            suf.assign(i, end);
+            j = std::find_if(i, end, is_space);
+            suf.assign(i, j);
             trim();
         }
 

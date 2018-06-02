@@ -370,8 +370,9 @@ conversion.
 A version number, represented as an array of integers optionally followed by a
 trailing string (e.g. `1.2.3beta`). The default constructor sets the version
 number to zero; the second constructor expects one or more integers followed
-by a string; the third constructor parses a string (a string that does not
-start with an integer is assumed to start with an implicit zero). Results are
+by a string; the third constructor parses a string. A string that does not
+start with an integer is assumed to start with an implicit zero; if the string
+contains any whitespace, anything after that is ignored. Results are
 unspecified if a version number element is too big to fit in an `unsigned
 int`.
 

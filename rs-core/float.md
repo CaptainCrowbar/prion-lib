@@ -31,6 +31,7 @@ actually supplied are accurate to at least `long double` precision where an
 exact value is defined, or to the best known accuracy for the empirical
 constants.
 
+<!-- TEXT -->
 * _Mathematical constants_
     * **`e`**                _= e                         = 2.7183_
     * **`ln2`**              _= log<sub>e</sub> 2         = 0.6931_

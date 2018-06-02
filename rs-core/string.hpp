@@ -1212,25 +1212,6 @@ namespace RS {
 
     // String literals
 
-    namespace RS_Detail {
-
-        inline auto find_leading_spaces(const Ustring& s, size_t limit = npos) noexcept {
-            size_t n = 0;
-            auto i = s.begin(), e = s.end();
-            while (i != e && n < limit) {
-                if (*i == ' ')
-                    ++n;
-                else if (*i == '\t')
-                    n += 4;
-                else
-                    break;
-                ++i;
-            }
-            return std::make_pair(i, n);
-        }
-
-    }
-
     namespace Literals {
 
         inline Strings operator""_csv(const char* p, size_t n) {
@@ -1257,28 +1238,29 @@ namespace RS {
 
         inline Ustring operator""_doc(const char* p, size_t n) {
             using namespace RS_Detail;
-            auto lines = splitv_lines(Ustring(p, n));
-            for (auto& line: lines)
-                line = trim_right(line);
-            if (! lines.empty() && lines.front().empty())
-                lines.erase(lines.begin());
-            if (! lines.empty() && lines.back().empty())
-                lines.pop_back();
-            if (lines.empty())
-                return {};
-            size_t margin = npos;
+            Uview text(p, n);
+            size_t cut = text.find_last_of('\n') + 1, indent = 0;
+            if (text.find_first_not_of("\t ", cut) == npos) {
+                for (size_t i = cut; i < n; ++i)
+                    indent += text[i] == '\t' ? 4 : 1;
+                text = Uview(p, cut);
+            }
+            auto lines = splitv_lines(text);
             for (auto& line: lines) {
-                if (! line.empty()) {
-                    size_t spaces = find_leading_spaces(line).second;
-                    margin = std::min(margin, spaces);
+                line = trim_right(line);
+                size_t start = line.find_first_not_of("\t ");
+                if (start == npos) {
+                    line.clear();
+                } else {
+                    size_t leading = 0;
+                    for (size_t i = 0; i < start; ++i)
+                        leading += line[i] == '\t' ? 4 : 1;
+                    leading = leading > indent ? leading - indent : 0;
+                    line.replace(0, start, leading, ' ');
                 }
             }
-            for (auto& line: lines) {
-                auto i = find_leading_spaces(line, margin).first;
-                line.erase(0, i - line.begin());
-                auto ls = find_leading_spaces(line);
-                line.replace(0, ls.first - line.begin(), ls.second, ' ');
-            }
+            if (! lines.empty() && lines.front().empty())
+                lines.erase(lines.begin());
             return join(lines, "\n", true);
         }
 

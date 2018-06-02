@@ -321,7 +321,7 @@ void test_core_serial_persistent_storage() {
                 "number": 0,
                 "string": ""
             }
-        )"_doc);
+            )"_doc);
 
         TRY(pnum = 42);
         TRY(pstr = "Hello world");
@@ -340,7 +340,7 @@ void test_core_serial_persistent_storage() {
                 "number": 42,
                 "string": "Hello world"
             }
-        )"_doc);
+            )"_doc);
 
         TRY(store.autosave(10ms));
         TRY(pnum = 86);

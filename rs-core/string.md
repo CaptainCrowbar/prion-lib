@@ -26,9 +26,10 @@ Examples:
 
 * `Ustring` **`operator""_doc`**`(const char* p, size_t n)`
 
-The `""_doc` literal removes a leading line feed if present, adds a trailing
-one if not present, and removes any common leading indentation from all non-
-empty lines. Tab indentation is converted to 4 spaces.
+The `""_doc` literal removes a leading blank line if present, strips all
+trailing whitespace, converts tab indentation to 4 spaces, and strips leading
+indentation from all text lines, using the indentation of the trailing line to
+indicate where the left margin is intended to be
 
 Example:
 
@@ -36,7 +37,7 @@ Example:
         Hello world.
             Hello again.
         Goodbye.
-    )"_doc
+        )"_doc
 
 Result:
 

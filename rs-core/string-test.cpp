@@ -61,16 +61,12 @@ void test_core_string_literals() {
     TEST_EQUAL(s, "");
 
     TRY(s = R"(Hello world.)"_doc);
-    TEST_EQUAL(s,
-        "Hello world.\n"
-    );
+    TEST_EQUAL(s, "Hello world.\n");
 
     TRY(s = R"(
         Hello world.
-    )"_doc);
-    TEST_EQUAL(s,
-        "Hello world.\n"
-    );
+        )"_doc);
+    TEST_EQUAL(s, "Hello world.\n");
 
     TRY(s = R"(
 
@@ -80,7 +76,7 @@ void test_core_string_literals() {
 
         Goodbye.
 
-    )"_doc);
+        )"_doc);
     TEST_EQUAL(s,
         "\n"
         "Hello world.\n"
@@ -95,7 +91,7 @@ void test_core_string_literals() {
         "\t\tHello world.\n"
         "\t\t\tHello again.\n"
         "\t\t\t\tGoodbye.\n"
-        ""_doc);
+        "\t\t"_doc);
     TEST_EQUAL(s,
         "Hello world.\n"
         "    Hello again.\n"

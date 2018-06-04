@@ -114,13 +114,13 @@ behaviour is undefined if it does not match.</p>
 <li><code>template &lt;typename T, typename F&gt; void Variant::</code><strong><code>call_if</code></strong><code>(F f)</code></li>
 <li><code>template &lt;typename T, typename F&gt; void Variant::</code><strong><code>call_if</code></strong><code>(F f) const</code></li>
 <li><code>template &lt;typename T, typename F&gt; [return type of F] Variant::</code><strong><code>call_or</code></strong><code>(F f) const</code></li>
-<li><code>template &lt;typename T, typename F, typename RT&gt; RT Variant::</code><strong><code>call_or</code></strong><code>(F f, const RT&amp; def) const</code></li>
+<li><code>template &lt;typename T, typename F, typename T2&gt; [return type of F] Variant::</code><strong><code>call_or</code></strong><code>(F f, const T2&amp; def) const</code></li>
 </ul>
 <p>Call a function on the variant's current value, if the current branch matches
 the specified type. All of these expect <code>F</code> to be a unary function that takes
 a <code>T&amp;</code> (first version) or <code>const T&amp;</code> (other versions). In the first version of
 <code>call_or()</code>, the return type of <code>F</code> must be default constructible; in the
-second version, it must be implicitly convertible to <code>RT</code>.</p>
+second version, it must be implicitly convertible from <code>T2</code>.</p>
 </div>
 <div class="defns">
 <ul>
@@ -150,8 +150,8 @@ the <code>Variant</code> template argument list.</p>
 <ul>
 <li><code>template &lt;typename T&gt; bool Variant::</code><strong><code>is</code></strong><code>() const noexcept</code></li>
 </ul>
-<p>True if <code>T</code> is the current branch type. This will fail to compile if <code>T</code> is
-not one of the variant's branches.</p>
+<p>True if <code>T</code> is the current branch type. This will return false if <code>T</code> is not
+one of the variant's branches.</p>
 </div>
 <div class="defns">
 <ul>

@@ -84,13 +84,13 @@ behaviour is undefined if it does not match.
 * `template <typename T, typename F> void Variant::`**`call_if`**`(F f)`
 * `template <typename T, typename F> void Variant::`**`call_if`**`(F f) const`
 * `template <typename T, typename F> [return type of F] Variant::`**`call_or`**`(F f) const`
-* `template <typename T, typename F, typename RT> RT Variant::`**`call_or`**`(F f, const RT& def) const`
+* `template <typename T, typename F, typename T2> [return type of F] Variant::`**`call_or`**`(F f, const T2& def) const`
 
 Call a function on the variant's current value, if the current branch matches
 the specified type. All of these expect `F` to be a unary function that takes
 a `T&` (first version) or `const T&` (other versions). In the first version of
 `call_or()`, the return type of `F` must be default constructible; in the
-second version, it must be implicitly convertible to `RT`.
+second version, it must be implicitly convertible from `T2`.
 
 * `bool Variant::`**`empty`**`() const noexcept`
 
@@ -112,8 +112,8 @@ the `Variant` template argument list.
 
 * `template <typename T> bool Variant::`**`is`**`() const noexcept`
 
-True if `T` is the current branch type. This will fail to compile if `T` is
-not one of the variant's branches.
+True if `T` is the current branch type. This will return false if `T` is not
+one of the variant's branches.
 
 * `bool Variant::`**`is_equal`**`(const Variant& v) const noexcept`
 * `bool Variant::`**`is_greater`**`(const Variant& v) const noexcept`

@@ -15,6 +15,11 @@ By Ross Smith
 An `N`-dimensional vector type. `T` must be an arithmetic type; `N` must be a
 positive integer.
 
+`Vector` supports mixed mode arithmetic, in which the operands of a binary
+operator (or in some cases a named function) may have different value types.
+In these cases the return type is given as `CT`, meaning the
+`std::common_type` of the operands' value types.
+
 * `using` **`Int[1-4]`** `= Vector<int, [1-4]>`
 * `using` **`Int8_[1-4]`** `= Vector<int8_t, [1-4]>`
 * `using` **`Int16_[1-4]`** `= Vector<int16_t, [1-4]>`
@@ -99,20 +104,21 @@ null terminator).
 
 Unary arithmetic operators.
 
-* `template <typename T1, typename T2> Vector<T1, 3>` **`operator^`**`(const Vector<T1, 3>& lhs, const Vector<T2, 3>& rhs) noexcept`
-* `template <typename T1, typename T2, size_t N> T1` **`operator%`**`(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept`
+* `template <typename T1, typename T2> Vector<CT, 3>` **`operator^`**`(const Vector<T1, 3>& lhs, const Vector<T2, 3>& rhs) noexcept`
+* `template <typename T1, typename T2, size_t N> CT` **`operator%`**`(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept`
+* `template <typename T1, typename T2> Vector<CT, 3>` **`cross`**`(const Vector<T1, 3>& lhs, const Vector<T2, 3>& rhs) noexcept`
+* `template <typename T1, typename T2, size_t N> CT` **`dot`**`(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept`
 
-Vector cross (`^`) and dot (`%`) product operators. Multiplication between
-`T1` and `T2` must be defined.
+Vector cross (`^`) and dot (`%`) product operators, and equivalent functions.
 
 * `template <typename T2> Vector& Vector::`**`operator+=`**`(const Vector<T2, N>& rhs) noexcept`
 * `template <typename T2> Vector& Vector::`**`operator-=`**`(const Vector<T2, N>& rhs) noexcept`
 * `template <typename T2> Vector& Vector::`**`operator*=`**`(const Vector<T2, N>& rhs) noexcept`
 * `template <typename T2> Vector& Vector::`**`operator/=`**`(const Vector<T2, N>& rhs) noexcept`
-* `template <typename T1, typename T2, size_t N> Vector<T1, N>` **`operator+`**`(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept`
-* `template <typename T1, typename T2, size_t N> Vector<T1, N>` **`operator-`**`(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept`
-* `template <typename T1, typename T2, size_t N> Vector<T1, N>` **`operator*`**`(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept`
-* `template <typename T1, typename T2, size_t N> Vector<T1, N>` **`operator/`**`(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept`
+* `template <typename T1, typename T2, size_t N> Vector<CT, N>` **`operator+`**`(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept`
+* `template <typename T1, typename T2, size_t N> Vector<CT, N>` **`operator-`**`(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept`
+* `template <typename T1, typename T2, size_t N> Vector<CT, N>` **`operator*`**`(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept`
+* `template <typename T1, typename T2, size_t N> Vector<CT, N>` **`operator/`**`(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept`
 
 Element-wise arithmetic operators. In each case the corresponding operation
 between `T1` and `T2` must be defined. Behaviour is undefined on division by
@@ -120,9 +126,9 @@ zero.
 
 * `template <typename T2> Vector& Vector::`**`operator*=`**`(T2 rhs) noexcept`
 * `template <typename T2> Vector& Vector::`**`operator/=`**`(T2 rhs) noexcept`
-* `template <typename T1, typename T2, size_t N> Vector<T1, N>` **`operator*`**`(const Vector<T1, N>& lhs, T2 rhs) noexcept`
-* `template <typename T1, typename T2, size_t N> Vector<T2, N>` **`operator*`**`(T1 lhs, const Vector<T2, N>& rhs) noexcept`
-* `template <typename T1, typename T2, size_t N> Vector<T1, N>` **`operator/`**`(const Vector<T1, N>& lhs, T2 rhs) noexcept`
+* `template <typename T1, typename T2, size_t N> Vector<CT, N>` **`operator*`**`(const Vector<T1, N>& lhs, T2 rhs) noexcept`
+* `template <typename T1, typename T2, size_t N> Vector<CT, N>` **`operator*`**`(T1 lhs, const Vector<T2, N>& rhs) noexcept`
+* `template <typename T1, typename T2, size_t N> Vector<CT, N>` **`operator/`**`(const Vector<T1, N>& lhs, T2 rhs) noexcept`
 
 Vector-scalar arithmetic operators. In each case the corresponding operation
 between `T1` and `T2` must be defined. Behaviour is undefined on division by
@@ -181,7 +187,7 @@ Comparison operators.
 Simple string formatting; this simply writes the vector's elements in their
 default format, enclosed in square brackets.
 
-* `Vector` **`clamp`**`(Vector x, Vector min, Vector max) noexcept`
+* `template <typename T1, typename T2, typename T3> Vector<T1, N>` **`clamp`**`(Vector<T1, N> x, Vector<T2, N> min, Vector<T3, N> max) noexcept`
 * `Vector` **`min`**`(Vector x, Vector y) noexcept`
 * `Vector` **`max`**`(Vector x, Vector y) noexcept`
 * `std::pair<Vector, Vector>` **`minmax`**`(Vector x, Vector y) noexcept`

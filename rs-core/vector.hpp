@@ -191,64 +191,89 @@ namespace RS {
         return v;
     }
 
+    template <typename T1, typename T2>
+    Vector<std::common_type_t<T1, T2>, 3> cross(const Vector<T1, 3>& lhs, const Vector<T2, 3>& rhs) noexcept {
+        using CT = std::common_type_t<T1, T2>;
+        return {CT(lhs[1]) * CT(rhs[2]) - CT(lhs[2]) * CT(rhs[1]),
+                CT(lhs[2]) * CT(rhs[0]) - CT(lhs[0]) * CT(rhs[2]),
+                CT(lhs[0]) * CT(rhs[1]) - CT(lhs[1]) * CT(rhs[0])};
+    }
+
+    template <typename T1, typename T2, size_t N>
+    T1 dot(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept {
+        using CT = std::common_type_t<T1, T2>;
+        return std::inner_product(lhs.begin(), lhs.end(), rhs.begin(), CT(0));
+    }
 
     template <typename T1, typename T2>
     Vector<T1, 3> operator^(const Vector<T1, 3>& lhs, const Vector<T2, 3>& rhs) noexcept {
-        return {lhs[1] * rhs[2] - lhs[2] * rhs[1],
-                lhs[2] * rhs[0] - lhs[0] * rhs[2],
-                lhs[0] * rhs[1] - lhs[1] * rhs[0]};
+        return cross(lhs, rhs);
     }
 
     template <typename T1, typename T2, size_t N>
     T1 operator%(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept {
-        return std::inner_product(lhs.begin(), lhs.end(), rhs.begin(), T1(0));
+        return dot(lhs, rhs);
     }
 
     template <typename T1, typename T2, size_t N>
-    Vector<T1, N> operator+(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept {
-        auto v = lhs;
+    Vector<std::common_type_t<T1, T2>, N> operator+(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept {
+        using CT = std::common_type_t<T1, T2>;
+        using CV = Vector<CT, N>;
+        CV v = lhs;
         v += rhs;
         return v;
     }
 
     template <typename T1, typename T2, size_t N>
-    Vector<T1, N> operator-(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept {
-        auto v = lhs;
+    Vector<std::common_type_t<T1, T2>, N> operator-(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept {
+        using CT = std::common_type_t<T1, T2>;
+        using CV = Vector<CT, N>;
+        CV v = lhs;
         v -= rhs;
         return v;
     }
 
     template <typename T1, typename T2, size_t N>
-    Vector<T1, N> operator*(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept {
-        auto v = lhs;
+    Vector<std::common_type_t<T1, T2>, N> operator*(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept {
+        using CT = std::common_type_t<T1, T2>;
+        using CV = Vector<CT, N>;
+        CV v = lhs;
         v *= rhs;
         return v;
     }
 
     template <typename T1, typename T2, size_t N>
-    Vector<T1, N> operator/(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept {
-        auto v = lhs;
+    Vector<std::common_type_t<T1, T2>, N> operator/(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept {
+        using CT = std::common_type_t<T1, T2>;
+        using CV = Vector<CT, N>;
+        CV v = lhs;
         v /= rhs;
         return v;
     }
 
     template <typename T1, typename T2, size_t N>
-    Vector<T1, N> operator*(const Vector<T1, N>& lhs, T2 rhs) noexcept {
-        auto v = lhs;
+    Vector<std::common_type_t<T1, T2>, N> operator*(const Vector<T1, N>& lhs, T2 rhs) noexcept {
+        using CT = std::common_type_t<T1, T2>;
+        using CV = Vector<CT, N>;
+        CV v = lhs;
         v *= rhs;
         return v;
     }
 
     template <typename T1, typename T2, size_t N>
-    Vector<T2, N> operator*(T1 lhs, const Vector<T2, N>& rhs) noexcept {
-        Vector<T2, N> v(lhs);
-        v *= rhs;
+    Vector<std::common_type_t<T1, T2>, N> operator*(T1 lhs, const Vector<T2, N>& rhs) noexcept {
+        using CT = std::common_type_t<T1, T2>;
+        using CV = Vector<CT, N>;
+        CV v = rhs;
+        v *= lhs;
         return v;
     }
 
     template <typename T1, typename T2, size_t N>
-    Vector<T1, N> operator/(const Vector<T1, N>& lhs, T2 rhs) noexcept {
-        auto v = lhs;
+    Vector<std::common_type_t<T1, T2>, N> operator/(const Vector<T1, N>& lhs, T2 rhs) noexcept {
+        using CT = std::common_type_t<T1, T2>;
+        using CV = Vector<CT, N>;
+        CV v = lhs;
         v /= rhs;
         return v;
     }
@@ -268,8 +293,8 @@ namespace RS {
         return out << to_str(v);
     }
 
-    template <typename T, size_t N>
-    Vector<T, N> clamp(Vector<T, N> x, Vector<T, N> min, Vector<T, N> max) noexcept {
+    template <typename T1, typename T2, typename T3, size_t N>
+    Vector<T1, N> clamp(Vector<T1, N> x, Vector<T2, N> min, Vector<T3, N> max) noexcept {
         for (size_t i = 0; i < N; ++i)
             x[i] = clamp(x[i], min[i], max[i]);
         return x;

@@ -58,8 +58,6 @@
     * [`"rs-core/time.hpp"`](time.html) - Time and date algorithms
 * _Unit testing_
     * [`"rs-core/unit-test.hpp"`](unit-test.html) - Unit testing
-* _Third party code_
-    * `"rs-core/colony.hpp"` - [Matthew Bentley's colony implementation](http://plflib.org/colony.htm)
 
 This is a header-only library that contains the utilities that I've found a
 common need for in multiple projects.

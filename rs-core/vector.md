@@ -1,4 +1,4 @@
-# Vectors, Matrices, and Quaternnions #
+# Vectors, Matrices, and Quaternions #
 
 By Ross Smith
 

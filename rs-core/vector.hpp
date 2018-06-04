@@ -347,6 +347,13 @@ namespace RS {
                     v[i] = ptr[j];
                 return v;
             }
+            static void set_column(T* ptr, size_t c, const T* v) noexcept {
+                std::copy_n(v, N, ptr + N * c);
+            }
+            static void set_row(T* ptr, size_t r, const T* v) noexcept {
+                for (size_t i = r, j = 0; j < N; i += N, ++j)
+                    ptr[i] = v[j];
+            }
             static void swap_columns(T* ptr, size_t c1, size_t c2) noexcept {
                 if (c1 != c2)
                     std::swap_ranges(ptr + N * c1, ptr + N * (c1 + 1), ptr + N * c2);
@@ -370,6 +377,13 @@ namespace RS {
             }
             static Vector<T, N> get_row(const T* ptr, size_t r) noexcept {
                 return Vector<T, N>(ptr + N * r);
+            }
+            static void set_column(T* ptr, size_t c, const T* v) noexcept {
+                for (size_t i = c, j = 0; j < N; i += N, ++j)
+                    ptr[i] = v[j];
+            }
+            static void set_row(T* ptr, size_t r, const T* v) noexcept {
+                std::copy_n(v, N, ptr + N * r);
             }
             static void swap_columns(T* ptr, size_t c1, size_t c2) noexcept {
                 if (c1 != c2)
@@ -568,6 +582,8 @@ namespace RS {
         vector_type row(size_t r) const noexcept { return layout_specific::get_row(arr.data(), r); }
         T det() const noexcept { return RS_Detail::Determinant<Matrix>()(*this); }
         Matrix inverse() const noexcept { return RS_Detail::Inverse<Matrix>()(*this); }
+        void set_column(size_t c, vector_type v) noexcept { layout_specific::set_column(arr.data(), c, v.begin()); }
+        void set_row(size_t r, vector_type v) noexcept { layout_specific::set_row(arr.data(), r, v.begin()); }
         constexpr size_t size() const noexcept { return cells; }
         Matrix swap_columns(size_t c1, size_t c2) const noexcept;
         Matrix swap_rows(size_t r1, size_t r2) const noexcept;

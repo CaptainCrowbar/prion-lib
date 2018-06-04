@@ -327,6 +327,12 @@ Calculate the inverse of a matrix. This requires `T` to be a floating point
 type. Behaviour is undefined if the matrix is singular. This is currently only
 implemented for `N<=4`.
 
+* `void Matrix::`**`set_column`**`(size_t c, vector_type v) noexcept`
+* `void Matrix::`**`set_row`**`(size_t r, vector_type v) noexcept`
+
+Replace a column or row with the vector. Behaviour is undefined if the index
+is out of bounds.
+
 * `constexpr size_t Matrix::`**`size`**`() const noexcept`
 
 Returns `N*N`.

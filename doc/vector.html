@@ -421,6 +421,14 @@ implemented for <code>N&lt;=4</code>.</p>
 </div>
 <div class="defns">
 <ul>
+<li><code>void Matrix::</code><strong><code>set_column</code></strong><code>(size_t c, vector_type v) noexcept</code></li>
+<li><code>void Matrix::</code><strong><code>set_row</code></strong><code>(size_t r, vector_type v) noexcept</code></li>
+</ul>
+<p>Replace a column or row with the vector. Behaviour is undefined if the index
+is out of bounds.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>constexpr size_t Matrix::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
 </ul>
 <p>Returns <code>N*N</code>.</p>

@@ -596,6 +596,85 @@ void test_core_vector_matrix() {
     TRY(v1 = cm3.row(1));     TEST_EQUAL(to_str(v1), "[7,11,13]");
     TRY(v1 = cm3.row(2));     TEST_EQUAL(to_str(v1), "[17,19,23]");
 
+    TRY((v1 = {1,2,3}));
+    TRY(rm3 = rm1);
+    TRY(rm3.set_column(0, v1));
+    TEST_EQUAL(to_str(rm3),
+        "[[1,3,5],"
+        "[2,11,13],"
+        "[3,19,23]]"
+    );
+    TRY(rm3.set_column(1, v1));
+    TEST_EQUAL(to_str(rm3),
+        "[[1,1,5],"
+        "[2,2,13],"
+        "[3,3,23]]"
+    );
+    TRY(rm3.set_column(2, v1));
+    TEST_EQUAL(to_str(rm3),
+        "[[1,1,1],"
+        "[2,2,2],"
+        "[3,3,3]]"
+    );
+    TRY(rm3 = rm1);
+    TRY(rm3.set_row(0, v1));
+    TEST_EQUAL(to_str(rm3),
+        "[[1,2,3],"
+        "[7,11,13],"
+        "[17,19,23]]"
+    );
+    TRY(rm3.set_row(1, v1));
+    TEST_EQUAL(to_str(rm3),
+        "[[1,2,3],"
+        "[1,2,3],"
+        "[17,19,23]]"
+    );
+    TRY(rm3.set_row(2, v1));
+    TEST_EQUAL(to_str(rm3),
+        "[[1,2,3],"
+        "[1,2,3],"
+        "[1,2,3]]"
+    );
+
+    TRY(cm3 = cm1);
+    TRY(cm3.set_column(0, v1));
+    TEST_EQUAL(to_str(cm3),
+        "[[1,3,5],"
+        "[2,11,13],"
+        "[3,19,23]]"
+    );
+    TRY(cm3.set_column(1, v1));
+    TEST_EQUAL(to_str(cm3),
+        "[[1,1,5],"
+        "[2,2,13],"
+        "[3,3,23]]"
+    );
+    TRY(cm3.set_column(2, v1));
+    TEST_EQUAL(to_str(cm3),
+        "[[1,1,1],"
+        "[2,2,2],"
+        "[3,3,3]]"
+    );
+    TRY(cm3 = cm1);
+    TRY(cm3.set_row(0, v1));
+    TEST_EQUAL(to_str(cm3),
+        "[[1,2,3],"
+        "[7,11,13],"
+        "[17,19,23]]"
+    );
+    TRY(cm3.set_row(1, v1));
+    TEST_EQUAL(to_str(cm3),
+        "[[1,2,3],"
+        "[1,2,3],"
+        "[17,19,23]]"
+    );
+    TRY(cm3.set_row(2, v1));
+    TEST_EQUAL(to_str(cm3),
+        "[[1,2,3],"
+        "[1,2,3],"
+        "[1,2,3]]"
+    );
+
     TRY(rm3 = rm1.swap_rows(0, 1));
     TEST_EQUAL(to_str(rm3),
         "[[7,11,13],"

@@ -54,17 +54,17 @@ namespace RS {
 
         namespace RS_Detail {
 
-            using SocketFionbio = int;
             using SocketFlag = int;
+            using SocketIop = int;
             using SocketSendRecv = ssize_t;
 
-            constexpr auto close_socket = &::close;
-            constexpr auto ioctl_socket = &::ioctl;
             constexpr int e_again = EAGAIN;
             constexpr int e_badf = EBADF;
 
             inline void clear_error() noexcept { errno = 0; }
+            inline int close_socket(SocketType s) noexcept { return ::close(s); }
             inline int get_error() noexcept { return errno; }
+            inline int ioctl_socket(SocketType s, int r, SocketIop* p) noexcept { return ::ioctl(s, r, p); }
 
         }
 
@@ -88,17 +88,17 @@ namespace RS {
 
         namespace RS_Detail {
 
-            using SocketFionbio = unsigned long;
             using SocketFlag = char;
+            using SocketIop = unsigned long;
             using SocketSendRecv = int;
 
-            constexpr auto close_socket = &::closesocket;
-            constexpr auto ioctl_socket = &::ioctlsocket;
             constexpr int e_again = WSAEWOULDBLOCK;
             constexpr int e_badf = WSAENOTSOCK;
 
             inline void clear_error() noexcept { WSASetLastError(0); }
+            inline int close_socket(SocketType s) noexcept { return ::closesocket(s); }
             inline int get_error() noexcept { return WSAGetLastError(); }
+            inline int ioctl_socket(SocketType s, long r, SocketIop* p) noexcept { return ::ioctlsocket(s, r, p); }
 
         }
 
@@ -130,7 +130,7 @@ namespace RS {
         };
 
         inline void control_blocking(SocketType sock, bool flag) {
-            auto mode = SocketFionbio(! flag);
+            auto mode = SocketIop(! flag);
             clear_error();
             net_call(ioctl_socket(sock, FIONBIO, &mode)).fail_if(-1, "ioctl()");
         }

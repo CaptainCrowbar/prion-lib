@@ -65,14 +65,6 @@
     #endif
 #endif
 
-// Microsoft brain damage
-
-#ifdef _MSC_VER
-    #pragma warning(disable: 4127) // conditional expression is constant
-    #pragma warning(disable: 4250) // class inherits member by dominance
-    #pragma warning(disable: 4310) // cast truncates constant value
-#endif
-
 // Preprocessor macros
 
 #define RS_BITMASK_OPERATORS(EC) \

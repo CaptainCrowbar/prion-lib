@@ -30,13 +30,6 @@ otherwise `steady_clock`.
 
 ## Constants ##
 
-* `constexpr uint32_t` **`utc_zone`**
-* `constexpr uint32_t` **`local_zone`**
-
-One of these is passed to some of the time and date functions to indicate
-whether a broken down date is expressed in UTC or the local time zone. If none
-of these are present, the default is `utc_zone`.
-
 * `constexpr uint32_t` **`ymd_order`**
 * `constexpr uint32_t` **`dmy_order`**
 * `constexpr uint32_t` **`mdy_order`**
@@ -54,18 +47,6 @@ Convert a time point from one representation to another, possibly on a
 different clock. This will call `time_point_cast()` if possible; otherwise, it
 will check the current times on both clocks and use that to convert from one
 clock to the other.
-
-* `template <typename R, typename P> void` **`from_seconds`**`(double s, duration<R, P>& d) noexcept`
-* `template <typename R, typename P> double` **`to_seconds`**`(const duration<R, P>& d) noexcept`
-
-Convenience functions to convert between a `duration` and a floating point
-number of seconds.
-
-* `system_clock::time_point` **`make_date`**`(int year, int month, int day, int hour = 0, int min = 0, double sec = 0, uint32_t flags = utc_zone)`
-
-Converts a broken down date into a time point. Behaviour if any of the date
-arguments are invalid follows the same rules as `mktime()`. This will throw
-`std::invalid_argument` if an invalid combination of flags is passed.
 
 ## System specific time and date conversions ##
 
@@ -107,47 +88,6 @@ For reference, the system time types are:
         * `struct` **`FILETIME`**
             * `DWORD FILETIME::`**`dwLowDateTime`** `// low 32 bits`
             * `DWORD FILETIME::`**`dwHighDateTime`** `// high 32 bits`
-
-## Time and date formatting ##
-
-* `Ustring` **`format_date`**`(system_clock::time_point tp, int prec = 0, uint32_t flags = utc_zone)`
-* `Ustring` **`format_date`**`(system_clock::time_point tp, Uview format, uint32_t flags = utc_zone)`
-
-These convert a time point into a broken down date and format it. The first
-version writes the date in ISO 8601 format (`"yyyy-mm-dd hh:mm:ss"`). If
-`prec` is greater than zero, the specified number of decimal places will be
-added to the seconds field.
-
-The second version writes the date using the conventions of `strftime()`. This
-will return an empty string if anything goes wrong (there is no way to
-distinguish between a conversion error and a legitimately empty result; this
-is a limitation of `strftime()`).
-
-Both of these will throw `std::invalid_argument` if an invalid combination of
-flags is passed.
-
-For reference, the portable subset of the `strftime()` formatting codes are:
-
-| Code  | Description                          | Code    | Description                          |
-| ----  | -----------                          | ----    | -----------                          |
-|       **Date elements**                      | |       **Weekday elements**                   | |
-| `%Y`  | Year number                          | `%a`    | Local weekday abbreviation           |
-| `%y`  | Last 2 digits of the year (`00-99`)  | `%w`    | Sunday-based weekday number (`0-6`)  |
-| `%m`  | Month number (`00-12`)               | `%A`    | Local weekday name                   |
-| `%B`  | Local month name                     | `%U`    | Sunday-based week number (`00-53`)   |
-| `%b`  | Local month abbreviation             | `%W`    | Monday-based week number (`00-53`)   |
-| `%d`  | Day of the month (`01-31`)           |         **Other elements**                     | |
-|       **Time of day elements**               | | `%c`  | Local standard date/time format      |
-| `%H`  | Hour on 24-hour clock (`00-23`)      | `%x`    | Local standard date format           |
-| `%I`  | Hour on 12-hour clock (`01-12`)      | `%X`    | Local standard time format           |
-| `%p`  | Local equivalent of a.m./p.m.        | `%j`    | Day of the year (`001-366`)          |
-| `%M`  | Minute (`00-59`)                     | `%Z`    | Time zone name                       |
-| `%S`  | Second (`00-60`)                     | `%z`    | Time zone offset                     |
-
-* `template <typename R, typename P> Ustring` **`format_time`**`(const duration<R, P>& time, int prec = 0)`
-
-Formats a time duration in days, hours, minutes, seconds, and (if `prec>0`)
-fractions of a second.
 
 ## Time and date parsing ##
 

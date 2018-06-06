@@ -24,11 +24,9 @@ namespace RS {
 
     // Constants
 
-    constexpr auto utc_zone    = uint32_t(1) << 0;
-    constexpr auto local_zone  = uint32_t(1) << 1;
-    constexpr auto ymd_order   = uint32_t(1) << 2;
-    constexpr auto dmy_order   = uint32_t(1) << 3;
-    constexpr auto mdy_order   = uint32_t(1) << 4;
+    constexpr uint32_t ymd_order = 4;
+    constexpr uint32_t dmy_order = 8;
+    constexpr uint32_t mdy_order = 16;
 
     // General time and date operations
 
@@ -62,50 +60,6 @@ namespace RS {
     template <typename TP2, typename C1, typename D1>
     TP2 convert_time_point(std::chrono::time_point<C1, D1> src) {
         return RS_Detail::ConvertTimePointHelper<C1, D1, typename TP2::clock, typename TP2::duration>()(src);
-    }
-
-    template <typename R, typename P>
-    void from_seconds(double s, std::chrono::duration<R, P>& d) noexcept {
-        using namespace std::chrono;
-        d = duration_cast<duration<R, P>>(Dseconds(s));
-    }
-
-    template <typename R, typename P>
-    double to_seconds(const std::chrono::duration<R, P>& d) noexcept {
-        using namespace std::chrono;
-        return duration_cast<Dseconds>(d).count();
-    }
-
-    inline std::chrono::system_clock::time_point make_date(int year, int month, int day, int hour = 0, int min = 0, double sec = 0, uint32_t flags = utc_zone) {
-        using namespace std::chrono;
-        uint32_t zone = flags & (utc_zone | local_zone);
-        if (ibits(zone) > 1 || flags - zone)
-            throw std::invalid_argument("Invalid date flags: 0x" + hex(flags, 1));
-        double isec = 0, fsec = modf(sec, &isec);
-        if (fsec < 0) {
-            isec -= 1;
-            fsec += 1;
-        }
-        tm stm;
-        memset(&stm, 0, sizeof(stm));
-        stm.tm_sec = int(isec);
-        stm.tm_min = min;
-        stm.tm_hour = hour;
-        stm.tm_mday = day;
-        stm.tm_mon = month - 1;
-        stm.tm_year = year - 1900;
-        stm.tm_isdst = -1;
-        time_t t;
-        if (zone == local_zone)
-            t = mktime(&stm);
-        else
-            #ifdef _XOPEN_SOURCE
-                t = timegm(&stm);
-            #else
-                t = _mkgmtime(&stm);
-            #endif
-        system_clock::time_point::rep extra(int64_t(fsec * system_clock::time_point::duration(seconds(1)).count()));
-        return system_clock::from_time_t(t) + system_clock::time_point::duration(extra);
     }
 
     // System specific time and date conversions
@@ -196,91 +150,6 @@ namespace RS {
         }
 
     #endif
-
-    // Time and date formatting
-
-    // Unfortunately strftime() doesn't set errno and simply returns zero on
-    // any error. This means that there is no way to distinguish between an
-    // invalid format string, an output buffer that is too small, and a
-    // legitimately empty result. Here we try first with a reasonable output
-    // length, and if that fails, try again with a much larger one; if it
-    // still fails, give up. This could theoretically fail in the face of a
-    // very long localized date format, but there doesn't seem to be a better
-    // solution.
-
-    inline Ustring format_date(std::chrono::system_clock::time_point tp, Uview format, uint32_t flags = utc_zone) {
-        using namespace std::chrono;
-        uint32_t zone = flags & (utc_zone | local_zone);
-        if (ibits(zone) > 1 || flags - zone)
-            throw std::invalid_argument("Invalid date flags: 0x" + hex(flags, 1));
-        if (format.empty())
-            return {};
-        auto t = system_clock::to_time_t(tp);
-        tm stm = zone == local_zone ? *localtime(&t) : *gmtime(&t);
-        Ustring fs(format);
-        Ustring result(std::max(2 * format.size(), size_t(100)), '\0');
-        auto rc = strftime(&result[0], result.size(), fs.data(), &stm);
-        if (rc == 0) {
-            result.resize(10 * result.size(), '\0');
-            rc = strftime(&result[0], result.size(), fs.data(), &stm);
-        }
-        result.resize(rc);
-        result.shrink_to_fit();
-        return result;
-    }
-
-    inline Ustring format_date(std::chrono::system_clock::time_point tp, int prec = 0, uint32_t flags = utc_zone) {
-        using namespace std::chrono;
-        using namespace std::literals;
-        uint32_t zone = flags & (utc_zone | local_zone);
-        if (ibits(zone) > 1 || flags - zone)
-            throw std::invalid_argument("Invalid date flags: 0x" + hex(flags, 1));
-        Ustring result = format_date(tp, "%Y-%m-%d %H:%M:%S"s, zone);
-        if (prec > 0) {
-            double sec = to_seconds(tp.time_since_epoch());
-            double isec;
-            double fsec = modf(sec, &isec);
-            Ustring buf(prec + 3, '\0');
-            snprintf(&buf[0], buf.size(), "%.*f", prec, fsec);
-            result += buf.data() + 1;
-        }
-        return result;
-    }
-
-    template <typename R, typename P>
-    Ustring format_time(const std::chrono::duration<R, P>& time, int prec = 0) {
-        using namespace RS_Detail;
-        using namespace std::chrono;
-        auto whole = duration_cast<seconds>(time);
-        int64_t isec = whole.count();
-        auto frac = time - duration_cast<duration<R, P>>(whole);
-        double fsec = duration_cast<Dseconds>(frac).count();
-        Ustring result;
-        if (isec < 0 || fsec < 0)
-            result += '-';
-        isec = std::abs(isec);
-        fsec = std::abs(fsec);
-        int64_t d = isec / 86400;
-        isec -= 86400 * d;
-        if (d)
-            result += decfmt(d) + 'd';
-        int64_t h = isec / 3600;
-        isec -= 3600 * h;
-        if (d || h)
-            result += decfmt(h, d ? 2 : 1) + 'h';
-        int64_t m = isec / 60;
-        if (d || h || m)
-            result += decfmt(m, d || h ? 2 : 1) + 'm';
-        isec -= 60 * m;
-        result += decfmt(isec, d || h || m ? 2 : 1);
-        if (prec > 0) {
-            Ustring buf(prec + 3, '\0');
-            snprintf(&buf[0], buf.size(), "%.*f", prec, fsec);
-            result += buf.data() + 1;
-        }
-        result += 's';
-        return result;
-    }
 
     // Time and date parsing
 

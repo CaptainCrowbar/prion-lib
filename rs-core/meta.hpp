@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rs-core/meta-internal.hpp"
+#include "unicorn/utility.hpp"
 #include <algorithm>
 #include <functional>
 #include <iterator>
@@ -696,8 +696,6 @@ namespace RS::Meta {
     template <typename T, bool = IsIterator<T>::value> struct IsMutableIterator: std::false_type {};
     template <typename T> struct IsMutableIterator<T, true>: Not<std::is_const<typename std::remove_pointer_t<decltype(&*std::declval<T>())>>> {};
 
-    template <typename T> using IsRange = And<Or<IsDetected<MetaDetail::HasStdBeginArchetype, T>, IsDetected<MetaDetail::HasAdlBeginArchetype, T>>,
-        Or<IsDetected<MetaDetail::HasStdEndArchetype, T>, IsDetected<MetaDetail::HasAdlEndArchetype, T>>>;
     template <typename T> struct IsMutableRange: IsMutableIterator<typename MetaDetail::RangeIteratorType<T>::type> {};
 
     template <typename T> using IsContainer = And<IsDetected<MetaDetail::HasBeginMethodArchetype, T>, IsDetected<MetaDetail::HasEndMethodArchetype, T>,
@@ -713,7 +711,6 @@ namespace RS::Meta {
     template <typename T> constexpr bool is_bidirectional_iterator = IsBidirectionalIterator<T>::value;
     template <typename T> constexpr bool is_random_access_iterator = IsRandomAccessIterator<T>::value;
     template <typename T> constexpr bool is_mutable_iterator = IsMutableIterator<T>::value;
-    template <typename T> constexpr bool is_range = IsRange<T>::value;
     template <typename T> constexpr bool is_mutable_range = IsMutableRange<T>::value;
     template <typename T> constexpr bool is_container = IsContainer<T>::value;
     template <typename T> constexpr bool is_insertable_container = IsInsertableContainer<T>::value;

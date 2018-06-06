@@ -47,43 +47,6 @@ Result:
 
 ## Case conversion functions ##
 
-* `constexpr bool` **`ascii_isalnum`**`(char c) noexcept`
-* `constexpr bool` **`ascii_isalpha`**`(char c) noexcept`
-* `constexpr bool` **`ascii_iscntrl`**`(char c) noexcept`
-* `constexpr bool` **`ascii_isdigit`**`(char c) noexcept`
-* `constexpr bool` **`ascii_isgraph`**`(char c) noexcept`
-* `constexpr bool` **`ascii_islower`**`(char c) noexcept`
-* `constexpr bool` **`ascii_isprint`**`(char c) noexcept`
-* `constexpr bool` **`ascii_ispunct`**`(char c) noexcept`
-* `constexpr bool` **`ascii_isspace`**`(char c) noexcept`
-* `constexpr bool` **`ascii_isupper`**`(char c) noexcept`
-* `constexpr bool` **`ascii_isxdigit`**`(char c) noexcept`
-
-These are simple ASCII-only versions of the standard character type functions.
-All of them will always return false for bytes outside the ASCII range
-(0-127).
-
-* `constexpr bool` **`ascii_isalnum_w`**`(char c) noexcept`
-* `constexpr bool` **`ascii_isalpha_w`**`(char c) noexcept`
-* `constexpr bool` **`ascii_ispunct_w`**`(char c) noexcept`
-
-These behave the same as the corresponding functions without the `"_w"`
-suffix, except that the underscore character is counted as a letter instead of
-a punctuation mark. (The suffix is intended to suggest the `"\w"` regex
-element, which does much the same thing.)
-
-* `constexpr char` **`ascii_tolower`**`(char c) noexcept`
-* `constexpr char` **`ascii_toupper`**`(char c) noexcept`
-* `std::string` **`ascii_lowercase`**`(std::string_view s)`
-* `std::string` **`ascii_uppercase`**`(std::string_view s)`
-* `std::string` **`ascii_titlecase`**`(std::string_view s)`
-* `std::string` **`ascii_sentencecase`**`(std::string_view s)`
-
-Simple ASCII-only case conversion functions. All non-ASCII characters are left
-unchanged. The sentence case function capitalizes the first letter of every
-sentence (delimited by a full stop or two consecutive line breaks), leaving
-everything else alone.
-
 * `Strings` **`name_breakdown`**`(Uview name)`
 
 Breaks down a name (such as a programming language variable name) into its
@@ -195,14 +158,6 @@ string. The `partition_at()` function breaks the string at the first
 occurrence of the delimiter substring; `partition_by()` breaks it at the first
 contiguous group of one or more bytes from the delimiter list.
 
-* `Ustring` **`quote`**`(std::string_view str)`
-* `Ustring` **`bquote`**`(std::string_view str)`
-
-Return a quoted string; internal quotes, backslashes, and control characters
-are escaped. The `bquote()` function always escapes all non-ASCII bytes;
-`quote()` passes valid UTF-8 unchanged, but will switch to `bquote()` mode if
-the string is not valid UTF-8.
-
 * `std::string` **`repeat`**`(std::string_view s, size_t n, std::string_view delim = "")`
 
 Returns a string containing `n` copies of `s`. If a delimiter is given, it
@@ -246,14 +201,6 @@ characters are found.
 
 ## String formatting functions ##
 
-* `template <typename T> Ustring` **`bin`**`(T x, size_t digits = 8 * sizeof(T))`
-* `template <typename T> Ustring` **`dec`**`(T x, size_t digits = 1)`
-* `template <typename T> Ustring` **`hex`**`(T x, size_t digits = 2 * sizeof(T))`
-
-Simple number formatting functions. These convert an integer to a binary,
-decimal, or hexadecimal string, generating at least the specified number of
-digits.
-
 * `template <typename... Args> Ustring` **`fmt`**`(Uview pattern, const Args&... args)`
 
 This performs string interpolation, inserting the variadic arguments
@@ -264,33 +211,6 @@ be replaced with an empty string. If a dollar sign is not followed by a bare
 or braced number, the dollar sign is discarded and the next character is
 copied unchanged (so `"$$"` will produce a literal dollar sign).
 
-* `template <typename Range> Ustring` **`format_list`**`(const Range& r)`
-* `template <typename Range> Ustring` **`format_list`**`(const Range& r, std::string_view prefix, std::string_view delimiter, std::string_view suffix)`
-* `template <typename Range> Ustring` **`format_map`**`(const Range& r)`
-* `template <typename Range> Ustring` **`format_map`**`(const Range& r, std::string_view prefix, std::string_view infix, std::string_view delimiter, std::string_view suffix)`
-
-Format a range as a delimited list. The `format_list()` function writes the
-elements in sequence, with `prefix` and `suffix` at the beginning and end, and
-with a `delimiter` between each pair of elements; individual elements are
-formatted using `to_str()` (see below). The `format_map()` function expects
-the range's value type to be a pair (or something with `first` and `second`
-members); the elements of each pair are separated with the `infix` string, and
-the range is otherwise formatted in the same way as `format_list()`. The
-default formats are based on JSON syntax:
-
-<!-- TEXT -->
-* `format_list(r) = format_list(r, "[", ",", "]")`
-* `format_map(r) = format_map(r, "{", ":", ",", "}")`
-
-* `template <typename T> Ustring` **`fp_format`**`(T t, char mode = 'g', int prec = 6)`
-
-Simple floating point formatting, by calling `snprintf()`. `T` must be an
-arithmetic type; it will be converted to `double` internally. The additional
-format `'Z/z'` is the same as `'G/g'` except that trailing zeros are not
-stripped. This will throw `std::invalid_argument` if the mode is not one of
-`[EFGZefgz]`; it may throw `std::system_error` under implementation defined
-circumstances.
-
 * `template <size_t N> Ustring` **`hex`**`(const std::array<uint8_t, N>& bytes)`
 * `Ustring` **`hexdump`**`(const void* ptr, size_t n, size_t block = 0)`
 * `Ustring` **`hexdump`**`(std::string_view str, size_t block = 0)`
@@ -298,64 +218,10 @@ circumstances.
 Convert a block of raw data into hexadecimal bytes. If `block` is not zero, a
 line feed is inserted after each block.
 
-* `Ustring` **`roman`**`(int n)`
-
-Formats a number as a Roman numeral. Numbers greater than 1000 will be written
-with an arbitrarily long sequence of `"M"`. This will return an empty string
-if the argument is less than 1.
-
 * `Ustring` **`tf`**`(bool b)`
 * `Ustring` **`yn`**`(bool b)`
 
 Convert a boolean to `"true/false"` or `"yes/no"`.
-
-* `template <typename T> Ustring` **`to_str`**`(const T& t)`
-
-Formats an object as a string. This uses the following rules for formatting
-various types:
-
-* Strings and string-like types - The string content is simply copied verbatim; a null character pointer is treated as an empty string.
-* Unicode string and character types - Converted to UTF-8 using `uconv()`.
-* Ranges (other than strings) - Serialized in the same format as `format_list()` above (or `format_map()` if the value type is a pair).
-* Integer types - Formatted using `dec()`.
-* Floating point types - Formatted using `fp_format()`.
-* `bool` - Written as `"true"` or `"false"`.
-* Otherwise - Call the type's output operator, or fail to compile if it does not have one.
-
-"String-like types" are defined as `std::string`, `std::string_view`, `char`,
-character pointers, and anything with an implicit conversion to `std::string`
-or `std::string_view`.
-
-## String parsing functions ##
-
-* `unsigned long long` **`binnum`**`(std::string_view str) noexcept`
-* `long long` **`decnum`**`(std::string_view str) noexcept`
-* `unsigned long long` **`hexnum`**`(std::string_view str) noexcept`
-* `double` **`fpnum`**`(std::string_view str) noexcept`
-
-The `binnum()`, `decnum()`, and `hexnum()` functions convert a binary,
-decimal, or hexadecimal string to a number; `fpnum()` converts a string to a
-floating point number. These will ignore any trailing characters that are not
-part of a number, and will return zero if the string is empty or does not
-contain a valid number. Results that are out of range will be clamped to the
-nearest end of the return type's range (for `fpnum()` this will normally be
-positive or negative infinity).
-
-* `int64_t` **`si_to_int`**`(Uview str)`
-* `double` **`si_to_float`**`(Uview str)`
-
-These parse a number from a string representation tagged with an SI multiplier
-abbreviation (e.g. `"123k"`). For the integer version, only tags representing
-positive powers of 1000 (starting with`"k"`) are recognised, and are case
-insensitive. For the floating point version, all tags representing powers of
-100 are recognised (`"u"` is used for "micro"), and are case sensitive, except
-that `"K"` is equivalent to `"k"`. For both versions, a space is allowed
-between the number and the tag, and any additional text after the number or
-tag is ignored.
-
-These will throw `std::invalid_argument` if the string does not start with a
-valid number, or `std::range_error` if the result is too big for the return
-type.
 
 ## HTML/XML tags ##
 

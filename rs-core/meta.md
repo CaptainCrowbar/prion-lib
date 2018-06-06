@@ -163,6 +163,9 @@ the same type are always equal). An output operator is defined for `Nil`
 
 ### Reflection tools ###
 
+These are originally defined in `"unicorn/utility.hpp"`; the documentation is
+repeated here for easier reference.
+
 _(Based on Walter E. Brown,
 [N4502 Proposing Standard Library Support for the C++ Detection Idiom V2](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/n4502.pdf),
 2015.)_

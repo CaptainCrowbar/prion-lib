@@ -25,7 +25,6 @@ values that do not represent a valid date.</p>
 <li><a href="#constants">Constants</a></li>
 <li><a href="#general-time-and-date-operations">General time and date operations</a></li>
 <li><a href="#system-specific-time-and-date-conversions">System specific time and date conversions</a></li>
-<li><a href="#time-and-date-formatting">Time and date formatting</a></li>
 <li><a href="#time-and-date-parsing">Time and date parsing</a></li>
 <li><a href="#timing-base-classes">Timing base classes</a></li>
 <li><a href="#timing-utilities">Timing utilities</a></li>
@@ -53,15 +52,6 @@ otherwise <code>steady_clock</code>.</p>
 <h2 id="constants">Constants</h2>
 <div class="defns">
 <ul>
-<li><code>constexpr uint32_t</code> <strong><code>utc_zone</code></strong></li>
-<li><code>constexpr uint32_t</code> <strong><code>local_zone</code></strong></li>
-</ul>
-<p>One of these is passed to some of the time and date functions to indicate
-whether a broken down date is expressed in UTC or the local time zone. If none
-of these are present, the default is <code>utc_zone</code>.</p>
-</div>
-<div class="defns">
-<ul>
 <li><code>constexpr uint32_t</code> <strong><code>ymd_order</code></strong></li>
 <li><code>constexpr uint32_t</code> <strong><code>dmy_order</code></strong></li>
 <li><code>constexpr uint32_t</code> <strong><code>mdy_order</code></strong></li>
@@ -80,22 +70,6 @@ the date elements are in. If none of these are present, the default is
 different clock. This will call <code>time_point_cast()</code> if possible; otherwise, it
 will check the current times on both clocks and use that to convert from one
 clock to the other.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>template &lt;typename R, typename P&gt; void</code> <strong><code>from_seconds</code></strong><code>(double s, duration&lt;R, P&gt;&amp; d) noexcept</code></li>
-<li><code>template &lt;typename R, typename P&gt; double</code> <strong><code>to_seconds</code></strong><code>(const duration&lt;R, P&gt;&amp; d) noexcept</code></li>
-</ul>
-<p>Convenience functions to convert between a <code>duration</code> and a floating point
-number of seconds.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>system_clock::time_point</code> <strong><code>make_date</code></strong><code>(int year, int month, int day, int hour = 0, int min = 0, double sec = 0, uint32_t flags = utc_zone)</code></li>
-</ul>
-<p>Converts a broken down date into a time point. Behaviour if any of the date
-arguments are invalid follows the same rules as <code>mktime()</code>. This will throw
-<code>std::invalid_argument</code> if an invalid combination of flags is passed.</p>
 </div>
 <h2 id="system-specific-time-and-date-conversions">System specific time and date conversions</h2>
 <div class="defns">
@@ -157,121 +131,6 @@ API).</p>
 </ul>
 </li>
 </ul>
-</div>
-<h2 id="time-and-date-formatting">Time and date formatting</h2>
-<div class="defns">
-<ul>
-<li><code>Ustring</code> <strong><code>format_date</code></strong><code>(system_clock::time_point tp, int prec = 0, uint32_t flags = utc_zone)</code></li>
-<li><code>Ustring</code> <strong><code>format_date</code></strong><code>(system_clock::time_point tp, Uview format, uint32_t flags = utc_zone)</code></li>
-</ul>
-<p>These convert a time point into a broken down date and format it. The first
-version writes the date in ISO 8601 format (<code>"yyyy-mm-dd hh:mm:ss"</code>). If
-<code>prec</code> is greater than zero, the specified number of decimal places will be
-added to the seconds field.</p>
-<p>The second version writes the date using the conventions of <code>strftime()</code>. This
-will return an empty string if anything goes wrong (there is no way to
-distinguish between a conversion error and a legitimately empty result; this
-is a limitation of <code>strftime()</code>).</p>
-<p>Both of these will throw <code>std::invalid_argument</code> if an invalid combination of
-flags is passed.</p>
-<p>For reference, the portable subset of the <code>strftime()</code> formatting codes are:</p>
-<table>
-<thead>
-<tr>
-<th>Code</th>
-<th>Description</th>
-<th>Code</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Date elements</strong></td>
-<td></td>
-<td><strong>Weekday elements</strong></td>
-<td></td>
-</tr>
-<tr>
-<td><code>%Y</code></td>
-<td>Year number</td>
-<td><code>%a</code></td>
-<td>Local weekday abbreviation</td>
-</tr>
-<tr>
-<td><code>%y</code></td>
-<td>Last 2 digits of the year (<code>00-99</code>)</td>
-<td><code>%w</code></td>
-<td>Sunday-based weekday number (<code>0-6</code>)</td>
-</tr>
-<tr>
-<td><code>%m</code></td>
-<td>Month number (<code>00-12</code>)</td>
-<td><code>%A</code></td>
-<td>Local weekday name</td>
-</tr>
-<tr>
-<td><code>%B</code></td>
-<td>Local month name</td>
-<td><code>%U</code></td>
-<td>Sunday-based week number (<code>00-53</code>)</td>
-</tr>
-<tr>
-<td><code>%b</code></td>
-<td>Local month abbreviation</td>
-<td><code>%W</code></td>
-<td>Monday-based week number (<code>00-53</code>)</td>
-</tr>
-<tr>
-<td><code>%d</code></td>
-<td>Day of the month (<code>01-31</code>)</td>
-<td><strong>Other elements</strong></td>
-<td></td>
-</tr>
-<tr>
-<td><strong>Time of day elements</strong></td>
-<td></td>
-<td><code>%c</code></td>
-<td>Local standard date/time format</td>
-</tr>
-<tr>
-<td><code>%H</code></td>
-<td>Hour on 24-hour clock (<code>00-23</code>)</td>
-<td><code>%x</code></td>
-<td>Local standard date format</td>
-</tr>
-<tr>
-<td><code>%I</code></td>
-<td>Hour on 12-hour clock (<code>01-12</code>)</td>
-<td><code>%X</code></td>
-<td>Local standard time format</td>
-</tr>
-<tr>
-<td><code>%p</code></td>
-<td>Local equivalent of a.m./p.m.</td>
-<td><code>%j</code></td>
-<td>Day of the year (<code>001-366</code>)</td>
-</tr>
-<tr>
-<td><code>%M</code></td>
-<td>Minute (<code>00-59</code>)</td>
-<td><code>%Z</code></td>
-<td>Time zone name</td>
-</tr>
-<tr>
-<td><code>%S</code></td>
-<td>Second (<code>00-60</code>)</td>
-<td><code>%z</code></td>
-<td>Time zone offset</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="defns">
-<ul>
-<li><code>template &lt;typename R, typename P&gt; Ustring</code> <strong><code>format_time</code></strong><code>(const duration&lt;R, P&gt;&amp; time, int prec = 0)</code></li>
-</ul>
-<p>Formats a time duration in days, hours, minutes, seconds, and (if <code>prec&gt;0</code>)
-fractions of a second.</p>
 </div>
 <h2 id="time-and-date-parsing">Time and date parsing</h2>
 <div class="defns">

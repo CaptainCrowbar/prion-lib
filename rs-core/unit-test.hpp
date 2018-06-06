@@ -420,10 +420,10 @@ namespace RS {
                             result += char(uc);
                         } else if (uc <= 0xff) {
                             result += "\\x";
-                            result += RS_Detail::hexfmt(uc, 2);
+                            result += hex(uc, 2);
                         } else {
                             result += "\\x{";
-                            result += RS_Detail::hexfmt(uc, 1);
+                            result += hex(uc, 1);
                             result += "}";
                         }
                         break;
@@ -436,9 +436,9 @@ namespace RS {
         template <typename T> static const void* preformat(T* t) noexcept { return t; }
         static unsigned preformat(unsigned char t) noexcept { return t; }
         static int preformat(signed char t) noexcept { return t; }
-        static std::string preformat(char16_t t) noexcept { return "U+" + RS_Detail::hexfmt(t, 4); }
-        static std::string preformat(char32_t t) noexcept { return "U+" + RS_Detail::hexfmt(t, 4); }
-        static std::string preformat(wchar_t t) noexcept { return "U+" + RS_Detail::hexfmt(std::make_unsigned_t<wchar_t>(t), 4); }
+        static std::string preformat(char16_t t) noexcept { return "U+" + hex(t, 4); }
+        static std::string preformat(char32_t t) noexcept { return "U+" + hex(t, 4); }
+        static std::string preformat(wchar_t t) noexcept { return "U+" + hex(std::make_unsigned_t<wchar_t>(t), 4); }
         static std::string preformat(const std::string& t) { return preformat_string(t); }
         static std::string preformat(const std::u16string& t) { return preformat_string(t); }
         static std::string preformat(const std::u32string& t) { return preformat_string(t); }

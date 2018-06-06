@@ -7,16 +7,12 @@ extern void test_core_common_string_types();
 extern void test_core_common_metaprogramming();
 extern void test_core_common_type_adapters();
 extern void test_core_common_type_related_functions();
-extern void test_core_common_version_number();
 extern void test_core_common_arithmetic_literals();
 extern void test_core_common_generic_algorithms();
 extern void test_core_common_integer_sequences();
 extern void test_core_common_memory_algorithms();
-extern void test_core_common_range_traits();
-extern void test_core_common_range_types();
 extern void test_core_common_generic_arithmetic();
 extern void test_core_common_integer_arithmetic();
-extern void test_core_common_bitwise_operations();
 extern void test_core_common_function_traits();
 extern void test_core_common_function_operations();
 extern void test_core_common_generic_function_objects();
@@ -108,7 +104,6 @@ extern void test_core_io_external_buffer();
 extern void test_core_io_internal_buffer();
 extern void test_core_io_print_formatting();
 extern void test_core_ipc_named_mutex();
-extern void test_core_kwargs_keyword_arguments();
 extern void test_core_meta_logic();
 extern void test_core_meta_append();
 extern void test_core_meta_concat();
@@ -299,7 +294,6 @@ extern void test_core_string_character();
 extern void test_core_string_property();
 extern void test_core_string_manipulation();
 extern void test_core_string_formatting();
-extern void test_core_string_parsing();
 extern void test_core_string_html_xml_tags();
 extern void test_core_string_type_names();
 extern void test_core_string_unicode();
@@ -312,8 +306,6 @@ extern void test_core_time_date_types();
 extern void test_core_time_convert_time_point();
 extern void test_core_time_general_operations();
 extern void test_core_time_system_specific_conversions();
-extern void test_core_time_format_date();
-extern void test_core_time_format_time();
 extern void test_core_time_parse_date();
 extern void test_core_time_parse_time();
 extern void test_core_time_wait_base();
@@ -359,16 +351,12 @@ int main() {
         { "core/common/metaprogramming", test_core_common_metaprogramming },
         { "core/common/type-adapters", test_core_common_type_adapters },
         { "core/common/type-related-functions", test_core_common_type_related_functions },
-        { "core/common/version-number", test_core_common_version_number },
         { "core/common/arithmetic-literals", test_core_common_arithmetic_literals },
         { "core/common/generic-algorithms", test_core_common_generic_algorithms },
         { "core/common/integer-sequences", test_core_common_integer_sequences },
         { "core/common/memory-algorithms", test_core_common_memory_algorithms },
-        { "core/common/range-traits", test_core_common_range_traits },
-        { "core/common/range-types", test_core_common_range_types },
         { "core/common/generic-arithmetic", test_core_common_generic_arithmetic },
         { "core/common/integer-arithmetic", test_core_common_integer_arithmetic },
-        { "core/common/bitwise-operations", test_core_common_bitwise_operations },
         { "core/common/function-traits", test_core_common_function_traits },
         { "core/common/function-operations", test_core_common_function_operations },
         { "core/common/generic-function-objects", test_core_common_generic_function_objects },
@@ -460,7 +448,6 @@ int main() {
         { "core/io/internal-buffer", test_core_io_internal_buffer },
         { "core/io/print-formatting", test_core_io_print_formatting },
         { "core/ipc/named-mutex", test_core_ipc_named_mutex },
-        { "core/kwargs/keyword-arguments", test_core_kwargs_keyword_arguments },
         { "core/meta/logic", test_core_meta_logic },
         { "core/meta/append", test_core_meta_append },
         { "core/meta/concat", test_core_meta_concat },
@@ -651,7 +638,6 @@ int main() {
         { "core/string/property", test_core_string_property },
         { "core/string/manipulation", test_core_string_manipulation },
         { "core/string/formatting", test_core_string_formatting },
-        { "core/string/parsing", test_core_string_parsing },
         { "core/string/html-xml-tags", test_core_string_html_xml_tags },
         { "core/string/type-names", test_core_string_type_names },
         { "core/string/unicode", test_core_string_unicode },
@@ -664,8 +650,6 @@ int main() {
         { "core/time/convert-time-point", test_core_time_convert_time_point },
         { "core/time/general-operations", test_core_time_general_operations },
         { "core/time/system-specific-conversions", test_core_time_system_specific_conversions },
-        { "core/time/format-date", test_core_time_format_date },
-        { "core/time/format-time", test_core_time_format_time },
         { "core/time/parse-date", test_core_time_parse_date },
         { "core/time/parse-time", test_core_time_parse_time },
         { "core/time/wait-base", test_core_time_wait_base },

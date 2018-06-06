@@ -148,57 +148,6 @@ from a pointer copies `sizeof(T)` bytes into the object. The `ptr()` and
 `rep()` functions give access to the internal, byte ordered form. The hash
 function gives the same result as the underlying integer type's hash.
 
-### String and character types ###
-
-* `using` **`Ustring`** `= std::string`
-* `using` **`Uview`** `= std::string_view`
-
-Use `Ustring` or `Uview` for strings that are expected to be in UTF-8 (or
-ASCII, since any ASCII string is also valid UTF-8), while plain `std::string`
-or `std::string_view` is used where the string is expected to be in some other
-Unicode encoding, or where the string is being used simply as an array of
-bytes rather than encoded text.
-
-* `using` **`Strings`** `= std::vector<std::string>`
-
-Commonly used type defined for convenience.
-
-* `#define` **`RS_NATIVE_WCHAR`** `1` _- defined if the system API uses wide characters_
-* `using` **`NativeCharacter`** `= [char on Unix, wchar_t on Windows]`
-* `using` **`NativeString`** `= [std::string on Unix, std::wstring on Windows]`
-
-These are defined to reflect the character types used in the operating
-system's native API.
-
-* `#define` **`RS_WCHAR_UTF16`** `1` _- defined if wchar_t and wstring are UTF-16_
-* `#define` **`RS_WCHAR_UTF32`** `1` _- defined if wchar_t and wstring are UTF-32_
-* `using` **`WcharEquivalent`** `= [char16_t or char32_t]`
-* `using` **`WstringEquivalent`** `= [std::u16string or std::u32string]`
-
-These are defined to reflect the encoding represented by `wchar_t` and
-`std::wstring`. Systems where wide strings are neither UTF-16 nor UTF-32 are
-not supported.
-
-* `template <typename C> basic_string<C>` **`cstr`**`(const C* ptr)`
-* `template <typename C> basic_string<C>` **`cstr`**`(const C* ptr, size_t n)`
-
-These construct a string from a pointer to a null-terminated character
-sequence, or a pointer and a length. They differ from the corresponding string
-constructors in that passing a null pointer will yield an empty string, or a
-string of `n` null characters, instead of undefined behaviour.
-
-* `template <typename C> size_t` **`cstr_size`**`(const C* ptr)`
-
-Returns the length of a null-terminated string (a generalized version of
-`strlen()`). This will return zero if the pointer is null.
-
-* `template <typename S> [string view]` **`make_view`**`(const S& s, size_t pos = 0, size_t len = npos) noexcept`
-
-Returns a string view over the given string. The string argument may be an
-instantiation of `std:basic_string` or `std::basic_string_view`, or a pointer
-to a null terminated character array. The substring bounds are range checked
-and clamped to the actual size of the string.
-
 ### Exceptions ###
 
 * `void` **`rethrow`**`(std::exception_ptr p)`
@@ -227,46 +176,6 @@ const string>` yields `string`, while `CopyConst<const int, string>` yields
 Signed and unsigned integer types with the specified number of bits (the same
 types as `int8_t`, `int16_t`, etc). These will fail to compile if `Bits` is
 not a power of 2 in the supported range (8-64).
-
-### Mixins ###
-
-<!-- DEFN --> These are convenience base classes that define members and
-operators that would normally just be repetitive boilerplate (similar to the
-ones in Boost). They all use the CRTP idiom; a class `T` should derive from
-`Mixin<T>` to automatically generate the desired boilerplate code. The table
-below shows which operations the user is required to define, and which ones
-the mixin will automatically define. (Here, `t` and `u` are objects of type
-`T`, `v` is an object of `T`'s value type, and `n` is an integer.)
-
-Mixin                                       | Requires                         | Defines
------                                       | --------                         | -------
-**`EqualityComparable`**`<T>`               | `t==u`                           | `t!=u`
-**`LessThanComparable`**`<T>`               | `t==u, t<u`                      | `t!=u, t>u, t<=u, t>=u`
-**`InputIterator`**`<T,CV>`                 | `*t, ++t, t==u`                  | `t->, t++, t!=u`
-**`OutputIterator`**`<T>`                   | `t=v`                            | `*t, ++t, t++`
-**`ForwardIterator`**`<T,CV>`               | `*t, ++t, t==u`                  | `t->, t++, t!=u`
-**`BidirectionalIterator`**`<T,CV>`         | `*t, ++t, --t, t==u`             | `t->, t++, t--, t!=u`
-**`RandomAccessIterator`**`<T,CV>`          | `*t, t+=n, t-u`                  | `t->, t[n], ++t, t++, --t, t--, t-=n, t+n, n+t, t-n,`<br>`t==u, t!=u, t<u, t>u, t<=u, t>=u`
-**`FlexibleRandomAccessIterator`**`<T,CV>`  | `*t, ++t, --t, t+=n, t-u, t==u`  | `t->, t[n], t++, t--, t-=n, t+n, n+t, t-n,`<br>`t!=u, t<u, t>u, t<=u, t>=u`
-
-In the iterator mixins, `CV` is either `V` or `const V`, where `V` is the
-iterator's value type, depending on whether a mutable or const iterator is
-required.
-
-The first version of `RandomAccessIterator` uses the minimal set of user
-supplied operations to generate all of those required;
-`FlexibleRandomAccessIterator` requires more user supplied operations, but
-will decay safely to one of the simpler iterator types if an underlying type
-does not supply all of the corresponding operations.
-
-In addition to the operators listed in the table above, all iterator mixins
-supply the standard member types:
-
-* `using` **`difference_type`** `= ptrdiff_t`
-* `using` **`iterator_category`** `= [standard iterator tag type]`
-* `using` **`pointer`** `= CV*`
-* `using` **`reference`** `= CV&`
-* `using` **`value_type`** `= std::remove_const_t<CV>`
 
 ### Type adapters ###
 
@@ -336,65 +245,6 @@ different sizes, but does no other safety checks. The `implicit_cast()`
 operation performs the conversion only if it would be allowed as an implicit
 conversion.
 
-### Version number ###
-
-* `class` **`Version`**
-    * `using Version::`**`value_type`** `= unsigned`
-    * `Version::`**`Version`**`() noexcept`
-    * `template <typename... Args> Version::`**`Version`**`(unsigned n, Args... args)`
-    * `explicit Version::`**`Version`**`(const Ustring& s)`
-    * `Version::`**`Version`**`(const Version& v)`
-    * `Version::`**`Version`**`(Version&& v) noexcept`
-    * `Version::`**`~Version`**`() noexcept`
-    * `Version& Version::`**`operator=`**`(const Version& v)`
-    * `Version& Version::`**`operator=`**`(Version&& v) noexcept`
-    * `unsigned Version::`**`operator[]`**`(size_t i) const noexcept`
-    * `const unsigned* Version::`**`begin`**`() const noexcept`
-    * `const unsigned* Version::`**`end`**`() const noexcept`
-    * `unsigned Version::`**`major`**`() const noexcept`
-    * `unsigned Version::`**`minor`**`() const noexcept`
-    * `unsigned Version::`**`patch`**`() const noexcept`
-    * `size_t Version::`**`size`**`() const noexcept`
-    * `Ustring Version::`**`str`**`(size_t min_elements = 2, char delimiter = '.') const`
-    * `Ustring Version::`**`suffix`**`() const`
-    * `uint32_t Version::`**`to32`**`() const noexcept`
-    * `static Version Version::`**`from32`**`(uint32_t n) noexcept`
-* `bool` **`operator==`**`(const Version& lhs, const Version& rhs) noexcept`
-* `bool` **`operator!=`**`(const Version& lhs, const Version& rhs) noexcept`
-* `bool` **`operator<`**`(const Version& lhs, const Version& rhs) noexcept;`
-* `bool` **`operator>`**`(const Version& lhs, const Version& rhs) noexcept`
-* `bool` **`operator<=`**`(const Version& lhs, const Version& rhs) noexcept`
-* `bool` **`operator>=`**`(const Version& lhs, const Version& rhs) noexcept`
-* `std::ostream&` **`operator<<`**`(std::ostream& o, const Version& v)`
-
-A version number, represented as an array of integers optionally followed by a
-trailing string (e.g. `1.2.3beta`). The default constructor sets the version
-number to zero; the second constructor expects one or more integers followed
-by a string; the third constructor parses a string. A string that does not
-start with an integer is assumed to start with an implicit zero; if the string
-contains any whitespace, anything after that is ignored. Results are
-unspecified if a version number element is too big to fit in an `unsigned
-int`.
-
-The indexing operator returns the requested element; it will return zero if
-the index is out of range for the stored array. The `major()`, `minor()`, and
-`patch()` functions return elements 0, 1, and 2. The `suffix()` function
-returns the trailing string element.
-
-The `size()` function returns the number of numeric elements in the version
-number. This will always return at least 1.
-
-The `str()` function (and the output operator) formats the version number in
-the conventional form; a minimum number of elements can be requested. The
-`to32()` and `from32()` functions pack or unpack the version into a 32 bit
-integer, with one byte per element (e.g. version `1.2.3` becomes
-`0x01020300`); `to32()` truncates elements higher than 255 and ignores the
-string element.
-
-Following the common convention that version suffixes are used to designate
-pre-release builds, versions with a suffix are ordered before the same version
-without the suffix.
-
 ## Constants and literals ##
 
 ### Arithmetic literals ###
@@ -413,25 +263,7 @@ without the suffix.
 
 Integer literals.
 
-### String related constants ###
-
-* `constexpr const char*` **`ascii_whitespace`** `= "\t\n\v\f\r "`
-
-ASCII whitespace characters.
-
-* `constexpr size_t` **`npos`** `= string::npos`
-
-Defined for convenience. Following the conventions established by the standard
-library, this value is often used as a function argument to mean "as large as
-possible" or "no limit", or as a return value to mean "not found".
-
-### Other constants ###
-
-* `constexpr bool` **`big_endian_target`**
-* `constexpr bool` **`little_endian_target`**
-
-One of these will be true and the other false, reflecting the target system's
-byte order.
+### Arithmetic constants ###
 
 * `constexpr unsigned` **`KB`** `= 1024`
 * `constexpr unsigned long` **`MB`** `= 1 048 576`
@@ -450,23 +282,15 @@ Advances an iterator by the given number of steps, or until it reaches `end`,
 whichever comes first. This will take `O(1)` time if the iterator is random
 access, otherwise `O(n)`.
 
-* `template <typename Container> [output iterator]` **`append`**`(Container& con)`
-* `template <typename Container> [output iterator]` **`overwrite`**`(Container& con)`
-* `template <typename Range, typename Container> const Range&` **`operator>>`**`(const Range& lhs, [append iterator] rhs)`
+* `template <typename T> constexpr Irange<T*>` **`array_range`**`(T* ptr, size_t len)`
 
-The `append()` and `overwrite()` functions create output iterators that will
-append elements to a standard container (see `append_to()` below). The
-`append()` function is similar to `std::back_inserter()` (but supports
-containers without `push_back()`), while `overwrite()` will first clear the
-container and then return the append iterator. There is also an operator that
-can be used to copy any range into a container.
+Returns `irange(ptr,ptr+len)`.
 
-* `template <typename Container, typename T> void` **`append_to`**`(Container& con, const T& t)`
+* `template <typename T, size_t N> constexpr std::tuple<T,...>` **`array_to_tuple`**`(const T (&array)[N])`
+* `template <typename T, size_t N> constexpr std::tuple<T,...>` **`array_to_tuple`**`(const std::array<T, N> &array)`
 
-Appends an item to a container; used by `append()` and `overwrite()`. The
-generic version calls `con.insert(con.end(), t)`; overloads (found by argument
-dependent lookup) can be used for container-like types that do not have a
-suitable `insert()` method.
+Convert a C-style array or a `std::array` to a tuple containing the same
+values.
 
 * `template <typename Range> [value type]` **`at_index`**`(const Range& r, size_t index)`
 * `template <typename Range, typename T> [value type]` **`at_index`**`(const Range& r, size_t index, const T& def)`
@@ -476,12 +300,6 @@ value (implicitly converted to the range's value type) if the index is out of
 bounds. If no default value is supplied, a default constructed object of the
 value type is returned. The array type can be any range with random access
 iterators.
-
-* `template <typename Range1, typename Range2> int` **`compare_3way`**`(const Range1& r1, const Range2& r2)`
-* `template <typename Range1, typename Range2, typename Compare> int` **`compare_3way`**`(const Range1& r1, const Range2& r2, Compare cmp)`
-
-Compare two ranges, returning -1 if the first range is less than the second,
-zero if they are equal, and +1 if the first range is greater.
 
 * `template <typename R, typename Container> void` **`con_append`**`(const R& src, Container& dst)`
 * `template <typename R, typename Container> void` **`con_overwrite`**`(const R& src, Container& dst)`
@@ -598,51 +416,9 @@ return zero if either pointer is null.
 Swap two blocks of memory. This will work if the two ranges overlap or are the
 same, but behaviour is undefined if either pointer is null.
 
-### Range traits ###
-
-* `template <typename T, size_t N> constexpr size_t` **`array_count`**`(T[N]) noexcept`
-* `template <typename InputRange> size_t` **`range_count`**`(const InputRange& r)`
-* `template <typename InputRange> bool` **`range_empty`**`(const InputRange& r)`
-
-Return the length of a range. The `range_count()` function is just shorthand
-for `std::distance(begin(r),end(r))`, and `range_empty()` has the obvious
-meaning. The `array_count()` version returns the same value, but only works on
-C-style arrays and is `constexpr`.
-
-### Range types ###
-
-* `template <typename Iterator> struct` **`Irange`**
-    * `using Irange::`**`iterator`** `= Iterator`
-    * `using Irange::`**`value_type`** `= [Iterator's value type]`
-    * `Iterator Irange::`**`first`**
-    * `Iterator Irange::`**`second`**
-    * `constexpr Iterator Irange::`**`begin`**`() const { return first; }`
-    * `constexpr Iterator Irange::`**`end`**`() const { return second; }`
-    * `constexpr bool Irange::`**`empty`**`() const { return first == second; }`
-    * `constexpr size_t Irange::`**`size`**`() const { return std::distance(first, second); }`
-* `template <typename Iterator> constexpr Irange<Iterator>` **`irange`**`(const Iterator& i, const Iterator& j)`
-* `template <typename Iterator> constexpr Irange<Iterator>` **`irange`**`(const pair<Iterator, Iterator>& p)`
-
-A wrapper for a pair of iterators, usable as a range in standard algorithms.
-
-* `template <typename T> constexpr Irange<T*>` **`array_range`**`(T* ptr, size_t len)`
-
-Returns `irange(ptr,ptr+len)`.
-
-* `template <typename T, size_t N> constexpr std::tuple<T,...>` **`array_to_tuple`**`(const T (&array)[N])`
-* `template <typename T, size_t N> constexpr std::tuple<T,...>` **`array_to_tuple`**`(const std::array<T, N> &array)`
-
-Convert a C-style array or a `std::array` to a tuple containing the same
-values.
-
 ## Arithmetic functions ##
 
 ### Generic arithmetic functions ###
-
-* `template <typename T, typename T2, typename T3> constexpr T` **`clamp`**`(const T& x, const T2& min, const T3& max) noexcept`
-
-Clamps a value to a fixed range. This returns `min` if `t<min`, `max` if
-`t>max`, otherwise `t`. `T2` and `T3` must be implicitly convertible t `T`.
 
 * `template <typename T> pair<T, T>` **`divide`**`(T x, T y) noexcept`
 * `template <typename T> T` **`quo`**`(T x, T y) noexcept`
@@ -678,14 +454,6 @@ Returns 1 if the argument is positive, 0 if zero, and -1 if negative.
 
 ### Integer arithmetic functions ###
 
-* `template <typename T> constexpr std::make_signed_t<T>` **`as_signed`**`(T t) noexcept`
-* `template <typename T> constexpr std::make_unsigned_t<T>` **`as_unsigned`**`(T t) noexcept`
-
-These return their argument converted to a signed or unsigned value of the
-same size (the argument is returned unchanged if `T` already had the desired
-signedness). Behaviour is undefined if `T` is not an integer or enumeration
-type.
-
 * `template <typename T> T` **`binomial`**`(T a, T b) noexcept`
 * `double` **`xbinomial`**`(int a, int b) noexcept`
 
@@ -711,44 +479,6 @@ negative, or if `T` is signed and the true result would be out of range.
 
 Returns the integer square root of the argument (the true square root
 truncated to an integer). Behaviour is undefined if the argument is negative.
-
-### Bitwise operations ###
-
-For all functions in this section that are templated on the argument type, the
-function will fail to compile if `T` is not an integer, and behaviour is
-undefined if `T` is signed and the argument is negative.
-
-* `template <typename T> constexpr int` **`ibits`**`(T t) noexcept`
-
-Returns the number of 1 bits in the argument.
-
-* `template <typename T> constexpr T` **`ifloor2`**`(T t) noexcept`
-* `template <typename T> constexpr T` **`iceil2`**`(T t) noexcept`
-
-Return the argument rounded down or up to a power of 2. For `iceil2()`,
-behaviour is undefined if the argument is large enough that the correct answer
-is not representable.
-
-* `template <typename T> constexpr int` **`ilog2p1`**`(T t) noexcept`
-
-Returns `floor(log2(t))+1`, equal to the number of significant bits in `t`,
-or zero if `t` is zero.
-
-* `template <typename T> constexpr bool` **`ispow2`**`(T t) noexcept`
-
-True if the argument is an exact power of 2.
-
-* `constexpr uint64_t` **`letter_to_mask`**`(char c) noexcept`
-
-Converts a letter to a mask with bit 0-51 set (corresponding to `[A-Za-z]`.
-Returns zero if the argument is not an ASCII letter.
-
-* `template <typename T> constexpr T` **`rotl`**`(T t, int n) noexcept`
-* `template <typename T> constexpr T` **`rotr`**`(T t, int n) noexcept`
-
-Bitwise rotate left or right. The bit count is reduced modulo the number of
-bits in `T`; a negative shift in one direction is treated as a positive shift
-in the other.
 
 ## Functional utilities ##
 
@@ -885,33 +615,6 @@ The `def()` function returns the default value of `T`, which is `T(Def)` if
 operator returns true if the stored value is not equal to the default (note
 that this may give a different result from `bool(T)`).
 
-* `class` **`[scope guard]`**
-    * `[scope guard]::`**`[scope guard]`**`(F&& f)`
-    * `[scope guard]::`**`[scope guard]`**`([scope guard]&&) noexcept`
-    * `[scope guard]::`**`~[scope guard]`**`() noexcept`
-    * `void [scope guard]::`**`release`**`() noexcept`
-* `template <typename F> inline [scope guard]` **`scope_exit`**`(F&& f)`
-* `template <typename F> inline [scope guard]` **`scope_fail`**`(F&& f)`
-* `template <typename F> inline [scope guard]` **`scope_success`**`(F&& f)`
-
-The anonymous scope guard class stores a function object, to be called when
-the guard is destroyed. The three functions create scope guards with different
-execution conditions.
-
-The `scope_exit()` guard calls the function unconditionally; `scope_success()`
-calls it only on normal exit (not when unwinding due to an exception);
-`scope_fail()` calls it only when an exception causes stack unwinding (not on
-normal exit). If the creation function throws an exception (this is only
-possible if the function object's copy or move constructor or assignment
-operator throws), `scope_exit()` and `scope_fail()` will call the function
-before propagating the exception, while `scope_success()` will not. Any
-exceptions thrown by the function call in the scope guard's destructor are
-silently ignored (normally the function should be written so as not to throw
-anything).
-
-The `release()` function discards the saved function; after it is called, the
-scope guard object will do nothing on destruction.
-
 * `class` **`ScopedTransaction`**
     * `using ScopedTransaction::`**`callback`** `= function<void()>`
     * `ScopedTransaction::`**`ScopedTransaction`**`() noexcept`
@@ -937,11 +640,6 @@ A single `ScopedTransaction` object can be used for multiple transactions.
 Once `commit()` or `rollback()` is called, the undo stack is discarded, and
 any newly added function pairs become part of a new cycle, equivalent to a
 newly constructed `ScopedTransaction`.
-
-* `template <typename T> std::unique_lock<T>` **`make_lock`**`(T& t)`
-* `template <typename T> std::shared_lock<T>` **`make_shared_lock`**`(T& t)`
-
-Simple wrapper functions to create a mutex lock.
 
 ## I/O utilities ##
 

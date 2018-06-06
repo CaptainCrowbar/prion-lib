@@ -104,8 +104,6 @@ void test_core_time_general_operations() {
     minutes m = {};
     seconds s = {};
     milliseconds ms = {};
-    system_clock::time_point tp = {};
-    int64_t n1 = 0, n2 = 0;
 
     TRY(from_seconds(7200.0, h));   TEST_EQUAL(h.count(), 2);
     TRY(from_seconds(7200.0, m));   TEST_EQUAL(m.count(), 120);
@@ -116,16 +114,6 @@ void test_core_time_general_operations() {
     TEST_EQUAL(to_seconds(minutes(10)), 600);
     TEST_EQUAL(to_seconds(seconds(10)), 10);
     TEST_NEAR(to_seconds(milliseconds(10)), 0.01);
-
-    TRY(tp = make_date(1970, 1, 1, 0, 0, 0));
-    TRY(n1 = int64_t(system_clock::to_time_t(tp)));
-    TEST_EQUAL(n1, 0);
-    TRY(tp = make_date(2000, 1, 2, 3, 4, 5));
-    TRY(n1 = int64_t(system_clock::to_time_t(tp)));
-    TEST_EQUAL(n1, 946'782'245);
-    TRY(tp = make_date(2000, 1, 2, 3, 4, 5, local_zone));
-    TRY(n2 = int64_t(system_clock::to_time_t(tp)));
-    TEST_COMPARE(std::abs(n2 - n1), <=, 86400);
 
 }
 
@@ -236,86 +224,6 @@ void test_core_time_system_specific_conversions() {
         TEST_EQUAL(tp2.time_since_epoch().count(), tp.time_since_epoch().count());
 
     #endif
-
-}
-
-void test_core_time_format_date() {
-
-    system_clock::time_point tp = {};
-    system_clock::duration d = {};
-    Ustring str;
-
-    TRY(tp = make_date(2000, 1, 2, 3, 4, 5));
-    TRY(str = format_date(tp));
-    TEST_EQUAL(str, "2000-01-02 03:04:05");
-    TRY(str = format_date(tp, 3));
-    TEST_EQUAL(str, "2000-01-02 03:04:05.000");
-    TRY(from_seconds(0.12345, d));
-    TRY(tp += d);
-    TRY(str = format_date(tp));
-    TEST_EQUAL(str, "2000-01-02 03:04:05");
-    TRY(str = format_date(tp, 3));
-    TEST_EQUAL(str, "2000-01-02 03:04:05.123");
-    TRY(from_seconds(0.44444, d));
-    TRY(tp += d);
-    TRY(str = format_date(tp));
-    TEST_EQUAL(str, "2000-01-02 03:04:05");
-    TRY(str = format_date(tp, 3));
-    TEST_EQUAL(str, "2000-01-02 03:04:05.568");
-    TRY(str = format_date(tp, "%d/%m/%Y %H:%M"));
-    TEST_EQUAL(str, "02/01/2000 03:04");
-    TRY(str = format_date(tp, ""));
-    TEST_EQUAL(str, "");
-    TRY(tp = make_date(2000, 1, 2, 3, 4, 5, local_zone));
-    TRY(str = format_date(tp, 0, local_zone));
-    TEST_EQUAL(str, "2000-01-02 03:04:05");
-
-}
-
-void test_core_time_format_time() {
-
-    Ustring str;
-
-    TRY(str = format_time(Dseconds(0)));              TEST_EQUAL(str, "0s");
-    TRY(str = format_time(Dseconds(0), 3));           TEST_EQUAL(str, "0.000s");
-    TRY(str = format_time(Dseconds(0.25), 3));        TEST_EQUAL(str, "0.250s");
-    TRY(str = format_time(Dseconds(0.5), 3));         TEST_EQUAL(str, "0.500s");
-    TRY(str = format_time(Dseconds(0.75), 3));        TEST_EQUAL(str, "0.750s");
-    TRY(str = format_time(Dseconds(1), 3));           TEST_EQUAL(str, "1.000s");
-    TRY(str = format_time(Dseconds(1.25), 3));        TEST_EQUAL(str, "1.250s");
-    TRY(str = format_time(Dseconds(59.999), 3));      TEST_EQUAL(str, "59.999s");
-    TRY(str = format_time(Dseconds(60), 3));          TEST_EQUAL(str, "1m00.000s");
-    TRY(str = format_time(Dseconds(1234), 3));        TEST_EQUAL(str, "20m34.000s");
-    TRY(str = format_time(Dseconds(12345), 3));       TEST_EQUAL(str, "3h25m45.000s");
-    TRY(str = format_time(Dseconds(123456), 3));      TEST_EQUAL(str, "1d10h17m36.000s");
-    TRY(str = format_time(Dseconds(1234567), 3));     TEST_EQUAL(str, "14d06h56m07.000s");
-    TRY(str = format_time(Dseconds(12345678), 3));    TEST_EQUAL(str, "142d21h21m18.000s");
-    TRY(str = format_time(Dseconds(123456789), 3));   TEST_EQUAL(str, "1428d21h33m09.000s");
-    TRY(str = format_time(Dseconds(-0.25), 3));       TEST_EQUAL(str, "-0.250s");
-    TRY(str = format_time(Dseconds(-0.5), 3));        TEST_EQUAL(str, "-0.500s");
-    TRY(str = format_time(Dseconds(-0.75), 3));       TEST_EQUAL(str, "-0.750s");
-    TRY(str = format_time(Dseconds(-1), 3));          TEST_EQUAL(str, "-1.000s");
-    TRY(str = format_time(Dseconds(-1.25), 3));       TEST_EQUAL(str, "-1.250s");
-    TRY(str = format_time(Dseconds(-59.999), 3));     TEST_EQUAL(str, "-59.999s");
-    TRY(str = format_time(Dseconds(-60), 3));         TEST_EQUAL(str, "-1m00.000s");
-    TRY(str = format_time(Dseconds(-1234), 3));       TEST_EQUAL(str, "-20m34.000s");
-    TRY(str = format_time(Dseconds(-12345), 3));      TEST_EQUAL(str, "-3h25m45.000s");
-    TRY(str = format_time(Dseconds(-123456), 3));     TEST_EQUAL(str, "-1d10h17m36.000s");
-    TRY(str = format_time(Dseconds(-1234567), 3));    TEST_EQUAL(str, "-14d06h56m07.000s");
-    TRY(str = format_time(Dseconds(-12345678), 3));   TEST_EQUAL(str, "-142d21h21m18.000s");
-    TRY(str = format_time(Dseconds(-123456789), 3));  TEST_EQUAL(str, "-1428d21h33m09.000s");
-    TRY(str = format_time(nanoseconds(1), 10));       TEST_EQUAL(str, "0.0000000010s");
-    TRY(str = format_time(microseconds(1), 7));       TEST_EQUAL(str, "0.0000010s");
-    TRY(str = format_time(milliseconds(1), 4));       TEST_EQUAL(str, "0.0010s");
-    TRY(str = format_time(seconds(1)));               TEST_EQUAL(str, "1s");
-    TRY(str = format_time(minutes(1)));               TEST_EQUAL(str, "1m00s");
-    TRY(str = format_time(hours(1)));                 TEST_EQUAL(str, "1h00m00s");
-    TRY(str = format_time(nanoseconds(-1), 10));      TEST_EQUAL(str, "-0.0000000010s");
-    TRY(str = format_time(microseconds(-1), 7));      TEST_EQUAL(str, "-0.0000010s");
-    TRY(str = format_time(milliseconds(-1), 4));      TEST_EQUAL(str, "-0.0010s");
-    TRY(str = format_time(seconds(-1)));              TEST_EQUAL(str, "-1s");
-    TRY(str = format_time(minutes(-1)));              TEST_EQUAL(str, "-1m00s");
-    TRY(str = format_time(hours(-1)));                TEST_EQUAL(str, "-1h00m00s");
 
 }
 

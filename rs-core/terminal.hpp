@@ -67,16 +67,16 @@ namespace RS {
     constexpr const char* xt_cyan_bg      = "\x1b[46m";  // Cyan bg
     constexpr const char* xt_white_bg     = "\x1b[47m";  // White bg
 
-    inline std::string xt_move_up(int n) { return "\x1b[" + RS_Detail::decfmt(n) + 'A'; }                                                       // Cursor up n spaces
-    inline std::string xt_move_down(int n) { return "\x1b[" + RS_Detail::decfmt(n) + 'B'; }                                                     // Cursor down n spaces
-    inline std::string xt_move_right(int n) { return "\x1b[" + RS_Detail::decfmt(n) + 'C'; }                                                    // Cursor right n spaces
-    inline std::string xt_move_left(int n) { return "\x1b[" + RS_Detail::decfmt(n) + 'D'; }                                                     // Cursor left n spaces
-    inline std::string xt_colour(int r, int g, int b) { return "\x1b[38;5;" + RS_Detail::decfmt(RS_Detail::xt_encode_rgb(r, g, b)) + 'm'; }     // Set fg colour to an RGB value (0-5)
-    inline std::string xt_colour(Int3 rgb) { return xt_colour(rgb.x(), rgb.y(), rgb.z()); }                                                     // Set fg colour to an RGB value (0-5)
-    inline std::string xt_colour_bg(int r, int g, int b) { return "\x1b[48;5;" + RS_Detail::decfmt(RS_Detail::xt_encode_rgb(r, g, b)) + 'm'; }  // Set bg colour to an RGB value (0-5)
-    inline std::string xt_colour_bg(Int3 rgb) { return xt_colour_bg(rgb.x(), rgb.y(), rgb.z()); }                                               // Set fg colour to an RGB value (0-5)
-    inline std::string xt_grey(int grey) { return "\x1b[38;5;" + RS_Detail::decfmt(RS_Detail::xt_encode_grey(grey)) + 'm'; }                    // Set fg colour to a grey level (1-24)
-    inline std::string xt_grey_bg(int grey) { return "\x1b[48;5;" + RS_Detail::decfmt(RS_Detail::xt_encode_grey(grey)) + 'm'; }                 // Set bg colour to a grey level (1-24)
+    inline std::string xt_move_up(int n) { return "\x1b[" + dec(n) + 'A'; }                                                       // Cursor up n spaces
+    inline std::string xt_move_down(int n) { return "\x1b[" + dec(n) + 'B'; }                                                     // Cursor down n spaces
+    inline std::string xt_move_right(int n) { return "\x1b[" + dec(n) + 'C'; }                                                    // Cursor right n spaces
+    inline std::string xt_move_left(int n) { return "\x1b[" + dec(n) + 'D'; }                                                     // Cursor left n spaces
+    inline std::string xt_colour(int r, int g, int b) { return "\x1b[38;5;" + dec(RS_Detail::xt_encode_rgb(r, g, b)) + 'm'; }     // Set fg colour to an RGB value (0-5)
+    inline std::string xt_colour(Int3 rgb) { return xt_colour(rgb.x(), rgb.y(), rgb.z()); }                                       // Set fg colour to an RGB value (0-5)
+    inline std::string xt_colour_bg(int r, int g, int b) { return "\x1b[48;5;" + dec(RS_Detail::xt_encode_rgb(r, g, b)) + 'm'; }  // Set bg colour to an RGB value (0-5)
+    inline std::string xt_colour_bg(Int3 rgb) { return xt_colour_bg(rgb.x(), rgb.y(), rgb.z()); }                                 // Set fg colour to an RGB value (0-5)
+    inline std::string xt_grey(int grey) { return "\x1b[38;5;" + dec(RS_Detail::xt_encode_grey(grey)) + 'm'; }                    // Set fg colour to a grey level (1-24)
+    inline std::string xt_grey_bg(int grey) { return "\x1b[48;5;" + dec(RS_Detail::xt_encode_grey(grey)) + 'm'; }                 // Set bg colour to a grey level (1-24)
 
     // Progress bar
 

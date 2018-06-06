@@ -2,19 +2,14 @@
 #include "rs-core/unit-test.hpp"
 #include <algorithm>
 #include <array>
-#include <cmath>
-#include <cstddef>
+#include <cstdlib>
 #include <cstring>
-#include <ctime>
-#include <exception>
 #include <functional>
 #include <map>
 #include <memory>
 #include <set>
 #include <sstream>
-#include <stdexcept>
 #include <string>
-#include <system_error>
 #include <tuple>
 #include <type_traits>
 #include <typeinfo>
@@ -37,11 +32,6 @@ using namespace std::literals;
 
 namespace {
 
-    using RS_Detail::decfmt;
-    using RS_Detail::hexfmt;
-
-    Ustring make_str(std::nullptr_t) { return "null"; }
-
     template <typename T>
     Ustring make_str(const T& t) {
         std::ostringstream out;
@@ -51,7 +41,7 @@ namespace {
 
     #define MAKE_STR_FOR_CONTAINER(Con) \
         template <typename T> \
-        Ustring make_str(const std::Con<T>& c) { \
+        Ustring make_str(const Con<T>& c) { \
             if (c.empty()) \
                 return "[]"; \
             std::ostringstream out; \
@@ -63,20 +53,14 @@ namespace {
             return s; \
         }
 
-    MAKE_STR_FOR_CONTAINER(set)
-    MAKE_STR_FOR_CONTAINER(vector)
+    MAKE_STR_FOR_CONTAINER(std::set)
+    MAKE_STR_FOR_CONTAINER(std::vector)
 
     Ustring f1(int n) { return Ustring(size_t(n), '*'); }
     Ustring f1(Ustring s) { return '[' + s + ']'; }
     Ustring f2() { return "Hello"; }
     Ustring f2(Ustring s) { return '[' + s + ']'; }
-    Ustring f2(int x, int y) { return decfmt(x * y); }
-
-    RS_ENUM(FooEnum, int16_t, 1, alpha, bravo, charlie);
-    RS_ENUM_CLASS(BarEnum, int32_t, 1,
-        alpha,
-        bravo,
-        charlie);
+    Ustring f2(int x, int y) { return dec(x * y); }
 
     enum class ZapEnum: uint32_t {
         alpha = 1,
@@ -220,11 +204,7 @@ void test_core_common_preprocessor_macros() {
 
     std::vector<int> iv = {1, 2, 3, 4, 5}, iv2 = {2, 3, 5, 7, 11};
     Strings result, sv = {"Neddie", "Eccles", "Bluebottle"};
-    FooEnum f = {};
-    BarEnum b = {};
     ZapEnum x = {}, y = {}, z = {};
-    std::vector<FooEnum> vf;
-    std::vector<BarEnum> vb;
 
     TRY(std::transform(iv.begin(), iv.end(), overwrite(result), RS_OVERLOAD(f1)));
     TEST_EQUAL_RANGE(result, (Strings{"*", "**", "***", "****", "*****"}));
@@ -241,74 +221,8 @@ void test_core_common_preprocessor_macros() {
         TRY(*out++ = of2(iv[i], iv2[i]));
     TEST_EQUAL_RANGE(result, (Strings{"2", "6", "15", "28", "55"}));
 
-    TEST_TYPE(std::underlying_type_t<FooEnum>, int16_t);
-    TEST_TYPE(std::underlying_type_t<BarEnum>, int32_t);
     TEST_TYPE(std::underlying_type_t<ZapEnum>, uint32_t);
-
-    TEST_EQUAL(sizeof(FooEnum), 2);
-    TEST_EQUAL(sizeof(BarEnum), 4);
     TEST_EQUAL(sizeof(ZapEnum), 4);
-
-    TEST_EQUAL(int(alpha), 1);
-    TEST_EQUAL(int(bravo), 2);
-    TEST_EQUAL(int(charlie), 3);
-
-    TEST_EQUAL(make_str(alpha), "alpha");
-    TEST_EQUAL(make_str(bravo), "bravo");
-    TEST_EQUAL(make_str(charlie), "charlie");
-    TEST_EQUAL(make_str(FooEnum(0)), "0");
-    TEST_EQUAL(make_str(FooEnum(4)), "4");
-    TEST_EQUAL(make_str(FooEnum(99)), "99");
-    TEST_EQUAL(make_str(nullptr), "null");
-
-    TEST(! enum_is_valid(FooEnum(0)));
-    TEST(enum_is_valid(FooEnum(1)));
-    TEST(enum_is_valid(FooEnum(2)));
-    TEST(enum_is_valid(FooEnum(3)));
-    TEST(! enum_is_valid(FooEnum(4)));
-
-    TRY(vf = enum_values<FooEnum>());
-    TEST_EQUAL(vf.size(), 3);
-    TEST_EQUAL(make_str(vf), "[alpha,bravo,charlie]");
-
-    TEST_EQUAL(int(BarEnum::alpha), 1);
-    TEST_EQUAL(int(BarEnum::bravo), 2);
-    TEST_EQUAL(int(BarEnum::charlie), 3);
-
-    TEST_EQUAL(make_str(BarEnum::alpha), "BarEnum::alpha");
-    TEST_EQUAL(make_str(BarEnum::bravo), "BarEnum::bravo");
-    TEST_EQUAL(make_str(BarEnum::charlie), "BarEnum::charlie");
-    TEST_EQUAL(make_str(BarEnum(0)), "0");
-    TEST_EQUAL(make_str(BarEnum(4)), "4");
-    TEST_EQUAL(make_str(BarEnum(99)), "99");
-
-    TEST(! enum_is_valid(BarEnum(0)));
-    TEST(enum_is_valid(BarEnum(1)));
-    TEST(enum_is_valid(BarEnum(2)));
-    TEST(enum_is_valid(BarEnum(3)));
-    TEST(! enum_is_valid(BarEnum(4)));
-
-    TRY(vb = enum_values<BarEnum>());
-    TEST_EQUAL(vb.size(), 3);
-    TEST_EQUAL(make_str(vb), "[BarEnum::alpha,BarEnum::bravo,BarEnum::charlie]");
-
-    TEST(str_to_enum("alpha", f));    TEST_EQUAL(f, alpha);
-    TEST(str_to_enum("bravo", f));    TEST_EQUAL(f, bravo);
-    TEST(str_to_enum("charlie", f));  TEST_EQUAL(f, charlie);
-    TEST(! str_to_enum("delta", f));
-    TEST(str_to_enum("FooEnum::alpha", f));    TEST_EQUAL(f, alpha);
-    TEST(str_to_enum("FooEnum::bravo", f));    TEST_EQUAL(f, bravo);
-    TEST(str_to_enum("FooEnum::charlie", f));  TEST_EQUAL(f, charlie);
-    TEST(! str_to_enum("FooEnum::delta", f));
-
-    TEST(str_to_enum("alpha", b));    TEST_EQUAL(b, BarEnum::alpha);
-    TEST(str_to_enum("bravo", b));    TEST_EQUAL(b, BarEnum::bravo);
-    TEST(str_to_enum("charlie", b));  TEST_EQUAL(b, BarEnum::charlie);
-    TEST(! str_to_enum("delta", b));
-    TEST(str_to_enum("BarEnum::alpha", b));    TEST_EQUAL(b, BarEnum::alpha);
-    TEST(str_to_enum("BarEnum::bravo", b));    TEST_EQUAL(b, BarEnum::bravo);
-    TEST(str_to_enum("BarEnum::charlie", b));  TEST_EQUAL(b, BarEnum::charlie);
-    TEST(! str_to_enum("BarEnum::delta", b));
 
     x = ZapEnum::alpha;
     y = ZapEnum::bravo;
@@ -335,16 +249,6 @@ void test_core_common_preprocessor_macros() {
 }
 
 void test_core_common_integer_types() {
-
-    uint16_t u16_1 = 1;
-    uint8_t u8_2[2];
-
-    std::memcpy(u8_2, &u16_1, 2);
-    TEST_COMPARE(little_endian_target, !=, big_endian_target);
-    TEST_EQUAL(bool(u8_2[0]), little_endian_target);
-    TEST_EQUAL(bool(u8_2[1]), big_endian_target);
-    TEST_EQUAL(native_endian == big_endian, big_endian_target);
-    TEST_EQUAL(native_endian == little_endian, little_endian_target);
 
     uint8_t a8;
     uint16_t a16;
@@ -644,170 +548,6 @@ void test_core_common_type_related_functions() {
 
 }
 
-void test_core_common_version_number() {
-
-    Version v1, v2;
-
-    TEST_EQUAL(v1[0], 0);
-    TEST_EQUAL(v1[1], 0);
-    TEST_EQUAL(v1[2], 0);
-    TEST_EQUAL(v1.major(), 0);
-    TEST_EQUAL(v1.minor(), 0);
-    TEST_EQUAL(v1.patch(), 0);
-    TEST_EQUAL(v1.suffix(), "");
-    TEST_EQUAL(v1.size(), 1);
-    TEST_EQUAL(v1.str(), "0.0");
-    TEST_EQUAL(v1.str(0), "");
-    TEST_EQUAL(v1.str(1), "0");
-    TEST_EQUAL(v1.str(2), "0.0");
-    TEST_EQUAL(v1.str(3), "0.0.0");
-    TEST_EQUAL(v1.str(4), "0.0.0.0");
-    TEST_EQUAL(v1.str(4, '-'), "0-0-0-0");
-    TEST_EQUAL(v1.to32(), 0);
-
-    TRY((v1 = {42}));
-    TEST_EQUAL(v1[0], 42);
-    TEST_EQUAL(v1[1], 0);
-    TEST_EQUAL(v1[2], 0);
-    TEST_EQUAL(v1.major(), 42);
-    TEST_EQUAL(v1.minor(), 0);
-    TEST_EQUAL(v1.patch(), 0);
-    TEST_EQUAL(v1.suffix(), "");
-    TEST_EQUAL(v1.size(), 1);
-    TEST_EQUAL(v1.str(), "42.0");
-    TEST_EQUAL(v1.to32(), 0x2a000000);
-
-    TRY((v1 = {42,"beta"}));
-    TEST_EQUAL(v1[0], 42);
-    TEST_EQUAL(v1[1], 0);
-    TEST_EQUAL(v1[2], 0);
-    TEST_EQUAL(v1.major(), 42);
-    TEST_EQUAL(v1.minor(), 0);
-    TEST_EQUAL(v1.patch(), 0);
-    TEST_EQUAL(v1.suffix(), "beta");
-    TEST_EQUAL(v1.size(), 1);
-    TEST_EQUAL(v1.str(), "42.0beta");
-    TEST_EQUAL(v1.to32(), 0x2a000000);
-
-    TRY((v1 = {1,2,3}));
-    TEST_EQUAL(v1[0], 1);
-    TEST_EQUAL(v1[1], 2);
-    TEST_EQUAL(v1[2], 3);
-    TEST_EQUAL(v1.major(), 1);
-    TEST_EQUAL(v1.minor(), 2);
-    TEST_EQUAL(v1.patch(), 3);
-    TEST_EQUAL(v1.suffix(), "");
-    TEST_EQUAL(v1.size(), 3);
-    TEST_EQUAL(v1.str(), "1.2.3");
-    TEST_EQUAL(v1.str(0), "1.2.3");
-    TEST_EQUAL(v1.str(1), "1.2.3");
-    TEST_EQUAL(v1.str(2), "1.2.3");
-    TEST_EQUAL(v1.str(3), "1.2.3");
-    TEST_EQUAL(v1.str(4), "1.2.3.0");
-    TEST_EQUAL(v1.str(4, '-'), "1-2-3-0");
-    TEST_EQUAL(v1.to32(), 0x01020300);
-
-    TRY((v1 = {1,2,3,"beta"}));
-    TEST_EQUAL(v1[0], 1);
-    TEST_EQUAL(v1[1], 2);
-    TEST_EQUAL(v1[2], 3);
-    TEST_EQUAL(v1.major(), 1);
-    TEST_EQUAL(v1.minor(), 2);
-    TEST_EQUAL(v1.patch(), 3);
-    TEST_EQUAL(v1.suffix(), "beta");
-    TEST_EQUAL(v1.size(), 3);
-    TEST_EQUAL(v1.str(), "1.2.3beta");
-    TEST_EQUAL(v1.str(0), "1.2.3beta");
-    TEST_EQUAL(v1.str(1), "1.2.3beta");
-    TEST_EQUAL(v1.str(2), "1.2.3beta");
-    TEST_EQUAL(v1.str(3), "1.2.3beta");
-    TEST_EQUAL(v1.str(4), "1.2.3.0beta");
-    TEST_EQUAL(v1.to32(), 0x01020300);
-
-    TRY(v1 = Version::from32(0x12345678));
-    TEST_EQUAL(v1[0], 18);
-    TEST_EQUAL(v1[1], 52);
-    TEST_EQUAL(v1[2], 86);
-    TEST_EQUAL(v1[3], 120);
-    TEST_EQUAL(v1.major(), 18);
-    TEST_EQUAL(v1.minor(), 52);
-    TEST_EQUAL(v1.patch(), 86);
-    TEST_EQUAL(v1.suffix(), "");
-    TEST_EQUAL(v1.size(), 4);
-    TEST_EQUAL(v1.str(), "18.52.86.120");
-    TEST_EQUAL(v1.to32(), 0x12345678);
-
-    TRY(v1 = Version(""));
-    TEST_EQUAL(v1[0], 0);
-    TEST_EQUAL(v1[1], 0);
-    TEST_EQUAL(v1[2], 0);
-    TEST_EQUAL(v1.major(), 0);
-    TEST_EQUAL(v1.minor(), 0);
-    TEST_EQUAL(v1.patch(), 0);
-    TEST_EQUAL(v1.suffix(), "");
-    TEST_EQUAL(v1.size(), 1);
-    TEST_EQUAL(v1.str(), "0.0");
-    TEST_EQUAL(v1.to32(), 0);
-
-    TRY(v1 = Version("1.2.3"));
-    TEST_EQUAL(v1[0], 1);
-    TEST_EQUAL(v1[1], 2);
-    TEST_EQUAL(v1[2], 3);
-    TEST_EQUAL(v1.major(), 1);
-    TEST_EQUAL(v1.minor(), 2);
-    TEST_EQUAL(v1.patch(), 3);
-    TEST_EQUAL(v1.suffix(), "");
-    TEST_EQUAL(v1.size(), 3);
-    TEST_EQUAL(v1.str(), "1.2.3");
-    TEST_EQUAL(v1.to32(), 0x01020300);
-
-    TRY(v1 = Version("1.2.3beta"));
-    TEST_EQUAL(v1[0], 1);
-    TEST_EQUAL(v1[1], 2);
-    TEST_EQUAL(v1[2], 3);
-    TEST_EQUAL(v1.major(), 1);
-    TEST_EQUAL(v1.minor(), 2);
-    TEST_EQUAL(v1.patch(), 3);
-    TEST_EQUAL(v1.suffix(), "beta");
-    TEST_EQUAL(v1.size(), 3);
-    TEST_EQUAL(v1.str(), "1.2.3beta");
-    TEST_EQUAL(v1.to32(), 0x01020300);
-
-    TRY(v1 = Version("1.2.3 beta"));
-    TEST_EQUAL(v1[0], 1);
-    TEST_EQUAL(v1[1], 2);
-    TEST_EQUAL(v1[2], 3);
-    TEST_EQUAL(v1.major(), 1);
-    TEST_EQUAL(v1.minor(), 2);
-    TEST_EQUAL(v1.patch(), 3);
-    TEST_EQUAL(v1.suffix(), "");
-    TEST_EQUAL(v1.size(), 3);
-    TEST_EQUAL(v1.str(), "1.2.3");
-    TEST_EQUAL(v1.to32(), 0x01020300);
-
-    TRY(v1 = Version("beta"));
-    TEST_EQUAL(v1[0], 0);
-    TEST_EQUAL(v1[1], 0);
-    TEST_EQUAL(v1[2], 0);
-    TEST_EQUAL(v1.major(), 0);
-    TEST_EQUAL(v1.minor(), 0);
-    TEST_EQUAL(v1.patch(), 0);
-    TEST_EQUAL(v1.size(), 1);
-    TEST_EQUAL(v1.suffix(), "beta");
-    TEST_EQUAL(v1.str(), "0.0beta");
-    TEST_EQUAL(v1.to32(), 0);
-
-    TRY(v1 = Version());            TRY(v2 = Version());           TEST_COMPARE(v1, ==, v2);
-    TRY(v1 = Version());            TRY(v2 = Version("1.2.3"));    TEST_COMPARE(v1, <, v2);
-    TRY(v1 = Version("1.2"));       TRY(v2 = Version("1"));        TEST_COMPARE(v1, >, v2);
-    TRY(v1 = Version("1.2"));       TRY(v2 = Version("1.2"));      TEST_COMPARE(v1, ==, v2);
-    TRY(v1 = Version("1.2"));       TRY(v2 = Version("1.1.1"));    TEST_COMPARE(v1, >, v2);
-    TRY(v1 = Version("1.2"));       TRY(v2 = Version("1.2.1"));    TEST_COMPARE(v1, <, v2);
-    TRY(v1 = Version("1.2"));       TRY(v2 = Version("1.2beta"));  TEST_COMPARE(v1, >, v2);
-    TRY(v1 = Version("1.2alpha"));  TRY(v2 = Version("1.2beta"));  TEST_COMPARE(v1, <, v2);
-
-}
-
 void test_core_common_arithmetic_literals() {
 
     #ifdef __GNUC__
@@ -847,81 +587,81 @@ void test_core_common_arithmetic_literals() {
 
     TRY(pt = 0_pt);
     TEST_EQUAL(pt, 0_pt);
-    TEST_EQUAL(decfmt(pt), "0");
-    TEST_EQUAL(hexfmt(pt, 1), "0");
+    TEST_EQUAL(dec(pt), "0");
+    TEST_EQUAL(hex(pt, 1), "0");
     TRY(pt = 12345_pt);
     TEST_EQUAL(pt, 12345_pt);
-    TEST_EQUAL(decfmt(pt), "12345");
+    TEST_EQUAL(dec(pt), "12345");
     TRY(pt = 0x0_pt);
-    TEST_EQUAL(decfmt(pt), "0");
+    TEST_EQUAL(dec(pt), "0");
     TRY(pt = 0x12345_pt);
-    TEST_EQUAL(hexfmt(pt, 1), "12345");
-    TEST_EQUAL(decfmt(pt), "74565");
+    TEST_EQUAL(hex(pt, 1), "12345");
+    TEST_EQUAL(dec(pt), "74565");
 
     TRY(sz = 0_sz);
     TEST_EQUAL(sz, 0_sz);
-    TEST_EQUAL(decfmt(sz), "0");
-    TEST_EQUAL(hexfmt(sz, 1), "0");
+    TEST_EQUAL(dec(sz), "0");
+    TEST_EQUAL(hex(sz, 1), "0");
     TRY(sz = 12345_sz);
     TEST_EQUAL(sz, 12345_sz);
-    TEST_EQUAL(decfmt(sz), "12345");
+    TEST_EQUAL(dec(sz), "12345");
     TRY(sz = 0x0_sz);
-    TEST_EQUAL(decfmt(sz), "0");
+    TEST_EQUAL(dec(sz), "0");
     TRY(sz = 0x12345_sz);
-    TEST_EQUAL(hexfmt(sz, 1), "12345");
-    TEST_EQUAL(decfmt(sz), "74565");
+    TEST_EQUAL(hex(sz, 1), "12345");
+    TEST_EQUAL(dec(sz), "74565");
 
     if (sizeof(size_t) == 8) {
 
         TRY(pt = 0_pt);
-        TEST_EQUAL(hexfmt(pt), "0000000000000000");
+        TEST_EQUAL(hex(pt), "0000000000000000");
         TRY(pt = 9'223'372'036'854'775'807_pt); // 2^63-1
         TEST_EQUAL(pt, 9'223'372'036'854'775'807_pt);
-        TEST_EQUAL(decfmt(pt), "9223372036854775807");
+        TEST_EQUAL(dec(pt), "9223372036854775807");
         TRY(pt = -9'223'372'036'854'775'807_pt); // -(2^63-1)
         TEST_EQUAL(pt, -9'223'372'036'854'775'807_pt);
-        TEST_EQUAL(decfmt(pt), "-9223372036854775807");
+        TEST_EQUAL(dec(pt), "-9223372036854775807");
         TRY(pt = -9'223'372'036'854'775'808_pt); // -2^63
         TEST_EQUAL(pt, -9'223'372'036'854'775'808_pt);
-        TEST_EQUAL(decfmt(pt), "-9223372036854775808");
+        TEST_EQUAL(dec(pt), "-9223372036854775808");
         TRY(pt = 0x7fffffffffffffff_pt);
-        TEST_EQUAL(hexfmt(pt), "7fffffffffffffff");
-        TEST_EQUAL(decfmt(pt), "9223372036854775807");
+        TEST_EQUAL(hex(pt), "7fffffffffffffff");
+        TEST_EQUAL(dec(pt), "9223372036854775807");
 
         TRY(sz = 0_sz);
-        TEST_EQUAL(hexfmt(sz), "0000000000000000");
+        TEST_EQUAL(hex(sz), "0000000000000000");
         TRY(sz = 18'446'744'073'709'551'615_sz); // 2^64-1
         TEST_EQUAL(sz, 18'446'744'073'709'551'615_sz);
-        TEST_EQUAL(decfmt(sz), "18446744073709551615");
+        TEST_EQUAL(dec(sz), "18446744073709551615");
         TRY(sz = 0xffffffffffffffff_sz);
-        TEST_EQUAL(hexfmt(sz), "ffffffffffffffff");
-        TEST_EQUAL(decfmt(sz), "18446744073709551615");
+        TEST_EQUAL(hex(sz), "ffffffffffffffff");
+        TEST_EQUAL(dec(sz), "18446744073709551615");
 
     } else {
 
         TRY(pt = 0_pt);
-        TEST_EQUAL(hexfmt(pt), "00000000");
+        TEST_EQUAL(hex(pt), "00000000");
         TRY(pt = 2'147'483'647_pt); // 2^31-1
         TEST_EQUAL(pt, 2'147'483'647_pt);
-        TEST_EQUAL(decfmt(pt), "2147483647");
+        TEST_EQUAL(dec(pt), "2147483647");
         TRY(pt = -2'147'483'647_pt); // -(2^31-1)
         TEST_EQUAL(pt, -2'147'483'647_pt);
-        TEST_EQUAL(decfmt(pt), "-2147483647");
+        TEST_EQUAL(dec(pt), "-2147483647");
         TRY(pt = -2'147'483'648_pt); // -2^31
         TEST_EQUAL(pt, -2'147'483'648_pt);
-        TEST_EQUAL(decfmt(pt), "-2147483648");
+        TEST_EQUAL(dec(pt), "-2147483648");
         TRY(pt = 0x7fffffff_pt);
-        TEST_EQUAL(hexfmt(pt), "7fffffff");
-        TEST_EQUAL(decfmt(pt), "2147483647");
+        TEST_EQUAL(hex(pt), "7fffffff");
+        TEST_EQUAL(dec(pt), "2147483647");
 
         TRY(sz = 0_sz);
-        TEST_EQUAL(hexfmt(sz), "00000000");
+        TEST_EQUAL(hex(sz), "00000000");
         TRY(sz = 4'294'967'295_sz); // 2^32-1
         TEST_EQUAL(sz, 4'294'967'295_sz);
-        TEST_EQUAL(decfmt(sz), "4294967295");
+        TEST_EQUAL(dec(sz), "4294967295");
         TRY(sz = 0xffffffff_sz);
-        TEST_EQUAL(hexfmt(sz), "ffffffff");
-        TEST_EQUAL(decfmt(sz), "4294967295");
+        TEST_EQUAL(hex(sz), "ffffffff");
+        TEST_EQUAL(dec(sz), "4294967295");
 
     }
 
@@ -937,36 +677,35 @@ void test_core_common_generic_algorithms() {
     std::vector<int> v1, v2, v3, v4;
     int n = 0;
     char c = 0;
+    char array[] {'H','e','l','l','o'};
+    const char* cp = array;
 
-    s1 = "Hello";
-    TRY(std::copy(s1.begin(), s1.end(), append(s2)));
-    TEST_EQUAL(s2, "Hello");
-    s1 = " world";
-    TRY(std::copy(s1.begin(), s1.end(), append(s2)));
-    TEST_EQUAL(s2, "Hello world");
-    s1 = "Goodbye";
-    TRY(std::copy(s1.begin(), s1.end(), overwrite(s2)));
-    TEST_EQUAL(s2, "Goodbye");
+    auto ar = array_range(array, sizeof(array));
+    TEST_EQUAL(ar.size(), 5);
+    TRY(std::copy(ar.begin(), ar.end(), overwrite(s1)));
+    TEST_EQUAL(s1, "Hello");
 
-    std::set<int> set1, set2;
-    set1 = {1, 2, 3};
-    TRY(std::copy(set1.begin(), set1.end(), append(set2)));
-    TEST_EQUAL(make_str(set2), "[1,2,3]");
-    set1 = {4, 5, 6};
-    TRY(std::copy(set1.begin(), set1.end(), append(set2)));
-    TEST_EQUAL(make_str(set2), "[1,2,3,4,5,6]");
-    set1 = {1, 2, 3};
-    TRY(std::copy(set1.begin(), set1.end(), append(set2)));
-    TEST_EQUAL(make_str(set2), "[1,2,3,4,5,6]");
-    set1 = {7, 8, 9};
-    TRY(std::copy(set1.begin(), set1.end(), overwrite(set2)));
-    TEST_EQUAL(make_str(set2), "[7,8,9]");
+    auto car = array_range(cp, sizeof(array));
+    TEST_EQUAL(car.size(), 5);
+    TRY(std::copy(car.begin(), car.end(), overwrite(s1)));
+    TEST_EQUAL(s1, "Hello");
 
-    s1.clear();
+    int a[5] = {1,2,3,4,5};
+    std::array<int, 5> b = {{6,7,8,9,10}};
 
-    TRY("Hello"s >> append(s1));       TEST_EQUAL(s1, "Hello");
-    TRY("World"s >> append(s1));       TEST_EQUAL(s1, "HelloWorld");
-    TRY("Goodbye"s >> overwrite(s1));  TEST_EQUAL(s1, "Goodbye");
+    auto t = array_to_tuple(a);
+    auto u = array_to_tuple(b);
+
+    TEST_EQUAL(std::get<0>(t), 1);
+    TEST_EQUAL(std::get<1>(t), 2);
+    TEST_EQUAL(std::get<2>(t), 3);
+    TEST_EQUAL(std::get<3>(t), 4);
+    TEST_EQUAL(std::get<4>(t), 5);
+    TEST_EQUAL(std::get<0>(u), 6);
+    TEST_EQUAL(std::get<1>(u), 7);
+    TEST_EQUAL(std::get<2>(u), 8);
+    TEST_EQUAL(std::get<3>(u), 9);
+    TEST_EQUAL(std::get<4>(u), 10);
 
     s1 = "Hello";
 
@@ -978,27 +717,6 @@ void test_core_common_generic_algorithms() {
     TRY(c = at_index(s1, 4, '*'));     TEST_EQUAL(c, 'o');
     TRY(c = at_index(s1, 5, '*'));     TEST_EQUAL(c, '*');
     TRY(c = at_index(s1, npos, '*'));  TEST_EQUAL(c, '*');
-
-    s1 = "";               s2 = "";               TRY(n = compare_3way(s1, s2));                    TEST_EQUAL(n, 0);
-    s1 = "";               s2 = "hello";          TRY(n = compare_3way(s1, s2));                    TEST_EQUAL(n, -1);
-    s1 = "hello";          s2 = "";               TRY(n = compare_3way(s1, s2));                    TEST_EQUAL(n, 1);
-    s1 = "hello";          s2 = "world";          TRY(n = compare_3way(s1, s2));                    TEST_EQUAL(n, -1);
-    s1 = "hello";          s2 = "hello";          TRY(n = compare_3way(s1, s2));                    TEST_EQUAL(n, 0);
-    s1 = "hello";          s2 = "goodbye";        TRY(n = compare_3way(s1, s2));                    TEST_EQUAL(n, 1);
-    s1 = "hello";          s2 = "hello world";    TRY(n = compare_3way(s1, s2));                    TEST_EQUAL(n, -1);
-    s1 = "hello world";    s2 = "hello";          TRY(n = compare_3way(s1, s2));                    TEST_EQUAL(n, 1);
-    s1 = "hello goodbye";  s2 = "hello world";    TRY(n = compare_3way(s1, s2));                    TEST_EQUAL(n, -1);
-    s1 = "hello world";    s2 = "hello goodbye";  TRY(n = compare_3way(s1, s2));                    TEST_EQUAL(n, 1);
-    s1 = "";               s2 = "";               TRY(n = compare_3way(s1, s2, std::greater<>()));  TEST_EQUAL(n, 0);
-    s1 = "";               s2 = "hello";          TRY(n = compare_3way(s1, s2, std::greater<>()));  TEST_EQUAL(n, -1);
-    s1 = "hello";          s2 = "";               TRY(n = compare_3way(s1, s2, std::greater<>()));  TEST_EQUAL(n, 1);
-    s1 = "hello";          s2 = "world";          TRY(n = compare_3way(s1, s2, std::greater<>()));  TEST_EQUAL(n, 1);
-    s1 = "hello";          s2 = "hello";          TRY(n = compare_3way(s1, s2, std::greater<>()));  TEST_EQUAL(n, 0);
-    s1 = "hello";          s2 = "goodbye";        TRY(n = compare_3way(s1, s2, std::greater<>()));  TEST_EQUAL(n, -1);
-    s1 = "hello";          s2 = "hello world";    TRY(n = compare_3way(s1, s2, std::greater<>()));  TEST_EQUAL(n, -1);
-    s1 = "hello world";    s2 = "hello";          TRY(n = compare_3way(s1, s2, std::greater<>()));  TEST_EQUAL(n, 1);
-    s1 = "hello goodbye";  s2 = "hello world";    TRY(n = compare_3way(s1, s2, std::greater<>()));  TEST_EQUAL(n, 1);
-    s1 = "hello world";    s2 = "hello goodbye";  TRY(n = compare_3way(s1, s2, std::greater<>()));  TEST_EQUAL(n, -1);
 
     const auto is_alpha = [] (char c) { return isalpha(c); };
     const auto same_case = [] (char a, char b) { return islower(a) == islower(b) && isupper(a) == isupper(b); };
@@ -1020,7 +738,7 @@ void test_core_common_generic_algorithms() {
     TRY(v1 = concatenate(v2, v3, v4));  TEST_EQUAL(make_str(v1), "[1,2,3,4,5,6,7,8,9]");
 
     auto f1 = [&] { s1 += "Hello"; };
-    auto f2 = [&] (size_t i) { s1 += decfmt(i) + ";"; };
+    auto f2 = [&] (size_t i) { s1 += dec(i) + ";"; };
 
     s1.clear();  TRY(do_n(0, f1));   TEST_EQUAL(s1, "");
     s1.clear();  TRY(do_n(1, f1));   TEST_EQUAL(s1, "Hello");
@@ -1179,73 +897,7 @@ void test_core_common_memory_algorithms() {
 
 }
 
-void test_core_common_range_traits() {
-
-    char array[] {'H','e','l','l','o'};
-
-    TEST_EQUAL(array_count(""), 1);
-    TEST_EQUAL(array_count("Hello"), 6);
-    TEST_EQUAL(array_count(array), 5);
-    TEST_EQUAL(range_count(""s), 0);
-    TEST_EQUAL(range_count("Hello"s), 5);
-    TEST_EQUAL(range_count(""), 1);
-    TEST_EQUAL(range_count("Hello"), 6);
-    TEST(range_empty(""s));
-    TEST(! range_empty("Hello"s));
-
-}
-
-void test_core_common_range_types() {
-
-    char array[] {'H','e','l','l','o'};
-    const char* cp = array;
-    std::string s1, s2;
-
-    auto ar = array_range(array, sizeof(array));
-    TEST_EQUAL(ar.size(), 5);
-    TRY(std::copy(ar.begin(), ar.end(), overwrite(s1)));
-    TEST_EQUAL(s1, "Hello");
-
-    auto car = array_range(cp, sizeof(array));
-    TEST_EQUAL(car.size(), 5);
-    TRY(std::copy(car.begin(), car.end(), overwrite(s1)));
-    TEST_EQUAL(s1, "Hello");
-
-    int a[5] = {1,2,3,4,5};
-    std::array<int, 5> b = {{6,7,8,9,10}};
-
-    auto t = array_to_tuple(a);
-    auto u = array_to_tuple(b);
-
-    TEST_EQUAL(std::get<0>(t), 1);
-    TEST_EQUAL(std::get<1>(t), 2);
-    TEST_EQUAL(std::get<2>(t), 3);
-    TEST_EQUAL(std::get<3>(t), 4);
-    TEST_EQUAL(std::get<4>(t), 5);
-    TEST_EQUAL(std::get<0>(u), 6);
-    TEST_EQUAL(std::get<1>(u), 7);
-    TEST_EQUAL(std::get<2>(u), 8);
-    TEST_EQUAL(std::get<3>(u), 9);
-    TEST_EQUAL(std::get<4>(u), 10);
-
-}
-
 void test_core_common_generic_arithmetic() {
-
-    TEST_EQUAL(clamp(1, 2, 4), 2);
-    TEST_EQUAL(clamp(2, 2, 4), 2);
-    TEST_EQUAL(clamp(3, 2, 4), 3);
-    TEST_EQUAL(clamp(4, 2, 4), 4);
-    TEST_EQUAL(clamp(5, 2, 4), 4);
-    TEST_EQUAL(clamp(1.0, 2, 4), 2);
-    TEST_EQUAL(clamp(1.5, 2, 4), 2);
-    TEST_EQUAL(clamp(2.0, 2, 4), 2);
-    TEST_EQUAL(clamp(2.5, 2, 4), 2.5);
-    TEST_EQUAL(clamp(3.0, 2, 4), 3);
-    TEST_EQUAL(clamp(3.5, 2, 4), 3.5);
-    TEST_EQUAL(clamp(4.0, 2, 4), 4);
-    TEST_EQUAL(clamp(4.5, 2, 4), 4);
-    TEST_EQUAL(clamp(5.0, 2, 4), 4);
 
     int sx, sy, sq, sr;
 
@@ -1474,66 +1126,6 @@ void test_core_common_generic_arithmetic() {
 }
 
 void test_core_common_integer_arithmetic() {
-
-    int8_t s8 = -42;
-    uint8_t u8 = 42;
-    int16_t s16 = -42;
-    uint16_t u16 = 42;
-    int32_t s32 = -42;
-    uint32_t u32 = 42;
-    int64_t s64 = -42;
-    uint64_t u64 = 42;
-
-    TEST_EQUAL(sizeof(as_signed(s8)), 1);
-    TEST_EQUAL(sizeof(as_signed(u8)), 1);
-    TEST_EQUAL(sizeof(as_unsigned(s8)), 1);
-    TEST_EQUAL(sizeof(as_unsigned(u8)), 1);
-    TEST_EQUAL(sizeof(as_signed(s16)), 2);
-    TEST_EQUAL(sizeof(as_signed(u16)), 2);
-    TEST_EQUAL(sizeof(as_unsigned(s16)), 2);
-    TEST_EQUAL(sizeof(as_unsigned(u16)), 2);
-    TEST_EQUAL(sizeof(as_signed(s32)), 4);
-    TEST_EQUAL(sizeof(as_signed(u32)), 4);
-    TEST_EQUAL(sizeof(as_unsigned(s32)), 4);
-    TEST_EQUAL(sizeof(as_unsigned(u32)), 4);
-    TEST_EQUAL(sizeof(as_signed(s64)), 8);
-    TEST_EQUAL(sizeof(as_signed(u64)), 8);
-    TEST_EQUAL(sizeof(as_unsigned(s64)), 8);
-    TEST_EQUAL(sizeof(as_unsigned(u64)), 8);
-
-    TEST(std::is_signed<decltype(as_signed(s8))>::value);
-    TEST(std::is_signed<decltype(as_signed(u8))>::value);
-    TEST(std::is_unsigned<decltype(as_unsigned(s8))>::value);
-    TEST(std::is_unsigned<decltype(as_unsigned(u8))>::value);
-    TEST(std::is_signed<decltype(as_signed(s16))>::value);
-    TEST(std::is_signed<decltype(as_signed(u16))>::value);
-    TEST(std::is_unsigned<decltype(as_unsigned(s16))>::value);
-    TEST(std::is_unsigned<decltype(as_unsigned(u16))>::value);
-    TEST(std::is_signed<decltype(as_signed(s32))>::value);
-    TEST(std::is_signed<decltype(as_signed(u32))>::value);
-    TEST(std::is_unsigned<decltype(as_unsigned(s32))>::value);
-    TEST(std::is_unsigned<decltype(as_unsigned(u32))>::value);
-    TEST(std::is_signed<decltype(as_signed(s64))>::value);
-    TEST(std::is_signed<decltype(as_signed(u64))>::value);
-    TEST(std::is_unsigned<decltype(as_unsigned(s64))>::value);
-    TEST(std::is_unsigned<decltype(as_unsigned(u64))>::value);
-
-    TEST_EQUAL(as_signed(s8), -42);
-    TEST_EQUAL(as_signed(u8), 42);
-    TEST_EQUAL(as_unsigned(s8), 214);
-    TEST_EQUAL(as_unsigned(u8), 42);
-    TEST_EQUAL(as_signed(s16), -42);
-    TEST_EQUAL(as_signed(u16), 42);
-    TEST_EQUAL(as_unsigned(s16), 65494);
-    TEST_EQUAL(as_unsigned(u16), 42);
-    TEST_EQUAL(as_signed(s32), -42);
-    TEST_EQUAL(as_signed(u32), 42);
-    TEST_EQUAL(as_unsigned(s32), 4'294'967'254ul);
-    TEST_EQUAL(as_unsigned(u32), 42);
-    TEST_EQUAL(as_signed(s64), -42);
-    TEST_EQUAL(as_signed(u64), 42);
-    TEST_EQUAL(as_unsigned(s64), 18'446'744'073'709'551'574ull);
-    TEST_EQUAL(as_unsigned(u64), 42);
 
     TEST_EQUAL(binomial(-1, -1), 0);
     TEST_EQUAL(binomial(-1, 0), 0);
@@ -1784,166 +1376,6 @@ void test_core_common_integer_arithmetic() {
 
 }
 
-void test_core_common_bitwise_operations() {
-
-    TEST_EQUAL(ibits(0), 0);
-    TEST_EQUAL(ibits(1), 1);
-    TEST_EQUAL(ibits(2), 1);
-    TEST_EQUAL(ibits(3), 2);
-    TEST_EQUAL(ibits(4), 1);
-    TEST_EQUAL(ibits(5), 2);
-    TEST_EQUAL(ibits(6), 2);
-    TEST_EQUAL(ibits(7), 3);
-    TEST_EQUAL(ibits(8), 1);
-    TEST_EQUAL(ibits(9), 2);
-    TEST_EQUAL(ibits(10), 2);
-    TEST_EQUAL(ibits(0x7fff), 15);
-    TEST_EQUAL(ibits(0x8000), 1);
-    TEST_EQUAL(ibits(0x8888), 4);
-    TEST_EQUAL(ibits(0xffff), 16);
-    TEST_EQUAL(ibits(0x7fffffffffffffffull), 63);
-    TEST_EQUAL(ibits(0x8000000000000000ull), 1);
-    TEST_EQUAL(ibits(0xffffffffffffffffull), 64);
-
-    TEST_EQUAL(ifloor2(0), 0);
-    TEST_EQUAL(ifloor2(1), 1);
-    TEST_EQUAL(ifloor2(2), 2);
-    TEST_EQUAL(ifloor2(3), 2);
-    TEST_EQUAL(ifloor2(4), 4);
-    TEST_EQUAL(ifloor2(5), 4);
-    TEST_EQUAL(ifloor2(6), 4);
-    TEST_EQUAL(ifloor2(7), 4);
-    TEST_EQUAL(ifloor2(8), 8);
-    TEST_EQUAL(ifloor2(9), 8);
-    TEST_EQUAL(ifloor2(10), 8);
-    TEST_EQUAL(ifloor2(0x7ffful), 0x4000ul);
-    TEST_EQUAL(ifloor2(0x8000ul), 0x8000ul);
-    TEST_EQUAL(ifloor2(0x8001ul), 0x8000ul);
-    TEST_EQUAL(ifloor2(0xfffful), 0x8000ul);
-
-    TEST_EQUAL(iceil2(0), 0);
-    TEST_EQUAL(iceil2(1), 1);
-    TEST_EQUAL(iceil2(2), 2);
-    TEST_EQUAL(iceil2(3), 4);
-    TEST_EQUAL(iceil2(4), 4);
-    TEST_EQUAL(iceil2(5), 8);
-    TEST_EQUAL(iceil2(6), 8);
-    TEST_EQUAL(iceil2(7), 8);
-    TEST_EQUAL(iceil2(8), 8);
-    TEST_EQUAL(iceil2(9), 16);
-    TEST_EQUAL(iceil2(10), 16);
-    TEST_EQUAL(iceil2(0x7ffful), 0x8000ul);
-    TEST_EQUAL(iceil2(0x8000ul), 0x8000ul);
-    TEST_EQUAL(iceil2(0x8001ul), 0x10000ul);
-    TEST_EQUAL(iceil2(0xfffful), 0x10000ul);
-
-    TEST(! ispow2(0));
-    TEST(ispow2(1));
-    TEST(ispow2(2));
-    TEST(! ispow2(3));
-    TEST(ispow2(4));
-    TEST(! ispow2(5));
-    TEST(! ispow2(6));
-    TEST(! ispow2(7));
-    TEST(ispow2(8));
-    TEST(! ispow2(9));
-    TEST(! ispow2(10));
-    TEST(! ispow2(0x7fff));
-    TEST(ispow2(0x8000));
-    TEST(! ispow2(0x8001));
-    TEST(! ispow2(0xffff));
-    TEST(! ispow2(0x7fffffffffffffffull));
-    TEST(ispow2(0x8000000000000000ull));
-    TEST(! ispow2(0x8000000000000001ull));
-    TEST(! ispow2(0xffffffffffffffffull));
-
-    TEST_EQUAL(ilog2p1(0), 0);
-    TEST_EQUAL(ilog2p1(1), 1);
-    TEST_EQUAL(ilog2p1(2), 2);
-    TEST_EQUAL(ilog2p1(3), 2);
-    TEST_EQUAL(ilog2p1(4), 3);
-    TEST_EQUAL(ilog2p1(5), 3);
-    TEST_EQUAL(ilog2p1(6), 3);
-    TEST_EQUAL(ilog2p1(7), 3);
-    TEST_EQUAL(ilog2p1(8), 4);
-    TEST_EQUAL(ilog2p1(9), 4);
-    TEST_EQUAL(ilog2p1(10), 4);
-    TEST_EQUAL(ilog2p1(0x7fff), 15);
-    TEST_EQUAL(ilog2p1(0x8000), 16);
-    TEST_EQUAL(ilog2p1(0x8888), 16);
-    TEST_EQUAL(ilog2p1(0xffff), 16);
-    TEST_EQUAL(ilog2p1(0x7fffffffffffffffull), 63);
-    TEST_EQUAL(ilog2p1(0x8000000000000000ull), 64);
-    TEST_EQUAL(ilog2p1(0xffffffffffffffffull), 64);
-
-    TEST_EQUAL(letter_to_mask('A'), 1);
-    TEST_EQUAL(letter_to_mask('B'), 2);
-    TEST_EQUAL(letter_to_mask('C'), 4);
-    TEST_EQUAL(letter_to_mask('Z'), 0x2000000ull);
-    TEST_EQUAL(letter_to_mask('a'), 0x4000000ull);
-    TEST_EQUAL(letter_to_mask('b'), 0x8000000ull);
-    TEST_EQUAL(letter_to_mask('c'), 0x10000000ull);
-    TEST_EQUAL(letter_to_mask('z'), 0x8000000000000ull);
-    TEST_EQUAL(letter_to_mask('~'), 0);
-
-    uint16_t u = 0x1234;
-
-    TEST_EQUAL(rotl(u, 0), 0x1234);    TEST_EQUAL(rotr(u, 0), 0x1234);
-    TEST_EQUAL(rotl(u, 4), 0x2341);    TEST_EQUAL(rotr(u, 4), 0x4123);
-    TEST_EQUAL(rotl(u, 8), 0x3412);    TEST_EQUAL(rotr(u, 8), 0x3412);
-    TEST_EQUAL(rotl(u, 12), 0x4123);   TEST_EQUAL(rotr(u, 12), 0x2341);
-    TEST_EQUAL(rotl(u, 16), 0x1234);   TEST_EQUAL(rotr(u, 16), 0x1234);
-    TEST_EQUAL(rotl(u, 20), 0x2341);   TEST_EQUAL(rotr(u, 20), 0x4123);
-    TEST_EQUAL(rotl(u, 24), 0x3412);   TEST_EQUAL(rotr(u, 24), 0x3412);
-    TEST_EQUAL(rotl(u, 28), 0x4123);   TEST_EQUAL(rotr(u, 28), 0x2341);
-    TEST_EQUAL(rotl(u, 32), 0x1234);   TEST_EQUAL(rotr(u, 32), 0x1234);
-    TEST_EQUAL(rotl(u, -4), 0x4123);   TEST_EQUAL(rotr(u, -4), 0x2341);
-    TEST_EQUAL(rotl(u, -8), 0x3412);   TEST_EQUAL(rotr(u, -8), 0x3412);
-    TEST_EQUAL(rotl(u, -12), 0x2341);  TEST_EQUAL(rotr(u, -12), 0x4123);
-    TEST_EQUAL(rotl(u, -16), 0x1234);  TEST_EQUAL(rotr(u, -16), 0x1234);
-    TEST_EQUAL(rotl(u, -20), 0x4123);  TEST_EQUAL(rotr(u, -20), 0x2341);
-    TEST_EQUAL(rotl(u, -24), 0x3412);  TEST_EQUAL(rotr(u, -24), 0x3412);
-    TEST_EQUAL(rotl(u, -28), 0x2341);  TEST_EQUAL(rotr(u, -28), 0x4123);
-    TEST_EQUAL(rotl(u, -32), 0x1234);  TEST_EQUAL(rotr(u, -32), 0x1234);
-
-    uint32_t v = 0x12345678;
-
-    TEST_EQUAL(rotl(v, 0), 0x12345678);    TEST_EQUAL(rotr(v, 0), 0x12345678);
-    TEST_EQUAL(rotl(v, 4), 0x23456781);    TEST_EQUAL(rotr(v, 4), 0x81234567);
-    TEST_EQUAL(rotl(v, 8), 0x34567812);    TEST_EQUAL(rotr(v, 8), 0x78123456);
-    TEST_EQUAL(rotl(v, 12), 0x45678123);   TEST_EQUAL(rotr(v, 12), 0x67812345);
-    TEST_EQUAL(rotl(v, 16), 0x56781234);   TEST_EQUAL(rotr(v, 16), 0x56781234);
-    TEST_EQUAL(rotl(v, 20), 0x67812345);   TEST_EQUAL(rotr(v, 20), 0x45678123);
-    TEST_EQUAL(rotl(v, 24), 0x78123456);   TEST_EQUAL(rotr(v, 24), 0x34567812);
-    TEST_EQUAL(rotl(v, 28), 0x81234567);   TEST_EQUAL(rotr(v, 28), 0x23456781);
-    TEST_EQUAL(rotl(v, 32), 0x12345678);   TEST_EQUAL(rotr(v, 32), 0x12345678);
-    TEST_EQUAL(rotl(v, 36), 0x23456781);   TEST_EQUAL(rotr(v, 36), 0x81234567);
-    TEST_EQUAL(rotl(v, 40), 0x34567812);   TEST_EQUAL(rotr(v, 40), 0x78123456);
-    TEST_EQUAL(rotl(v, 44), 0x45678123);   TEST_EQUAL(rotr(v, 44), 0x67812345);
-    TEST_EQUAL(rotl(v, 48), 0x56781234);   TEST_EQUAL(rotr(v, 48), 0x56781234);
-    TEST_EQUAL(rotl(v, 52), 0x67812345);   TEST_EQUAL(rotr(v, 52), 0x45678123);
-    TEST_EQUAL(rotl(v, 56), 0x78123456);   TEST_EQUAL(rotr(v, 56), 0x34567812);
-    TEST_EQUAL(rotl(v, 60), 0x81234567);   TEST_EQUAL(rotr(v, 60), 0x23456781);
-    TEST_EQUAL(rotl(v, 64), 0x12345678);   TEST_EQUAL(rotr(v, 64), 0x12345678);
-    TEST_EQUAL(rotl(v, -4), 0x81234567);   TEST_EQUAL(rotr(v, -4), 0x23456781);
-    TEST_EQUAL(rotl(v, -8), 0x78123456);   TEST_EQUAL(rotr(v, -8), 0x34567812);
-    TEST_EQUAL(rotl(v, -12), 0x67812345);  TEST_EQUAL(rotr(v, -12), 0x45678123);
-    TEST_EQUAL(rotl(v, -16), 0x56781234);  TEST_EQUAL(rotr(v, -16), 0x56781234);
-    TEST_EQUAL(rotl(v, -20), 0x45678123);  TEST_EQUAL(rotr(v, -20), 0x67812345);
-    TEST_EQUAL(rotl(v, -24), 0x34567812);  TEST_EQUAL(rotr(v, -24), 0x78123456);
-    TEST_EQUAL(rotl(v, -28), 0x23456781);  TEST_EQUAL(rotr(v, -28), 0x81234567);
-    TEST_EQUAL(rotl(v, -32), 0x12345678);  TEST_EQUAL(rotr(v, -32), 0x12345678);
-    TEST_EQUAL(rotl(v, -36), 0x81234567);  TEST_EQUAL(rotr(v, -36), 0x23456781);
-    TEST_EQUAL(rotl(v, -40), 0x78123456);  TEST_EQUAL(rotr(v, -40), 0x34567812);
-    TEST_EQUAL(rotl(v, -44), 0x67812345);  TEST_EQUAL(rotr(v, -44), 0x45678123);
-    TEST_EQUAL(rotl(v, -48), 0x56781234);  TEST_EQUAL(rotr(v, -48), 0x56781234);
-    TEST_EQUAL(rotl(v, -52), 0x45678123);  TEST_EQUAL(rotr(v, -52), 0x67812345);
-    TEST_EQUAL(rotl(v, -56), 0x34567812);  TEST_EQUAL(rotr(v, -56), 0x78123456);
-    TEST_EQUAL(rotl(v, -60), 0x23456781);  TEST_EQUAL(rotr(v, -60), 0x81234567);
-    TEST_EQUAL(rotl(v, -64), 0x12345678);  TEST_EQUAL(rotr(v, -64), 0x12345678);
-
-}
-
 void test_core_common_function_traits() {
 
     TEST_EQUAL(fa0(), "hello");  TEST_EQUAL(fa1('a'), "a");  TEST_EQUAL(fa2(5, 'z'), "zzzzz");
@@ -2091,7 +1523,7 @@ void test_core_common_hash_functions() {
 
 void test_core_common_scope_guards() {
 
-    int n;
+    int n = 0;
     std::string s;
 
     {
@@ -2172,60 +1604,6 @@ void test_core_common_scope_guards() {
         TEST(r);
         TEST_EQUAL(r.get(), &n);
     }
-
-    n = 0;
-    {
-        n = 1;
-        auto x = scope_exit([&] { n = 2; });
-        TEST_EQUAL(n, 1);
-    }
-    TEST_EQUAL(n, 2);
-
-    n = 0;
-    try {
-        n = 1;
-        auto x = scope_exit([&] { n = 2; });
-        TEST_EQUAL(n, 1);
-        throw std::runtime_error("fail");
-    }
-    catch (...) {}
-    TEST_EQUAL(n, 2);
-
-    n = 0;
-    {
-        n = 1;
-        auto x = scope_success([&] { n = 2; });
-        TEST_EQUAL(n, 1);
-    }
-    TEST_EQUAL(n, 2);
-
-    n = 0;
-    try {
-        n = 1;
-        auto x = scope_success([&] { n = 2; });
-        TEST_EQUAL(n, 1);
-        throw std::runtime_error("fail");
-    }
-    catch (...) {}
-    TEST_EQUAL(n, 1);
-
-    n = 0;
-    {
-        n = 1;
-        auto x = scope_fail([&] { n = 2; });
-        TEST_EQUAL(n, 1);
-    }
-    TEST_EQUAL(n, 1);
-
-    n = 0;
-    try {
-        n = 1;
-        auto x = scope_fail([&] { n = 2; });
-        TEST_EQUAL(n, 1);
-        throw std::runtime_error("fail");
-    }
-    catch (...) {}
-    TEST_EQUAL(n, 2);
 
     s.clear();
     {

@@ -64,7 +64,7 @@ namespace RS {
             inline void clear_error() noexcept { errno = 0; }
             inline int close_socket(SocketType s) noexcept { return ::close(s); }
             inline int get_error() noexcept { return errno; }
-            inline int ioctl_socket(SocketType s, int r, SocketIop* p) noexcept { return ::ioctl(s, r, p); }
+            constexpr auto ioctl_socket = &::ioctl;
 
         }
 

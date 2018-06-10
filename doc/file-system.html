@@ -28,27 +28,34 @@
 <div class="defns">
 <ul>
 <li><code>enum class</code> <strong><code>SystemPath</code></strong><ul>
-<li><code>SystemPath::</code><strong><code>apps</code></strong></li>
-<li><code>SystemPath::</code><strong><code>os</code></strong></li>
+<li><code>SystemPath::</code><strong><code>apps</code></strong> <em>- System-wide application install directory</em></li>
+<li><code>SystemPath::</code><strong><code>os</code></strong> <em>- Base directory for operating system files</em></li>
 </ul>
 </li>
 <li><code>enum class</code> <strong><code>UserPath</code></strong><ul>
-<li><code>UserPath::</code><strong><code>apps</code></strong></li>
-<li><code>UserPath::</code><strong><code>cache</code></strong></li>
-<li><code>UserPath::</code><strong><code>desktop</code></strong></li>
-<li><code>UserPath::</code><strong><code>documents</code></strong></li>
-<li><code>UserPath::</code><strong><code>downloads</code></strong></li>
-<li><code>UserPath::</code><strong><code>home</code></strong></li>
-<li><code>UserPath::</code><strong><code>movies</code></strong></li>
-<li><code>UserPath::</code><strong><code>music</code></strong></li>
-<li><code>UserPath::</code><strong><code>pictures</code></strong></li>
-<li><code>UserPath::</code><strong><code>settings</code></strong></li>
+<li><code>UserPath::</code><strong><code>apps</code></strong> <em>- User-specific application install directory</em></li>
+<li><code>UserPath::</code><strong><code>cache</code></strong> <em>- User-specific local application data cache</em></li>
+<li><code>UserPath::</code><strong><code>desktop</code></strong> <em>- User's desktop</em></li>
+<li><code>UserPath::</code><strong><code>documents</code></strong> <em>- User's documents</em></li>
+<li><code>UserPath::</code><strong><code>downloads</code></strong> <em>- User's downloads</em></li>
+<li><code>UserPath::</code><strong><code>home</code></strong> <em>- User's home directory</em></li>
+<li><code>UserPath::</code><strong><code>movies</code></strong> <em>- User's movies</em></li>
+<li><code>UserPath::</code><strong><code>music</code></strong> <em>- User's music</em></li>
+<li><code>UserPath::</code><strong><code>pictures</code></strong> <em>- User's pictures</em></li>
+<li><code>UserPath::</code><strong><code>settings</code></strong> <em>- User-specific application settings</em></li>
 </ul>
 </li>
 <li><code>static Unicorn::Path</code> <strong><code>std_path</code></strong><code>(SystemPath id)</code></li>
 <li><code>static Unicorn::Path</code> <strong><code>std_path</code></strong><code>(UserPath id)</code></li>
 </ul>
-<p>TODO - throws <code>invalid_argument,system_error</code></p>
+<p>Query some of the standard locations on the host file system. The <code>SystemPath</code>
+enumeration values refer to system-wide standard directories, while the
+<code>UserPath</code> values refer to User-specific directories. These functions will
+throw <code>std::invalid_argument</code> if the argument is not one of the listed
+enumeration values, or <code>std::system_error</code> if anything goes wrong with a
+system API query (which probably means the operating system is incorrectly
+configured, or the user associated with the calling process has been
+incorrectly set up).</p>
 <p>Typical locations on common operating systems:</p>
 <table>
 <thead>
@@ -70,7 +77,7 @@
 </tr>
 <tr>
 <td><code>SystemPath::os</code></td>
-<td>Root directory for operating system files</td>
+<td>Base directory for operating system files</td>
 <td><code>/</code></td>
 <td><code>/</code></td>
 <td><code>C:\Windows</code></td>
@@ -149,82 +156,91 @@
 </table>
 </div>
 <h2 id="search-path">Search path</h2>
-<p>(Unfortunately <code>SearchPath</code> is defined as a macro on Windows.)</p>
+<p>(Unfortunately the name <code>SearchPath</code> is defined as a macro on Windows.)</p>
 <div class="defns">
 <ul>
 <li><code>class</code> <strong><code>PathList</code></strong><code>: public std::vector&lt;Unicorn::Path&gt;</code></li>
 </ul>
-<p>TODO</p>
+<p>A list of directories in which files are expected to be found.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>using PathList::</code><strong><code>flag_type</code></strong> <code>= Unicorn::Path::flag_type</code></li>
+<li><code>using PathList::</code><strong><code>flag_type</code></strong> <code>= [unsigned integer]</code></li>
 </ul>
-<p>TODO</p>
+<p>Member type.</p>
 </div>
 <div class="defns">
 <ul>
 <li><code>static constexpr char PathList::</code><strong><code>delimiter</code></strong> <code>= [':' on Unix, ';' on Windows]</code></li>
 </ul>
-<p>TODO</p>
+<p>The delimiter used to separate directory names in a search path.</p>
 </div>
 <div class="defns">
 <ul>
 <li><code>static constexpr flag_type PathList::</code><strong><code>env</code></strong>      <em>- The string is the name of an environment variable</em></li>
 <li><code>static constexpr flag_type PathList::</code><strong><code>no_dups</code></strong>  <em>- Remove duplicate entries</em></li>
 </ul>
-<p>TODO</p>
+<p>Flags used in search path functions.</p>
 </div>
 <div class="defns">
 <ul>
 <li><code>PathList::</code><strong><code>PathList</code></strong><code>()</code></li>
 <li><code>explicit PathList::</code><strong><code>PathList</code></strong><code>(Uview text, flag_type flags = 0)</code></li>
-</ul>
-<p>TODO - flags <code>env,no_dups</code></p>
-</div>
-<div class="defns">
-<ul>
 <li><code>PathList::</code><strong><code>~PathList</code></strong><code>() noexcept</code></li>
 <li><code>PathList::</code><strong><code>PathList</code></strong><code>(const PathList&amp; pl)</code></li>
 <li><code>PathList::</code><strong><code>PathList</code></strong><code>(PathList&amp;&amp; pl) noexcept</code></li>
 <li><code>PathList&amp; PathList::</code><strong><code>operator=</code></strong><code>(const PathList&amp; pl)</code></li>
 <li><code>PathList&amp; PathList::</code><strong><code>operator=</code></strong><code>(PathList&amp;&amp; pl) noexcept</code></li>
 </ul>
-<p>TODO</p>
+<p>Life cycle functions. The default constructor creates an empty search path.
+The second constructor accepts a string that can be either an explicit list of
+directories, or (if the <code>env</code> flag is set) the name of an environment variable
+from which a search path will be read. If the <code>no_dups</code> flag is set, duplicate
+entries will be removed from the list (this only checks for identical
+directory names; it does not resolve the names to check if different names may
+refer to the same file).</p>
 </div>
 <div class="defns">
 <ul>
 <li><code>bool PathList::</code><strong><code>contains</code></strong><code>(const Unicorn::Path&amp; dir) const noexcept</code></li>
 </ul>
-<p>TODO</p>
+<p>True if the directory is in the search path (this only checks for an exact
+string match on the name).</p>
 </div>
 <div class="defns">
 <ul>
 <li><code>void PathList::</code><strong><code>erase_all</code></strong><code>(const Unicorn::Path&amp; dir)</code></li>
 </ul>
-<p>TODO</p>
+<p>Remove all matching directories.</p>
 </div>
 <div class="defns">
 <ul>
 <li><code>void PathList::</code><strong><code>erase_dups</code></strong><code>()</code></li>
 </ul>
-<p>TODO</p>
+<p>Remove all duplicate entries.</p>
 </div>
 <div class="defns">
 <ul>
 <li><code>Unicorn::Path PathList::</code><strong><code>find</code></strong><code>(Uview name)</code></li>
 <li><code>Unicorn::Path PathList::</code><strong><code>find</code></strong><code>(Uview name, bool case_sensitive)</code></li>
-<li><code>Unicorn::Path PathList::</code><strong><code>find</code></strong><code>(const Regex&amp; pattern)</code></li>
+<li><code>Unicorn::Path PathList::</code><strong><code>find</code></strong><code>(const Unicorn::Regex&amp; pattern)</code></li>
 </ul>
-<p>TODO - throws <code>system_error</code></p>
+<p>Find the first matching file in the search path. Only the immediate children
+of each directory in the path are checked; a target name that contains a
+directory delimiter will never match anything. Search path entries that do not
+exist, or are not directories, are skipped. Case sensitivity follows the
+operating system standard by default. The version that takes a regex performs
+a match against the leaf name only.</p>
 </div>
 <div class="defns">
 <ul>
 <li><code>std::vector&lt;Unicorn::Path&gt; PathList::</code><strong><code>find_all</code></strong><code>(Uview name)</code></li>
 <li><code>std::vector&lt;Unicorn::Path&gt; PathList::</code><strong><code>find_all</code></strong><code>(Uview name, bool case_sensitive)</code></li>
-<li><code>std::vector&lt;Unicorn::Path&gt; PathList::</code><strong><code>find_all</code></strong><code>(const Regex&amp; pattern)</code></li>
+<li><code>std::vector&lt;Unicorn::Path&gt; PathList::</code><strong><code>find_all</code></strong><code>(const Unicorn::Regex&amp; pattern)</code></li>
 </ul>
-<p>TODO - throws <code>system_error</code></p>
+<p>Find all matching files in the search path. Matching rules are the same as
+<code>find()</code>. The returned vector may contain duplicate entries if the search path
+contained duplicate directories.</p>
 </div>
 <div class="defns">
 <ul>
@@ -232,11 +248,11 @@
 <li><code>std::string</code> <strong><code>to_str</code></strong><code>(const PathList&amp; pl)</code></li>
 <li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const PathList&amp; pl)</code></li>
 </ul>
-<p>TODO</p>
+<p>Return the search path as a string, following the conventions of the host OS.</p>
 </div>
 <div class="defns">
 <ul>
 <li><code>static PathList PathList::</code><strong><code>path</code></strong><code>(flag_type flags = 0)</code></li>
 </ul>
-<p>TODO - flags <code>no_dups</code></p></body>
+<p>Equivalent to <code>PathList("PATH")</code>. The <code>no_dups</code> flag has its normal effect.</p></body>
 </html>

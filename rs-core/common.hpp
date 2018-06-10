@@ -54,6 +54,8 @@
     #include <unistd.h>
 #endif
 
+RS_LDLIB(rs-core);
+
 // GNU brain damage
 
 #ifdef __GNUC__

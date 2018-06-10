@@ -32,6 +32,7 @@
     * [`"rs-core/range.hpp"`](range.html) -- Range algorithms
 * _Input/output_
     * [`"rs-core/file.hpp"`](file.html) - File class
+    * [`"rs-core/file-system.hpp"`](file-system.html) - File system information
     * [`"rs-core/io.hpp"`](io.html) - I/O utilities
     * [`"rs-core/net.hpp"`](net.html) - TCP/IP networking
     * [`"rs-core/terminal.hpp"`](terminal.html) - Terminal I/O

@@ -68,6 +68,8 @@ extern void test_core_encoding_base32();
 extern void test_core_encoding_base64();
 extern void test_core_encoding_ascii85();
 extern void test_core_encoding_z85();
+extern void test_core_file_system_standard_directories();
+extern void test_core_file_system_search_path();
 extern void test_core_file_names();
 extern void test_core_file_system_queries();
 extern void test_core_file_system_update();
@@ -412,6 +414,8 @@ int main() {
         { "core/encoding/base64", test_core_encoding_base64 },
         { "core/encoding/ascii85", test_core_encoding_ascii85 },
         { "core/encoding/z85", test_core_encoding_z85 },
+        { "core/file-system/standard-directories", test_core_file_system_standard_directories },
+        { "core/file-system/search-path", test_core_file_system_search_path },
         { "core/file/names", test_core_file_names },
         { "core/file/system-queries", test_core_file_system_queries },
         { "core/file/system-update", test_core_file_system_update },

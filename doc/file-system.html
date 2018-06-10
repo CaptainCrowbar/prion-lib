@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>RS Library: File System Information</title>
+<link type="text/css" rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<h1 id="rs-library-file-system-information"><a href="index.html">RS Library</a>: File System Information</h1>
+<p>By Ross Smith</p>
+<ul>
+<li><code>#include "rs-core/file-system.hpp"</code></li>
+</ul>
+<h2 id="contents">Contents</h2>
+<ul>
+<div class="toc">
+<ul>
+<li><a href="#rs-library-file-system-information">RS Library: File System Information</a><ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#standard-directories">Standard directories</a></li>
+<li><a href="#search-path">Search path</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</ul>
+<h2 id="standard-directories">Standard directories</h2>
+<div class="defns">
+<ul>
+<li><code>enum class</code> <strong><code>SystemPath</code></strong><ul>
+<li><code>SystemPath::</code><strong><code>apps</code></strong></li>
+<li><code>SystemPath::</code><strong><code>os</code></strong></li>
+</ul>
+</li>
+<li><code>enum class</code> <strong><code>UserPath</code></strong><ul>
+<li><code>UserPath::</code><strong><code>apps</code></strong></li>
+<li><code>UserPath::</code><strong><code>cache</code></strong></li>
+<li><code>UserPath::</code><strong><code>desktop</code></strong></li>
+<li><code>UserPath::</code><strong><code>documents</code></strong></li>
+<li><code>UserPath::</code><strong><code>downloads</code></strong></li>
+<li><code>UserPath::</code><strong><code>home</code></strong></li>
+<li><code>UserPath::</code><strong><code>movies</code></strong></li>
+<li><code>UserPath::</code><strong><code>music</code></strong></li>
+<li><code>UserPath::</code><strong><code>pictures</code></strong></li>
+<li><code>UserPath::</code><strong><code>settings</code></strong></li>
+</ul>
+</li>
+<li><code>static Unicorn::Path</code> <strong><code>std_path</code></strong><code>(SystemPath id)</code></li>
+<li><code>static Unicorn::Path</code> <strong><code>std_path</code></strong><code>(UserPath id)</code></li>
+</ul>
+<p>TODO - throws <code>invalid_argument,system_error</code></p>
+<p>Typical locations on common operating systems:</p>
+<table>
+<thead>
+<tr>
+<th>Directory</th>
+<th>Interpretation</th>
+<th>Linux</th>
+<th>Mac</th>
+<th>Windows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SystemPath::apps</code></td>
+<td>System-wide application install directory</td>
+<td><code>/usr/local/bin</code></td>
+<td><code>/Applications</code></td>
+<td><code>C:\Program Files</code></td>
+</tr>
+<tr>
+<td><code>SystemPath::os</code></td>
+<td>Root directory for operating system files</td>
+<td><code>/</code></td>
+<td><code>/</code></td>
+<td><code>C:\Windows</code></td>
+</tr>
+<tr>
+<td><code>UserPath::apps</code></td>
+<td>User-specific application install directory</td>
+<td><code>&lt;home&gt;/bin</code></td>
+<td><code>&lt;home&gt;/Applications</code></td>
+<td><code>&lt;home&gt;\AppData\Local\Programs</code></td>
+</tr>
+<tr>
+<td><code>UserPath::cache</code></td>
+<td>User-specific local application data cache</td>
+<td><code>&lt;home&gt;/.cache</code></td>
+<td><code>&lt;home&gt;/Library/Caches</code></td>
+<td><code>&lt;home&gt;\AppData\Local</code></td>
+</tr>
+<tr>
+<td><code>UserPath::desktop</code></td>
+<td>User's desktop</td>
+<td><code>&lt;home&gt;/Desktop</code></td>
+<td><code>&lt;home&gt;/Desktop</code></td>
+<td><code>&lt;home&gt;\Desktop</code></td>
+</tr>
+<tr>
+<td><code>UserPath::documents</code></td>
+<td>User's documents</td>
+<td><code>&lt;home&gt;/Documents</code></td>
+<td><code>&lt;home&gt;/Documents</code></td>
+<td><code>&lt;home&gt;\Documents</code></td>
+</tr>
+<tr>
+<td><code>UserPath::downloads</code></td>
+<td>User's downloads</td>
+<td><code>&lt;home&gt;/Downloads</code></td>
+<td><code>&lt;home&gt;/Downloads</code></td>
+<td><code>&lt;home&gt;\Downloads</code></td>
+</tr>
+<tr>
+<td><code>UserPath::home</code></td>
+<td>User's home directory</td>
+<td><code>/home/&lt;user&gt;</code></td>
+<td><code>/Users/&lt;user&gt;</code></td>
+<td><code>C:\Users\&lt;user&gt;</code></td>
+</tr>
+<tr>
+<td><code>UserPath::movies</code></td>
+<td>User's movies</td>
+<td><code>&lt;home&gt;/Videos</code></td>
+<td><code>&lt;home&gt;/Movies</code></td>
+<td><code>&lt;home&gt;\Videos</code></td>
+</tr>
+<tr>
+<td><code>UserPath::music</code></td>
+<td>User's music</td>
+<td><code>&lt;home&gt;/Music</code></td>
+<td><code>&lt;home&gt;/Music</code></td>
+<td><code>&lt;home&gt;\Music</code></td>
+</tr>
+<tr>
+<td><code>UserPath::pictures</code></td>
+<td>User's pictures</td>
+<td><code>&lt;home&gt;/Pictures</code></td>
+<td><code>&lt;home&gt;/Pictures</code></td>
+<td><code>&lt;home&gt;\Pictures</code></td>
+</tr>
+<tr>
+<td><code>UserPath::settings</code></td>
+<td>User-specific application settings</td>
+<td><code>&lt;home&gt;/.config</code></td>
+<td><code>&lt;home&gt;/Library/Application Support</code></td>
+<td><code>&lt;home&gt;\AppData\Roaming</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="search-path">Search path</h2>
+<p>(Unfortunately <code>SearchPath</code> is defined as a macro on Windows.)</p>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>PathList</code></strong><code>: public std::vector&lt;Unicorn::Path&gt;</code></li>
+</ul>
+<p>TODO</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>using PathList::</code><strong><code>flag_type</code></strong> <code>= Unicorn::Path::flag_type</code></li>
+</ul>
+<p>TODO</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>static constexpr char PathList::</code><strong><code>delimiter</code></strong> <code>= [':' on Unix, ';' on Windows]</code></li>
+</ul>
+<p>TODO</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>static constexpr flag_type PathList::</code><strong><code>env</code></strong>      <em>- The string is the name of an environment variable</em></li>
+<li><code>static constexpr flag_type PathList::</code><strong><code>no_dups</code></strong>  <em>- Remove duplicate entries</em></li>
+</ul>
+<p>TODO</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>PathList::</code><strong><code>PathList</code></strong><code>()</code></li>
+<li><code>explicit PathList::</code><strong><code>PathList</code></strong><code>(Uview text, flag_type flags = 0)</code></li>
+</ul>
+<p>TODO - flags <code>env,no_dups</code></p>
+</div>
+<div class="defns">
+<ul>
+<li><code>PathList::</code><strong><code>~PathList</code></strong><code>() noexcept</code></li>
+<li><code>PathList::</code><strong><code>PathList</code></strong><code>(const PathList&amp; pl)</code></li>
+<li><code>PathList::</code><strong><code>PathList</code></strong><code>(PathList&amp;&amp; pl) noexcept</code></li>
+<li><code>PathList&amp; PathList::</code><strong><code>operator=</code></strong><code>(const PathList&amp; pl)</code></li>
+<li><code>PathList&amp; PathList::</code><strong><code>operator=</code></strong><code>(PathList&amp;&amp; pl) noexcept</code></li>
+</ul>
+<p>TODO</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool PathList::</code><strong><code>contains</code></strong><code>(const Unicorn::Path&amp; dir) const noexcept</code></li>
+</ul>
+<p>TODO</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void PathList::</code><strong><code>erase_all</code></strong><code>(const Unicorn::Path&amp; dir)</code></li>
+</ul>
+<p>TODO</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void PathList::</code><strong><code>erase_dups</code></strong><code>()</code></li>
+</ul>
+<p>TODO</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Unicorn::Path PathList::</code><strong><code>find</code></strong><code>(Uview name)</code></li>
+<li><code>Unicorn::Path PathList::</code><strong><code>find</code></strong><code>(Uview name, bool case_sensitive)</code></li>
+<li><code>Unicorn::Path PathList::</code><strong><code>find</code></strong><code>(const Regex&amp; pattern)</code></li>
+</ul>
+<p>TODO - throws <code>system_error</code></p>
+</div>
+<div class="defns">
+<ul>
+<li><code>std::vector&lt;Unicorn::Path&gt; PathList::</code><strong><code>find_all</code></strong><code>(Uview name)</code></li>
+<li><code>std::vector&lt;Unicorn::Path&gt; PathList::</code><strong><code>find_all</code></strong><code>(Uview name, bool case_sensitive)</code></li>
+<li><code>std::vector&lt;Unicorn::Path&gt; PathList::</code><strong><code>find_all</code></strong><code>(const Regex&amp; pattern)</code></li>
+</ul>
+<p>TODO - throws <code>system_error</code></p>
+</div>
+<div class="defns">
+<ul>
+<li><code>std::string PathList::</code><strong><code>str</code></strong><code>() const</code></li>
+<li><code>std::string</code> <strong><code>to_str</code></strong><code>(const PathList&amp; pl)</code></li>
+<li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const PathList&amp; pl)</code></li>
+</ul>
+<p>TODO</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>static PathList PathList::</code><strong><code>path</code></strong><code>(flag_type flags = 0)</code></li>
+</ul>
+<p>TODO - flags <code>no_dups</code></p></body>
+</html>

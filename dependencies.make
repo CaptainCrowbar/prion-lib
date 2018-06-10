@@ -20,6 +20,10 @@ $(BUILD)/dso-test.o: rs-core/dso-test.cpp rs-core/common.hpp rs-core/dso.hpp rs-
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/encoding-test.o: rs-core/encoding-test.cpp rs-core/common.hpp rs-core/encoding.hpp rs-core/float.hpp rs-core/meta.hpp rs-core/random.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp \
     /usr/local/include/unicorn/utility.hpp
+$(BUILD)/file-system-test.o: rs-core/file-system-test.cpp rs-core/common.hpp rs-core/file-system.hpp rs-core/unit-test.hpp \
+    /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/path.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/regex.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
+$(BUILD)/file-system.o: rs-core/file-system.cpp rs-core/common.hpp rs-core/file-system.hpp \
+    /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/path.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/regex.hpp /usr/local/include/unicorn/segment.hpp /usr/local/include/unicorn/string.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/file-test.o: rs-core/file-test.cpp rs-core/common.hpp rs-core/file.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/time.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/fixed-binary-test.o: rs-core/fixed-binary-test.cpp rs-core/common.hpp rs-core/fixed-binary.hpp rs-core/float.hpp rs-core/meta.hpp rs-core/random.hpp rs-core/statistics.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp \
@@ -102,6 +106,11 @@ $(BUILD)/vector-test.o: rs-core/vector-test.cpp rs-core/common.hpp rs-core/float
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/zlib-test.o: rs-core/zlib-test.cpp rs-core/common.hpp rs-core/file.hpp rs-core/float.hpp rs-core/io.hpp rs-core/meta.hpp rs-core/random.hpp rs-core/string.hpp rs-core/time.hpp rs-core/unit-test.hpp rs-core/vector.hpp rs-core/zlib.hpp \
     /usr/local/include/unicorn/utility.hpp
+ifeq ($(LIBTAG),msvc)
+    LDLIBS += unicorn.lib zlib.lib pcre2-8.lib
+else
+    LDLIBS += -lunicorn -lz -lpcre2-8
+endif
 ifeq ($(LIBTAG),cygwin)
     LDLIBS += -lcrypto
 endif
@@ -109,5 +118,5 @@ ifeq ($(LIBTAG),linux)
     LDLIBS += -lcrypto
 endif
 ifeq ($(LIBTAG),msvc)
-    LDLIBS += advapi32.lib shell32.lib ws2_32.lib zlib.lib
+    LDLIBS += advapi32.lib ole32.lib shell32.lib ws2_32.lib zlib.lib
 endif

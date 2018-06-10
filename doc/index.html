@@ -49,7 +49,6 @@
 </ul>
 </li>
 <li><em>Input/output</em><ul>
-<li><a href="file.html"><code>"rs-core/file.hpp"</code></a> - File class</li>
 <li><a href="file-system.html"><code>"rs-core/file-system.hpp"</code></a> - File system information</li>
 <li><a href="io.html"><code>"rs-core/io.hpp"</code></a> - I/O utilities</li>
 <li><a href="net.html"><code>"rs-core/net.hpp"</code></a> - TCP/IP networking</li>
@@ -89,20 +88,17 @@
 </ul>
 </li>
 </ul>
-<p>This is a header-only library that contains the utilities that I've found a
-common need for in multiple projects.</p>
+<p>This library contains the utilities that I've found a common need for in
+multiple projects.</p>
 <p>Everything in this library (except 3rd party code) is in <code>namespace RS</code>, and
 can be used either by explicit namespace qualification or via <code>using namespace
 RS</code>.</p>
-<p>Since this library is header-only, it is not necessary to build anything
-before using it with any other library. The makefile included here exists
-mainly to be referenced by inclusion in other projects' makefiles; it can also
-be used to run the library's own unit tests.</p>
+<p>There's a makefile but it's probably not as portable as it should be.</p>
 <p>The library is written in C++14 (more or less); you will need an up-to-date
 C++ compiler. It has been tested with:</p>
 <ul>
 <li>Apple Clang/Xcode 9 on MacOS</li>
-<li>GCC 6 and 7 on Linux and Cygwin</li>
+<li>GCC 7 on Linux and Cygwin</li>
 <li>Microsoft Visual Studio 2017 on Windows</li>
 </ul>
 <p>All test builds are made using a strict diagnostic mode (<code>-Wall -Wextra
@@ -116,10 +112,6 @@ care about. These include:</p>
 <li><code>float</code> and <code>double</code> are IEEE 32 and 64 bit types.</li>
 <li>Symbols from the C library are always in the global namespace.</li>
 </ul>
-<p>On Microsoft Windows builds, including the core header will bring in the whole
-of <code>&lt;windows.h&gt;</code>. This is annoying but unfortunately unavoidable for a library
-that needs to make calls to system APIs while remaining header-only. (Under
-Cygwin, this will only happen if <code>_WIN32</code> is defined.)</p>
 <p>Rebuilding the documentation (<code>make doc</code>) requires Python 3.4+ and the
 <a href="https://pypi.python.org/pypi/Markdown">Markdown module</a>. The scripts expect
 Python 3 to be callable as <code>python3</code>.</p></body>

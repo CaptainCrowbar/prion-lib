@@ -12,7 +12,6 @@
 #include <functional>
 #include <initializer_list>
 #include <iterator>
-#include <limits>
 #include <map>
 #include <random>
 #include <set>
@@ -21,20 +20,10 @@
 #include <utility>
 #include <vector>
 
-#ifdef _XOPEN_SOURCE
-    #include <fcntl.h>
-    #include <unistd.h>
-#else
-    #include <windows.h>
-    #include <wincrypt.h>
-#endif
-
 #ifdef _MSC_VER
     #pragma warning(push)
     #pragma warning(disable: 4723) // potential divide by 0
 #endif
-
-RS_LDLIB(msvc: advapi32);
 
 namespace RS {
 
@@ -287,31 +276,6 @@ namespace RS {
         int lo, hi;
     };
 
-        inline double UniformIntegerProperties::pdf(int x) const noexcept {
-            if (x >= lo && x <= hi)
-                return 1.0 / (hi - lo + 1);
-            else
-                return 0;
-        }
-
-        inline double UniformIntegerProperties::cdf(int x) const noexcept {
-            if (x < lo)
-                return 0;
-            else if (x < hi)
-                return double(x - lo + 1) / (hi - lo + 1);
-            else
-                return 1;
-        }
-
-        inline double UniformIntegerProperties::ccdf(int x) const noexcept {
-            if (x <= lo)
-                return 1;
-            else if (x <= hi)
-                return double(hi - x + 1) / (hi - lo + 1);
-            else
-                return 0;
-        }
-
     class BinomialDistributionProperties {
     public:
         BinomialDistributionProperties(int t, double p) noexcept: tests(t), prob(p) {}
@@ -329,35 +293,6 @@ namespace RS {
         int tests;
         double prob;
     };
-
-        inline double BinomialDistributionProperties::pdf(int x) const noexcept {
-            if (x >= 0 && x <= tests)
-                return xbinomial(tests, x) * std::pow(prob, double(x)) * std::pow(1.0 - prob, double(tests - x));
-            else
-                return 0;
-        }
-
-        inline double BinomialDistributionProperties::cdf(int x) const noexcept {
-            if (x < 0)
-                return 0;
-            else if (x >= tests)
-                return 1;
-            double c = 0;
-            for (int y = 0; y <= x; ++y)
-                c += pdf(y);
-            return c;
-        }
-
-        inline double BinomialDistributionProperties::ccdf(int x) const noexcept {
-            if (x <= 0)
-                return 1;
-            else if (x > tests)
-                return 0;
-            double c = 0;
-            for (int y = tests; y >= x; --y)
-                c += pdf(y);
-            return c;
-        }
 
     class DiceProperties {
     public:
@@ -377,26 +312,6 @@ namespace RS {
         int num = 1, fac = 6;
     };
 
-        inline double DiceProperties::pdf(int x) const noexcept {
-            if (x < num || x > max())
-                return 0;
-            double s = 1, t = 0;
-            for (int i = 0, j = x - 1; i < num; ++i, j -= fac, s = - s)
-                t += s * xbinomial(j, num - 1) * xbinomial(num, i);
-            return t * std::pow(double(fac), - double(num));
-        }
-
-        inline double DiceProperties::ccdf(int x) const noexcept {
-            if (x <= num)
-                return 1;
-            if (x > max())
-                return 0;
-            double s = 1, t = 0;
-            for (int i = 0, j = num * (fac + 1) - x; i < num; ++i, j -= fac, s = - s)
-                t += s * xbinomial(j, num) * xbinomial(num, i);
-            return t * std::pow(double(fac), - double(num));
-        }
-
     class UniformRealProperties {
     public:
         UniformRealProperties() = default;
@@ -414,36 +329,6 @@ namespace RS {
     private:
         double lo = 0, hi = 1;
     };
-
-        inline double UniformRealProperties::sd() const noexcept {
-            static const double inv_sqrt12 = sqrt(1.0 / 12.0);
-            return inv_sqrt12 * (hi - lo);
-        }
-
-        inline double UniformRealProperties::pdf(double x) const noexcept {
-            if (x > lo && x < hi)
-                return 1 / (hi - lo);
-            else
-                return 0;
-        }
-
-        inline double UniformRealProperties::cdf(double x) const noexcept {
-            if (x <= lo)
-                return 0;
-            else if (x < hi)
-                return (x - lo) / (hi - lo);
-            else
-                return 1;
-        }
-
-        inline double UniformRealProperties::ccdf(double x) const noexcept {
-            if (x <= lo)
-                return 1;
-            else if (x < hi)
-                return (hi - x) / (hi - lo);
-            else
-                return 0;
-        }
 
     class NormalDistributionProperties {
     public:
@@ -466,207 +351,151 @@ namespace RS {
         double cquantile_z(double q) const noexcept;
     };
 
-        inline double NormalDistributionProperties::quantile(double p) const noexcept {
-            if (p < 0.5)
-                return xm - xs * cquantile_z(p);
-            else if (p == 0.5)
-                return xm;
-            else
-                return xm + xs * cquantile_z(1 - p);
-        }
+    // Spatial distributions
 
-        inline double NormalDistributionProperties::cquantile(double q) const noexcept {
-            if (q < 0.5)
-                return xm + xs * cquantile_z(q);
-            else if (q == 0.5)
-                return xm;
-            else
-                return xm - xs * cquantile_z(1 - q);
-        }
-
-        inline double NormalDistributionProperties::pdf_z(double z) const noexcept {
-            return inv_sqrt2_d * inv_sqrtpi_d * exp(- z * z / 2);
-        }
-
-        inline double NormalDistributionProperties::cdf_z(double z) const noexcept {
-            return (erf(z / sqrt2_d) + 1) / 2;
-        }
-
-        inline double NormalDistributionProperties::cquantile_z(double q) const noexcept {
-            // Beasley-Springer approximation
-            // For |z|<3.75, absolute error <1e-6, relative error <2.5e-7
-            // For |z|<7.5, absolute error <5e-4, relative error <5e-5
-            // This will always be called with 0<q<1/2
-            static constexpr double threshold = 0.08;
-            static constexpr double a1 = 2.321213;
-            static constexpr double a2 = 4.850141;
-            static constexpr double a3 = -2.297965;
-            static constexpr double a4 = -2.787189;
-            static constexpr double b1 = 1.637068;
-            static constexpr double b2 = 3.543889;
-            static constexpr double c1 = -25.44106;
-            static constexpr double c2 = 41.3912;
-            static constexpr double c3 = -18.615;
-            static constexpr double c4 = 2.506628;
-            static constexpr double d1 = 3.130829;
-            static constexpr double d2 = -21.06224;
-            static constexpr double d3 = 23.08337;
-            static constexpr double d4 = -8.473511;
-            if (q < threshold) {
-                double r = sqrt(- log(q));
-                return (((a1 * r + a2) * r + a3) * r + a4) / ((b1 * r + b2) * r + 1);
-            } else {
-                double q1 = 0.5 - q;
-                double r = q1 * q1;
-                return q1 * (((c1 * r + c2) * r + c3) * r + c4) / ((((d1 * r + d2) * r + d3) * r + d4) * r + 1);
-            }
-        }
-
-        // Spatial distributions
+    template <typename T, size_t N>
+    class RandomVector {
+    public:
+        using result_type = Vector<T, N>;
+        using scalar_type = T;
+        static constexpr size_t dim = N;
+        RandomVector(): vec(T(1)) {}
+        explicit RandomVector(T t): vec(t) {}
+        explicit RandomVector(const Vector<T, N>& v): vec(v) {}
+        template <typename RNG> Vector<T, N> operator()(RNG& rng) const;
+        Vector<T, N> scale() const { return vec; }
+    private:
+        result_type vec;
+    };
 
         template <typename T, size_t N>
-        class RandomVector {
-        public:
-            using result_type = Vector<T, N>;
-            using scalar_type = T;
-            static constexpr size_t dim = N;
-            RandomVector(): vec(T(1)) {}
-            explicit RandomVector(T t): vec(t) {}
-            explicit RandomVector(const Vector<T, N>& v): vec(v) {}
-            template <typename RNG> Vector<T, N> operator()(RNG& rng) const;
-            Vector<T, N> scale() const { return vec; }
-        private:
-            result_type vec;
-        };
+        template <typename RNG>
+        Vector<T, N> RandomVector<T, N>::operator()(RNG& rng) const {
+            Vector<T, N> v;
+            for (size_t i = 0; i < N; ++i)
+                v[i] = random_real(rng, T(0), vec[i]);
+            return v;
+        }
 
-            template <typename T, size_t N>
-            template <typename RNG>
-            Vector<T, N> RandomVector<T, N>::operator()(RNG& rng) const {
+    template <typename T, size_t N>
+    class SymmetricRandomVector {
+    public:
+        using result_type = Vector<T, N>;
+        using scalar_type = T;
+        static constexpr size_t dim = N;
+        SymmetricRandomVector(): vec(T(1)) {}
+        explicit SymmetricRandomVector(T t): vec(t) {}
+        explicit SymmetricRandomVector(const Vector<T, N>& v): vec(v) {}
+        template <typename RNG> Vector<T, N> operator()(RNG& rng) const;
+        Vector<T, N> scale() const { return vec; }
+    private:
+        result_type vec;
+    };
+
+        template <typename T, size_t N>
+        template <typename RNG>
+        Vector<T, N> SymmetricRandomVector<T, N>::operator()(RNG& rng) const {
+            Vector<T, N> v;
+            for (size_t i = 0; i < N; ++i)
+                v[i] = random_real(rng, - vec[i], vec[i]);
+            return v;
+        }
+
+    namespace RS_Detail {
+
+        template <typename T, size_t N>
+        struct RandomInSphere {
+            template <typename RNG> Vector<T, N> generate(RNG& rng) const {
                 Vector<T, N> v;
-                for (size_t i = 0; i < N; ++i)
-                    v[i] = random_real(rng, T(0), vec[i]);
+                do std::generate(v.begin(), v.end(), [&] { return random_real<T>(rng, -1, 1); });
+                    while (v.r2() > T(1));
                 return v;
             }
-
-        template <typename T, size_t N>
-        class SymmetricRandomVector {
-        public:
-            using result_type = Vector<T, N>;
-            using scalar_type = T;
-            static constexpr size_t dim = N;
-            SymmetricRandomVector(): vec(T(1)) {}
-            explicit SymmetricRandomVector(T t): vec(t) {}
-            explicit SymmetricRandomVector(const Vector<T, N>& v): vec(v) {}
-            template <typename RNG> Vector<T, N> operator()(RNG& rng) const;
-            Vector<T, N> scale() const { return vec; }
-        private:
-            result_type vec;
         };
 
-            template <typename T, size_t N>
-            template <typename RNG>
-            Vector<T, N> SymmetricRandomVector<T, N>::operator()(RNG& rng) const {
-                Vector<T, N> v;
-                for (size_t i = 0; i < N; ++i)
-                    v[i] = random_real(rng, - vec[i], vec[i]);
+        template <typename T>
+        struct RandomInSphere<T, 2> {
+            template <typename RNG> Vector<T, 2> generate(RNG& rng) const {
+                using std::sin;
+                using std::cos;
+                Vector<T, 2> v;
+                do {
+                    T phi = random_real<T>(rng, 0, 2 * pi_c<T>);
+                    T r = random_real<T>(rng) + random_real<T>(rng);
+                    if (r > T(1))
+                        r = T(2) - r;
+                    v = {r * cos(phi), r * sin(phi)};
+                } while (v.r2() > T(1));
                 return v;
             }
-
-        namespace RS_Detail {
-
-            template <typename T, size_t N>
-            struct RandomInSphere {
-                template <typename RNG> Vector<T, N> generate(RNG& rng) const {
-                    Vector<T, N> v;
-                    do std::generate(v.begin(), v.end(), [&] { return random_real<T>(rng, -1, 1); });
-                        while (v.r2() > T(1));
-                    return v;
-                }
-            };
-
-            template <typename T>
-            struct RandomInSphere<T, 2> {
-                template <typename RNG> Vector<T, 2> generate(RNG& rng) const {
-                    using std::sin;
-                    using std::cos;
-                    Vector<T, 2> v;
-                    do {
-                        T phi = random_real<T>(rng, 0, 2 * pi_c<T>);
-                        T r = random_real<T>(rng) + random_real<T>(rng);
-                        if (r > T(1))
-                            r = T(2) - r;
-                        v = {r * cos(phi), r * sin(phi)};
-                    } while (v.r2() > T(1));
-                    return v;
-                }
-            };
-
-            template <typename T, size_t N>
-            struct RandomOnSphere {
-                template <typename RNG> Vector<T, N> generate(RNG& rng) const {
-                    Vector<T, N> v;
-                    do v = RandomInSphere<T, N>().generate(rng);
-                        while (v == Vector<T, N>());
-                    return v.dir();
-                }
-            };
-
-            template <typename T>
-            struct RandomOnSphere<T, 2> {
-                template <typename RNG> Vector<T, 2> generate(RNG& rng) const {
-                    using std::cos;
-                    using std::sin;
-                    T phi = random_real<T>(rng, 0, 2 * pi_c<T>);
-                    return Vector<T, 2>(cos(phi), sin(phi));
-                }
-            };
-
-            template <typename T>
-            struct RandomOnSphere<T, 3> {
-                template <typename RNG> Vector<T, 3> generate(RNG& rng) const {
-                    using std::cos;
-                    using std::sin;
-                    using std::sqrt;
-                    T phi = random_real<T>(rng, 0, 2 * pi_c<T>);
-                    T z = random_real<T>(rng, -1, 1);
-                    T r = sqrt(T(1) - z * z);
-                    T x = r * cos(phi);
-                    T y = r * sin(phi);
-                    return {x, y, z};
-                }
-            };
-
-        }
-
-        template <typename T, size_t N>
-        class RandomInSphere:
-        private RS_Detail::RandomInSphere<T, N> {
-        public:
-            using result_type = Vector<T, N>;
-            using scalar_type = T;
-            static constexpr size_t dim = N;
-            RandomInSphere(): rad{T(1)} {}
-            explicit RandomInSphere(T r): rad{std::fabs(r)} {}
-            template <typename RNG> Vector<T, N> operator()(RNG& rng) const { return rad * this->generate(rng); }
-            T radius() const noexcept { return rad; }
-        private:
-            T rad;
         };
 
         template <typename T, size_t N>
-        class RandomOnSphere:
-        private RS_Detail::RandomOnSphere<T, N> {
-        public:
-            using result_type = Vector<T, N>;
-            using scalar_type = T;
-            static constexpr size_t dim = N;
-            RandomOnSphere(): rad{T(1)} {}
-            explicit RandomOnSphere(T r): rad{std::fabs(r)} {}
-            template <typename RNG> Vector<T, N> operator()(RNG& rng) const { return rad * this->generate(rng); }
-            T radius() const noexcept { return rad; }
-        private:
-            T rad;
+        struct RandomOnSphere {
+            template <typename RNG> Vector<T, N> generate(RNG& rng) const {
+                Vector<T, N> v;
+                do v = RandomInSphere<T, N>().generate(rng);
+                    while (v == Vector<T, N>());
+                return v.dir();
+            }
         };
+
+        template <typename T>
+        struct RandomOnSphere<T, 2> {
+            template <typename RNG> Vector<T, 2> generate(RNG& rng) const {
+                using std::cos;
+                using std::sin;
+                T phi = random_real<T>(rng, 0, 2 * pi_c<T>);
+                return Vector<T, 2>(cos(phi), sin(phi));
+            }
+        };
+
+        template <typename T>
+        struct RandomOnSphere<T, 3> {
+            template <typename RNG> Vector<T, 3> generate(RNG& rng) const {
+                using std::cos;
+                using std::sin;
+                using std::sqrt;
+                T phi = random_real<T>(rng, 0, 2 * pi_c<T>);
+                T z = random_real<T>(rng, -1, 1);
+                T r = sqrt(T(1) - z * z);
+                T x = r * cos(phi);
+                T y = r * sin(phi);
+                return {x, y, z};
+            }
+        };
+
+    }
+
+    template <typename T, size_t N>
+    class RandomInSphere:
+    private RS_Detail::RandomInSphere<T, N> {
+    public:
+        using result_type = Vector<T, N>;
+        using scalar_type = T;
+        static constexpr size_t dim = N;
+        RandomInSphere(): rad{T(1)} {}
+        explicit RandomInSphere(T r): rad{std::fabs(r)} {}
+        template <typename RNG> Vector<T, N> operator()(RNG& rng) const { return rad * this->generate(rng); }
+        T radius() const noexcept { return rad; }
+    private:
+        T rad;
+    };
+
+    template <typename T, size_t N>
+    class RandomOnSphere:
+    private RS_Detail::RandomOnSphere<T, N> {
+    public:
+        using result_type = Vector<T, N>;
+        using scalar_type = T;
+        static constexpr size_t dim = N;
+        RandomOnSphere(): rad{T(1)} {}
+        explicit RandomOnSphere(T r): rad{std::fabs(r)} {}
+        template <typename RNG> Vector<T, N> operator()(RNG& rng) const { return rad * this->generate(rng); }
+        T radius() const noexcept { return rad; }
+    private:
+        T rad;
+    };
 
     // Unique distribution
 
@@ -835,51 +664,7 @@ namespace RS {
 
     // Text generators
 
-    namespace RS_Detail {
-
-        struct LoremGenerator {
-            void operator()(Xoroshiro& rng, Ustring& dst, size_t bytes, bool paras) const {
-                static constexpr const char* classic[] = {
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
-                    "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ",
-                    "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ",
-                    "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ",
-                };
-                static constexpr size_t n_lines = sizeof(classic) / sizeof(classic[0]);
-                if (bytes == 0)
-                    return;
-                dst.reserve(bytes + 20);
-                for (size_t i = 0; i < n_lines && dst.size() <= bytes; ++i)
-                    dst += classic[i];
-                if (paras)
-                    dst.replace(dst.size() - 1, 1, "\n\n");
-                while (dst.size() <= bytes) {
-                    size_t n_para = paras ? rng() % 7 + 1 : npos;
-                    for (size_t i = 0; i < n_para && dst.size() <= bytes; ++i)
-                        dst += classic[rng() % n_lines];
-                    if (paras)
-                        dst.replace(dst.size() - 1, 1, "\n\n");
-                }
-                size_t cut = dst.find_first_of("\n .,", bytes);
-                if (cut != npos)
-                    dst.resize(cut);
-                while (! ascii_isalpha(dst.back()))
-                    dst.pop_back();
-                dst += '.';
-                if (paras)
-                    dst += '\n';
-            }
-        };
-
-    }
-
-    inline Ustring lorem_ipsum(uint64_t seed, size_t bytes, bool paras = true) {
-        RS_Detail::LoremGenerator gen;
-        Xoroshiro rng(seed, 0x05b6b84c03ae03d2ull);
-        Ustring text;
-        gen(rng, text, bytes, paras);
-        return text;
-    }
+    Ustring lorem_ipsum(uint64_t seed, size_t bytes, bool paras = true);
 
 }
 

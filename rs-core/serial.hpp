@@ -3,27 +3,22 @@
 #include "rs-core/blob.hpp"
 #include "rs-core/channel.hpp"
 #include "rs-core/common.hpp"
-#include "rs-core/encoding.hpp"
-#include "rs-core/file-system.hpp"
 #include "rs-core/ipc.hpp"
 #include "rs-core/mp-integer.hpp"
 #include "rs-core/optional.hpp"
 #include "rs-core/rational.hpp"
-#include "rs-core/string.hpp"
 #include "rs-core/time.hpp"
 #include "rs-core/uuid.hpp"
 #include "rs-core/vector.hpp"
 #include "unicorn/path.hpp"
 #include <algorithm>
 #include <chrono>
-#include <cstring>
 #include <exception>
 #include <future>
 #include <memory>
 #include <mutex>
 #include <new>
 #include <stdexcept>
-#include <string>
 #include <vector>
 #include <nlohmann/json.hpp>
 
@@ -36,18 +31,8 @@ namespace RS {
 
     // Serialization for core library types
 
-    inline void to_json(json& j, const Blob& x) {
-        Ustring s;
-        Base64Encoding().encode_bytes(x.data(), x.size(), s);
-        j = s;
-    }
-
-    inline void from_json(const json& j, Blob& x) {
-        std::string dec, enc = j;
-        Base64Encoding().decode(enc, dec);
-        x.reset(dec.size());
-        std::memcpy(x.data(), dec.data(), dec.size());
-    }
+    void to_json(json& j, const Blob& x);
+    void from_json(const json& j, Blob& x);
 
     template <typename T, ByteOrder B> void to_json(json& j, const Endian<T, B>& x) { j = x.get(); }
     template <typename T, ByteOrder B> void from_json(const json& j, Endian<T, B>& x) { x = j.get<T>(); }
@@ -149,49 +134,6 @@ namespace RS {
         void save_state(bool always);
     };
 
-        inline PersistState::PersistState(const Ustring& id) {
-            Strings breakdown = splitv(id, "/");
-            if (breakdown.empty())
-                throw std::invalid_argument("Invalid persistent storage key: " + quote(id));
-            for (auto& item: breakdown)
-                if (item.empty() || item.size() > 100 || ! uvalid(item)
-                        || std::find_if(item.begin(), item.end(), ascii_iscntrl) != item.end()
-                        || item.find_first_of("\"*/:<>?[\\]|") != npos
-                        || std::find_if(item.begin(), item.end(), [] (char c) { return ascii_isalnum(c) || uint8_t(c) > 127; }) == item.end()
-                        || item.front() == ' ' || item.front() == '.' || item.back() == ' ' || item.back() == '.')
-                    throw std::invalid_argument("Invalid persistent storage key: " + quote(id));
-            state_id = id;
-            global_mutex = std::make_unique<NamedMutex>(id);
-            load();
-        }
-
-        inline PersistState::~PersistState() noexcept {
-            try {
-                autosave_off();
-                save_state(false);
-            }
-            catch (...) {}
-        }
-
-        inline void PersistState::load() {
-            auto local_lock = make_lock(local_mutex);
-            auto global_lock = make_lock(*global_mutex);
-            Unicorn::Path archive = archive_name();
-            Unicorn::Path old_archive = archive_name("old");
-            if (! archive.exists() && old_archive.exists())
-                old_archive.move_to(archive);
-            json j = json::object();
-            Ustring content;
-            archive.load(content, npos, Unicorn::Path::may_fail);
-            if (! content.empty())
-                j = json::parse(content);
-            if (j.is_object())
-                state_table = j;
-            else
-                state_table = json::object();
-            change_flag = false;
-        }
-
         template <typename R, typename P>
         void PersistState::autosave(std::chrono::duration<R, P> t) {
             using namespace std::chrono;
@@ -201,94 +143,6 @@ namespace RS {
                 autosave_channel = std::make_unique<TimerChannel>(t);
                 autosave_thread = std::async(std::launch::async, [this] { autosave_loop(); });
             }
-        }
-
-        inline void PersistState::autosave_off() {
-            auto local_lock = make_lock(local_mutex);
-            clear_autosave();
-        }
-
-        inline void PersistState::create(const Ustring& key, const json& value) {
-            auto local_lock = make_lock(local_mutex);
-            if (state_table.find(key) == state_table.end())
-                state_table[key] = value;
-            change_flag = true;
-        }
-
-        inline bool PersistState::read(const Ustring& key, json& value) {
-            auto local_lock = make_lock(local_mutex);
-            auto it = state_table.find(key);
-            if (it == state_table.end())
-                return false;
-            value = it.value();
-            return true;
-        }
-
-        inline void PersistState::update(const Ustring& key, const json& value) {
-            auto local_lock = make_lock(local_mutex);
-            state_table[key] = value;
-            change_flag = true;
-        }
-
-        inline void PersistState::erase(const Ustring& key) {
-            auto local_lock = make_lock(local_mutex);
-            state_table.erase(key);
-            change_flag = true;
-        }
-
-        inline Unicorn::Path PersistState::archive_name(const Ustring& tag) const {
-            auto path = state_id;
-            if (! tag.empty())
-                path += '.' + tag;
-            path += ".settings";
-            return std_path(UserPath::settings) / path;
-        }
-
-        inline void PersistState::autosave_loop() {
-            for (;;) {
-                autosave_channel->wait();
-                if (autosave_channel->is_closed())
-                    break;
-                save_state(false);
-            }
-        }
-
-        inline void PersistState::clear_autosave() {
-            if (autosave_channel) {
-                autosave_channel->close();
-                auto cleanup = scope_exit([&] {
-                    autosave_channel.reset();
-                    autosave_thread = {};
-                });
-                autosave_thread.wait();
-            }
-        }
-
-        inline void PersistState::save_state(bool always) {
-            auto local_lock = make_lock(local_mutex);
-            if (! always && ! change_flag)
-                return;
-            auto global_lock = make_lock(*global_mutex);
-            Unicorn::Path archive = archive_name();
-            Ustring content = state_table.dump(4) + '\n';
-            if (archive.exists()) {
-                Unicorn::Path new_archive = archive_name("new");
-                Unicorn::Path old_archive = archive_name("old");
-                new_archive.remove();
-                old_archive.remove();
-                auto cleanup = scope_exit([&] {
-                    new_archive.remove();
-                    old_archive.remove();
-                });
-                new_archive.save(content);
-                archive.move_to(old_archive);
-                auto rollback = scope_fail([&] { old_archive.move_to(archive); });
-                new_archive.move_to(archive);
-            } else {
-                archive.split_path().first.make_directory(Unicorn::Path::recurse);
-                archive.save(content);
-            }
-            change_flag = false;
         }
 
     // Persistent data wrapper

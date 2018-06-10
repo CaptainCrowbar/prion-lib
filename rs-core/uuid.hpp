@@ -3,9 +3,7 @@
 #include "rs-core/common.hpp"
 #include "rs-core/digest.hpp"
 #include "rs-core/random.hpp"
-#include <algorithm>
 #include <ostream>
-#include <stdexcept>
 
 namespace RS {
 
@@ -36,55 +34,6 @@ namespace RS {
         static bool is_alnum(char c) noexcept { return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'); }
         static bool is_xdigit(char c) noexcept { return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f'); }
     };
-
-    inline Uuid::Uuid(const void* ptr, size_t n) noexcept {
-        if (! ptr)
-            n = 0;
-        if (n > 16)
-            n = 16;
-        if (ptr && n)
-            memcpy(bytes, ptr, n);
-        if (n < 16)
-            memset(bytes + n, 0, 16 - n);
-    }
-
-    inline Uuid::Uuid(Uview s) {
-        auto i = s.begin(), end_s = s.end();
-        auto j = begin(), end_u = end();
-        int rc = 0;
-        while (i != end_s && j != end_u && rc != -1) {
-            i = std::find_if(i, end_s, is_xdigit);
-            if (i == end_s)
-                break;
-            rc = RS_Detail::decode_hex_byte(i, end_s);
-            if (rc == -1)
-                break;
-            *j++ = uint8_t(rc);
-        }
-        if (rc == -1 || j != end_u || std::find_if(i, end_s, is_alnum) != end_s)
-            throw std::invalid_argument("Invalid UUID: " + Ustring(s));
-    }
-
-    inline Ustring Uuid::str() const {
-        Ustring s;
-        s.reserve(36);
-        int i = 0;
-        for (; i < 4; ++i)
-            RS_Detail::append_hex_byte(bytes[i], s);
-        s += '-';
-        for (; i < 6; ++i)
-            RS_Detail::append_hex_byte(bytes[i], s);
-        s += '-';
-        for (; i < 8; ++i)
-            RS_Detail::append_hex_byte(bytes[i], s);
-        s += '-';
-        for (; i < 10; ++i)
-            RS_Detail::append_hex_byte(bytes[i], s);
-        s += '-';
-        for (; i < 16; ++i)
-            RS_Detail::append_hex_byte(bytes[i], s);
-        return s;
-    }
 
     inline std::ostream& operator<<(std::ostream& o, const Uuid& u) { return o << u.str(); }
     inline Ustring to_str(const Uuid& u) { return u.str(); }

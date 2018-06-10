@@ -45,7 +45,7 @@ Flags passed to the constructor and related functions, controlling the way the
 library is loaded. Flags not relevant to the target system are set to zero.
 
 * `Dso::`**`Dso`**`() noexcept`
-* `explicit Dso::`**`Dso`**`(const File& file, flag_type flags = 0)`
+* `explicit Dso::`**`Dso`**`(const Unicorn::Path& file, flag_type flags = 0)`
 * `Dso::`**`~Dso`**`() noexcept`
 * `Dso::`**`Dso`**`(Dso&&) noexcept`
 * `Dso& Dso::`**`operator=`**`(Dso&&) noexcept`
@@ -74,7 +74,7 @@ default constructed and moved from objects).
 Returns the native operating system handle on the library. This will be null
 if `bool(*this)` is false.
 
-* `File Dso::`**`file`**`() const`
+* `Unicorn::Path Dso::`**`file`**`() const`
 
 Returns the file name (as supplied to the constructor; this does not attempt
 to determine the actual absolute path to the loaded library).

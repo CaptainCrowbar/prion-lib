@@ -39,7 +39,6 @@ Specializations of `to_json()` and `from_json()` are provided for:
 * [`Blob`](blob.html)
 * [`CompactArray<T,N>`](compact-array.html)
 * [`Endian<T,B>`](common.html)
-* [`File`](file.html)
 * [`Int`](mp-integer.html)
 * [`Matrix<T,N,L>`](vector.html)
 * [`Nat`](mp-integer.html)
@@ -57,7 +56,7 @@ Specializations of `to_json()` and `from_json()` are provided for:
     * `template <typename... Args> explicit PersistState::`**`PersistState`**`(Args... id)`
     * `PersistState::`**`~PersistState`**`() noexcept`
     * `Ustring PersistState::`**`id`**`() const`
-    * `File PersistState::`**`file`**`() const`
+    * `Unicorn::Path PersistState::`**`file`**`() const`
     * `void PersistState::`**`load`**`()`
     * `void PersistState::`**`save`**`()`
     * `template <typename R, typename P> void PersistState::`**`autosave`**`(std::chrono::duration<R, P> t)`

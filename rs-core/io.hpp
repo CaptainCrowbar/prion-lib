@@ -1,8 +1,8 @@
 #pragma once
 
 #include "rs-core/common.hpp"
-#include "rs-core/file.hpp"
 #include "rs-core/string.hpp"
+#include "unicorn/path.hpp"
 #include <algorithm>
 #include <cerrno>
 #include <cstdio>
@@ -190,8 +190,8 @@ namespace RS {
         using handle_type = FILE*;
         Cstdio() = default;
         explicit Cstdio(FILE* f, bool owner = true) noexcept;
-        explicit Cstdio(const File& f, mode m = mode::read_only);
-        Cstdio(const File& f, const Ustring& iomode);
+        explicit Cstdio(const Unicorn::Path& f, mode m = mode::read_only);
+        Cstdio(const Unicorn::Path& f, const Ustring& iomode);
         virtual void close() noexcept override;
         virtual void flush() noexcept override;
         virtual int getc() noexcept override;
@@ -222,7 +222,7 @@ namespace RS {
                 fp = {f, [] (FILE*) {}};
         }
 
-        inline Cstdio::Cstdio(const File& f, mode m) {
+        inline Cstdio::Cstdio(const Unicorn::Path& f, mode m) {
             if (f.empty() || f.name() == "-") {
                 if (m == mode::read_only) {
                     *this = std_input();
@@ -256,15 +256,14 @@ namespace RS {
             }
         }
 
-        inline Cstdio::Cstdio(const File& f, const Ustring& iomode) {
+        inline Cstdio::Cstdio(const Unicorn::Path& f, const Ustring& iomode) {
             #ifdef _XOPEN_SOURCE
                 errno = 0;
                 auto rc = ::fopen(f.c_name(), iomode.data());
             #else
-                auto wfile = f.native();
                 auto wmode = uconv<std::wstring>(iomode);
                 errno = 0;
-                auto rc = _wfopen(wfile.data(), wmode.data());
+                auto rc = _wfopen(f.c_name(), wmode.data());
             #endif
             int err = errno;
             *this = Cstdio(rc);
@@ -376,8 +375,8 @@ namespace RS {
         using handle_type = int;
         Fdio() = default;
         explicit Fdio(int f, bool owner = true) noexcept;
-        explicit Fdio(const File& f, mode m = mode::read_only);
-        Fdio(const File& f, int iomode, int perm = 0666);
+        explicit Fdio(const Unicorn::Path& f, mode m = mode::read_only);
+        Fdio(const Unicorn::Path& f, int iomode, int perm = 0666);
         virtual void close() noexcept override;
         virtual void flush() noexcept override;
         virtual bool is_open() const noexcept override { return fd.get() != -1; }
@@ -413,7 +412,7 @@ namespace RS {
                 fd = {f, [] (int) {}};
         }
 
-        inline Fdio::Fdio(const File& f, mode m) {
+        inline Fdio::Fdio(const Unicorn::Path& f, mode m) {
             if (f.empty() || f.name() == "-") {
                 if (m == mode::read_only) {
                     *this = std_input();
@@ -436,7 +435,7 @@ namespace RS {
             *this = Fdio(f, fmode, 0666);
         }
 
-        inline Fdio::Fdio(const File& f, int iomode, int perm) {
+        inline Fdio::Fdio(const Unicorn::Path& f, int iomode, int perm) {
             #ifdef _XOPEN_SOURCE
                 #ifdef __CYGWIN__
                     if (! (iomode & (O_BINARY | O_TEXT)))
@@ -447,9 +446,8 @@ namespace RS {
             #else
                 if (! (iomode & (_O_BINARY | _O_TEXT | _O_U8TEXT | _O_U16TEXT | _O_WTEXT)))
                     iomode |= _O_BINARY;
-                auto wfile = f.native();
                 errno = 0;
-                auto rc = _wopen(wfile.data(), iomode, perm);
+                auto rc = _wopen(f.c_name(), iomode, perm);
             #endif
             int err = errno;
             *this = Fdio(rc);
@@ -557,8 +555,8 @@ namespace RS {
             using handle_type = void*;
             Winio() = default;
             explicit Winio(void* f, bool owner = true) noexcept;
-            explicit Winio(const File& f, mode m = mode::read_only);
-            Winio(const File& f, uint32_t desired_access, uint32_t share_mode, LPSECURITY_ATTRIBUTES security_attributes,
+            explicit Winio(const Unicorn::Path& f, mode m = mode::read_only);
+            Winio(const Unicorn::Path& f, uint32_t desired_access, uint32_t share_mode, LPSECURITY_ATTRIBUTES security_attributes,
                 uint32_t creation_disposition, uint32_t flags_and_attributes = 0, HANDLE template_file = nullptr);
             virtual void close() noexcept override;
             virtual void flush() noexcept override;
@@ -585,7 +583,7 @@ namespace RS {
                     fh = {f, [] (void*) {}};
             }
 
-            inline Winio::Winio(const File& f, mode m) {
+            inline Winio::Winio(const Unicorn::Path& f, mode m) {
                 if (f.empty() || f.name() == "-") {
                     if (m == mode::read_only) {
                         *this = std_input();
@@ -615,11 +613,10 @@ namespace RS {
                 }
             }
 
-            inline Winio::Winio(const File& f, uint32_t desired_access, uint32_t share_mode, LPSECURITY_ATTRIBUTES security_attributes,
+            inline Winio::Winio(const Unicorn::Path& f, uint32_t desired_access, uint32_t share_mode, LPSECURITY_ATTRIBUTES security_attributes,
                     uint32_t creation_disposition, uint32_t flags_and_attributes, HANDLE template_file) {
-                auto wfile = f.native();
                 SetLastError(0);
-                auto rc = CreateFileW(wfile.data(), desired_access, share_mode, security_attributes, creation_disposition, flags_and_attributes, template_file);
+                auto rc = CreateFileW(f.c_name(), desired_access, share_mode, security_attributes, creation_disposition, flags_and_attributes, template_file);
                 int err = GetLastError();
                 *this = Winio(rc);
                 set_error(err, std::system_category());

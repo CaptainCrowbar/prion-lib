@@ -12,7 +12,6 @@
 #include "rs-core/dso.hpp"
 #include "rs-core/encoding.hpp"
 #include "rs-core/file-system.hpp"
-#include "rs-core/file.hpp"
 #include "rs-core/fixed-binary.hpp"
 #include "rs-core/float.hpp"
 #include "rs-core/grid.hpp"

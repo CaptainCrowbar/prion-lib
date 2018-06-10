@@ -1,15 +1,17 @@
 #include "rs-core/io.hpp"
 #include "rs-core/unit-test.hpp"
+#include "unicorn/path.hpp"
 #include <algorithm>
 #include <system_error>
 #include <utility>
 
 using namespace RS;
+using namespace RS::Unicorn;
 
 void test_core_io_cstdio() {
 
     Cstdio io;
-    File file = "__cstdio_test__", no_file = "__no_such_file__";
+    Path file = "__cstdio_test__", no_file = "__no_such_file__";
     Ustring text;
     Strings vec;
     ptrdiff_t offset = 0;
@@ -91,7 +93,7 @@ void test_core_io_cstdio() {
 void test_core_io_fdio() {
 
     Fdio io;
-    File file = "__fdio_test__", no_file = "__no_such_file__";
+    Path file = "__fdio_test__", no_file = "__no_such_file__";
     Ustring text;
     Strings vec;
     ptrdiff_t offset = 0;
@@ -183,7 +185,7 @@ void test_core_io_winio() {
     #ifdef _WIN32
 
         Winio io;
-        File file = "__winio_test__", no_file = "__no_such_file__";
+        Path file = "__winio_test__", no_file = "__no_such_file__";
         Ustring text;
         Strings vec;
         ptrdiff_t offset = 0;

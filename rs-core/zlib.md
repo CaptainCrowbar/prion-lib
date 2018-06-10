@@ -36,8 +36,8 @@ trigger a `std::system_error` with a `ZlibCategory` error category.
 * `class` **`Gzio`**`: public IO`
     * `using Gzio::`**`handle_type`** `= gzFile`
     * `Gzio::`**`Gzio`**`()`
-    * `explicit Gzio::`**`Gzio`**`(const File& f, IO::mode m = IO::mode::read_only)`
-    * `Gzio::`**`Gzio`**`(const File& f, Uview iomode)`
+    * `explicit Gzio::`**`Gzio`**`(const Unicorn::Path& f, IO::mode m = IO::mode::read_only)`
+    * `Gzio::`**`Gzio`**`(const Unicorn::Path& f, Uview iomode)`
     * `virtual Gzio::`**`~Gzio`**`()`
     * `Gzio::`**`Gzio`**`(Gzio&& io)`
     * `Gzio& Gzio::`**`operator=`**`(Gzio&& io)`

@@ -71,7 +71,7 @@ library is loaded. Flags not relevant to the target system are set to zero.</p>
 <div class="defns">
 <ul>
 <li><code>Dso::</code><strong><code>Dso</code></strong><code>() noexcept</code></li>
-<li><code>explicit Dso::</code><strong><code>Dso</code></strong><code>(const File&amp; file, flag_type flags = 0)</code></li>
+<li><code>explicit Dso::</code><strong><code>Dso</code></strong><code>(const Unicorn::Path&amp; file, flag_type flags = 0)</code></li>
 <li><code>Dso::</code><strong><code>~Dso</code></strong><code>() noexcept</code></li>
 <li><code>Dso::</code><strong><code>Dso</code></strong><code>(Dso&amp;&amp;) noexcept</code></li>
 <li><code>Dso&amp; Dso::</code><strong><code>operator=</code></strong><code>(Dso&amp;&amp;) noexcept</code></li>
@@ -124,7 +124,7 @@ if <code>bool(*this)</code> is false.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>File Dso::</code><strong><code>file</code></strong><code>() const</code></li>
+<li><code>Unicorn::Path Dso::</code><strong><code>file</code></strong><code>() const</code></li>
 </ul>
 <p>Returns the file name (as supplied to the constructor; this does not attempt
 to determine the actual absolute path to the loaded library).</p>

@@ -4,7 +4,7 @@
 #include "rs-core/channel.hpp"
 #include "rs-core/common.hpp"
 #include "rs-core/encoding.hpp"
-#include "rs-core/file.hpp"
+#include "rs-core/file-system.hpp"
 #include "rs-core/ipc.hpp"
 #include "rs-core/mp-integer.hpp"
 #include "rs-core/optional.hpp"
@@ -13,6 +13,7 @@
 #include "rs-core/time.hpp"
 #include "rs-core/uuid.hpp"
 #include "rs-core/vector.hpp"
+#include "unicorn/path.hpp"
 #include <algorithm>
 #include <chrono>
 #include <cstring>
@@ -50,9 +51,6 @@ namespace RS {
 
     template <typename T, ByteOrder B> void to_json(json& j, const Endian<T, B>& x) { j = x.get(); }
     template <typename T, ByteOrder B> void from_json(const json& j, Endian<T, B>& x) { x = j.get<T>(); }
-
-    inline void to_json(json& j, const File& x) { j = x.name(); }
-    inline void from_json(const json& j, File& x) { x = File(j.get<Ustring>()); }
 
     inline void to_json(json& j, const Int& x) { j = x.str(); }
     inline void from_json(const json& j, Int& x) { x = Int(j.get<Ustring>()); }
@@ -127,7 +125,7 @@ namespace RS {
         explicit PersistState(const Ustring& id);
         template <typename... Args> explicit PersistState(Args... id): PersistState(join(Strings{id...}, "/")) {}
         ~PersistState() noexcept;
-        File file() const { return archive_name(); }
+        Unicorn::Path file() const { return archive_name(); }
         Ustring id() const { return state_id; }
         void load();
         void save() { save_state(true); }
@@ -145,7 +143,7 @@ namespace RS {
         Ustring state_id;
         json state_table;
         bool change_flag = false;
-        File archive_name(const Ustring& tag = {}) const;
+        Unicorn::Path archive_name(const Ustring& tag = {}) const;
         void autosave_loop();
         void clear_autosave();
         void save_state(bool always);
@@ -178,12 +176,13 @@ namespace RS {
         inline void PersistState::load() {
             auto local_lock = make_lock(local_mutex);
             auto global_lock = make_lock(*global_mutex);
-            File archive = archive_name();
-            File old_archive = archive_name("old");
+            Unicorn::Path archive = archive_name();
+            Unicorn::Path old_archive = archive_name("old");
             if (! archive.exists() && old_archive.exists())
                 old_archive.move_to(archive);
             json j = json::object();
-            Ustring content = archive.load();
+            Ustring content;
+            archive.load(content, npos, Unicorn::Path::may_fail);
             if (! content.empty())
                 j = json::parse(content);
             if (j.is_object())
@@ -237,12 +236,12 @@ namespace RS {
             change_flag = true;
         }
 
-        inline File PersistState::archive_name(const Ustring& tag) const {
+        inline Unicorn::Path PersistState::archive_name(const Ustring& tag) const {
             auto path = state_id;
             if (! tag.empty())
                 path += '.' + tag;
             path += ".settings";
-            return File::user_settings() / path;
+            return std_path(UserPath::settings) / path;
         }
 
         inline void PersistState::autosave_loop() {
@@ -270,11 +269,11 @@ namespace RS {
             if (! always && ! change_flag)
                 return;
             auto global_lock = make_lock(*global_mutex);
-            File archive = archive_name();
+            Unicorn::Path archive = archive_name();
             Ustring content = state_table.dump(4) + '\n';
             if (archive.exists()) {
-                File new_archive = archive_name("new");
-                File old_archive = archive_name("old");
+                Unicorn::Path new_archive = archive_name("new");
+                Unicorn::Path old_archive = archive_name("old");
                 new_archive.remove();
                 old_archive.remove();
                 auto cleanup = scope_exit([&] {
@@ -286,7 +285,7 @@ namespace RS {
                 auto rollback = scope_fail([&] { old_archive.move_to(archive); });
                 new_archive.move_to(archive);
             } else {
-                archive.parent().mkdir(File::recurse);
+                archive.split_path().first.make_directory(Unicorn::Path::recurse);
                 archive.save(content);
             }
             change_flag = false;

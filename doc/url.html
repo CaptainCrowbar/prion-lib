@@ -138,18 +138,6 @@ invalid (contains two consecutive slashes).</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>File Url::</code><strong><code>as_file</code></strong><code>() const</code></li>
-<li><code>static Url Url::</code><strong><code>from_file</code></strong><code>(const File&amp; f)</code></li>
-</ul>
-<p>Convert between a file name and a file URL. The <code>as_file()</code> function discards
-all elements other than host and path, and will throw <code>std::invalid_argument</code>
-if the URL is not a file URL (except that an empty URL will return an empty
-file name). The <code>from_file()</code> function always treats its argument as an
-absolute path, even if it does not start with a slash (or a drive letter on
-Windows).</p>
-</div>
-<div class="defns">
-<ul>
 <li><code>void Url::</code><strong><code>clear</code></strong><code>() noexcept;</code></li>
 </ul>
 <p>Resets the URL to an empty string.</p>

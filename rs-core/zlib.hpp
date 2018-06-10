@@ -1,8 +1,8 @@
 #pragma once
 
 #include "rs-core/common.hpp"
-#include "rs-core/file.hpp"
 #include "rs-core/io.hpp"
+#include "unicorn/path.hpp"
 #include <algorithm>
 #include <cerrno>
 #include <string>
@@ -90,8 +90,8 @@ namespace RS {
         RS_MOVE_ONLY(Gzio);
         using handle_type = gzFile;
         Gzio() = default;
-        explicit Gzio(const File& f, mode m = mode::read_only);
-        Gzio(const File& f, Uview iomode);
+        explicit Gzio(const Unicorn::Path& f, mode m = mode::read_only);
+        Gzio(const Unicorn::Path& f, Uview iomode);
         virtual void close() noexcept override;
         virtual void flush() noexcept override;
         virtual int getc() noexcept override;
@@ -110,7 +110,7 @@ namespace RS {
         void check_status(bool ok) noexcept;
     };
 
-        inline Gzio::Gzio(const File& f, mode m) {
+        inline Gzio::Gzio(const Unicorn::Path& f, mode m) {
             Ustring gzmode;
             switch (m) {
                 case IO::mode::read_only:   gzmode = "rb"; break;
@@ -121,9 +121,15 @@ namespace RS {
             *this = Gzio(f, gzmode);
         }
 
-        inline Gzio::Gzio(const File& f, Uview iomode) {
+        inline Gzio::Gzio(const Unicorn::Path& f, Uview iomode) {
+            std::string u_name;
+            #ifdef _XOPEN_SOURCE
+                u_name = f.os_name();
+            #else
+                u_name = f.name();
+            #endif
             errno = 0;
-            auto rc = gzopen(f.c_name(), iomode.data());
+            auto rc = gzopen(u_name.data(), iomode.data());
             int err = errno;
             if (rc) {
                 gzbuffer(rc, 65536);

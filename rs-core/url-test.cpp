@@ -1,5 +1,4 @@
 #include "rs-core/url.hpp"
-#include "rs-core/file.hpp"
 #include "rs-core/string.hpp"
 #include "rs-core/unit-test.hpp"
 #include <utility>
@@ -158,7 +157,6 @@ void test_core_url_parse_http() {
 void test_core_url_parse_file() {
 
     Url u;
-    File f;
 
     TRY(u = "file:///foo/bar/hello.txt"_url);
     TEST_EQUAL(u.str(), "file:///foo/bar/hello.txt");
@@ -198,16 +196,6 @@ void test_core_url_parse_file() {
     TEST(u.has_path());        TEST_EQUAL(u.path(), "/foo/bar/hello.txt");
     TEST(! u.has_query());     TEST_EQUAL(u.query(), "");
     TEST(! u.has_fragment());  TEST_EQUAL(u.fragment(), "");
-
-    TRY(u = {});                                     TRY(f = u.as_file());  TEST_EQUAL(f.name(), "");
-    TRY(u = "file:///foo/bar/hello.txt"_url);        TRY(f = u.as_file());  TEST_EQUAL(f.name(), "/foo/bar/hello.txt");
-    TRY(u = "file:///C:/foo/bar/hello.txt"_url);     TRY(f = u.as_file());  TEST_EQUAL(f.name(), "C:/foo/bar/hello.txt");
-    TRY(u = "file://server/foo/bar/hello.txt"_url);  TRY(f = u.as_file());  TEST_EQUAL(f.name(), "//server/foo/bar/hello.txt");
-
-    TRY(f = "");                            TRY(u = Url::from_file(f));    TEST_EQUAL(u.str(), "file:///");
-    TRY(f = "foo/bar/hello.txt");           TRY(u = Url::from_file(f));    TEST_EQUAL(u.str(), "file:///foo/bar/hello.txt");
-    TRY(f = "C:/foo/bar/hello.txt");        TRY(u = Url::from_file(f));    TEST_EQUAL(u.str(), "file:///C:/foo/bar/hello.txt");
-    TRY(f = "//server/foo/bar/hello.txt");  TRY(u = Url::from_file(f));    TEST_EQUAL(u.str(), "file://server/foo/bar/hello.txt");
 
 }
 

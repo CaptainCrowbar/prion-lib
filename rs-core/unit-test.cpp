@@ -70,13 +70,6 @@ extern void test_core_encoding_ascii85();
 extern void test_core_encoding_z85();
 extern void test_core_file_system_standard_directories();
 extern void test_core_file_system_search_path();
-extern void test_core_file_names();
-extern void test_core_file_system_queries();
-extern void test_core_file_system_update();
-extern void test_core_file_io();
-extern void test_core_file_metadata();
-extern void test_core_file_standard_locations();
-extern void test_core_file_literals();
 extern void test_core_fixed_binary_implementation_selection();
 extern void test_core_fixed_binary_small_binary();
 extern void test_core_fixed_binary_large_binary();
@@ -278,7 +271,6 @@ extern void test_core_serial_std_chrono();
 extern void test_core_serial_blob();
 extern void test_core_serial_compact_array();
 extern void test_core_serial_endian();
-extern void test_core_serial_file();
 extern void test_core_serial_multiprecision_integers();
 extern void test_core_serial_optional();
 extern void test_core_serial_rational();
@@ -416,13 +408,6 @@ int main() {
         { "core/encoding/z85", test_core_encoding_z85 },
         { "core/file-system/standard-directories", test_core_file_system_standard_directories },
         { "core/file-system/search-path", test_core_file_system_search_path },
-        { "core/file/names", test_core_file_names },
-        { "core/file/system-queries", test_core_file_system_queries },
-        { "core/file/system-update", test_core_file_system_update },
-        { "core/file/io", test_core_file_io },
-        { "core/file/metadata", test_core_file_metadata },
-        { "core/file/standard-locations", test_core_file_standard_locations },
-        { "core/file/literals", test_core_file_literals },
         { "core/fixed-binary/implementation-selection", test_core_fixed_binary_implementation_selection },
         { "core/fixed-binary/small-binary", test_core_fixed_binary_small_binary },
         { "core/fixed-binary/large-binary", test_core_fixed_binary_large_binary },
@@ -624,7 +609,6 @@ int main() {
         { "core/serial/blob", test_core_serial_blob },
         { "core/serial/compact-array", test_core_serial_compact_array },
         { "core/serial/endian", test_core_serial_endian },
-        { "core/serial/file", test_core_serial_file },
         { "core/serial/multiprecision-integers", test_core_serial_multiprecision_integers },
         { "core/serial/optional", test_core_serial_optional },
         { "core/serial/rational", test_core_serial_rational },

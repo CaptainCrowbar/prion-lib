@@ -137,8 +137,8 @@ API in `<cstdio>` or `<stdio.h>`
 The native file handle type.
 
 * `explicit Cstdio::`**`Cstdio`**`(FILE* f, bool owner = true) noexcept`
-* `explicit Cstdio::`**`Cstdio`**`(const File& f, mode m = mode::read_only)`
-* `Cstdio::`**`Cstdio`**`(const File& f, const Ustring& iomode)`
+* `explicit Cstdio::`**`Cstdio`**`(const Unicorn::Path& f, mode m = mode::read_only)`
+* `Cstdio::`**`Cstdio`**`(const Unicorn::Path& f, const Ustring& iomode)`
 
 The first constructor wraps a `Cstdio` object around an existing file pointer;
 if `owner` is true, the destructor will close the file. The second constructor
@@ -187,8 +187,8 @@ based system API.
 The native file descriptor type.
 
 * `explicit Fdio::`**`Fdio`**`(int f, bool owner = true) noexcept`
-* `explicit Fdio::`**`Fdio`**`(const File& f, mode m = mode::read_only)`
-* `Fdio::`**`Fdio`**`(const File& f, int iomode, int perm = 0666)`
+* `explicit Fdio::`**`Fdio`**`(const Unicorn::Path& f, mode m = mode::read_only)`
+* `Fdio::`**`Fdio`**`(const Unicorn::Path& f, int iomode, int perm = 0666)`
 
 The first constructor wraps an `Fdio` object around an existing file
 descriptor; if `owner` is true, the destructor will close the file. The second
@@ -285,8 +285,8 @@ This class implements I/O using the Win32 system API.
 The native file handle type.
 
 * `explicit Winio::`**`Winio`**`(void* f, bool owner = true) noexcept`
-* `explicit Winio::`**`Winio`**`(const File& f, mode m = mode::read_only)`
-* `Winio::`**`Winio`**`(const File& f, uint32_t desired_access, uint32_t share_mode, LPSECURITY_ATTRIBUTES security_attributes, uint32_t creation_disposition, uint32_t flags_and_attributes = 0, HANDLE template_file = nullptr)`
+* `explicit Winio::`**`Winio`**`(const Unicorn::Path& f, mode m = mode::read_only)`
+* `Winio::`**`Winio`**`(const Unicorn::Path& f, uint32_t desired_access, uint32_t share_mode, LPSECURITY_ATTRIBUTES security_attributes, uint32_t creation_disposition, uint32_t flags_and_attributes = 0, HANDLE template_file = nullptr)`
 
 The first constructor wraps a `Winio` object around an existing file handle;
 if `owner` is true, the destructor will close the file. The second constructor

@@ -1,14 +1,15 @@
 #include "rs-core/zlib.hpp"
-#include "rs-core/file.hpp"
 #include "rs-core/random.hpp"
 #include "rs-core/string.hpp"
 #include "rs-core/unit-test.hpp"
+#include "unicorn/path.hpp"
 #include <algorithm>
 #include <cstdlib>
 #include <string>
 #include <system_error>
 
 using namespace RS;
+using namespace RS::Unicorn;
 
 void test_core_zlib_compression() {
 
@@ -31,7 +32,7 @@ void test_core_zlib_compression() {
 void test_core_zlib_io() {
 
     Gzio io;
-    File file = "__gzio_test__", no_file = "__no_such_file__";
+    Path file = "__gzio_test__", no_file = "__no_such_file__";
     Ustring text;
     Strings vec;
     ptrdiff_t offset = 0;
@@ -56,10 +57,10 @@ void test_core_zlib_io() {
 
     #ifdef _XOPEN_SOURCE
 
-        File log = "__gzio_log__";
+        Path log = "__gzio_log__";
         Ustring cmd = fmt("file $1 >$2", file, log);
         TRY(std::system(cmd.data()));
-        TRY(text = log.load());
+        TRY(log.load(text));
         TEST_MATCH(text, "gzip compressed data");
         TRY(log.remove());
 

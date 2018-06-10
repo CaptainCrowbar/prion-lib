@@ -108,16 +108,6 @@ path (one that starts with a slash) will discard the original path and behave
 like `set_path()`. These will throw `std::invalid_argument` if the path is
 invalid (contains two consecutive slashes).
 
-* `File Url::`**`as_file`**`() const`
-* `static Url Url::`**`from_file`**`(const File& f)`
-
-Convert between a file name and a file URL. The `as_file()` function discards
-all elements other than host and path, and will throw `std::invalid_argument`
-if the URL is not a file URL (except that an empty URL will return an empty
-file name). The `from_file()` function always treats its argument as an
-absolute path, even if it does not start with a slash (or a drive letter on
-Windows).
-
 * `void Url::`**`clear`**`() noexcept;`
 
 Resets the URL to an empty string.

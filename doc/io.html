@@ -188,8 +188,8 @@ API in <code>&lt;cstdio&gt;</code> or <code>&lt;stdio.h&gt;</code></p>
 <div class="defns">
 <ul>
 <li><code>explicit Cstdio::</code><strong><code>Cstdio</code></strong><code>(FILE* f, bool owner = true) noexcept</code></li>
-<li><code>explicit Cstdio::</code><strong><code>Cstdio</code></strong><code>(const File&amp; f, mode m = mode::read_only)</code></li>
-<li><code>Cstdio::</code><strong><code>Cstdio</code></strong><code>(const File&amp; f, const Ustring&amp; iomode)</code></li>
+<li><code>explicit Cstdio::</code><strong><code>Cstdio</code></strong><code>(const Unicorn::Path&amp; f, mode m = mode::read_only)</code></li>
+<li><code>Cstdio::</code><strong><code>Cstdio</code></strong><code>(const Unicorn::Path&amp; f, const Ustring&amp; iomode)</code></li>
 </ul>
 <p>The first constructor wraps a <code>Cstdio</code> object around an existing file pointer;
 if <code>owner</code> is true, the destructor will close the file. The second constructor
@@ -253,8 +253,8 @@ based system API.</p>
 <div class="defns">
 <ul>
 <li><code>explicit Fdio::</code><strong><code>Fdio</code></strong><code>(int f, bool owner = true) noexcept</code></li>
-<li><code>explicit Fdio::</code><strong><code>Fdio</code></strong><code>(const File&amp; f, mode m = mode::read_only)</code></li>
-<li><code>Fdio::</code><strong><code>Fdio</code></strong><code>(const File&amp; f, int iomode, int perm = 0666)</code></li>
+<li><code>explicit Fdio::</code><strong><code>Fdio</code></strong><code>(const Unicorn::Path&amp; f, mode m = mode::read_only)</code></li>
+<li><code>Fdio::</code><strong><code>Fdio</code></strong><code>(const Unicorn::Path&amp; f, int iomode, int perm = 0666)</code></li>
 </ul>
 <p>The first constructor wraps an <code>Fdio</code> object around an existing file
 descriptor; if <code>owner</code> is true, the destructor will close the file. The second
@@ -722,8 +722,8 @@ required when creating a pipe; this argument is ignored on Unix.</p>
 <div class="defns">
 <ul>
 <li><code>explicit Winio::</code><strong><code>Winio</code></strong><code>(void* f, bool owner = true) noexcept</code></li>
-<li><code>explicit Winio::</code><strong><code>Winio</code></strong><code>(const File&amp; f, mode m = mode::read_only)</code></li>
-<li><code>Winio::</code><strong><code>Winio</code></strong><code>(const File&amp; f, uint32_t desired_access, uint32_t share_mode, LPSECURITY_ATTRIBUTES security_attributes, uint32_t creation_disposition, uint32_t flags_and_attributes = 0, HANDLE template_file = nullptr)</code></li>
+<li><code>explicit Winio::</code><strong><code>Winio</code></strong><code>(const Unicorn::Path&amp; f, mode m = mode::read_only)</code></li>
+<li><code>Winio::</code><strong><code>Winio</code></strong><code>(const Unicorn::Path&amp; f, uint32_t desired_access, uint32_t share_mode, LPSECURITY_ATTRIBUTES security_attributes, uint32_t creation_disposition, uint32_t flags_and_attributes = 0, HANDLE template_file = nullptr)</code></li>
 </ul>
 <p>The first constructor wraps a <code>Winio</code> object around an existing file handle;
 if <code>owner</code> is true, the destructor will close the file. The second constructor

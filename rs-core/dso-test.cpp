@@ -1,11 +1,12 @@
 #include "rs-core/dso.hpp"
-#include "rs-core/file.hpp"
 #include "rs-core/unit-test.hpp"
+#include "unicorn/path.hpp"
 #include <functional>
 #include <system_error>
 #include <utility>
 
 using namespace RS;
+using namespace RS::Unicorn;
 
 void test_core_dso_dynamic_library() {
 
@@ -14,7 +15,7 @@ void test_core_dso_dynamic_library() {
     TEST_THROW(Dso("no-such-thing"), std::system_error);
     TRY(lib1 = Dso::self());
 
-    File dir, file;
+    Path dir, file;
 
     #if defined(__APPLE__)
         dir = "/usr/lib";
@@ -31,7 +32,7 @@ void test_core_dso_dynamic_library() {
         file = "libcurl.dll";
     #endif
 
-    File path = dir / file;
+    Path path = dir / file;
 
     if (! path.exists()) {
         FAIL("Tests could not be run because the expected library was not found on this system: " + path.name());

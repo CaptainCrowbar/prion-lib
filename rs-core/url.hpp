@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rs-core/common.hpp"
-#include "rs-core/file.hpp"
 #include "rs-core/string.hpp"
 #include <algorithm>
 #include <cstdlib>
@@ -54,7 +53,6 @@ namespace RS {
         void clear_query() noexcept;
         void clear_fragment() noexcept;
         void append_path(Uview new_path);
-        File as_file() const;
         void clear() noexcept;
         Url doc() const;
         Url base() const;
@@ -69,7 +67,6 @@ namespace RS {
         Url& operator/=(Uview rhs) { append_path(rhs); return *this; }
         static Ustring encode(Uview s, Uview exempt = {});
         static Ustring decode(Uview s);
-        static Url from_file(const File& f);
         template <typename R> static Ustring make_query(const R& range, char delimiter = '&', uint32_t flags = 0);
         static std::vector<std::pair<Ustring, Ustring>> parse_query(Uview query, char delimiter = '\0');
         friend Url operator/(const Url& lhs, Uview rhs) { Url u = lhs; u.append_path(rhs); return u; }
@@ -329,26 +326,6 @@ namespace RS {
             fragment_pos += delta;
         }
 
-        inline File Url::as_file() const {
-            static const std::regex windows_root("^/[A-Za-z]:", std::regex_constants::optimize);
-            if (text.empty())
-                return {};
-            if (scheme() != "file")
-                throw std::invalid_argument("Not a file URL: " + quote(text));
-            Ustring f, h = host(), p = path();
-            if (! h.empty()) {
-                f = "//" + h;
-                if (p[0] != '/')
-                    f += '/';
-                f += p;
-            } else if (std::regex_search(p, windows_root)) {
-                f.assign(p, 1, npos);
-            } else {
-                f = p;
-            }
-            return File(f);
-        }
-
         inline void Url::clear() noexcept {
             text.clear();
             user_pos = password_pos = host_pos = port_pos = path_pos = query_pos = fragment_pos = 0;
@@ -472,17 +449,6 @@ namespace RS {
                 }
             }
             return out;
-        }
-
-        inline Url Url::from_file(const File& f) {
-            Ustring name = f.name(), u = "file:";
-            if (starts_with(name, "//")) {
-                u += name;
-            } else {
-                u += "///";
-                u.append(name, size_t(name[0] == '/'), npos);
-            }
-            return Url(u);
         }
 
         template <typename R>

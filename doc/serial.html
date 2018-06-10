@@ -56,7 +56,6 @@ introduce rounding errors.</p>
 <li><a href="blob.html"><code>Blob</code></a></li>
 <li><a href="compact-array.html"><code>CompactArray&lt;T,N&gt;</code></a></li>
 <li><a href="common.html"><code>Endian&lt;T,B&gt;</code></a></li>
-<li><a href="file.html"><code>File</code></a></li>
 <li><a href="mp-integer.html"><code>Int</code></a></li>
 <li><a href="vector.html"><code>Matrix&lt;T,N,L&gt;</code></a></li>
 <li><a href="mp-integer.html"><code>Nat</code></a></li>
@@ -76,7 +75,7 @@ introduce rounding errors.</p>
 <li><code>template &lt;typename... Args&gt; explicit PersistState::</code><strong><code>PersistState</code></strong><code>(Args... id)</code></li>
 <li><code>PersistState::</code><strong><code>~PersistState</code></strong><code>() noexcept</code></li>
 <li><code>Ustring PersistState::</code><strong><code>id</code></strong><code>() const</code></li>
-<li><code>File PersistState::</code><strong><code>file</code></strong><code>() const</code></li>
+<li><code>Unicorn::Path PersistState::</code><strong><code>file</code></strong><code>() const</code></li>
 <li><code>void PersistState::</code><strong><code>load</code></strong><code>()</code></li>
 <li><code>void PersistState::</code><strong><code>save</code></strong><code>()</code></li>
 <li><code>template &lt;typename R, typename P&gt; void PersistState::</code><strong><code>autosave</code></strong><code>(std::chrono::duration&lt;R, P&gt; t)</code></li>

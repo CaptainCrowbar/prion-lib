@@ -1,7 +1,7 @@
 #include "rs-core/serial.hpp"
 #include "rs-core/blob.hpp"
 #include "rs-core/compact-array.hpp"
-#include "rs-core/file.hpp"
+#include "rs-core/file-system.hpp"
 #include "rs-core/mp-integer.hpp"
 #include "rs-core/optional.hpp"
 #include "rs-core/rational.hpp"
@@ -9,6 +9,7 @@
 #include "rs-core/unit-test.hpp"
 #include "rs-core/uuid.hpp"
 #include "rs-core/vector.hpp"
+#include "unicorn/path.hpp"
 #include <chrono>
 #include <map>
 #include <string>
@@ -17,6 +18,7 @@
 
 using namespace RS;
 using namespace RS::Literals;
+using namespace RS::Unicorn;
 using namespace std::chrono;
 using namespace std::literals;
 
@@ -149,21 +151,6 @@ void test_core_serial_endian() {
 
 }
 
-void test_core_serial_file() {
-
-    static const File cf1 = {};
-    static const File cf2 = "Hello world.txt";
-    static const File cf3 = "/usr/local/include";
-
-    json j;
-    File f;
-
-    TRY(j = cf1);  TRY(f = j.get<File>());  TEST_EQUAL(f, cf1);  TEST_EQUAL(f, "");
-    TRY(j = cf2);  TRY(f = j.get<File>());  TEST_EQUAL(f, cf2);  TEST_EQUAL(f, "Hello world.txt");
-    TRY(j = cf3);  TRY(f = j.get<File>());  TEST_EQUAL(f, cf3);  TEST_EQUAL(f, "/usr/local/include");
-
-}
-
 void test_core_serial_multiprecision_integers() {
 
     static const Nat cn = Nat("123456789123456789123456789123456789123456789");
@@ -280,9 +267,9 @@ void test_core_serial_persistent_storage() {
     static constexpr const char* vendor = "com.captaincrowbar";
     static constexpr const char* app = "test-core-serial";
 
-    static const File archive1 = File::user_settings() / "com.captaincrowbar/test-core-serial.settings";
-    static const File archive2 = File::user_settings() / "com.captaincrowbar/test-core-serial.new.settings";
-    static const File archive3 = File::user_settings() / "com.captaincrowbar/test-core-serial.old.settings";
+    static const Path archive1 = std_path(UserPath::settings) / "com.captaincrowbar/test-core-serial.settings";
+    static const Path archive2 = std_path(UserPath::settings) / "com.captaincrowbar/test-core-serial.new.settings";
+    static const Path archive3 = std_path(UserPath::settings) / "com.captaincrowbar/test-core-serial.old.settings";
     static const Ustring vendor_app = "com.captaincrowbar/test-core-serial";
 
     TRY(archive1.remove());
@@ -315,7 +302,7 @@ void test_core_serial_persistent_storage() {
         TRY(store.save());
         TEST(store.file().exists());
 
-        TRY(content = store.file().load());
+        TRY(store.file().load(content));
         TEST_EQUAL(content, R"(
             {
                 "number": 0,
@@ -334,7 +321,7 @@ void test_core_serial_persistent_storage() {
         TRY(store.save());
         TEST(store.file().exists());
 
-        TRY(content = store.file().load());
+        TRY(store.file().load(content));
         TEST_EQUAL(content, R"(
             {
                 "number": 42,

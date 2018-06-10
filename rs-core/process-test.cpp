@@ -12,7 +12,7 @@ using namespace std::literals;
 
 namespace {
 
-    constexpr const char* files = "[LICENSE.txt,Makefile,README.md,build,dependencies.make,doc,rs-core,scripts]";
+    constexpr const char* files = "[LICENSE.txt,Makefile,README.md,build,dependencies.make,doc,rs-core]";
 
 }
 

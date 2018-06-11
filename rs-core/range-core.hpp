@@ -90,6 +90,27 @@ namespace RS::Range {
         return lhs << rhs.first << rhs.second;
     }
 
+    // Output iterator wrapper
+
+    template <typename OutputIterator>
+    struct OutputObject:
+    AlgorithmBase<OutputObject<OutputIterator>> {
+        OutputIterator iter;
+        OutputObject(OutputIterator i): iter(i) {}
+    };
+
+    template <typename Range, typename OutputIterator>
+    void operator>>(const Range& lhs, OutputObject<OutputIterator> rhs) {
+        using std::begin;
+        using std::end;
+        std::copy(begin(lhs), end(lhs), rhs.iter);
+    }
+
+    template <typename OutputIterator>
+    inline OutputObject<OutputIterator> output(OutputIterator i) {
+        return i;
+    }
+
     // Trivial passthrough filter
 
     struct PassthroughObject:

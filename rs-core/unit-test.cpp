@@ -209,6 +209,7 @@ extern void test_core_range_combination_set_intersection();
 extern void test_core_range_combination_set_symmetric_difference();
 extern void test_core_range_combination_set_union();
 extern void test_core_range_combination_zip();
+extern void test_core_range_core_output();
 extern void test_core_range_core_passthrough();
 extern void test_core_range_core_collect();
 extern void test_core_range_core_each();
@@ -547,6 +548,7 @@ int main() {
         { "core/range-combination/set-symmetric-difference", test_core_range_combination_set_symmetric_difference },
         { "core/range-combination/set-union", test_core_range_combination_set_union },
         { "core/range-combination/zip", test_core_range_combination_zip },
+        { "core/range-core/output", test_core_range_core_output },
         { "core/range-core/passthrough", test_core_range_core_passthrough },
         { "core/range-core/collect", test_core_range_core_collect },
         { "core/range-core/each", test_core_range_core_each },

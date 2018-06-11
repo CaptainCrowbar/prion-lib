@@ -156,6 +156,7 @@ reflex forms.</p>
 <li><code>C</code> = Container type (STL compatible)</li>
 <li><code>FP</code> = Floating point type</li>
 <li><code>N</code> = Integer type</li>
+<li><code>OI</code> = Output iterator</li>
 <li><code>T</code> = Value type</li>
 </ul>
 </li>
@@ -188,6 +189,11 @@ reflex forms.</p>
 <td></td>
 <td><code>PR &gt;&gt;</code> <strong><code>each_pair</code></strong><code>(BF) -&gt; R</code></td>
 <td><code>PR&amp; &lt;&lt;</code> <strong><code>each_pair</code></strong><code>(BF)</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>R &gt;&gt;</code> <strong><code>output</code></strong><code>(OI) -&gt; OI</code></td>
+<td></td>
 </tr>
 <tr>
 <td></td>
@@ -725,7 +731,14 @@ element.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>Range r &gt;&gt;</code> <strong><code>passthrough</code></strong> <code>-&gt; Range2</code></li>
+<li><code>Range r &gt;&gt;</code> <strong><code>output</code></strong><code>(OutputIterator i)</code></li>
+</ul>
+<p>Copy a range into an output iterator. Behaviour is undefined if the input
+range is infinite.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>passthrough</code></strong> <code>-&gt; Range</code></li>
 <li><code>Range&amp; r &lt;&lt;</code> <strong><code>passthrough</code></strong></li>
 </ul>
 <p>An empty do-nothing algorithm that just passes on its input range.</p>

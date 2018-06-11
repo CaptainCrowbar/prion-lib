@@ -126,6 +126,7 @@ reflex forms.
     * `C` = Container type (STL compatible)
     * `FP` = Floating point type
     * `N` = Integer type
+    * `OI` = Output iterator
     * `T` = Value type
 
 | Section         | Forward algorithm                                          | Reflex algorithm                                    |
@@ -134,6 +135,7 @@ reflex forms.
 |                 | `R >>` **`collect`** `-> TRR`                              |                                                     |
 |                 | `R >>` **`each`**`(UF) -> R`                               | `R& <<` **`each`**`(UF)`                            |
 |                 | `PR >>` **`each_pair`**`(BF) -> R`                         | `PR& <<` **`each_pair`**`(BF)`                      |
+|                 | `R >>` **`output`**`(OI) -> OI`                            |                                                     |
 |                 | `R >>` **`overwrite`**`(C&) -> R`                          |                                                     |
 |                 | `R >>` **`passthrough`** `-> R`                            | `R& <<` **`passthrough`**                           |
 | Aggregation     | `R >>` **`adjacent_difference`**`[(BF)] -> CFR`            | `C& <<` **`adjacent_difference`**`[(BF)]`           |
@@ -264,7 +266,12 @@ Call a function on each element of a range, returning a reference to the input
 range. The `each_pair()` algorithm calls `f(x.first,x.second)` for each
 element.
 
-* `Range r >>` **`passthrough`** `-> Range2`
+* `Range r >>` **`output`**`(OutputIterator i)`
+
+Copy a range into an output iterator. Behaviour is undefined if the input
+range is infinite.
+
+* `Range r >>` **`passthrough`** `-> Range`
 * `Range& r <<` **`passthrough`**
 
 An empty do-nothing algorithm that just passes on its input range.

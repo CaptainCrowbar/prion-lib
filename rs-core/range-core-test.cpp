@@ -3,11 +3,24 @@
 #include "rs-core/unit-test.hpp"
 #include <algorithm>
 #include <forward_list>
+#include <iterator>
 #include <map>
 
 using namespace RS;
 using namespace RS::Range;
 using namespace std::literals;
+
+void test_core_range_core_output() {
+
+    Ustring s;
+
+    s.clear();  TRY("Hello"s >> output(std::back_inserter(s)));                                                              TEST_EQUAL(s, "Hello");
+    s.clear();  TRY("Hello"s >> passthrough >> output(std::back_inserter(s)));                                               TEST_EQUAL(s, "Hello");
+    s.clear();  TRY("Hello"s >> passthrough >> passthrough >> output(std::back_inserter(s)));                                TEST_EQUAL(s, "Hello");
+    s.clear();  TRY("Hello"s >> passthrough >> passthrough >> passthrough >> output(std::back_inserter(s)));                 TEST_EQUAL(s, "Hello");
+    s.clear();  TRY("Hello"s >> passthrough >> passthrough >> passthrough >> passthrough >> output(std::back_inserter(s)));  TEST_EQUAL(s, "Hello");
+
+}
 
 void test_core_range_core_passthrough() {
 

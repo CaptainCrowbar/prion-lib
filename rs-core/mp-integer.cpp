@@ -20,7 +20,7 @@ namespace RS {
         uint64_t sum = 0;
         for (size_t i = 0; i < common; ++i) {
             sum += uint64_t(rep[i]) + uint64_t(rhs.rep[i]);
-            rep[i] = uint32_t(sum & mask32);
+            rep[i] = uint32_t(sum);
             sum >>= 32;
         }
         const auto* rptr = &rep;
@@ -28,7 +28,7 @@ namespace RS {
             rptr = &rhs.rep;
         for (size_t i = common; i < rep.size(); ++i) {
             sum += uint64_t((*rptr)[i]);
-            rep[i] = uint32_t(sum & mask32);
+            rep[i] = uint32_t(sum);
             sum >>= 32;
         }
         if (sum)
@@ -323,13 +323,20 @@ namespace RS {
         } else {
             size_t m = x.rep.size(), n = y.rep.size();
             z.rep.assign(m + n, 0);
-            uint64_t sum = 0;
-            for (size_t k = 0; k < m + n; ++k) {
-                for (size_t i = std::min(k, m - 1), j = k - i; i != npos && j < n; --i, ++j)
-                    sum += uint64_t(x.rep[i]) * uint64_t(y.rep[j]);
-                z.rep[k] = uint32_t(sum & mask32);
-                sum >>= 32;
+            uint64_t carry = 0;
+            for (size_t k = 0; k <= m + n - 2; ++k) {
+                carry += uint64_t(z.rep[k]);
+                z.rep[k] = uint32_t(carry);
+                carry >>= 32;
+                size_t i_min = k < n ? 0 : k - n + 1;
+                size_t i_max = k < m ? k : m - 1;
+                for (size_t i = i_min; i <= i_max; ++i) {
+                    uint64_t p = uint64_t(x.rep[i]) * uint64_t(y.rep[k - i]) + uint64_t(z.rep[k]);
+                    z.rep[k] = uint32_t(p);
+                    carry += uint32_t(p >> 32);
+                }
             }
+            z.rep[m + n - 1] = uint32_t(carry);
             z.trim();
         }
     }

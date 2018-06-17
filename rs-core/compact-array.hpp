@@ -148,7 +148,7 @@ namespace RS {
     CompactArray<T, N>::CompactArray(CompactArray&& ca) noexcept {
         using namespace RS_Detail;
         reserve(ca.size());
-        uninitialized_move(ca.begin(), ca.end(), begin());
+        std::uninitialized_move(ca.begin(), ca.end(), begin());
         num = ca.num;
         ca.clear();
     }
@@ -177,7 +177,7 @@ namespace RS {
     template <typename T, size_t N>
     void CompactArray<T, N>::clear() noexcept {
         using namespace RS_Detail;
-        destroy(begin(), end());
+        std::destroy(begin(), end());
         if (! local)
             delete[] un.pc.ptr;
         num = 0;
@@ -188,7 +188,7 @@ namespace RS {
     void CompactArray<T, N>::reserve(size_t n) {
         using namespace RS_Detail;
         if (n <= num) {
-            destroy(begin() + n, end());
+            std::destroy(begin() + n, end());
             num = n;
             return;
         }
@@ -199,8 +199,8 @@ namespace RS {
             return;
         auto new_ptr = new raw_memory[new_cap];
         auto new_t_ptr = reinterpret_cast<T*>(new_ptr);
-        uninitialized_move(begin(), end(), new_t_ptr);
-        destroy(begin(), end());
+        std::uninitialized_move(begin(), end(), new_t_ptr);
+        std::destroy(begin(), end());
         if (! local)
             delete[] un.pc.ptr;
         un.pc.ptr = new_ptr;
@@ -226,14 +226,14 @@ namespace RS {
             auto old_ptr = un.pc.ptr;
             auto old_t_ptr = reinterpret_cast<T*>(old_ptr);
             local = true;
-            uninitialized_move(old_t_ptr, old_t_ptr + num, begin());
-            destroy(old_t_ptr, old_t_ptr + num);
+            std::uninitialized_move(old_t_ptr, old_t_ptr + num, begin());
+            std::destroy(old_t_ptr, old_t_ptr + num);
             delete[] old_ptr;
         } else {
             auto new_ptr = new raw_memory[num];
             auto new_t_ptr = reinterpret_cast<T*>(new_ptr);
-            uninitialized_move(begin(), end(), new_t_ptr);
-            destroy(begin(), end());
+            std::uninitialized_move(begin(), end(), new_t_ptr);
+            std::destroy(begin(), end());
             delete[] un.pc.ptr;
             un.pc.ptr = new_ptr;
             un.pc.cap = num;
@@ -279,7 +279,7 @@ namespace RS {
         } else {
             size_t n_new = std::distance(i, j);
             reserve(num + n_new);
-            uninitialized_move(i, j, this->begin() + n_old);
+            std::uninitialized_move(i, j, this->begin() + n_old);
             num += n_new;
         }
         return this->begin() + n_old;
@@ -354,11 +354,11 @@ namespace RS {
             reserve(num + n_inserted);
             auto insert_at = begin() + n_before;
             if (n_inserted < n_after) {
-                uninitialized_move(end() - n_inserted, end(), end());
+                std::uninitialized_move(end() - n_inserted, end(), end());
                 std::move_backward(insert_at, end() - n_inserted, end());
                 std::copy(j, k, insert_at);
             } else {
-                uninitialized_move(insert_at, end(), end() + n_inserted - n_after);
+                std::uninitialized_move(insert_at, end(), end() + n_inserted - n_after);
                 auto mid = j;
                 std::advance(mid, n_after);
                 std::copy(j, mid, insert_at);
@@ -397,7 +397,7 @@ namespace RS {
         size_t n_erase = j - i;
         auto mut = begin() + (i - begin());
         std::move(j, cend(), mut);
-        destroy(end() - n_erase, end());
+        std::destroy(end() - n_erase, end());
         num -= n_erase;
     }
 
@@ -423,19 +423,19 @@ namespace RS {
             size_t common = std::min(num, ca.num);
             std::swap_ranges(begin(), begin() + common, ca.begin());
             if (num > common) {
-                uninitialized_move(begin() + common, end(), ca.begin() + common);
-                destroy(begin() + common, end());
+                std::uninitialized_move(begin() + common, end(), ca.begin() + common);
+                std::destroy(begin() + common, end());
             } else if (ca.num > common) {
-                uninitialized_move(ca.begin() + common, ca.end(), begin() + common);
-                destroy(ca.begin() + common, ca.end());
+                std::uninitialized_move(ca.begin() + common, ca.end(), begin() + common);
+                std::destroy(ca.begin() + common, ca.end());
             }
             std::swap(num, ca.num);
         } else if (local) {
             auto p = ca.un.pc.ptr;
             auto c = ca.un.pc.cap;
             auto ca_ptr = reinterpret_cast<T*>(ca.un.mem);
-            uninitialized_move(begin(), end(), ca_ptr);
-            destroy(begin(), end());
+            std::uninitialized_move(begin(), end(), ca_ptr);
+            std::destroy(begin(), end());
             std::swap(num, ca.num);
             std::swap(local, ca.local);
             un.pc.ptr = p;

@@ -81,30 +81,6 @@ namespace RS {
 
     namespace RS_Detail {
 
-        #if (defined(__GNUC__) && ! defined(__clang__) && (__GNUC__ <= 6)) || (defined(_MSC_VER) && _MSC_VER <= 1900)
-
-            template <typename ForwardIterator>
-            void destroy(ForwardIterator i, ForwardIterator j) {
-                using T = typename std::iterator_traits<ForwardIterator>::value_type;
-                for (; i != j; ++i)
-                    (*i).~T();
-            }
-
-            template <typename InputIterator, typename ForwardIterator>
-            ForwardIterator uninitialized_move(InputIterator i, InputIterator j, ForwardIterator k) {
-                using T = typename std::iterator_traits<ForwardIterator>::value_type;
-                for (; i != j; ++i, ++k)
-                    new (&*k) T(std::move(*i));
-                return k;
-            }
-
-        #else
-
-            using std::destroy;
-            using std::uninitialized_move;
-
-        #endif
-
         // https://stackoverflow.com/questions/41207774/how-do-i-create-a-tuple-of-n-ts-from-an-array-of-t
         template <size_t... Sequence, typename Array>
         constexpr auto array_to_tuple_helper(const Array& array, std::index_sequence<Sequence...>) {

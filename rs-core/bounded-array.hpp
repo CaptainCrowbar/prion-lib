@@ -138,7 +138,7 @@ namespace RS {
     BoundedArray<T, N>::BoundedArray(BoundedArray&& ba) noexcept:
     mem(), num(ba.num) {
         using namespace RS_Detail;
-        uninitialized_move(ba.begin(), ba.end(), begin());
+        std::uninitialized_move(ba.begin(), ba.end(), begin());
     }
 
     template <typename T, size_t N>
@@ -165,7 +165,7 @@ namespace RS {
     template <typename T, size_t N>
     void BoundedArray<T, N>::clear() noexcept {
         using namespace RS_Detail;
-        destroy(begin(), end());
+        std::destroy(begin(), end());
         num = 0;
     }
 
@@ -173,7 +173,7 @@ namespace RS {
     void BoundedArray<T, N>::resize(size_t n, const T& t) {
         check_length(n);
         if (n < num)
-            destroy(begin() + n, end());
+            std::destroy(begin() + n, end());
         else if (n > num)
             std::uninitialized_fill(begin() + num, begin() + n, t);
         num = n;
@@ -218,7 +218,7 @@ namespace RS {
         } else {
             size_t n_new = std::distance(i, j);
             check_length(num + n_new);
-            uninitialized_move(i, j, this->begin() + n_old);
+            std::uninitialized_move(i, j, this->begin() + n_old);
             num += n_new;
         }
         return this->begin() + n_old;
@@ -293,11 +293,11 @@ namespace RS {
             check_length(num + n_inserted);
             auto insert_at = begin() + n_before;
             if (n_inserted < n_after) {
-                uninitialized_move(end() - n_inserted, end(), end());
+                std::uninitialized_move(end() - n_inserted, end(), end());
                 std::move_backward(insert_at, end() - n_inserted, end());
                 std::copy(j, k, insert_at);
             } else {
-                uninitialized_move(insert_at, end(), end() + n_inserted - n_after);
+                std::uninitialized_move(insert_at, end(), end() + n_inserted - n_after);
                 auto mid = j;
                 std::advance(mid, n_after);
                 std::copy(j, mid, insert_at);
@@ -336,7 +336,7 @@ namespace RS {
         size_t n_erase = j - i;
         auto mut = begin() + (i - begin());
         std::move(j, cend(), mut);
-        destroy(end() - n_erase, end());
+        std::destroy(end() - n_erase, end());
         num -= n_erase;
     }
 
@@ -361,11 +361,11 @@ namespace RS {
         size_t common = std::min(num, ba.num);
         std::swap_ranges(begin(), begin() + common, ba.begin());
         if (num > common) {
-            uninitialized_move(begin() + common, end(), ba.begin() + common);
-            destroy(begin() + common, end());
+            std::uninitialized_move(begin() + common, end(), ba.begin() + common);
+            std::destroy(begin() + common, end());
         } else if (ba.num > common) {
-            uninitialized_move(ba.begin() + common, ba.end(), begin() + common);
-            destroy(ba.begin() + common, ba.end());
+            std::uninitialized_move(ba.begin() + common, ba.end(), begin() + common);
+            std::destroy(ba.begin() + common, ba.end());
         }
         std::swap(num, ba.num);
     }

@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <array>
 #include <cstdlib>
-#include <cstring>
 #include <functional>
 #include <map>
 #include <memory>
@@ -1519,6 +1518,16 @@ void test_core_common_hash_functions() {
     TRY(h5 = hash_range(sv));
     TEST_EQUAL(h4, h5);
 
+    std::hash<int> ih;
+    std::hash<std::string> sh;
+
+    TRY(h1 = ih(42));          TRY(h2 = std_hash(42));          TEST_EQUAL(h1, h2);
+    TRY(h1 = ih(86));          TRY(h2 = std_hash(86));          TEST_EQUAL(h1, h2);
+    TRY(h1 = ih(99));          TRY(h2 = std_hash(99));          TEST_EQUAL(h1, h2);
+    TRY(h1 = sh("hello"s));    TRY(h2 = std_hash("hello"s));    TEST_EQUAL(h1, h2);
+    TRY(h1 = sh("world"s));    TRY(h2 = std_hash("world"s));    TEST_EQUAL(h1, h2);
+    TRY(h1 = sh("goodbye"s));  TRY(h2 = std_hash("goodbye"s));  TEST_EQUAL(h1, h2);
+
 }
 
 void test_core_common_scope_guards() {
@@ -1640,5 +1649,12 @@ void test_core_common_scope_guards() {
         TEST_EQUAL(s, "abc");
     }
     TEST_EQUAL(s, "abc");
+
+}
+
+void test_core_common_logging() {
+
+    TRY(logx("Log test:", 1, 2, 3, 4, 5));
+    TRY(logx("Log test:", 6, 7, 8, 9, 10));
 
 }

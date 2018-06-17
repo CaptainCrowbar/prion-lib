@@ -569,6 +569,10 @@ problems) calculates the hash of the supplied data; the second version takes
 an existing hash value and mixes it with additional data. All of these call
 the element type's `std::hash`.
 
+* `template <typename T> size_t` **`std_hash`**`(const T& t) noexcept`
+
+This simply calls `std::hash<T>::operator()` on its argument.
+
 * `template <typename... Args> struct` **`TupleHash`**
     * `size_t` **`operator()`**`(const tuple<Args...>& t) const`
 

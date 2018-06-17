@@ -14,6 +14,8 @@ $(BUILD)/channel.o: rs-core/channel.cpp rs-core/channel.hpp rs-core/common.hpp r
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/common-test.o: rs-core/common-test.cpp rs-core/common.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
+$(BUILD)/common.o: rs-core/common.cpp rs-core/common.hpp \
+    /usr/local/include/unicorn/utility.hpp
 $(BUILD)/compact-array-test.o: rs-core/compact-array-test.cpp rs-core/common.hpp rs-core/compact-array.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/digest-test.o: rs-core/digest-test.cpp rs-core/common.hpp rs-core/digest.hpp rs-core/string.hpp rs-core/unit-test.hpp \

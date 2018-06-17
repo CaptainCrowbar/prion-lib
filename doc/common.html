@@ -718,6 +718,12 @@ the element type's <code>std::hash</code>.</p>
 </div>
 <div class="defns">
 <ul>
+<li><code>template &lt;typename T&gt; size_t</code> <strong><code>std_hash</code></strong><code>(const T&amp; t) noexcept</code></li>
+</ul>
+<p>This simply calls <code>std::hash&lt;T&gt;::operator()</code> on its argument.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>template &lt;typename... Args&gt; struct</code> <strong><code>TupleHash</code></strong><ul>
 <li><code>size_t</code> <strong><code>operator()</code></strong><code>(const tuple&lt;Args...&gt;&amp; t) const</code></li>
 </ul>

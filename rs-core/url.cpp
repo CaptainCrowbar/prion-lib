@@ -1,9 +1,11 @@
 #include "rs-core/url.hpp"
 #include "rs-core/string.hpp"
+#include "unicorn/regex.hpp"
 #include <algorithm>
-#include <regex>
 #include <stdexcept>
 #include <string>
+
+using namespace RS::Unicorn;
 
 namespace RS {
 
@@ -26,13 +28,12 @@ namespace RS {
     }
 
     void Url::set_scheme(Uview new_scheme) {
-        static const std::regex pattern("[A-Za-z][A-Za-z0-9+.-]*(:(?://)?)?", std::regex_constants::optimize);
-        auto begin = new_scheme.data(), end = begin + new_scheme.size();
-        std::cmatch match;
-        if (! std::regex_match(begin, end, match, pattern))
+        static const Regex pattern("[a-z][a-z0-9+.-]*(:(?://)?)?", Regex::full | Regex::icase | Regex::optimize);
+        auto match = pattern(new_scheme);
+        if (! match)
             throw std::invalid_argument("Invalid URL scheme: " + quote(new_scheme));
         Ustring scheme_text = ascii_lowercase(new_scheme);
-        if (! match[1].matched) {
+        if (! match.matched(1)) {
             scheme_text += ':';
             if (empty() || has_slashes())
                 scheme_text += "//";
@@ -303,34 +304,33 @@ namespace RS {
 
     bool Url::try_parse(Uview s) {
         // scheme:[//][[user[:password]@]host[:port]][/path][?query][#fragment]
-        static const std::regex pattern(
-            "([A-Za-z][A-Za-z0-9+.-]*:(?://)?)"  // scheme
-            "(?:"
-                "(?:"
-                    "([^/:@]+)"  // user
-                    "([^/@]*@)"  // password
-                ")?"
-                "([^/:@]+)"  // host
-                "(:\\d+)?"   // port
-            ")?"
-            "(/[^#?]*)?"   // path
-            "(\\?[^#]*)?"  // query
-            "(#.*)?",      // fragment
-            std::regex_constants::optimize);
-        auto begin = s.data(), end = begin + s.size();
-        if (std::find_if(begin, end, ascii_iscntrl) != end)
+        static const Regex pattern(R"(
+            ([a-z][a-z0-9+.-]*:(?://)?)  # scheme
+            (?:
+                (?:
+                    ([^/:@]+)  # user
+                    ([^/@]*@)  # password
+                )?
+                ([^/:@]+)  # host
+                (:\d+)?    # port
+            )?
+            (/[^#?]*)?  # path
+            (\?[^#]*)?  # query
+            (\#.*)?     # fragment
+            )", Regex::extended | Regex::full | Regex::icase | Regex::optimize);
+        if (std::find_if(s.begin(), s.end(), ascii_iscntrl) != s.end())
             return false;
-        std::cmatch match;
-        if (! std::regex_match(begin, end, match, pattern))
+        auto match = pattern(s);
+        if (! match)
             return false;
         text = Ustring(s);
-        user_pos = int(match[1].length());
-        password_pos = user_pos + int(match[2].length());
-        host_pos = password_pos + int(match[3].length());
-        port_pos = host_pos + int(match[4].length());
-        path_pos = port_pos + int(match[5].length());
-        query_pos = path_pos + int(match[6].length());
-        fragment_pos = query_pos + int(match[7].length());
+        user_pos = int(match.count(1));
+        password_pos = user_pos + int(match.count(2));
+        host_pos = password_pos + int(match.count(3));
+        port_pos = host_pos + int(match.count(4));
+        path_pos = port_pos + int(match.count(5));
+        query_pos = path_pos + int(match.count(6));
+        fragment_pos = query_pos + int(match.count(7));
         return true;
     }
 

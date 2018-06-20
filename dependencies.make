@@ -129,7 +129,7 @@ $(BUILD)/unit-test.o: rs-core/unit-test.cpp  \
 $(BUILD)/url-test.o: rs-core/url-test.cpp rs-core/common.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/url.hpp \
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/url.o: rs-core/url.cpp rs-core/common.hpp rs-core/string.hpp rs-core/url.hpp \
-    /usr/local/include/unicorn/utility.hpp
+    /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/regex.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/uuid-test.o: rs-core/uuid-test.cpp rs-core/common.hpp rs-core/digest.hpp rs-core/float.hpp rs-core/meta.hpp rs-core/random.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/uuid.hpp rs-core/vector.hpp \
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/uuid.o: rs-core/uuid.cpp rs-core/common.hpp rs-core/digest.hpp rs-core/float.hpp rs-core/meta.hpp rs-core/random.hpp rs-core/string.hpp rs-core/uuid.hpp rs-core/vector.hpp \

@@ -58,9 +58,7 @@ overflow the integer type's range.</p>
 <li><code>Rational::</code><strong><code>Rational</code></strong><code>()</code></li>
 <li><code>template &lt;typename T2&gt; Rational::</code><strong><code>Rational</code></strong><code>(T2 t)</code></li>
 <li><code>template &lt;typename T2, typename T3&gt; Rational::</code><strong><code>Rational</code></strong><code>(T2 n, T3 d)</code></li>
-<li><code>explicit Rational::</code><strong><code>Rational</code></strong><code>(const Ustring&amp; s)</code></li>
-<li><code>explicit Rational::</code><strong><code>Rational</code></strong><code>(const char* s)</code></li>
-<li><code>Rational::</code><strong><code>~Rational() noexcept</code></strong></li>
+<li><code>extional::</code><strong><code>~Rational</code></strong><code>() noexcept</code></li>
 <li><code>Rational::</code><strong><code>Rational</code></strong><code>(const Rational&amp; r)</code></li>
 <li><code>Rational::</code><strong><code>Rational</code></strong><code>(Rational&amp;&amp; r) noexcept</code></li>
 <li><code>Rational&amp; Rational::</code><strong><code>operator=</code></strong><code>(const Rational&amp; r)</code></li>
@@ -69,12 +67,9 @@ overflow the integer type's range.</p>
 </ul>
 <p>Life cycle functions. The first constructor sets the number to zero; the
 second sets it to an integer; the third to the ratio of two integers. <code>T2</code> and
-<code>T3</code> must be implicitly convertible to <code>T</code>. The constructors from a string can
-read an integer or rational number in simple or mixed form, with whitespace
-between any of the elements.</p>
-<p>The string constructors will throw <code>std::invalid_argument</code> if the string does
-not contain a valid value; any constructor that can take a numerator and
-denominator will throw <code>std::domain_error</code> if the denominator is zero.</p>
+<code>T3</code> must be implicitly convertible to <code>T</code>. The constructor that takes a
+numerator and denominator will throw <code>std::domain_error</code> if the denominator is
+zero.</p>
 </div>
 <div class="defns">
 <ul>
@@ -155,6 +150,19 @@ of the functions; <code>round()</code> rounds halves toward positive infinity.</
 </ul>
 <p>Return the sign of a rational number (-1 if negative, 0 if zero, 1 if
 positive).</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool Rational::</code><strong><code>try_parse</code></strong><code>(Uview s)</code></li>
+<li><code>static Rational Rational::</code><strong><code>parse</code></strong><code>(Uview s)</code></li>
+</ul>
+<p>Parse a string into a rational number. The string can be in integer, simple,
+or mixed form (<code>"123"</code>, <code>"123/456"</code>, or <code>"123 456/789"</code>), with an optional
+leading sign; non-significant whitespace is ignored. The <code>try_parse()</code>
+function modifies the current <code>Rational</code> object in place, while <code>parse()</code>
+returns a new object. If the argument is not a valid rational, <code>try_parse()</code>
+will return false and leave the current object unchanged, while <code>parse()</code> will
+throw <code>std::invalid_argument</code>.</p>
 </div>
 <div class="defns">
 <ul>

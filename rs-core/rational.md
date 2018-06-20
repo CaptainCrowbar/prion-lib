@@ -37,9 +37,7 @@ Member types.
 * `Rational::`**`Rational`**`()`
 * `template <typename T2> Rational::`**`Rational`**`(T2 t)`
 * `template <typename T2, typename T3> Rational::`**`Rational`**`(T2 n, T3 d)`
-* `explicit Rational::`**`Rational`**`(const Ustring& s)`
-* `explicit Rational::`**`Rational`**`(const char* s)`
-* `Rational::`**`~Rational() noexcept`**
+* `extional::`**`~Rational`**`() noexcept`
 * `Rational::`**`Rational`**`(const Rational& r)`
 * `Rational::`**`Rational`**`(Rational&& r) noexcept`
 * `Rational& Rational::`**`operator=`**`(const Rational& r)`
@@ -48,13 +46,9 @@ Member types.
 
 Life cycle functions. The first constructor sets the number to zero; the
 second sets it to an integer; the third to the ratio of two integers. `T2` and
-`T3` must be implicitly convertible to `T`. The constructors from a string can
-read an integer or rational number in simple or mixed form, with whitespace
-between any of the elements.
-
-The string constructors will throw `std::invalid_argument` if the string does
-not contain a valid value; any constructor that can take a numerator and
-denominator will throw `std::domain_error` if the denominator is zero.
+`T3` must be implicitly convertible to `T`. The constructor that takes a
+numerator and denominator will throw `std::domain_error` if the denominator is
+zero.
 
 * `explicit Rational::`**`operator bool`**`() const noexcept`
 * `bool Rational::`**`operator!`**`() const noexcept`
@@ -117,6 +111,17 @@ Returns the reciprocal of the rational number. This will throw
 
 Return the sign of a rational number (-1 if negative, 0 if zero, 1 if
 positive).
+
+* `bool Rational::`**`try_parse`**`(Uview s)`
+* `static Rational Rational::`**`parse`**`(Uview s)`
+
+Parse a string into a rational number. The string can be in integer, simple,
+or mixed form (`"123"`, `"123/456"`, or `"123 456/789"`), with an optional
+leading sign; non-significant whitespace is ignored. The `try_parse()`
+function modifies the current `Rational` object in place, while `parse()`
+returns a new object. If the argument is not a valid rational, `try_parse()`
+will return false and leave the current object unchanged, while `parse()` will
+throw `std::invalid_argument`.
 
 * `T Rational::`**`whole`**`() const`
 * `Rational Rational::`**`frac`**`() const`

@@ -3,25 +3,15 @@
 #include "rs-core/common.hpp"
 #include "rs-core/string.hpp"
 #include <algorithm>
-#include <cstdlib>
 #include <ostream>
-#include <regex>
 #include <stdexcept>
-#include <type_traits>
+#include <vector>
 
 namespace RS {
 
     namespace RS_Detail {
 
-        template <typename T>
-        struct IntegerParser {
-            T operator()(const Ustring& s) const noexcept {
-                if (std::is_signed<T>::value)
-                    return T(strtoll(s.data(), nullptr, 10));
-                else
-                    return T(strtoull(s.data(), nullptr, 10));
-            }
-        };
+        bool parse_rational(Uview s, std::vector<Uview>& parts, bool& neg) noexcept;
 
     }
 
@@ -30,38 +20,39 @@ namespace RS {
     public:
         using integer_type = T;
         Rational() = default;
-        template <typename T2> Rational(T2 t): nm(t), dn(T(1)) {}
-        template <typename T2, typename T3> Rational(T2 n, T3 d): nm(n), dn(d) { reduce(); }
-        explicit Rational(const Ustring& s);
-        explicit Rational(const char* s): Rational(cstr(s)) {}
-        template <typename T2> Rational& operator=(T2 t) { nm = t; dn = T(1); return *this; }
-        explicit operator bool() const noexcept { return nm != T(0); }
-        bool operator!() const noexcept { return nm == T(0); }
-        template <typename T2> explicit operator T2() const { return T2(nm) / T2(dn); }
+        template <typename T2> Rational(T2 t): numer(t), denom(T(1)) {}
+        template <typename T2, typename T3> Rational(T2 n, T3 d): numer(n), denom(d) { reduce(); }
+        template <typename T2> Rational& operator=(T2 t) { numer = t; denom = T(1); return *this; }
+        explicit operator bool() const noexcept { return numer != T(0); }
+        bool operator!() const noexcept { return numer == T(0); }
+        template <typename T2> explicit operator T2() const { return T2(numer) / T2(denom); }
         Rational operator+() const { return *this; }
         Rational operator-() const;
         Rational& operator+=(const Rational& rhs) { return *this = *this + rhs; }
         Rational& operator-=(const Rational& rhs) { return *this = *this - rhs; }
         Rational& operator*=(const Rational& rhs) { return *this = *this * rhs; }
         Rational& operator/=(const Rational& rhs) { return *this = *this / rhs; }
-        T num() const { return nm; }
-        T den() const { return dn; }
+        T num() const { return numer; }
+        T den() const { return denom; }
         Rational abs() const;
-        T floor() const { return quo(nm, dn); }
+        T floor() const { return quo(numer, denom); }
         T ceil() const;
         T round() const;
-        bool is_integer() const noexcept { return dn == T(1); }
+        bool is_integer() const noexcept { return denom == T(1); }
         Rational reciprocal() const;
-        int sign() const noexcept { return nm > T(0) ? 1 : nm == T(0) ? 0 : -1; }
+        int sign() const noexcept { return numer > T(0) ? 1 : numer == T(0) ? 0 : -1; }
         T whole() const;
         Rational frac() const;
         Ustring str() const;
         Ustring mixed() const;
-        Ustring simple() const { return to_str(nm) + '/' + to_str(dn); }
+        Ustring simple() const { return to_str(numer) + '/' + to_str(denom); }
+        bool try_parse(Uview s);
+        static Rational parse(Uview s);
     private:
         using ldouble = long double;
-        T nm = T(0), dn = T(1);
+        T numer = T(0), denom = T(1);
         void reduce();
+        static T parse_integer(Uview s) noexcept;
     };
 
     using Rat = Rational<int>;
@@ -74,41 +65,9 @@ namespace RS {
     using Urat64 = Rational<uint64_t>;
 
     template <typename T>
-    Rational<T>::Rational(const Ustring& s) {
-        static constexpr RS_Detail::IntegerParser<T> make_integer;
-        static const std::regex int_pattern("([+-]?)\\s*(\\d+)\\s*");
-        static const std::regex rat_pattern("([+-]?)\\s*(?:(\\d+)\\s+)?(\\d+)\\s*/\\s*(\\d+)\\s*");
-        Ustring ipart, npart, dpart;
-        bool neg = false;
-        std::smatch match;
-        if (std::regex_match(s, match, int_pattern)) {
-            ipart = match[2];
-            npart.clear();
-            dpart.clear();
-            neg = match[1] == "-";
-        } else if (std::regex_match(s, match, rat_pattern)) {
-            ipart = match[2];
-            npart = match[3];
-            dpart = match[4];
-            neg = match[1] == "-";
-        } else {
-            throw std::invalid_argument("Invalid rational number: " + quote(s));
-        }
-        if (! npart.empty())
-            nm = make_integer(npart);
-        if (! dpart.empty())
-            dn = make_integer(dpart);
-        if (! ipart.empty())
-            nm += dn * make_integer(ipart);
-        reduce();
-        if (neg)
-            nm = - nm;
-    }
-
-    template <typename T>
     Rational<T> Rational<T>::operator-() const {
         auto r = *this;
-        r.nm = - r.nm;
+        r.numer = - r.numer;
         return r;
     }
 
@@ -135,14 +94,14 @@ namespace RS {
     template <typename T>
     Rational<T> Rational<T>::abs() const {
         auto r = *this;
-        if (nm < T(0))
-            r.nm = - nm;
+        if (numer < T(0))
+            r.numer = - numer;
         return r;
     }
 
     template <typename T>
     T Rational<T>::ceil() const {
-        auto qr = divide(nm, dn);
+        auto qr = divide(numer, denom);
         T q = qr.first;
         if (qr.second != T(0))
             q += T(1);
@@ -151,45 +110,45 @@ namespace RS {
 
     template <typename T>
     T Rational<T>::round() const {
-        auto qr = divide(nm, dn);
+        auto qr = divide(numer, denom);
         T q = qr.first;
-        if (T(2) * qr.second >= dn)
+        if (T(2) * qr.second >= denom)
             q += T(1);
         return q;
     }
 
     template <typename T>
     Rational<T> Rational<T>::reciprocal() const {
-        if (nm == T(0))
+        if (numer == T(0))
             throw std::domain_error("Division by zero");
         auto r = *this;
-        std::swap(r.nm, r.dn);
+        std::swap(r.numer, r.denom);
         return r;
     }
 
     template <typename T>
     T Rational<T>::whole() const {
-        if (nm >= T(0))
-            return nm / dn;
+        if (numer >= T(0))
+            return numer / denom;
         else
-            return - (- nm / dn);
+            return - (- numer / denom);
     }
 
     template <typename T>
     Rational<T> Rational<T>::frac() const {
         auto r = *this;
-        if (nm >= T(0))
-            r.nm = nm % dn;
+        if (numer >= T(0))
+            r.numer = numer % denom;
         else
-            r.nm = - (- nm % dn);
+            r.numer = - (- numer % denom);
         return r;
     }
 
     template <typename T>
     Ustring Rational<T>::str() const {
-        Ustring s = to_str(nm);
-        if (dn > T(1))
-            s += '/' + to_str(dn);
+        Ustring s = to_str(numer);
+        if (denom > T(1))
+            s += '/' + to_str(denom);
         return s;
     }
 
@@ -211,16 +170,52 @@ namespace RS {
     }
 
     template <typename T>
+    bool Rational<T>::try_parse(Uview s) {
+        std::vector<Uview> parts;
+        bool neg = false;
+        if (! RS_Detail::parse_rational(s, parts, neg))
+            return false;
+        numer = parse_integer(parts[0]);
+        if (parts.size() == 1)
+            denom = T(1);
+        else
+            denom = parse_integer(parts.back());
+        if (parts.size() == 3)
+            numer = numer * denom + parse_integer(parts[1]);
+        if (neg)
+            numer = - numer;
+        reduce();
+        return true;
+    }
+
+    template <typename T>
+    Rational<T> Rational<T>::parse(Uview s) {
+        Rational r;
+        if (! r.try_parse(s))
+            throw std::invalid_argument("Invalid rational number: " + quote(s));
+        return r;
+    }
+
+    template <typename T>
     void Rational<T>::reduce() {
-        if (dn == T(0))
+        if (denom == T(0))
             throw std::domain_error("Division by zero");
-        if (dn < T(0)) {
-            nm = - nm;
-            dn = - dn;
+        if (denom < T(0)) {
+            numer = - numer;
+            denom = - denom;
         }
-        T g = gcd(nm, dn);
-        nm /= g;
-        dn /= g;
+        T g = gcd(numer, denom);
+        numer /= g;
+        denom /= g;
+    }
+
+    template <typename T>
+    T Rational<T>::parse_integer(Uview s) noexcept {
+        static const T ten(10);
+        T t(0);
+        for (char c: s)
+            t = ten * t + T(c - '0');
+        return t;
     }
 
     template <typename T1, typename T2> bool operator==(const Rational<T1>& x, const Rational<T2>& y) { return x.num() == y.num() && x.den() == y.den(); }

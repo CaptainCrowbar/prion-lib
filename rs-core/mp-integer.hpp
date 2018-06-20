@@ -190,13 +190,6 @@ namespace RS {
 
     // Related types
 
-    namespace RS_Detail {
-
-        template <> struct IntegerParser<Nat> { Nat operator()(const Ustring& s) const noexcept { return Nat(s); } };
-        template <> struct IntegerParser<Int> { Int operator()(const Ustring& s) const noexcept { return Int(s); } };
-
-    }
-
     using Uratmp = Rational<Nat>;
     using Ratmp = Rational<Int>;
 

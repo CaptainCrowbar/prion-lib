@@ -84,6 +84,8 @@ $(BUILD)/range-transformation-test.o: rs-core/range-transformation-test.cpp rs-c
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/rational-test.o: rs-core/rational-test.cpp rs-core/common.hpp rs-core/rational.hpp rs-core/string.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
+$(BUILD)/rational.o: rs-core/rational.cpp rs-core/common.hpp rs-core/rational.hpp rs-core/string.hpp \
+    /usr/local/include/unicorn/utility.hpp
 $(BUILD)/ring-buffer-test.o: rs-core/ring-buffer-test.cpp rs-core/common.hpp rs-core/ring-buffer.hpp rs-core/string.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/scale-map-test.o: rs-core/scale-map-test.cpp rs-core/common.hpp rs-core/float.hpp rs-core/meta.hpp rs-core/scale-map.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp \

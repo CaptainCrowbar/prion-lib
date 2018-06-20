@@ -178,18 +178,18 @@ void test_core_rational_parsing() {
 
     Rat r;
 
-    TRY(r = Rat("0"));       TEST_EQUAL(r.num(), 0);   TEST_EQUAL(r.den(), 1);
-    TRY(r = Rat("5"));       TEST_EQUAL(r.num(), 5);   TEST_EQUAL(r.den(), 1);
-    TRY(r = Rat("-5"));      TEST_EQUAL(r.num(), -5);  TEST_EQUAL(r.den(), 1);
-    TRY(r = Rat("1/3"));     TEST_EQUAL(r.num(), 1);   TEST_EQUAL(r.den(), 3);
-    TRY(r = Rat("4/6"));     TEST_EQUAL(r.num(), 2);   TEST_EQUAL(r.den(), 3);
-    TRY(r = Rat("-1/3"));    TEST_EQUAL(r.num(), -1);  TEST_EQUAL(r.den(), 3);
-    TRY(r = Rat("-4/6"));    TEST_EQUAL(r.num(), -2);  TEST_EQUAL(r.den(), 3);
-    TRY(r = Rat("1 2/3"));   TEST_EQUAL(r.num(), 5);   TEST_EQUAL(r.den(), 3);
-    TRY(r = Rat("-1 2/3"));  TEST_EQUAL(r.num(), -5);  TEST_EQUAL(r.den(), 3);
+    TRY(r = Rat::parse("0"));       TEST_EQUAL(r.num(), 0);   TEST_EQUAL(r.den(), 1);
+    TRY(r = Rat::parse("5"));       TEST_EQUAL(r.num(), 5);   TEST_EQUAL(r.den(), 1);
+    TRY(r = Rat::parse("-5"));      TEST_EQUAL(r.num(), -5);  TEST_EQUAL(r.den(), 1);
+    TRY(r = Rat::parse("1/3"));     TEST_EQUAL(r.num(), 1);   TEST_EQUAL(r.den(), 3);
+    TRY(r = Rat::parse("4/6"));     TEST_EQUAL(r.num(), 2);   TEST_EQUAL(r.den(), 3);
+    TRY(r = Rat::parse("-1/3"));    TEST_EQUAL(r.num(), -1);  TEST_EQUAL(r.den(), 3);
+    TRY(r = Rat::parse("-4/6"));    TEST_EQUAL(r.num(), -2);  TEST_EQUAL(r.den(), 3);
+    TRY(r = Rat::parse("1 2/3"));   TEST_EQUAL(r.num(), 5);   TEST_EQUAL(r.den(), 3);
+    TRY(r = Rat::parse("-1 2/3"));  TEST_EQUAL(r.num(), -5);  TEST_EQUAL(r.den(), 3);
 
-    TEST_THROW(r = Rat(""), std::invalid_argument);
-    TEST_THROW(r = Rat("1 2"), std::invalid_argument);
-    TEST_THROW(r = Rat("1 -2/3"), std::invalid_argument);
+    TEST_THROW(r = Rat::parse(""), std::invalid_argument);
+    TEST_THROW(r = Rat::parse("1 2"), std::invalid_argument);
+    TEST_THROW(r = Rat::parse("1 -2/3"), std::invalid_argument);
 
 }

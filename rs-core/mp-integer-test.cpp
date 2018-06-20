@@ -1042,18 +1042,18 @@ void test_core_mp_integer_rational_parsing() {
 
     Ratmp r;
 
-    TRY(r = Ratmp("0"));       TEST_EQUAL(r.num(), 0);   TEST_EQUAL(r.den(), 1);
-    TRY(r = Ratmp("5"));       TEST_EQUAL(r.num(), 5);   TEST_EQUAL(r.den(), 1);
-    TRY(r = Ratmp("-5"));      TEST_EQUAL(r.num(), -5);  TEST_EQUAL(r.den(), 1);
-    TRY(r = Ratmp("1/3"));     TEST_EQUAL(r.num(), 1);   TEST_EQUAL(r.den(), 3);
-    TRY(r = Ratmp("4/6"));     TEST_EQUAL(r.num(), 2);   TEST_EQUAL(r.den(), 3);
-    TRY(r = Ratmp("-1/3"));    TEST_EQUAL(r.num(), -1);  TEST_EQUAL(r.den(), 3);
-    TRY(r = Ratmp("-4/6"));    TEST_EQUAL(r.num(), -2);  TEST_EQUAL(r.den(), 3);
-    TRY(r = Ratmp("1 2/3"));   TEST_EQUAL(r.num(), 5);   TEST_EQUAL(r.den(), 3);
-    TRY(r = Ratmp("-1 2/3"));  TEST_EQUAL(r.num(), -5);  TEST_EQUAL(r.den(), 3);
+    TRY(r = Ratmp::parse("0"));       TEST_EQUAL(r.num(), 0);   TEST_EQUAL(r.den(), 1);
+    TRY(r = Ratmp::parse("5"));       TEST_EQUAL(r.num(), 5);   TEST_EQUAL(r.den(), 1);
+    TRY(r = Ratmp::parse("-5"));      TEST_EQUAL(r.num(), -5);  TEST_EQUAL(r.den(), 1);
+    TRY(r = Ratmp::parse("1/3"));     TEST_EQUAL(r.num(), 1);   TEST_EQUAL(r.den(), 3);
+    TRY(r = Ratmp::parse("4/6"));     TEST_EQUAL(r.num(), 2);   TEST_EQUAL(r.den(), 3);
+    TRY(r = Ratmp::parse("-1/3"));    TEST_EQUAL(r.num(), -1);  TEST_EQUAL(r.den(), 3);
+    TRY(r = Ratmp::parse("-4/6"));    TEST_EQUAL(r.num(), -2);  TEST_EQUAL(r.den(), 3);
+    TRY(r = Ratmp::parse("1 2/3"));   TEST_EQUAL(r.num(), 5);   TEST_EQUAL(r.den(), 3);
+    TRY(r = Ratmp::parse("-1 2/3"));  TEST_EQUAL(r.num(), -5);  TEST_EQUAL(r.den(), 3);
 
-    TEST_THROW(r = Ratmp(""), std::invalid_argument);
-    TEST_THROW(r = Ratmp("1 2"), std::invalid_argument);
-    TEST_THROW(r = Ratmp("1 -2/3"), std::invalid_argument);
+    TEST_THROW(r = Ratmp::parse(""), std::invalid_argument);
+    TEST_THROW(r = Ratmp::parse("1 2"), std::invalid_argument);
+    TEST_THROW(r = Ratmp::parse("1 -2/3"), std::invalid_argument);
 
 }

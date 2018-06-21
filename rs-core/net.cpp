@@ -1,6 +1,7 @@
 #include "rs-core/net.hpp"
 #include "rs-core/digest.hpp"
 #include "rs-core/string.hpp"
+#include "unicorn/utf.hpp"
 #include <algorithm>
 #include <cerrno>
 #include <chrono>
@@ -18,6 +19,7 @@
     #include <sys/select.h>
 #endif
 
+using namespace RS::Unicorn;
 using namespace std::chrono;
 using namespace std::literals;
 
@@ -118,7 +120,7 @@ namespace RS {
         public std::error_category {
         public:
             AddrinfoCategory() {}
-            virtual Ustring message(int ev) const { return cstr(gai_strerror(ev)); }
+            virtual Ustring message(int ev) const { return to_utf8(cstr(gai_strerror(ev)), Utf::replace); }
             virtual const char* name() const noexcept { return "Addrinfo"; }
         };
 

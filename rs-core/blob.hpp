@@ -1,13 +1,8 @@
 #pragma once
 
 #include "rs-core/common.hpp"
-#include "rs-core/digest.hpp"
-#include "rs-core/string.hpp"
-#include <algorithm>
 #include <cstdlib>
 #include <functional>
-#include <new>
-#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -42,15 +37,15 @@ namespace RS {
         void copy(const void* p, size_t n) { Blob b; b.init(p, n); swap(b); }
         bool empty() const noexcept { return len == 0; }
         void fill(uint8_t x) noexcept { memset(ptr, x, len); }
-        size_t hash() const noexcept { return Djb2a()(ptr, len); }
-        Ustring hex(size_t block = 0) const { return hexdump(ptr, len, block); }
+        size_t hash() const noexcept;
+        Ustring hex(size_t block = 0) const;
         void reset(size_t n) { Blob b(n); swap(b); }
         void reset(size_t n, uint8_t x) { Blob b(n, x); swap(b); }
         void reset(void* p, size_t n) { Blob b(p, n); swap(b); }
         template <typename F> void reset(void* p, size_t n, F f) { Blob b(p, n, f); swap(b); }
         size_t size() const noexcept { return len; }
-        std::string str() const { return empty() ? std::string() : std::string(c_data(), len); }
-        void swap(Blob& b) noexcept { std::swap(ptr, b.ptr); std::swap(len, b.len); del.swap(b.del); }
+        std::string str() const;
+        void swap(Blob& b) noexcept;
         static Blob from_hex(const Ustring& s);
     private:
         void* ptr = nullptr;
@@ -60,51 +55,8 @@ namespace RS {
         void init(const void* p, size_t n);
     };
 
-    inline Blob Blob::from_hex(const Ustring& s) {
-        std::string buf;
-        buf.reserve(s.size() / 2);
-        auto i = s.begin(), end = s.end();
-        while (i != end) {
-            auto j = std::find_if(i, end, ascii_isalnum);
-            if (j == end)
-                break;
-            i = std::find_if_not(j, end, ascii_isxdigit);
-            if ((i != end && ascii_isalnum(*i)) || (j - i) % 2)
-                throw std::invalid_argument("Invalid hex string");
-            while (j != i)
-                buf += char(RS_Detail::decode_hex_byte(j, i));
-        }
-        Blob b(buf.size());
-        memcpy(b.data(), buf.data(), buf.size());
-        return b;
-    }
-
-    inline void Blob::init(size_t n) {
-        if (n) {
-            ptr = std::malloc(n);
-            if (! ptr)
-                throw std::bad_alloc();
-            len = n;
-            del = &std::free;
-        }
-    }
-
-    inline void Blob::init(const void* p, size_t n) {
-        if (p && n) {
-            init(n);
-            memcpy(ptr, p, n);
-        }
-    }
-
-    inline bool operator==(const Blob& lhs, const Blob& rhs) noexcept {
-        return lhs.size() == rhs.size() && memcmp(lhs.data(), rhs.data(), lhs.size()) == 0;
-    }
-
-    inline bool operator<(const Blob& lhs, const Blob& rhs) noexcept {
-        auto cmp = memcmp(lhs.data(), rhs.data(), std::min(lhs.size(), rhs.size()));
-        return cmp < 0 || (cmp == 0 && lhs.size() < rhs.size());
-    }
-
+    bool operator==(const Blob& lhs, const Blob& rhs) noexcept;
+    bool operator<(const Blob& lhs, const Blob& rhs) noexcept;
     inline void swap(Blob& b1, Blob& b2) noexcept { b1.swap(b2); }
 
 }

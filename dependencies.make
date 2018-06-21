@@ -2,7 +2,9 @@ $(BUILD)/algorithm-test.o: rs-core/algorithm-test.cpp rs-core/algorithm.hpp rs-c
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/array-map-test.o: rs-core/array-map-test.cpp rs-core/array-map.hpp rs-core/common.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
-$(BUILD)/blob-test.o: rs-core/blob-test.cpp rs-core/blob.hpp rs-core/common.hpp rs-core/digest.hpp rs-core/string.hpp rs-core/unit-test.hpp \
+$(BUILD)/blob-test.o: rs-core/blob-test.cpp rs-core/blob.hpp rs-core/common.hpp rs-core/unit-test.hpp \
+    /usr/local/include/unicorn/utility.hpp
+$(BUILD)/blob.o: rs-core/blob.cpp rs-core/blob.hpp rs-core/common.hpp rs-core/digest.hpp rs-core/string.hpp \
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/bounded-array-test.o: rs-core/bounded-array-test.cpp rs-core/bounded-array.hpp rs-core/common.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp

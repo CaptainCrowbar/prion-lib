@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <memory>
 #include <new>
-#include <regex>
 
 #ifdef __GNUC__
     #include <cxxabi.h>
@@ -12,18 +11,45 @@ namespace RS {
 
     // Case conversion functions
 
+    namespace {
+
+        char name_char_type(char c) noexcept {
+            return ascii_isdigit(c) ? 'd' :
+                ascii_islower(c) ? 'l' :
+                ascii_isupper(c) ? 'u' : 'x';
+        }
+
+    }
+
     Strings name_breakdown(Uview name) {
-        static const std::regex word_pattern(
-            "[[:digit:]]+"
-            "|[[:lower:]]+"
-            "|[[:upper:]]+(?![[:lower:]])"
-            "|[[:upper:]][[:lower:]]*"
-        );
-        const char* cbegin = name.data();
-        const char* cend = cbegin + name.size();
-        std::cregex_iterator rbegin(cbegin, cend, word_pattern), rend;
         Strings vec;
-        std::transform(rbegin, rend, append(vec), [] (auto& m) { return m.str(); });
+        auto i = name.begin(), end = name.end();
+        while (i != end) {
+            while (i != end && name_char_type(*i) == 'x')
+                ++i;
+            if (i == end)
+                break;
+            char ctype = name_char_type(*i);
+            auto j = i + 1;
+            if (ctype == 'u') {
+                while (j != end && name_char_type(*j) == 'u')
+                    ++j;
+                if (name_char_type(*j) == 'l') {
+                    if (j - i == 1) {
+                        ++j;
+                        while (j != end && name_char_type(*j) == 'l')
+                            ++j;
+                    } else {
+                        --j;
+                    }
+                }
+            } else {
+                while (j != end && name_char_type(*j) == ctype)
+                    ++j;
+            }
+            vec.push_back(Ustring(i, j));
+            i = j;
+        }
         return vec;
     }
 

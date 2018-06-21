@@ -276,32 +276,3 @@ string, as a `std::type_info` or `std:type_index` object, as a type argument
 to a template function (e.g. `type_name<int>()`), or as an object whose type
 is to be named (e.g. `type_name(42)`). The last version will report the
 dynamic type of the referenced object.
-
-## Unicode functions ##
-
-In all of these functions, the argument type `S` may be an instantiation of
-`std::basic_string` or `std::basic_string_view` on an 8, 16, or 32 bit
-character type, or a pointer to a null terminated string of one of those
-types. The input string is assumed to be in a UTF representation determined by
-the size of the character type. Behaviour is undefined if a null pointer is
-passed.
-
-* `template <typename S2, typename S> S2` **`uconv`**`(const S& s)`
-
-Converts between UTF representations. If the input and output character types
-are the same size, the input string is copied to the output without any
-validity checking; otherwise, invalid UTF in the input is replaced with the
-standard Unicode replacement character (`U+FFFD`) in the output.
-
-* `template <typename S> size_t` **`ulength`**`(const S& s) noexcept`
-
-Returns the number of characters (Unicode scalar values) in a string. The
-result is unspecified if the string is not valid UTF.
-
-* `template <typename S> bool` **`uvalid`**`(const S& s) noexcept`
-* `template <typename S> bool` **`uvalid`**`(const S& s, size_t& n) noexcept`
-
-Check a string for valid UTF encoding. The second version reports the number
-of code units before an invalid code sequence was encountered (i.e. the size
-of a valid UTF prefix; this will be equal to the length of `s` if the function
-returns true). These will always succeed for an empty string.

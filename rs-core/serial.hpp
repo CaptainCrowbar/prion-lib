@@ -11,6 +11,7 @@
 #include "rs-core/uuid.hpp"
 #include "rs-core/vector.hpp"
 #include "unicorn/path.hpp"
+#include "unicorn/utf.hpp"
 #include <algorithm>
 #include <chrono>
 #include <exception>
@@ -168,7 +169,7 @@ namespace RS {
         template <typename T>
         Persist<T>::Persist(PersistState& store, const Ustring& key, const T& init):
         db_ptr(&store), db_key(key) {
-            if (key.empty() || ! uvalid(key))
+            if (key.empty() || ! Unicorn::valid_string(key))
                 throw std::invalid_argument("Invalid persistent storage key: " + quote(key));
             db_ptr->create(db_key, init);
         }

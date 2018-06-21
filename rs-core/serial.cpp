@@ -5,6 +5,8 @@
 #include <cstring>
 #include <string>
 
+using namespace RS::Unicorn;
+
 namespace RS {
 
     // Serialization for core library types
@@ -29,7 +31,7 @@ namespace RS {
         if (breakdown.empty())
             throw std::invalid_argument("Invalid persistent storage key: " + quote(id));
         for (auto& item: breakdown)
-            if (item.empty() || item.size() > 100 || ! uvalid(item)
+            if (item.empty() || item.size() > 100 || ! valid_string(item)
                     || std::find_if(item.begin(), item.end(), ascii_iscntrl) != item.end()
                     || item.find_first_of("\"*/:<>?[\\]|") != npos
                     || std::find_if(item.begin(), item.end(), [] (char c) { return ascii_isalnum(c) || uint8_t(c) > 127; }) == item.end()

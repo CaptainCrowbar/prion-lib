@@ -45,7 +45,7 @@ $(BUILD)/io.o: rs-core/io.cpp rs-core/common.hpp rs-core/io.hpp rs-core/string.h
 $(BUILD)/ipc-test.o: rs-core/ipc-test.cpp rs-core/common.hpp rs-core/ipc.hpp rs-core/string.hpp rs-core/time.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/ipc.o: rs-core/ipc.cpp rs-core/common.hpp rs-core/digest.hpp rs-core/ipc.hpp rs-core/string.hpp rs-core/time.hpp \
-    /usr/local/include/unicorn/utility.hpp
+    /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/meta-test.o: rs-core/meta-test.cpp rs-core/common.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/mp-integer-test.o: rs-core/mp-integer-test.cpp rs-core/common.hpp rs-core/mp-integer.hpp rs-core/rational.hpp rs-core/string.hpp rs-core/unit-test.hpp \
@@ -110,8 +110,8 @@ $(BUILD)/string.o: rs-core/string.cpp rs-core/common.hpp rs-core/string.hpp \
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/table-test.o: rs-core/table-test.cpp rs-core/common.hpp rs-core/table.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
-$(BUILD)/table.o: rs-core/table.cpp rs-core/common.hpp rs-core/string.hpp rs-core/table.hpp \
-    /usr/local/include/unicorn/utility.hpp
+$(BUILD)/table.o: rs-core/table.cpp rs-core/common.hpp rs-core/table.hpp \
+    /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/segment.hpp /usr/local/include/unicorn/string.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/terminal-test.o: rs-core/terminal-test.cpp rs-core/common.hpp rs-core/string.hpp rs-core/terminal.hpp rs-core/time.hpp rs-core/unit-test.hpp rs-core/vector.hpp \
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/terminal.o: rs-core/terminal.cpp rs-core/common.hpp rs-core/float.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/terminal.hpp rs-core/time.hpp rs-core/vector.hpp \

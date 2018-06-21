@@ -1,8 +1,11 @@
 #include "rs-core/io.hpp"
+#include "unicorn/utf.hpp"
 #include <algorithm>
 #include <cerrno>
 #include <cstring>
 #include <fcntl.h>
+
+using namespace RS::Unicorn;
 
 #ifdef _XOPEN_SOURCE
     #define IO_FUNCTION(f) ::f
@@ -151,7 +154,7 @@ namespace RS {
             errno = 0;
             auto rc = ::fopen(f.c_name(), iomode.data());
         #else
-            auto wmode = uconv<std::wstring>(iomode);
+            auto wmode = to_wstring(iomode);
             errno = 0;
             auto rc = _wfopen(f.c_name(), wmode.data());
         #endif

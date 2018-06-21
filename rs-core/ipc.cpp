@@ -1,12 +1,14 @@
 #include "rs-core/ipc.hpp"
 #include "rs-core/digest.hpp"
 #include "rs-core/string.hpp"
+#include "unicorn/utf.hpp"
 #include <algorithm>
 #include <cerrno>
 #include <ctime>
 #include <system_error>
 #include <thread>
 
+using namespace RS::Unicorn;
 using namespace std::chrono;
 
 namespace RS {
@@ -98,11 +100,11 @@ namespace RS {
         NamedMutex::NamedMutex(const Ustring& name) {
             auto hash = Sha256()(name);
             Ustring xhash = hex(hash);
-            path = L"Local\\" + uconv<std::wstring>(xhash);
+            path = L"Local\\" + to_wstring(xhash);
             han = CreateMutexW(nullptr, false, path.data());
             auto err = GetLastError();
             if (! han)
-                throw std::system_error(err, std::system_category(), uconv<Ustring>(path));
+                throw std::system_error(err, std::system_category(), to_utf8(path));
         }
 
         NamedMutex::~NamedMutex() noexcept {
@@ -110,21 +112,21 @@ namespace RS {
         }
 
         Ustring NamedMutex::name() const {
-            return uconv<Ustring>(path.substr(6, npos));
+            return to_utf8(path.substr(6, npos));
         }
 
         void NamedMutex::lock() {
             auto rc = WaitForSingleObject(han, INFINITE);
             auto err = GetLastError();
             if (rc == WAIT_FAILED)
-                throw std::system_error(err, std::system_category(), uconv<Ustring>(path));
+                throw std::system_error(err, std::system_category(), to_utf8(path));
         }
 
         bool NamedMutex::try_lock() {
             auto rc = WaitForSingleObject(han, 0);
             auto err = GetLastError();
             if (rc == WAIT_FAILED)
-                throw std::system_error(err, std::system_category(), uconv<Ustring>(path));
+                throw std::system_error(err, std::system_category(), to_utf8(path));
             return rc != WAIT_TIMEOUT;
         }
 
@@ -138,7 +140,7 @@ namespace RS {
             auto rc = WaitForSingleObject(han, msec32);
             auto err = GetLastError();
             if (rc == WAIT_FAILED)
-                throw std::system_error(err, std::system_category(), uconv<Ustring>(path));
+                throw std::system_error(err, std::system_category(), to_utf8(path));
             return rc != WAIT_TIMEOUT;
         }
 

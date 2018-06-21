@@ -1,8 +1,11 @@
 #include "rs-core/process.hpp"
 #include "rs-core/io.hpp"
+#include "unicorn/utf.hpp"
 #include <algorithm>
 #include <chrono>
 #include <system_error>
+
+using namespace RS::Unicorn;
 
 #ifdef _XOPEN_SOURCE
     #include <sys/select.h>
@@ -25,7 +28,7 @@ namespace RS {
             errno = 0;
             fp = ::popen(cmd.data(), "r");
         #else
-            auto wcmd = uconv<std::wstring>(cmd);
+            auto wcmd = to_wstring(cmd, Utf::throws);
             errno = 0;
             fp = ::_wpopen(wcmd.data(), L"rb");
         #endif

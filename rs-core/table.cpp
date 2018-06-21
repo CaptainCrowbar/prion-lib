@@ -1,8 +1,16 @@
 #include "rs-core/table.hpp"
-#include "rs-core/string.hpp"
+#include "unicorn/string.hpp"
 #include <algorithm>
 
+using namespace RS::Unicorn;
+
 namespace RS {
+
+    namespace {
+
+        constexpr uint32_t length_flags = Length::graphemes | Length::narrow;
+
+    }
 
     // Class Table
 
@@ -44,7 +52,7 @@ namespace RS {
                     width = 2;
                 } else {
                     text += row[c];
-                    width = ulength(row[c]);
+                    width = str_length(row[c], length_flags);
                 }
                 if (c != columns - 1)
                     text.append(tab.widths[c] - width + 2, ' ');
@@ -64,7 +72,7 @@ namespace RS {
         if (s.empty())
             s = "--";
         row.push_back(s);
-        size_t len = ulength(s);
+        size_t len = str_length(s, length_flags);
         if (widths.size() < row.size()) {
             widths.push_back(len);
         } else {

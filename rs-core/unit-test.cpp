@@ -294,7 +294,6 @@ extern void test_core_string_manipulation();
 extern void test_core_string_formatting();
 extern void test_core_string_html_xml_tags();
 extern void test_core_string_type_names();
-extern void test_core_string_unicode();
 extern void test_core_table_class();
 extern void test_core_terminal_progress_bar();
 extern void test_core_terminal_io_operations();
@@ -634,7 +633,6 @@ int main() {
         { "core/string/formatting", test_core_string_formatting },
         { "core/string/html-xml-tags", test_core_string_html_xml_tags },
         { "core/string/type-names", test_core_string_type_names },
-        { "core/string/unicode", test_core_string_unicode },
         { "core/table/class", test_core_table_class },
         { "core/terminal/progress-bar", test_core_terminal_progress_bar },
         { "core/terminal/io-operations", test_core_terminal_io_operations },

@@ -25,7 +25,6 @@
 <li><a href="#string-formatting-functions">String formatting functions</a></li>
 <li><a href="#htmlxml-tags">HTML/XML tags</a></li>
 <li><a href="#type-names">Type names</a></li>
-<li><a href="#unicode-functions">Unicode functions</a></li>
 </ul>
 </li>
 </ul>
@@ -340,38 +339,5 @@ stream enclosed by the tags.</p>
 string, as a <code>std::type_info</code> or <code>std:type_index</code> object, as a type argument
 to a template function (e.g. <code>type_name&lt;int&gt;()</code>), or as an object whose type
 is to be named (e.g. <code>type_name(42)</code>). The last version will report the
-dynamic type of the referenced object.</p>
-</div>
-<h2 id="unicode-functions">Unicode functions</h2>
-<p>In all of these functions, the argument type <code>S</code> may be an instantiation of
-<code>std::basic_string</code> or <code>std::basic_string_view</code> on an 8, 16, or 32 bit
-character type, or a pointer to a null terminated string of one of those
-types. The input string is assumed to be in a UTF representation determined by
-the size of the character type. Behaviour is undefined if a null pointer is
-passed.</p>
-<div class="defns">
-<ul>
-<li><code>template &lt;typename S2, typename S&gt; S2</code> <strong><code>uconv</code></strong><code>(const S&amp; s)</code></li>
-</ul>
-<p>Converts between UTF representations. If the input and output character types
-are the same size, the input string is copied to the output without any
-validity checking; otherwise, invalid UTF in the input is replaced with the
-standard Unicode replacement character (<code>U+FFFD</code>) in the output.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>template &lt;typename S&gt; size_t</code> <strong><code>ulength</code></strong><code>(const S&amp; s) noexcept</code></li>
-</ul>
-<p>Returns the number of characters (Unicode scalar values) in a string. The
-result is unspecified if the string is not valid UTF.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>template &lt;typename S&gt; bool</code> <strong><code>uvalid</code></strong><code>(const S&amp; s) noexcept</code></li>
-<li><code>template &lt;typename S&gt; bool</code> <strong><code>uvalid</code></strong><code>(const S&amp; s, size_t&amp; n) noexcept</code></li>
-</ul>
-<p>Check a string for valid UTF encoding. The second version reports the number
-of code units before an invalid code sequence was encountered (i.e. the size
-of a valid UTF prefix; this will be equal to the length of <code>s</code> if the function
-returns true). These will always succeed for an empty string.</p></body>
+dynamic type of the referenced object.</p></body>
 </html>

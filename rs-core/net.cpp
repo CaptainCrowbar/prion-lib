@@ -118,7 +118,7 @@ namespace RS {
         public std::error_category {
         public:
             AddrinfoCategory() {}
-            virtual Ustring message(int ev) const { return uconv<Ustring>(cstr(gai_strerror(ev))); }
+            virtual Ustring message(int ev) const { return cstr(gai_strerror(ev)); }
             virtual const char* name() const noexcept { return "Addrinfo"; }
         };
 

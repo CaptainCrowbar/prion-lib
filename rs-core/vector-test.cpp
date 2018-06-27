@@ -2,10 +2,9 @@
 #include "rs-core/float.hpp"
 #include "rs-core/string.hpp"
 #include "rs-core/unit-test.hpp"
-#include <algorithm>
 #include <cmath>
 #include <cstdlib>
-#include <sstream>
+#include <map>
 #include <stdexcept>
 #include <tuple>
 #include <vector>
@@ -176,6 +175,14 @@ void test_core_vector_integer() {
     TEST_EQUAL(to_str(v3), "[1,3,4]");
     TEST_EQUAL(to_str(v4), "[2,3,5]");
 
+    std::map<Int3, Ustring> map;
+
+    TRY((map[{9,4,3}] = "alpha"));
+    TRY((map[{8,5,2}] = "bravo"));
+    TRY((map[{7,6,1}] = "charlie"));
+
+    TEST_EQUAL(to_str(map), "{[7,6,1]:charlie,[8,5,2]:bravo,[9,4,3]:alpha}");
+
 }
 
 void test_core_vector_floating() {
@@ -296,6 +303,14 @@ void test_core_vector_floating() {
     TRY(std::tie(v3, v4) = minmax(v1, v2));
     TEST_EQUAL(to_str(v3), "[1,3,4]");
     TEST_EQUAL(to_str(v4), "[2,3,5]");
+
+    std::map<Double3, Ustring> map;
+
+    TRY((map[{9,4,3}] = "alpha"));
+    TRY((map[{8,5,2}] = "bravo"));
+    TRY((map[{7,6,1}] = "charlie"));
+
+    TEST_EQUAL(to_str(map), "{[7,6,1]:charlie,[8,5,2]:bravo,[9,4,3]:alpha}");
 
 }
 

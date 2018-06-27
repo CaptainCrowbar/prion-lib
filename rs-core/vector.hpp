@@ -12,7 +12,9 @@
 #include <numeric>
 #include <ostream>
 #include <stdexcept>
+#include <tuple>
 #include <type_traits>
+#include <utility>
 
 namespace RS {
 
@@ -1268,22 +1270,26 @@ namespace std {
 
     template <typename T, size_t N>
     struct hash<RS::Vector<T, N>> {
-        using argument_type = RS::Vector<T, N>;
-        using result_type = size_t;
         size_t operator()(const RS::Vector<T, N>& v) const noexcept { return RS::hash_range(v); }
+    };
+
+    template <typename T, size_t N>
+    struct less<RS::Vector<T, N>> {
+        bool operator()(const RS::Vector<T, N>& v1, const RS::Vector<T, N>& v2) const noexcept {
+            for (size_t i = 0; i < N; ++i)
+                if (v1[i] < v2[i])
+                    return true;
+            return false;
+        }
     };
 
     template <typename T, size_t N, RS::MatrixLayout L>
     struct hash<RS::Matrix<T, N, L>> {
-        using argument_type = RS::Matrix<T, N, L>;
-        using result_type = size_t;
         size_t operator()(const RS::Matrix<T, N, L>& m) const noexcept { return RS::hash_range(m); }
     };
 
     template <typename T>
     struct hash<RS::Quaternion<T>> {
-        using argument_type = RS::Quaternion<T>;
-        using result_type = size_t;
         size_t operator()(const RS::Quaternion<T>& q) const noexcept { return RS::hash_range(q); }
     };
 

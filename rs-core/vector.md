@@ -199,6 +199,12 @@ member.
 
 Hash function.
 
+* `template <typename T, size_t N> struct std::`**`less`**`<Vector<T, N>>`
+
+`Vector` has no natural ordering and therefore no less-than operator, but a
+specialization of `std::less` is provided to allow `Vector` to be sued as the
+key in ordered containers.
+
 ## Matrix ##
 
 * `enum class` **`MatrixLayout`**

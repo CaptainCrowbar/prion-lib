@@ -104,8 +104,15 @@ Functions for generating variable terminal control codes.
     * `Ustring Xcolour::`**`bg`**`() const`
     * `Ustring Xcolour::`**`repr`**`() const`
     * `static constexpr Xcolour Xcolour::`**`from_index`**`(int i) noexcept`
+* `bool` **`operator==`**`(Xcolour lhs, Xcolour rhs) noexcept`
+* `bool` **`operator!=`**`(Xcolour lhs, Xcolour rhs) noexcept`
+* `bool` **`operator<`**`(Xcolour lhs, Xcolour rhs) noexcept`
+* `bool` **`operator>`**`(Xcolour lhs, Xcolour rhs) noexcept`
+* `bool` **`operator<=`**`(Xcolour lhs, Xcolour rhs) noexcept`
+* `bool` **`operator>=`**`(Xcolour lhs, Xcolour rhs) noexcept`
 * `std::ostream&` **`operator<<`**`(std::ostream& out, Xcolour xc)`
 * `Ustring` **`to_str`**`(Xcolour xc)`
+* `class` **`std::hash<Xcolour>`**
 
 This is used to generate 8-bit terminal colour control codes. The colour can
 be null (which produces no output), a grey level from 1 to 24, or a set of RGB
@@ -123,6 +130,8 @@ generate the same string as `fg()`.
     <esc> [38;5; <232-255> m  = Set foreground colour to a grey level
     <esc> [48;5; <16-231> m   = Set background colour to an RGB value
     <esc> [48;5; <232-255> m  = Set background colour to a grey level
+
+The comparison functions order colours by index.
 
 ## Terminal I/O functions ##
 

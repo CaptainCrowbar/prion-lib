@@ -129,8 +129,15 @@ be taken into account in estimating the run time.</p>
 <li><code>static constexpr Xcolour Xcolour::</code><strong><code>from_index</code></strong><code>(int i) noexcept</code></li>
 </ul>
 </li>
+<li><code>bool</code> <strong><code>operator==</code></strong><code>(Xcolour lhs, Xcolour rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator!=</code></strong><code>(Xcolour lhs, Xcolour rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&lt;</code></strong><code>(Xcolour lhs, Xcolour rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&gt;</code></strong><code>(Xcolour lhs, Xcolour rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&lt;=</code></strong><code>(Xcolour lhs, Xcolour rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&gt;=</code></strong><code>(Xcolour lhs, Xcolour rhs) noexcept</code></li>
 <li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, Xcolour xc)</code></li>
 <li><code>Ustring</code> <strong><code>to_str</code></strong><code>(Xcolour xc)</code></li>
+<li><code>class</code> <strong><code>std::hash&lt;Xcolour&gt;</code></strong></li>
 </ul>
 <p>This is used to generate 8-bit terminal colour control codes. The colour can
 be null (which produces no output), a grey level from 1 to 24, or a set of RGB
@@ -146,6 +153,7 @@ generate the same string as <code>fg()</code>.</p>
 &lt;esc&gt; [48;5; &lt;16-231&gt; m   = Set background colour to an RGB value
 &lt;esc&gt; [48;5; &lt;232-255&gt; m  = Set background colour to a grey level
 </code></pre>
+<p>The comparison functions order colours by index.</p>
 </div>
 <h2 id="terminal-io-functions">Terminal I/O functions</h2>
 <div class="defns">

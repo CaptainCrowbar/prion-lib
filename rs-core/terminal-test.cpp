@@ -80,6 +80,8 @@ void test_core_terminal_xterm_colour_class() {
     Ustring s;
     Int3 v;
 
+    TEST_EQUAL(sizeof(Xcolour), 1);
+
     TRY(xc = {});                         TEST_EQUAL(xc.grey(), 0);   TEST_EQUAL(xc.r(), 0);  TEST_EQUAL(xc.g(), 0);  TEST_EQUAL(xc.b(), 0);  TEST_EQUAL(xc.index(), 0);
     TRY(xc = Xcolour(-1));                TEST_EQUAL(xc.grey(), 1);   TEST_EQUAL(xc.r(), 0);  TEST_EQUAL(xc.g(), 0);  TEST_EQUAL(xc.b(), 0);  TEST_EQUAL(xc.index(), 232);
     TRY(xc = Xcolour(1));                 TEST_EQUAL(xc.grey(), 1);   TEST_EQUAL(xc.r(), 0);  TEST_EQUAL(xc.g(), 0);  TEST_EQUAL(xc.b(), 0);  TEST_EQUAL(xc.index(), 232);

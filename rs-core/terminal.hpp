@@ -4,6 +4,7 @@
 #include "rs-core/string.hpp"
 #include "rs-core/vector.hpp"
 #include <chrono>
+#include <functional>
 #include <iostream>
 #include <ostream>
 #include <string>
@@ -73,7 +74,8 @@ namespace RS {
 
     // Terminal colours
 
-    class Xcolour {
+    class Xcolour:
+    public LessThanComparable<Xcolour> {
     public:
         constexpr Xcolour() = default;
         constexpr explicit Xcolour(int grey) noexcept: code(uint8_t(231 + clamp(grey, 1, 24))) {}
@@ -92,6 +94,8 @@ namespace RS {
         Ustring bg() const { return code == 0 ? Ustring() : "\x1b[48;5;" + std::to_string(code) + "m"; }
         Ustring repr() const;
         static constexpr Xcolour from_index(int i) noexcept { Xcolour xc; xc.code = uint8_t(clamp(i, 0, 255)); return xc; }
+        friend bool operator==(Xcolour lhs, Xcolour rhs) noexcept { return lhs.index() == rhs.index(); }
+        friend bool operator<(Xcolour lhs, Xcolour rhs) noexcept { return lhs.index() < rhs.index(); }
         friend std::ostream& operator<<(std::ostream& out, Xcolour xc) { return out << xc.fg(); }
         friend Ustring to_str(Xcolour xc) { return xc.fg(); }
     private:
@@ -104,5 +108,15 @@ namespace RS {
     // Terminal I/O functions
 
     bool is_stdout_redirected() noexcept;
+
+}
+
+namespace std {
+
+    template <>
+    class hash<RS::Xcolour> {
+    public:
+        size_t operator()(RS::Xcolour xc) const noexcept { return std::hash<int>()(xc.index()); }
+    };
 
 }

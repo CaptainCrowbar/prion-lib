@@ -1277,8 +1277,8 @@ namespace std {
     struct less<RS::Vector<T, N>> {
         bool operator()(const RS::Vector<T, N>& v1, const RS::Vector<T, N>& v2) const noexcept {
             for (size_t i = 0; i < N; ++i)
-                if (v1[i] < v2[i])
-                    return true;
+                if (v1[i] != v2[i])
+                    return v1[i] < v2[i];
             return false;
         }
     };

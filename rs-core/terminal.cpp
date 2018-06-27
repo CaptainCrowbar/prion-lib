@@ -14,27 +14,6 @@ using namespace std::chrono;
 
 namespace RS {
 
-    // Terminal I/O operations
-
-    bool is_stdout_redirected() noexcept {
-        return ! IO_FUNCTION(isatty)(1);
-    }
-
-    namespace RS_Detail {
-
-        int xt_encode_grey(int n) noexcept {
-            return 231 + clamp(n, 1, 24);
-        }
-
-        int xt_encode_rgb(int r, int g, int b) noexcept {
-            r = clamp(r, 0, 5);
-            g = clamp(g, 0, 5);
-            b = clamp(b, 0, 5);
-            return 36 * r + 6 * g + b + 16;
-        }
-
-    }
-
     // Class ProgressBar
 
     ProgressBar::ProgressBar(Uview label, size_t length, std::ostream& out):
@@ -48,13 +27,14 @@ namespace RS {
             bar_length -= bar_offset + tail_length + 4;
         }
         if (! label.empty())
-            *out_ptr << xt_yellow << label << " ";
-        *out_ptr << Ustring(xt_cyan) << "[" << xt_blue << Ustring(bar_length, '-') << xt_cyan << "] " << Ustring(tail_length, ' ') << xt_reset << std::flush;
+            *out_ptr << Xterm::yellow << label << " ";
+        *out_ptr << Ustring(Xterm::cyan) << "[" << Xterm::blue << Ustring(bar_length, '-') << Xterm::cyan << "] "
+            << Ustring(tail_length, ' ') << Xterm::reset << std::flush;
         start_time = system_clock::now();
     }
 
     ProgressBar::~ProgressBar() noexcept {
-        try { *out_ptr << (xt_move_left(tail_length) + xt_erase_right) << std::endl; }
+        try { *out_ptr << (Xterm::move_left(tail_length) + Xterm::erase_right) << std::endl; }
             catch (...) {}
     }
 
@@ -84,9 +64,28 @@ namespace RS {
         size_t n_left = bar_length - current_pos + tail_length + 2;
         size_t n_advance = new_pos - current_pos;
         size_t n_right = bar_length - new_pos + 2;
-        *out_ptr << xt_move_left(int(n_left)) << xt_green << Ustring(n_advance, '+') << xt_move_right(int(n_right)) << xt_yellow << message << xt_reset << std::flush;
+        *out_ptr << Xterm::move_left(int(n_left)) << Xterm::green << Ustring(n_advance, '+')
+            << Xterm::move_right(int(n_right)) << Xterm::yellow << message << Xterm::reset << std::flush;
         current_pos = new_pos;
     }
 
+    // Terminal colours
+
+    Ustring Xcolour::repr() const {
+        if (is_null())
+            return "Xcolour()";
+        else if (is_grey())
+            return "Xcolour(" + std::to_string(grey()) + ")";
+        else if (is_rgb())
+            return "Xcolour(" + std::to_string(r()) + "," + std::to_string(g()) + "," + std::to_string(b()) + ")";
+        else
+            return "Xcolour::from_index(" + std::to_string(code) + ")";
+    }
+
+    // Terminal I/O functions
+
+    bool is_stdout_redirected() noexcept {
+        return ! IO_FUNCTION(isatty)(1);
+    }
 
 }

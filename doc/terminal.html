@@ -17,7 +17,9 @@
 <li><a href="#terminal-io">Terminal I/O</a><ul>
 <li><a href="#contents">Contents</a></li>
 <li><a href="#progress-bar">Progress bar</a></li>
-<li><a href="#terminal-io-operations">Terminal I/O operations</a></li>
+<li><a href="#terminal-controls">Terminal controls</a></li>
+<li><a href="#terminal-colours">Terminal colours</a></li>
+<li><a href="#terminal-io-functions">Terminal I/O functions</a></li>
 </ul>
 </li>
 </ul>
@@ -46,7 +48,106 @@ clamped to the unit range. Progress will never go backwards; a call with a
 value less than the previous value will not update the bar, although it will
 be taken into account in estimating the run time.</p>
 </div>
-<h2 id="terminal-io-operations">Terminal I/O operations</h2>
+<h2 id="terminal-controls">Terminal controls</h2>
+<div class="defns">
+<ul>
+<li><code>namespace RS::</code><strong><code>Xterm</code></strong></li>
+</ul>
+<p>Contains definitions for common terminal control codes.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>constexpr const char* Xterm::</code><strong><code>up</code></strong> <code>=           &lt;esc&gt; [A    = Cursor up</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>down</code></strong> <code>=         &lt;esc&gt; [B    = Cursor down</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>right</code></strong> <code>=        &lt;esc&gt; [C    = Cursor right</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>left</code></strong> <code>=         &lt;esc&gt; [D    = Cursor left</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>erase_left</code></strong> <code>=   &lt;esc&gt; [1K   = Erase left</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>erase_right</code></strong> <code>=  &lt;esc&gt; [K    = Erase right</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>erase_above</code></strong> <code>=  &lt;esc&gt; [1J   = Erase above</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>erase_below</code></strong> <code>=  &lt;esc&gt; [J    = Erase below</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>erase_line</code></strong> <code>=   &lt;esc&gt; [2K   = Erase line</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>clear</code></strong> <code>=        &lt;esc&gt; [2J   = Clear screen</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>reset</code></strong> <code>=        &lt;esc&gt; [0m   = Reset attributes</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>bold</code></strong> <code>=         &lt;esc&gt; [1m   = Bold</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>under</code></strong> <code>=        &lt;esc&gt; [4m   = Underline</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>bold_off</code></strong> <code>=     &lt;esc&gt; [22m  = Bold off</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>under_off</code></strong> <code>=    &lt;esc&gt; [24m  = Underline off</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>colour_off</code></strong> <code>=   &lt;esc&gt; [39m  = Colour off</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>black</code></strong> <code>=        &lt;esc&gt; [30m  = Black fg</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>red</code></strong> <code>=          &lt;esc&gt; [31m  = Red fg</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>green</code></strong> <code>=        &lt;esc&gt; [32m  = Green fg</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>yellow</code></strong> <code>=       &lt;esc&gt; [33m  = Yellow fg</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>blue</code></strong> <code>=         &lt;esc&gt; [34m  = Blue fg</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>magenta</code></strong> <code>=      &lt;esc&gt; [35m  = Magenta fg</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>cyan</code></strong> <code>=         &lt;esc&gt; [36m  = Cyan fg</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>white</code></strong> <code>=        &lt;esc&gt; [37m  = White fg</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>black_bg</code></strong> <code>=     &lt;esc&gt; [40m  = Black bg</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>red_bg</code></strong> <code>=       &lt;esc&gt; [41m  = Red bg</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>green_bg</code></strong> <code>=     &lt;esc&gt; [42m  = Green bg</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>yellow_bg</code></strong> <code>=    &lt;esc&gt; [43m  = Yellow bg</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>blue_bg</code></strong> <code>=      &lt;esc&gt; [44m  = Blue bg</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>magenta_bg</code></strong> <code>=   &lt;esc&gt; [45m  = Magenta bg</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>cyan_bg</code></strong> <code>=      &lt;esc&gt; [46m  = Cyan bg</code></li>
+<li><code>constexpr const char* Xterm::</code><strong><code>white_bg</code></strong> <code>=     &lt;esc&gt; [47m  = White bg</code></li>
+</ul>
+<p>Terminal cursor movement and output formatting codes.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Ustring Xterm::</code><strong><code>move_up</code></strong><code>(int n)     = &lt;esc&gt; x1b[ &lt;n&gt; A  = Cursor up n spaces</code></li>
+<li><code>Ustring Xterm::</code><strong><code>move_down</code></strong><code>(int n)   = &lt;esc&gt; x1b[ &lt;n&gt; B  = Cursor down n spaces</code></li>
+<li><code>Ustring Xterm::</code><strong><code>move_right</code></strong><code>(int n)  = &lt;esc&gt; x1b[ &lt;n&gt; C  = Cursor right n spaces</code></li>
+<li><code>Ustring Xterm::</code><strong><code>move_left</code></strong><code>(int n)   = &lt;esc&gt; x1b[ &lt;n&gt; D  = Cursor left n spaces</code></li>
+</ul>
+<p>Functions for generating variable terminal control codes.</p>
+</div>
+<h2 id="terminal-colours">Terminal colours</h2>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>Xcolour</code></strong><ul>
+<li><code>constexpr Xcolour::</code><strong><code>Xcolour</code></strong><code>()</code></li>
+<li><code>constexpr explicit Xcolour::</code><strong><code>Xcolour</code></strong><code>(int grey) noexcept</code></li>
+<li><code>explicit Xcolour::</code><strong><code>Xcolour</code></strong><code>(Int3 rgb) noexcept</code></li>
+<li><code>constexpr Xcolour::</code><strong><code>Xcolour</code></strong><code>(int r, int g, int b) noexcept</code></li>
+<li><code>constexpr Xcolour::</code><strong><code>Xcolour</code></strong><code>(const Xcolour&amp; xc) noexcept</code></li>
+<li><code>constexpr Xcolour::</code><strong><code>Xcolour</code></strong><code>(Xcolour&amp;&amp; xc) noexcept</code></li>
+<li><code>constexpr Xcolour::</code><strong><code>~Xcolour</code></strong><code>() noexcept</code></li>
+<li><code>constexpr Xcolour&amp; Xcolour::</code><strong><code>operator=</code></strong><code>(const Xcolour&amp; xc) noexcept</code></li>
+<li><code>constexpr Xcolour&amp; Xcolour::</code><strong><code>operator=</code></strong><code>(Xcolour&amp;&amp; xc) noexcept</code></li>
+<li><code>constexpr bool Xcolour::</code><strong><code>is_null</code></strong><code>() const noexcept</code></li>
+<li><code>constexpr bool Xcolour::</code><strong><code>is_grey</code></strong><code>() const noexcept</code></li>
+<li><code>constexpr bool Xcolour::</code><strong><code>is_rgb</code></strong><code>() const noexcept</code></li>
+<li><code>constexpr int Xcolour::</code><strong><code>grey</code></strong><code>() const noexcept</code></li>
+<li><code>constexpr int Xcolour::</code><strong><code>r</code></strong><code>() const noexcept</code></li>
+<li><code>constexpr int Xcolour::</code><strong><code>g</code></strong><code>() const noexcept</code></li>
+<li><code>constexpr int Xcolour::</code><strong><code>b</code></strong><code>() const noexcept</code></li>
+<li><code>constexpr int Xcolour::</code><strong><code>index</code></strong><code>() const noexcept</code></li>
+<li><code>Int3 Xcolour::</code><strong><code>as_rgb24</code></strong><code>() const noexcept</code></li>
+<li><code>Ustring Xcolour::</code><strong><code>fg</code></strong><code>() const</code></li>
+<li><code>Ustring Xcolour::</code><strong><code>bg</code></strong><code>() const</code></li>
+<li><code>Ustring Xcolour::</code><strong><code>repr</code></strong><code>() const</code></li>
+<li><code>static constexpr Xcolour Xcolour::</code><strong><code>from_index</code></strong><code>(int i) noexcept</code></li>
+</ul>
+</li>
+<li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, Xcolour xc)</code></li>
+<li><code>Ustring</code> <strong><code>to_str</code></strong><code>(Xcolour xc)</code></li>
+</ul>
+<p>This is used to generate 8-bit terminal colour control codes. The colour can
+be null (which produces no output), a grey level from 1 to 24, or a set of RGB
+levels from 0 to 5. Grey and RGB levels are clamped to their respective
+ranges.</p>
+<p>The <code>as_rgb24()</code> function converts the colour code to a 24-bit RGB triple. The
+<code>index()</code> function returns the index (0-255) used in the control sequence.</p>
+<p>The <code>fg()</code> and <code>bg()</code> functions return the terminal control strings to set the
+foreground or background colour. The output operator and <code>to_str()</code> function
+generate the same string as <code>fg()</code>.</p>
+<pre><code>&lt;esc&gt; [38;5; &lt;16-231&gt; m   = Set foreground colour to an RGB value
+&lt;esc&gt; [38;5; &lt;232-255&gt; m  = Set foreground colour to a grey level
+&lt;esc&gt; [48;5; &lt;16-231&gt; m   = Set background colour to an RGB value
+&lt;esc&gt; [48;5; &lt;232-255&gt; m  = Set background colour to a grey level
+</code></pre>
+</div>
+<h2 id="terminal-io-functions">Terminal I/O functions</h2>
 <div class="defns">
 <ul>
 <li><code>bool</code> <strong><code>is_stdout_redirected</code></strong><code>() noexcept</code></li>
@@ -54,60 +155,5 @@ be taken into account in estimating the run time.</p>
 <p>Attempts to detect whether standard output has been redirected to a file or
 pipe (true), or is going directly to a terminal (false). This is not always
 possible to detect reliably; this function is fairly reliable on Unix, less so
-on Windows.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>constexpr const char*</code> <strong><code>xt_up</code></strong> <code>=           &lt;esc&gt; [A    = Cursor up</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_down</code></strong> <code>=         &lt;esc&gt; [B    = Cursor down</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_right</code></strong> <code>=        &lt;esc&gt; [C    = Cursor right</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_left</code></strong> <code>=         &lt;esc&gt; [D    = Cursor left</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_erase_left</code></strong> <code>=   &lt;esc&gt; [1K   = Erase left</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_erase_right</code></strong> <code>=  &lt;esc&gt; [K    = Erase right</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_erase_above</code></strong> <code>=  &lt;esc&gt; [1J   = Erase above</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_erase_below</code></strong> <code>=  &lt;esc&gt; [J    = Erase below</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_erase_line</code></strong> <code>=   &lt;esc&gt; [2K   = Erase line</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_clear</code></strong> <code>=        &lt;esc&gt; [2J   = Clear screen</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_reset</code></strong> <code>=        &lt;esc&gt; [0m   = Reset attributes</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_bold</code></strong> <code>=         &lt;esc&gt; [1m   = Bold</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_under</code></strong> <code>=        &lt;esc&gt; [4m   = Underline</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_bold_off</code></strong> <code>=     &lt;esc&gt; [22m  = Bold off</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_under_off</code></strong> <code>=    &lt;esc&gt; [24m  = Underline off</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_colour_off</code></strong> <code>=   &lt;esc&gt; [39m  = Colour off</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_black</code></strong> <code>=        &lt;esc&gt; [30m  = Black foreground</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_red</code></strong> <code>=          &lt;esc&gt; [31m  = Red foreground</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_green</code></strong> <code>=        &lt;esc&gt; [32m  = Green foreground</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_yellow</code></strong> <code>=       &lt;esc&gt; [33m  = Yellow foreground</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_blue</code></strong> <code>=         &lt;esc&gt; [34m  = Blue foreground</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_magenta</code></strong> <code>=      &lt;esc&gt; [35m  = Magenta foreground</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_cyan</code></strong> <code>=         &lt;esc&gt; [36m  = Cyan foreground</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_white</code></strong> <code>=        &lt;esc&gt; [37m  = White foreground</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_black_bg</code></strong> <code>=     &lt;esc&gt; [40m  = Black background</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_red_bg</code></strong> <code>=       &lt;esc&gt; [41m  = Red background</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_green_bg</code></strong> <code>=     &lt;esc&gt; [42m  = Green background</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_yellow_bg</code></strong> <code>=    &lt;esc&gt; [43m  = Yellow background</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_blue_bg</code></strong> <code>=      &lt;esc&gt; [44m  = Blue background</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_magenta_bg</code></strong> <code>=   &lt;esc&gt; [45m  = Magenta background</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_cyan_bg</code></strong> <code>=      &lt;esc&gt; [46m  = Cyan background</code></li>
-<li><code>constexpr const char*</code> <strong><code>xt_white_bg</code></strong> <code>=     &lt;esc&gt; [47m  = White background</code></li>
-</ul>
-<p>Xterm cursor movement and output formatting codes.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>string</code> <strong><code>xt_move_up</code></strong><code>(int n)                  = &lt;esc&gt; [&lt;n&gt;A             = Cursor up n spaces</code></li>
-<li><code>string</code> <strong><code>xt_move_down</code></strong><code>(int n)                = &lt;esc&gt; [&lt;n&gt;B             = Cursor down n spaces</code></li>
-<li><code>string</code> <strong><code>xt_move_right</code></strong><code>(int n)               = &lt;esc&gt; [&lt;n&gt;C             = Cursor right n spaces</code></li>
-<li><code>string</code> <strong><code>xt_move_left</code></strong><code>(int n)                = &lt;esc&gt; [&lt;n&gt;D             = Cursor left n spaces</code></li>
-<li><code>string</code> <strong><code>xt_colour</code></strong><code>(int r, int g, int b)     = &lt;esc&gt; [38;5;&lt;16-231&gt;m   = Set foreground colour to an RGB value</code></li>
-<li><code>string</code> <strong><code>xt_colour</code></strong><code>(Int3 rgb)                = &lt;esc&gt; [38;5;&lt;16-231&gt;m   = Set foreground colour to an RGB value</code></li>
-<li><code>string</code> <strong><code>xt_colour_bg</code></strong><code>(int r, int g, int b)  = &lt;esc&gt; [48;5;&lt;16-231&gt;m   = Set background colour to an RGB value</code></li>
-<li><code>string</code> <strong><code>xt_colour_bg</code></strong><code>(Int3 rgb)             = &lt;esc&gt; [38;5;&lt;16-231&gt;m   = Set foreground colour to an RGB value</code></li>
-<li><code>string</code> <strong><code>xt_grey</code></strong><code>(int grey)                  = &lt;esc&gt; [38;5;&lt;232-255&gt;m  = Set foreground colour to a grey level</code></li>
-<li><code>string</code> <strong><code>xt_grey_bg</code></strong><code>(int grey)               = &lt;esc&gt; [48;5;&lt;232-255&gt;m  = Set background colour to a grey level</code></li>
-</ul>
-<p>Functions for generating variable Xterm codes. The RGB levels passed to the
-<code>xt_colour[_bg]()</code> functions are clamped to the range 0 to 5, yielding 216
-different colours. The grey level passed to the <code>xt_grey[_bg]()</code> functions is
-clamped to a range of 1-24.</p></body>
+on Windows.</p></body>
 </html>

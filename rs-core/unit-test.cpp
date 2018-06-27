@@ -295,8 +295,8 @@ extern void test_core_string_formatting();
 extern void test_core_string_html_xml_tags();
 extern void test_core_string_type_names();
 extern void test_core_table_class();
-extern void test_core_terminal_progress_bar();
-extern void test_core_terminal_io_operations();
+extern void test_core_terminal_xterm_control_codes();
+extern void test_core_terminal_xterm_colour_class();
 extern void test_core_thread_pool_class();
 extern void test_core_thread_pool_timing();
 extern void test_core_time_date_types();
@@ -634,8 +634,8 @@ int main() {
         { "core/string/html-xml-tags", test_core_string_html_xml_tags },
         { "core/string/type-names", test_core_string_type_names },
         { "core/table/class", test_core_table_class },
-        { "core/terminal/progress-bar", test_core_terminal_progress_bar },
-        { "core/terminal/io-operations", test_core_terminal_io_operations },
+        { "core/terminal/xterm-control-codes", test_core_terminal_xterm_control_codes },
+        { "core/terminal/xterm-colour-class", test_core_terminal_xterm_colour_class },
         { "core/thread-pool/class", test_core_thread_pool_class },
         { "core/thread-pool/timing", test_core_thread_pool_timing },
         { "core/time/date-types", test_core_time_date_types },

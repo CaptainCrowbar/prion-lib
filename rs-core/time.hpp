@@ -160,15 +160,15 @@ namespace RS {
     class PollWait:
     public Wait {
     public:
-        virtual bool poll() override = 0;
-        virtual void wait() override;
+        virtual bool poll() = 0;
+        virtual void wait();
         duration min_interval() const noexcept { return min_wait; }
         duration max_interval() const noexcept { return max_wait; }
         template <typename R, typename P> void set_interval(std::chrono::duration<R, P> t) { set_interval(t, t); }
         template <typename R1, typename P1, typename R2, typename P2> void set_interval(std::chrono::duration<R1, P1> t1, std::chrono::duration<R2, P2> t2);
     protected:
         PollWait() noexcept {}
-        virtual bool do_wait_until(time_point t) final;
+        virtual bool do_wait_until(time_point t);
     private:
         duration min_wait = std::chrono::microseconds(10);
         duration max_wait = std::chrono::milliseconds(10);
@@ -186,7 +186,7 @@ namespace RS {
     public PollWait {
     public:
         template <typename Predicate> explicit PollCondition(Predicate p): pred(p) {}
-        virtual bool poll() final { return pred(); }
+        virtual bool poll() { return pred(); }
     private:
         std::function<bool()> pred;
     };

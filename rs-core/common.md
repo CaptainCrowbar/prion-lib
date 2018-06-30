@@ -663,3 +663,24 @@ are not interleaved. Output from different threads will be given different
 colours, chosen at random based on a hash of the thread ID. Because these are
 intended only for debugging the code around them, any exceptions thrown by
 their internal workings are silently ignored.
+
+## Multithreading ##
+
+### Thread class ###
+
+* `class` **`Thread`**`: public std::thread`
+    * `Thread::`**`Thread`**`() noexcept`
+    * `template <typename F, typename... Args> explicit Thread::`**`Thread`**`(F&& f, Args&&... args)`
+    * `Thread::`**`Thread`**`(Thread&& t) noexcept`
+    * `Thread::`**`~Thread`**`() noexcept`
+    * `Thread& Thread::`**`operator=`**`(Thread&& t) noexcept`
+    * `void Thread::`**`detach`**`()`
+    * `void Thread::`**`join`**`()`
+    * `id Thread::`**`get_id`**`() const noexcept`
+    * `bool Thread::`**`joinable`**`() const noexcept`
+    * `native_handle_type Thread::`**`native_handle`**`() noexcept`
+    * `void Thread::`**`swap`**`(Thread& t) noexcept`
+
+A simple wrapper for `std::thread`. This differs from `std::thread` only in
+that it will automatically join on destruction, or when used on the LHS of an
+assignment.

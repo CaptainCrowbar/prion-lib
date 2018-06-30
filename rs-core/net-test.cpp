@@ -3,7 +3,6 @@
 #include "rs-core/unit-test.hpp"
 #include <algorithm>
 #include <chrono>
-#include <future>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
@@ -285,7 +284,7 @@ void test_core_net_dns_query() {
 
 void test_core_net_tcp_client_server() {
 
-    auto t1 = std::async([] {
+    auto t1 = Thread([] {
         std::unique_ptr<TcpServer> server;
         std::unique_ptr<TcpClient> client;
         std::string msg;
@@ -303,7 +302,7 @@ void test_core_net_tcp_client_server() {
         TEST_EQUAL(msg, "goodbye");
     });
 
-    auto t2 = std::async([] {
+    auto t2 = Thread([] {
         std::unique_ptr<TcpClient> client;
         std::string msg;
         size_t n = 0;
@@ -324,14 +323,14 @@ void test_core_net_tcp_client_server() {
         TEST(client->is_closed());
     });
 
-    TRY(t1.wait());
-    TRY(t2.wait());
+    TRY(t1.join());
+    TRY(t2.join());
 
 }
 
 void test_core_net_socket_set() {
 
-    auto t1 = std::async([] {
+    auto t1 = Thread([] {
         std::unique_ptr<TcpServer> server;
         std::unique_ptr<TcpClient> client1, client2;
         SocketSet set;
@@ -369,7 +368,7 @@ void test_core_net_socket_set() {
         TEST_EQUAL(msg, "[alpha,bravo]");
     });
 
-    auto t2 = std::async([] {
+    auto t2 = Thread([] {
         std::unique_ptr<TcpClient> client;
         std::this_thread::sleep_for(50ms);
         TRY(client = std::make_unique<TcpClient>(IPv4::localhost(), port));
@@ -377,7 +376,7 @@ void test_core_net_socket_set() {
         std::this_thread::sleep_for(200ms);
     });
 
-    auto t3 = std::async([] {
+    auto t3 = Thread([] {
         std::unique_ptr<TcpClient> client;
         std::this_thread::sleep_for(50ms);
         TRY(client = std::make_unique<TcpClient>(IPv4::localhost(), port));
@@ -385,8 +384,8 @@ void test_core_net_socket_set() {
         std::this_thread::sleep_for(200ms);
     });
 
-    TRY(t1.wait());
-    TRY(t2.wait());
-    TRY(t3.wait());
+    TRY(t1.join());
+    TRY(t2.join());
+    TRY(t3.join());
 
 }

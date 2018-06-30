@@ -15,7 +15,6 @@
 #include <algorithm>
 #include <chrono>
 #include <exception>
-#include <future>
 #include <memory>
 #include <mutex>
 #include <new>
@@ -123,7 +122,7 @@ namespace RS {
         void erase(const Ustring& key);
     private:
         std::unique_ptr<TimerChannel> autosave_channel;
-        std::future<void> autosave_thread;
+        Thread autosave_thread;
         std::unique_ptr<NamedMutex> global_mutex;
         std::mutex local_mutex;
         Ustring state_id;
@@ -142,7 +141,7 @@ namespace RS {
             clear_autosave();
             if (t > duration<R, P>()) {
                 autosave_channel = std::make_unique<TimerChannel>(t);
-                autosave_thread = std::async(std::launch::async, [this] { autosave_loop(); });
+                autosave_thread = Thread([this] { autosave_loop(); });
             }
         }
 

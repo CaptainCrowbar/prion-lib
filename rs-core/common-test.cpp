@@ -2,6 +2,7 @@
 #include "rs-core/unit-test.hpp"
 #include <algorithm>
 #include <array>
+#include <chrono>
 #include <cstdlib>
 #include <functional>
 #include <map>
@@ -9,6 +10,7 @@
 #include <set>
 #include <sstream>
 #include <string>
+#include <thread>
 #include <tuple>
 #include <type_traits>
 #include <typeinfo>
@@ -21,6 +23,7 @@
 
 using namespace RS;
 using namespace RS::Literals;
+using namespace std::chrono;
 using namespace std::literals;
 
 // These tests are a bit incestuous since the unit test module itself uses
@@ -1656,5 +1659,54 @@ void test_core_common_logging() {
 
     TRY(logx("Log test:", 1, 2, 3, 4, 5));
     TRY(logx("Log test:", 6, 7, 8, 9, 10));
+
+}
+
+namespace {
+
+    struct WriteInThread {
+        Ustring src;
+        Ustring* dst = nullptr;
+        void operator()() {
+            std::this_thread::sleep_for(100ms);
+            if (dst)
+                *dst += src;
+        }
+    };
+
+}
+
+void test_core_common_thread_class() {
+
+    Thread t1, t2;
+    Ustring s;
+
+    TEST(! t1.joinable());
+    TRY(t1 = Thread(WriteInThread{"Hello", &s}));
+    TEST(t1.joinable());
+    TRY(t1.join());
+    TEST(! t1.joinable());
+    TEST_EQUAL(s, "Hello");
+
+    s.clear();
+    TRY(t1 = Thread(WriteInThread{"Hello", &s}));
+    TEST(t1.joinable());
+    TRY(t1 = {});
+    TEST(! t1.joinable());
+    TEST_EQUAL(s, "Hello");
+
+    s.clear();
+    TRY(t1 = Thread(WriteInThread{"Hello", &s}));
+    TRY(t2 = Thread(WriteInThread{"Goodbye", &s}));
+    TEST(t1.joinable());
+    TEST(t2.joinable());
+    TRY(t1.swap(t2));
+    TEST(t1.joinable());
+    TEST(t2.joinable());
+    TRY(t1.join());
+    TRY(t2.join());
+    TEST(! t1.joinable());
+    TEST(! t2.joinable());
+    TEST(s == "HelloGoodbye" || s == "GoodbyeHello");
 
 }

@@ -53,6 +53,10 @@
 <li><a href="#logging">Logging</a></li>
 </ul>
 </li>
+<li><a href="#multithreading">Multithreading</a><ul>
+<li><a href="#thread-class">Thread class</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -817,5 +821,28 @@ output. A private mutex is used to ensure that messages from different threads
 are not interleaved. Output from different threads will be given different
 colours, chosen at random based on a hash of the thread ID. Because these are
 intended only for debugging the code around them, any exceptions thrown by
-their internal workings are silently ignored.</p></body>
+their internal workings are silently ignored.</p>
+</div>
+<h2 id="multithreading">Multithreading</h2>
+<h3 id="thread-class">Thread class</h3>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>Thread</code></strong><code>: public std::thread</code><ul>
+<li><code>Thread::</code><strong><code>Thread</code></strong><code>() noexcept</code></li>
+<li><code>template &lt;typename F, typename... Args&gt; explicit Thread::</code><strong><code>Thread</code></strong><code>(F&amp;&amp; f, Args&amp;&amp;... args)</code></li>
+<li><code>Thread::</code><strong><code>Thread</code></strong><code>(Thread&amp;&amp; t) noexcept</code></li>
+<li><code>Thread::</code><strong><code>~Thread</code></strong><code>() noexcept</code></li>
+<li><code>Thread&amp; Thread::</code><strong><code>operator=</code></strong><code>(Thread&amp;&amp; t) noexcept</code></li>
+<li><code>void Thread::</code><strong><code>detach</code></strong><code>()</code></li>
+<li><code>void Thread::</code><strong><code>join</code></strong><code>()</code></li>
+<li><code>id Thread::</code><strong><code>get_id</code></strong><code>() const noexcept</code></li>
+<li><code>bool Thread::</code><strong><code>joinable</code></strong><code>() const noexcept</code></li>
+<li><code>native_handle_type Thread::</code><strong><code>native_handle</code></strong><code>() noexcept</code></li>
+<li><code>void Thread::</code><strong><code>swap</code></strong><code>(Thread&amp; t) noexcept</code></li>
+</ul>
+</li>
+</ul>
+<p>A simple wrapper for <code>std::thread</code>. This differs from <code>std::thread</code> only in
+that it will automatically join on destruction, or when used on the LHS of an
+assignment.</p></body>
 </html>

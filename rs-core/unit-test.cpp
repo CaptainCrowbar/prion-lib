@@ -21,6 +21,7 @@ extern void test_core_common_generic_function_objects();
 extern void test_core_common_hash_functions();
 extern void test_core_common_scope_guards();
 extern void test_core_common_logging();
+extern void test_core_common_thread_class();
 extern void test_core_algorithm_diff();
 extern void test_core_algorithm_edit_distance();
 extern void test_core_algorithm_find_optimum();
@@ -360,6 +361,7 @@ int main() {
         { "core/common/hash-functions", test_core_common_hash_functions },
         { "core/common/scope-guards", test_core_common_scope_guards },
         { "core/common/logging", test_core_common_logging },
+        { "core/common/thread-class", test_core_common_thread_class },
         { "core/algorithm/diff", test_core_algorithm_diff },
         { "core/algorithm/edit-distance", test_core_algorithm_edit_distance },
         { "core/algorithm/find-optimum", test_core_algorithm_find_optimum },

@@ -126,7 +126,8 @@ namespace RS {
                 autosave_channel.reset();
                 autosave_thread = {};
             });
-            autosave_thread.wait();
+            autosave_thread.join();
+            autosave_thread = {};
         }
     }
 

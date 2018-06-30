@@ -10,7 +10,6 @@
 #include <deque>
 #include <exception>
 #include <functional>
-#include <future>
 #include <map>
 #include <mutex>
 #include <ostream>
@@ -68,7 +67,7 @@ namespace RS {
         struct dispatch_task {
             mode runmode;
             dispatch_callback call;
-            std::future<void> thread;
+            Thread thread;
             std::atomic<bool> done;
             std::exception_ptr error;
         };

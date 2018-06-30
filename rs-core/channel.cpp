@@ -89,7 +89,7 @@ namespace RS {
                 }
                 task.done = true;
             };
-            task.thread = std::async(std::launch::async, payload);
+            task.thread = Thread(payload);
         }
     }
 

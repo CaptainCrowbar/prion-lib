@@ -2,7 +2,6 @@
 #include <chrono>
 #include <mutex>
 #include <random>
-#include <thread>
 
 namespace RS {
 

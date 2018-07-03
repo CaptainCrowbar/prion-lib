@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rs-core/common.hpp"
+#include <algorithm>
 #include <functional>
 #include <initializer_list>
 #include <set>
@@ -156,7 +157,7 @@ namespace RS {
 
         template <typename K1, typename K2, typename C1, typename C2>
         typename MirrorMap<K1, K2, C1, C2>::left_range MirrorMap<K1, K2, C1, C2>::equal_left(const K1& key) const {
-            auto eqr = left_set.equal_range(key);
+            auto eqr = std::equal_range(left_set.begin(), left_set.end(), key, left_set.key_comp());
             left_range range;
             range.first.iter = eqr.first;
             range.second.iter = eqr.second;
@@ -165,7 +166,7 @@ namespace RS {
 
         template <typename K1, typename K2, typename C1, typename C2>
         typename MirrorMap<K1, K2, C1, C2>::right_range MirrorMap<K1, K2, C1, C2>::equal_right(const K2& key) const {
-            auto eqr = right_set.equal_range(key);
+            auto eqr = std::equal_range(right_set.begin(), right_set.end(), key, right_set.key_comp());
             right_range range;
             range.first.iter = eqr.first;
             range.second.iter = eqr.second;
@@ -197,7 +198,7 @@ namespace RS {
 
         template <typename K1, typename K2, typename C1, typename C2>
         size_t MirrorMap<K1, K2, C1, C2>::erase_left(const K1& key) noexcept {
-            auto eqr = left_set.equal_range(key);
+            auto eqr = std::equal_range(left_set.begin(), left_set.end(), key, left_set.key_comp());
             size_t n = 0;
             for (auto i = eqr.first; i != eqr.second; ++i, ++n)
                 right_set.erase(i);
@@ -207,7 +208,7 @@ namespace RS {
 
         template <typename K1, typename K2, typename C1, typename C2>
         size_t MirrorMap<K1, K2, C1, C2>::erase_right(const K2& key) noexcept {
-            auto eqr = right_set.equal_range(key);
+            auto eqr = std::equal_range(right_set.begin(), right_set.end(), key, right_set.key_comp());
             size_t n = 0;
             for (auto i = eqr.first; i != eqr.second; ++i, ++n)
                 left_set.erase(*i);

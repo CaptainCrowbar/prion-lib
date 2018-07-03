@@ -18,10 +18,12 @@
 * _Containers_
     * [`"rs-core/array-map.hpp"`](array-map.html) - Sequence based associative array
     * [`"rs-core/blob.hpp"`](blob.html) - Binary large object
-    * [`"rs-core/bounded-array.hpp"`](bounded-array.html) - Bounded array
-    * [`"rs-core/compact-array.hpp"`](compact-array.html) - Compact array
+    * [`"rs-core/bounded-array.hpp"`](bounded-array.html) - Stack-based array with bounded size
+    * [`"rs-core/compact-array.hpp"`](compact-array.html) - Array optimized for small sizes
     * [`"rs-core/grid.hpp"`](grid.html) - Multidimensional array
     * [`"rs-core/index-table.hpp"`](index-table.html) - Multi-index map
+    * [`"rs-core/mirror-map.hpp"`](mirror-map.html) - Map with two-way lookup
+    * [`"rs-core/ordered-map.hpp"`](ordered-map.html) - Map with insertion order preservation
     * [`"rs-core/ring-buffer.hpp"`](ring-buffer.html) - Ring buffer
     * [`"rs-core/scale-map.hpp"`](scale-map.html) - Interpolating associative array
     * [`"rs-core/stack.hpp"`](stack.html) - Deterministic stack

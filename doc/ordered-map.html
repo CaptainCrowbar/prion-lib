@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Order Preserving Map</title>
+<link type="text/css" rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<h1 id="order-preserving-map">Order Preserving Map</h1>
+<p>By Ross Smith</p>
+<ul>
+<li><code>#include "rs-core/ordered-map.hpp"</code></li>
+</ul>
+<h2 id="contents">Contents</h2>
+<div class="toc">
+<ul>
+<li><a href="#order-preserving-map">Order Preserving Map</a><ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#class-orderedmap">Class OrderedMap</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="class-orderedmap">Class OrderedMap</h2>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename K, typename T&gt; class</code> <strong><code>OrderedMap</code></strong><ul>
+<li><code>typename OrderedMap::</code><strong><code>const_iterator</code></strong></li>
+<li><code>typename OrderedMap::</code><strong><code>iterator</code></strong></li>
+<li><code>using OrderedMap::</code><strong><code>key_type</code></strong> <code>= K</code></li>
+<li><code>using OrderedMap::</code><strong><code>mapped_type</code></strong> <code>= T</code></li>
+<li><code>using OrderedMap::</code><strong><code>value_type</code></strong> <code>= std::pair&lt;const K, T&gt;</code></li>
+<li><code>T&amp; OrderedMap::</code><strong><code>operator[]</code></strong><code>(const K&amp; k)</code></li>
+<li><code>iterator OrderedMap::</code><strong><code>begin</code></strong><code>()</code></li>
+<li><code>const_iterator OrderedMap::</code><strong><code>begin</code></strong><code>() const</code></li>
+<li><code>const_iterator OrderedMap::</code><strong><code>cbegin</code></strong><code>() const</code></li>
+<li><code>iterator OrderedMap::</code><strong><code>end</code></strong><code>()</code></li>
+<li><code>const_iterator OrderedMap::</code><strong><code>end</code></strong><code>() const</code></li>
+<li><code>const_iterator OrderedMap::</code><strong><code>cend</code></strong><code>() const</code></li>
+<li><code>void OrderedMap::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
+<li><code>bool OrderedMap::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
+<li><code>bool OrderedMap::</code><strong><code>erase</code></strong><code>(const K&amp; k) noexcept</code></li>
+<li><code>void OrderedMap::</code><strong><code>erase</code></strong><code>(const_iterator i) noexcept</code></li>
+<li><code>iterator OrderedMap::</code><strong><code>find</code></strong><code>(const K&amp; k)</code></li>
+<li><code>const_iterator OrderedMap::</code><strong><code>find</code></strong><code>(const K&amp; k) const</code></li>
+<li><code>bool OrderedMap::</code><strong><code>has</code></strong><code>(const K&amp; k) const</code></li>
+<li><code>std::pair&lt;iterator, bool&gt; OrderedMap::</code><strong><code>insert</code></strong><code>(const K&amp; k, const T&amp; t)</code></li>
+<li><code>std::pair&lt;iterator, bool&gt; OrderedMap::</code><strong><code>insert</code></strong><code>(const value_type&amp; v)</code></li>
+<li><code>iterator OrderedMap::</code><strong><code>set</code></strong><code>(const K&amp; k, const T&amp; t)</code></li>
+<li><code>iterator OrderedMap::</code><strong><code>set</code></strong><code>(const value_type&amp; v)</code></li>
+<li><code>size_t OrderedMap::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
+<li><code>void OrderedMap::</code><strong><code>swap</code></strong><code>(OrderedMap&amp; om) noexcept</code></li>
+<li><code>void</code> <strong><code>swap</code></strong><code>(OrderedMap&amp; om1, OrderedMap&amp; om2) noexcept</code></li>
+</ul>
+</li>
+</ul>
+<p>An <code>OrderedMap</code> behaves the same as a <code>std::map</code> in most respects, except that
+iteration over the map returns the elements in insertion order instead of the
+key type's natural order.</p>
+<p>The <code>has()</code> function returns true if a matching key is present in the map. The
+<code>set()</code> functions perform an insert or update, creating a new value if the key
+is not already present, or replacing the mapped value if it is not, returning
+an iterator pointing to the new or modified element.</p></body>
+</html>

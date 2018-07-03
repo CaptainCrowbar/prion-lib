@@ -48,6 +48,8 @@ $(BUILD)/ipc.o: rs-core/ipc.cpp rs-core/common.hpp rs-core/digest.hpp rs-core/ip
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/meta-test.o: rs-core/meta-test.cpp rs-core/common.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
+$(BUILD)/mirror-map-test.o: rs-core/mirror-map-test.cpp rs-core/common.hpp rs-core/mirror-map.hpp rs-core/unit-test.hpp \
+    /usr/local/include/unicorn/utility.hpp
 $(BUILD)/mp-integer-test.o: rs-core/mp-integer-test.cpp rs-core/common.hpp rs-core/mp-integer.hpp rs-core/rational.hpp rs-core/string.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/mp-integer.o: rs-core/mp-integer.cpp rs-core/common.hpp rs-core/mp-integer.hpp rs-core/rational.hpp rs-core/string.hpp \
@@ -57,6 +59,8 @@ $(BUILD)/net-test.o: rs-core/net-test.cpp rs-core/channel.hpp rs-core/common.hpp
 $(BUILD)/net.o: rs-core/net.cpp rs-core/channel.hpp rs-core/common.hpp rs-core/digest.hpp rs-core/net.hpp rs-core/optional.hpp rs-core/string.hpp rs-core/time.hpp \
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/optional-test.o: rs-core/optional-test.cpp rs-core/common.hpp rs-core/optional.hpp rs-core/string.hpp rs-core/unit-test.hpp \
+    /usr/local/include/unicorn/utility.hpp
+$(BUILD)/ordered-map-test.o: rs-core/ordered-map-test.cpp rs-core/common.hpp rs-core/ordered-map.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/process-test.o: rs-core/process-test.cpp rs-core/channel.hpp rs-core/common.hpp rs-core/optional.hpp rs-core/process.hpp rs-core/string.hpp rs-core/time.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp

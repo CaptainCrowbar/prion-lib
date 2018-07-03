@@ -145,6 +145,12 @@ extern void test_core_meta_function_detection();
 extern void test_core_meta_type_categories();
 extern void test_core_meta_associated_types();
 extern void test_core_meta_iterator_utilities();
+extern void test_core_mirror_map_construct();
+extern void test_core_mirror_map_iterators();
+extern void test_core_mirror_map_insert();
+extern void test_core_mirror_map_erase();
+extern void test_core_mirror_map_search();
+extern void test_core_mirror_map_duplicates();
 extern void test_core_mp_integer_unsigned_conversion();
 extern void test_core_mp_integer_unsigned_arithmetic();
 extern void test_core_mp_integer_unsigned_bit_operations();
@@ -174,6 +180,7 @@ extern void test_core_optional_object_accounting();
 extern void test_core_optional_comparison_operators();
 extern void test_core_optional_coalescing_operators();
 extern void test_core_optional_function_calls();
+extern void test_core_ordered_map_class();
 extern void test_core_process_shell_commands();
 extern void test_core_process_stream();
 extern void test_core_process_text();
@@ -485,6 +492,12 @@ int main() {
         { "core/meta/type-categories", test_core_meta_type_categories },
         { "core/meta/associated-types", test_core_meta_associated_types },
         { "core/meta/iterator-utilities", test_core_meta_iterator_utilities },
+        { "core/mirror-map/construct", test_core_mirror_map_construct },
+        { "core/mirror-map/iterators", test_core_mirror_map_iterators },
+        { "core/mirror-map/insert", test_core_mirror_map_insert },
+        { "core/mirror-map/erase", test_core_mirror_map_erase },
+        { "core/mirror-map/search", test_core_mirror_map_search },
+        { "core/mirror-map/duplicates", test_core_mirror_map_duplicates },
         { "core/mp-integer/unsigned-conversion", test_core_mp_integer_unsigned_conversion },
         { "core/mp-integer/unsigned-arithmetic", test_core_mp_integer_unsigned_arithmetic },
         { "core/mp-integer/unsigned-bit-operations", test_core_mp_integer_unsigned_bit_operations },
@@ -514,6 +527,7 @@ int main() {
         { "core/optional/comparison-operators", test_core_optional_comparison_operators },
         { "core/optional/coalescing-operators", test_core_optional_coalescing_operators },
         { "core/optional/function-calls", test_core_optional_function_calls },
+        { "core/ordered-map/class", test_core_ordered_map_class },
         { "core/process/shell-commands", test_core_process_shell_commands },
         { "core/process/stream", test_core_process_stream },
         { "core/process/text", test_core_process_text },

@@ -45,7 +45,7 @@ void test_core_fixed_binary_small_binary() {
 
         using binary = SmallBinary<5>;
 
-        static constexpr binary c(42);
+        static const binary c(42);
         binary x, y, z;
 
         TEST_EQUAL(int(binary::max()), 31);
@@ -163,7 +163,7 @@ void test_core_fixed_binary_small_binary() {
 
         using binary = SmallBinary<35>;
 
-        static constexpr binary c(42);
+        static const binary c(42);
         binary x, y, z;
 
         TEST_EQUAL(uint64_t(binary::max()), 0x7ffffffff_u64);
@@ -308,7 +308,7 @@ void test_core_fixed_binary_large_binary() {
 
         using binary = LargeBinary<35>;
 
-        static constexpr binary c(42);
+        static const binary c(42);
         binary x, y, z;
 
         TEST_EQUAL(uint64_t(binary::max()), 0x7ffffffff_u64);
@@ -453,7 +453,7 @@ void test_core_fixed_binary_large_binary() {
 
         using binary = LargeBinary<100>;
 
-        static constexpr binary c(42);
+        static const binary c(42);
         binary x, y, z;
 
         TEST_EQUAL(binary::max().as_hex(), "fffffffffffffffffffffffff");
@@ -687,8 +687,8 @@ namespace {
     template <typename T>
     void do_random_arithmetic_tests() {
 
-        static constexpr int iterations = 10000;
-        static constexpr auto mask = uint64_t(T::max());
+        const int iterations = 10000;
+        const auto mask = uint64_t(T::max());
 
         std::mt19937 rng(42);
 
@@ -749,10 +749,10 @@ namespace {
     template <typename T1, typename T2>
     void do_conversion_tests() {
 
-        static constexpr uint64_t ca = 0x0123456789abcdef_u64;
-        static constexpr uint64_t cb = ~ ca;
-        static constexpr uint64_t mask1 = uint64_t(T1::max());
-        static constexpr uint64_t mask2 = uint64_t(T2::max());
+        const auto ca = 0x0123456789abcdef_u64;
+        const auto cb = ~ ca;
+        const auto mask1 = uint64_t(T1::max());
+        const auto mask2 = uint64_t(T2::max());
 
         T1 x1, y1, z1;
         T2 x2, y2, z2;

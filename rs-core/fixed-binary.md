@@ -29,15 +29,15 @@ function is documented as taking a `Binary` argument by value, usually the
 Member constants.
 
 * `constexpr Binary::`**`Binary`**`() noexcept`
-* `constexpr Binary::`**`Binary`**`(uint64_t x) noexcept`
-* `template <size_t M> constexpr explicit Binary::`**`Binary`**`(Binary<M> x) noexcept`
-* `constexpr explicit Binary::`**`Binary`**`(std::initializer_list<uint64_t> init) noexcept`
-* `constexpr explicit Binary::`**`Binary`**`(const Ustring& str, int base = 10) noexcept`
-* `constexpr Binary::`**`~Binary`**`() noexcept`
-* `constexpr Binary::`**`Binary`**`(const Binary& x) noexcept`
-* `constexpr Binary::`**`Binary`**`(Binary&& x) noexcept`
-* `constexpr Binary& Binary::`**`operator=`**`(const Binary& x) noexcept`
-* `constexpr Binary& Binary::`**`operator=`**`(Binary&& x) noexcept`
+* `Binary::`**`Binary`**`(uint64_t x) noexcept`
+* `template <size_t M> explicit Binary::`**`Binary`**`(Binary<M> x) noexcept`
+* `explicit Binary::`**`Binary`**`(std::initializer_list<uint64_t> init) noexcept`
+* `explicit Binary::`**`Binary`**`(const Ustring& str, int base = 10) noexcept`
+* `Binary::`**`~Binary`**`() noexcept`
+* `Binary::`**`Binary`**`(const Binary& x) noexcept`
+* `Binary::`**`Binary`**`(Binary&& x) noexcept`
+* `Binary& Binary::`**`operator=`**`(const Binary& x) noexcept`
+* `Binary& Binary::`**`operator=`**`(Binary&& x) noexcept`
 
 Life cycle operations. The default constructor sets the value to zero. A
 `Binary` can be constructed from a native unsigned integer, another `Binary`
@@ -67,11 +67,11 @@ equivalent of converting the significand exactly and then shifting by a number
 of bits based on the exponent; behaviour is undefined if the argument is
 negative.
 
-* `constexpr void Binary::`**`clear`**`() noexcept`
+* `void Binary::`**`clear`**`() noexcept`
 
 Sets the value to zero.
 
-* `constexpr int Binary::`**`compare`**`(Binary y) const noexcept`
+* `int Binary::`**`compare`**`(Binary y) const noexcept`
 
 Compares the current value (`x`) to `y`, returning `-1` if `x<y`, `0` if
 `x==y`, or `1` if `x>y`.
@@ -82,7 +82,7 @@ Compares the current value (`x`) to `y`, returning `-1` if `x<y`, `0` if
 Pointers to the internal representation, which will consist of a number of
 bytes equal to the `bytes` constant, in little endian order.
 
-* `template <typename T> constexpr bool Binary::`**`fits_in`**`() const noexcept`
+* `template <typename T> bool Binary::`**`fits_in`**`() const noexcept`
 
 True if the current value of the `Binary` will fit in a `T` without loss of
 information. Behaviour is undefined if `T` is not a primitive arithmetic type.
@@ -97,73 +97,73 @@ comes before the end of the string, and returns the number of characters
 successfully parsed. Behaviour is undefined if the base is less than 2 or
 greater than 35.
 
-* `constexpr size_t Binary::`**`significant_bits`**`() const noexcept`
+* `size_t Binary::`**`significant_bits`**`() const noexcept`
 
 Returns the number of significant bits in the value.
 
-* `constexpr explicit Binary::`**`operator bool`**`() const noexcept`
+* `explicit Binary::`**`operator bool`**`() const noexcept`
 
 Returns true if the value is not zero.
 
-* `template <typename T> constexpr explicit Binary::`**`operator T`**`() const noexcept`
+* `template <typename T> explicit Binary::`**`operator T`**`() const noexcept`
 
 Converts a `Binary` into a standard integer type. The usual arithmetic
 overflow rules apply if the value is out of range for the result type.
 Behaviour is undefined if `T` is not a primitive arithmetic type, or if `T` is
 signed and `fits_in<T>()` is false.
 
-* `constexpr Binary Binary::`**`operator+`**`() const noexcept`
-* `constexpr Binary Binary::`**`operator-`**`() const noexcept`
-* `constexpr Binary& Binary::`**`operator++`**`() noexcept`
-* `constexpr Binary Binary::`**`operator++`**`(int) noexcept`
-* `constexpr Binary& Binary::`**`operator--`**`() noexcept`
-* `constexpr Binary Binary::`**`operator--`**`(int) noexcept`
-* `constexpr Binary& Binary::`**`operator+=`**`(Binary y) noexcept`
-* `constexpr Binary& Binary::`**`operator-=`**`(Binary y) noexcept`
-* `constexpr Binary& Binary::`**`operator*=`**`(Binary y) noexcept`
-* `constexpr Binary& Binary::`**`operator/=`**`(Binary y) noexcept`
-* `constexpr Binary& Binary::`**`operator%=`**`(Binary y) noexcept`
-* `constexpr Binary` **`operator+`**`(Binary x, Binary y) noexcept`
-* `constexpr Binary` **`operator-`**`(Binary x, Binary y) noexcept`
-* `constexpr Binary` **`operator*`**`(Binary x, Binary y) noexcept`
-* `constexpr Binary` **`operator/`**`(Binary x, Binary y) noexcept`
-* `constexpr Binary` **`operator%`**`(Binary x, Binary y) noexcept`
-* `static constexpr void Binary::`**`divide`**`(Binary x, Binary y, Binary& q, Binary& r) noexcept`
+* `Binary Binary::`**`operator+`**`() const noexcept`
+* `Binary Binary::`**`operator-`**`() const noexcept`
+* `Binary& Binary::`**`operator++`**`() noexcept`
+* `Binary Binary::`**`operator++`**`(int) noexcept`
+* `Binary& Binary::`**`operator--`**`() noexcept`
+* `Binary Binary::`**`operator--`**`(int) noexcept`
+* `Binary& Binary::`**`operator+=`**`(Binary y) noexcept`
+* `Binary& Binary::`**`operator-=`**`(Binary y) noexcept`
+* `Binary& Binary::`**`operator*=`**`(Binary y) noexcept`
+* `Binary& Binary::`**`operator/=`**`(Binary y) noexcept`
+* `Binary& Binary::`**`operator%=`**`(Binary y) noexcept`
+* `Binary` **`operator+`**`(Binary x, Binary y) noexcept`
+* `Binary` **`operator-`**`(Binary x, Binary y) noexcept`
+* `Binary` **`operator*`**`(Binary x, Binary y) noexcept`
+* `Binary` **`operator/`**`(Binary x, Binary y) noexcept`
+* `Binary` **`operator%`**`(Binary x, Binary y) noexcept`
+* `static void Binary::`**`divide`**`(Binary x, Binary y, Binary& q, Binary& r) noexcept`
 
 Arithmetic operations. Most of these just have the obvious semantics, with the
 usual wraparound behaviour on overflow or underflow. For all of the division
 and remainder operations (including `divide()`), behaviour is undefined if the
 divisor is zero.
 
-* `constexpr Binary Binary::`**`operator~`**`() const noexcept`
-* `constexpr Binary& Binary::`**`operator&=`**`(Binary y) noexcept`
-* `constexpr Binary& Binary::`**`operator|=`**`(Binary y) noexcept`
-* `constexpr Binary& Binary::`**`operator^=`**`(Binary y) noexcept`
-* `constexpr Binary& Binary::`**`operator<<=`**`(int y) noexcept`
-* `constexpr Binary& Binary::`**`operator>>=`**`(int y) noexcept`
-* `constexpr Binary` **`operator&`**`(Binary x, Binary y) noexcept`
-* `constexpr Binary` **`operator|`**`(Binary x, Binary y) noexcept`
-* `constexpr Binary` **`operator^`**`(Binary x, Binary y) noexcept`
-* `constexpr Binary` **`operator<<`**`(Binary x, int y) noexcept`
-* `constexpr Binary` **`operator>>`**`(Binary x, int y) noexcept`
-* `constexpr Binary` **`rotl`**`(Binary x, int y) noexcept`
-* `constexpr Binary` **`rotr`**`(Binary x, int y) noexcept`
+* `Binary Binary::`**`operator~`**`() const noexcept`
+* `Binary& Binary::`**`operator&=`**`(Binary y) noexcept`
+* `Binary& Binary::`**`operator|=`**`(Binary y) noexcept`
+* `Binary& Binary::`**`operator^=`**`(Binary y) noexcept`
+* `Binary& Binary::`**`operator<<=`**`(int y) noexcept`
+* `Binary& Binary::`**`operator>>=`**`(int y) noexcept`
+* `Binary` **`operator&`**`(Binary x, Binary y) noexcept`
+* `Binary` **`operator|`**`(Binary x, Binary y) noexcept`
+* `Binary` **`operator^`**`(Binary x, Binary y) noexcept`
+* `Binary` **`operator<<`**`(Binary x, int y) noexcept`
+* `Binary` **`operator>>`**`(Binary x, int y) noexcept`
+* `Binary` **`rotl`**`(Binary x, int y) noexcept`
+* `Binary` **`rotr`**`(Binary x, int y) noexcept`
 
 Bitwise operations. These have their usual semantics. The bit count argument
 to the shift and rotate operations can be any value, including out of range or
 negative values; a negative shift or rotate is interpreted as a positive one
 in the opposite direction.
 
-* `constexpr bool` **`operator==`**`(Binary x, Binary y) noexcept`
-* `constexpr bool` **`operator!=`**`(Binary x, Binary y) noexcept`
-* `constexpr bool` **`operator<`**`(Binary x, Binary y) noexcept`
-* `constexpr bool` **`operator>`**`(Binary x, Binary y) noexcept`
-* `constexpr bool` **`operator<=`**`(Binary x, Binary y) noexcept`
-* `constexpr bool` **`operator>=`**`(Binary x, Binary y) noexcept`
+* `bool` **`operator==`**`(Binary x, Binary y) noexcept`
+* `bool` **`operator!=`**`(Binary x, Binary y) noexcept`
+* `bool` **`operator<`**`(Binary x, Binary y) noexcept`
+* `bool` **`operator>`**`(Binary x, Binary y) noexcept`
+* `bool` **`operator<=`**`(Binary x, Binary y) noexcept`
+* `bool` **`operator>=`**`(Binary x, Binary y) noexcept`
 
 Comparison operators.
 
-* `static constexpr Binary Binary::`**`max`**`() noexcept`
+* `static Binary Binary::`**`max`**`() noexcept`
 
 Returns the maximum value of the type (the complement of zero).
 

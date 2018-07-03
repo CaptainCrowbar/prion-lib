@@ -47,15 +47,15 @@ function is documented as taking a <code>Binary</code> argument by value, usuall
 <div class="defns">
 <ul>
 <li><code>constexpr Binary::</code><strong><code>Binary</code></strong><code>() noexcept</code></li>
-<li><code>constexpr Binary::</code><strong><code>Binary</code></strong><code>(uint64_t x) noexcept</code></li>
-<li><code>template &lt;size_t M&gt; constexpr explicit Binary::</code><strong><code>Binary</code></strong><code>(Binary&lt;M&gt; x) noexcept</code></li>
-<li><code>constexpr explicit Binary::</code><strong><code>Binary</code></strong><code>(std::initializer_list&lt;uint64_t&gt; init) noexcept</code></li>
-<li><code>constexpr explicit Binary::</code><strong><code>Binary</code></strong><code>(const Ustring&amp; str, int base = 10) noexcept</code></li>
-<li><code>constexpr Binary::</code><strong><code>~Binary</code></strong><code>() noexcept</code></li>
-<li><code>constexpr Binary::</code><strong><code>Binary</code></strong><code>(const Binary&amp; x) noexcept</code></li>
-<li><code>constexpr Binary::</code><strong><code>Binary</code></strong><code>(Binary&amp;&amp; x) noexcept</code></li>
-<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator=</code></strong><code>(const Binary&amp; x) noexcept</code></li>
-<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator=</code></strong><code>(Binary&amp;&amp; x) noexcept</code></li>
+<li><code>Binary::</code><strong><code>Binary</code></strong><code>(uint64_t x) noexcept</code></li>
+<li><code>template &lt;size_t M&gt; explicit Binary::</code><strong><code>Binary</code></strong><code>(Binary&lt;M&gt; x) noexcept</code></li>
+<li><code>explicit Binary::</code><strong><code>Binary</code></strong><code>(std::initializer_list&lt;uint64_t&gt; init) noexcept</code></li>
+<li><code>explicit Binary::</code><strong><code>Binary</code></strong><code>(const Ustring&amp; str, int base = 10) noexcept</code></li>
+<li><code>Binary::</code><strong><code>~Binary</code></strong><code>() noexcept</code></li>
+<li><code>Binary::</code><strong><code>Binary</code></strong><code>(const Binary&amp; x) noexcept</code></li>
+<li><code>Binary::</code><strong><code>Binary</code></strong><code>(Binary&amp;&amp; x) noexcept</code></li>
+<li><code>Binary&amp; Binary::</code><strong><code>operator=</code></strong><code>(const Binary&amp; x) noexcept</code></li>
+<li><code>Binary&amp; Binary::</code><strong><code>operator=</code></strong><code>(Binary&amp;&amp; x) noexcept</code></li>
 </ul>
 <p>Life cycle operations. The default constructor sets the value to zero. A
 <code>Binary</code> can be constructed from a native unsigned integer, another <code>Binary</code>
@@ -91,13 +91,13 @@ negative.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>constexpr void Binary::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
+<li><code>void Binary::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
 </ul>
 <p>Sets the value to zero.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>constexpr int Binary::</code><strong><code>compare</code></strong><code>(Binary y) const noexcept</code></li>
+<li><code>int Binary::</code><strong><code>compare</code></strong><code>(Binary y) const noexcept</code></li>
 </ul>
 <p>Compares the current value (<code>x</code>) to <code>y</code>, returning <code>-1</code> if <code>x&lt;y</code>, <code>0</code> if
 <code>x==y</code>, or <code>1</code> if <code>x&gt;y</code>.</p>
@@ -112,7 +112,7 @@ bytes equal to the <code>bytes</code> constant, in little endian order.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; constexpr bool Binary::</code><strong><code>fits_in</code></strong><code>() const noexcept</code></li>
+<li><code>template &lt;typename T&gt; bool Binary::</code><strong><code>fits_in</code></strong><code>() const noexcept</code></li>
 </ul>
 <p>True if the current value of the <code>Binary</code> will fit in a <code>T</code> without loss of
 information. Behaviour is undefined if <code>T</code> is not a primitive arithmetic type.</p>
@@ -131,19 +131,19 @@ greater than 35.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>constexpr size_t Binary::</code><strong><code>significant_bits</code></strong><code>() const noexcept</code></li>
+<li><code>size_t Binary::</code><strong><code>significant_bits</code></strong><code>() const noexcept</code></li>
 </ul>
 <p>Returns the number of significant bits in the value.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>constexpr explicit Binary::</code><strong><code>operator bool</code></strong><code>() const noexcept</code></li>
+<li><code>explicit Binary::</code><strong><code>operator bool</code></strong><code>() const noexcept</code></li>
 </ul>
 <p>Returns true if the value is not zero.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; constexpr explicit Binary::</code><strong><code>operator T</code></strong><code>() const noexcept</code></li>
+<li><code>template &lt;typename T&gt; explicit Binary::</code><strong><code>operator T</code></strong><code>() const noexcept</code></li>
 </ul>
 <p>Converts a <code>Binary</code> into a standard integer type. The usual arithmetic
 overflow rules apply if the value is out of range for the result type.
@@ -152,23 +152,23 @@ signed and <code>fits_in&lt;T&gt;()</code> is false.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>constexpr Binary Binary::</code><strong><code>operator+</code></strong><code>() const noexcept</code></li>
-<li><code>constexpr Binary Binary::</code><strong><code>operator-</code></strong><code>() const noexcept</code></li>
-<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator++</code></strong><code>() noexcept</code></li>
-<li><code>constexpr Binary Binary::</code><strong><code>operator++</code></strong><code>(int) noexcept</code></li>
-<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator--</code></strong><code>() noexcept</code></li>
-<li><code>constexpr Binary Binary::</code><strong><code>operator--</code></strong><code>(int) noexcept</code></li>
-<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator+=</code></strong><code>(Binary y) noexcept</code></li>
-<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator-=</code></strong><code>(Binary y) noexcept</code></li>
-<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator*=</code></strong><code>(Binary y) noexcept</code></li>
-<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator/=</code></strong><code>(Binary y) noexcept</code></li>
-<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator%=</code></strong><code>(Binary y) noexcept</code></li>
-<li><code>constexpr Binary</code> <strong><code>operator+</code></strong><code>(Binary x, Binary y) noexcept</code></li>
-<li><code>constexpr Binary</code> <strong><code>operator-</code></strong><code>(Binary x, Binary y) noexcept</code></li>
-<li><code>constexpr Binary</code> <strong><code>operator*</code></strong><code>(Binary x, Binary y) noexcept</code></li>
-<li><code>constexpr Binary</code> <strong><code>operator/</code></strong><code>(Binary x, Binary y) noexcept</code></li>
-<li><code>constexpr Binary</code> <strong><code>operator%</code></strong><code>(Binary x, Binary y) noexcept</code></li>
-<li><code>static constexpr void Binary::</code><strong><code>divide</code></strong><code>(Binary x, Binary y, Binary&amp; q, Binary&amp; r) noexcept</code></li>
+<li><code>Binary Binary::</code><strong><code>operator+</code></strong><code>() const noexcept</code></li>
+<li><code>Binary Binary::</code><strong><code>operator-</code></strong><code>() const noexcept</code></li>
+<li><code>Binary&amp; Binary::</code><strong><code>operator++</code></strong><code>() noexcept</code></li>
+<li><code>Binary Binary::</code><strong><code>operator++</code></strong><code>(int) noexcept</code></li>
+<li><code>Binary&amp; Binary::</code><strong><code>operator--</code></strong><code>() noexcept</code></li>
+<li><code>Binary Binary::</code><strong><code>operator--</code></strong><code>(int) noexcept</code></li>
+<li><code>Binary&amp; Binary::</code><strong><code>operator+=</code></strong><code>(Binary y) noexcept</code></li>
+<li><code>Binary&amp; Binary::</code><strong><code>operator-=</code></strong><code>(Binary y) noexcept</code></li>
+<li><code>Binary&amp; Binary::</code><strong><code>operator*=</code></strong><code>(Binary y) noexcept</code></li>
+<li><code>Binary&amp; Binary::</code><strong><code>operator/=</code></strong><code>(Binary y) noexcept</code></li>
+<li><code>Binary&amp; Binary::</code><strong><code>operator%=</code></strong><code>(Binary y) noexcept</code></li>
+<li><code>Binary</code> <strong><code>operator+</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>Binary</code> <strong><code>operator-</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>Binary</code> <strong><code>operator*</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>Binary</code> <strong><code>operator/</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>Binary</code> <strong><code>operator%</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>static void Binary::</code><strong><code>divide</code></strong><code>(Binary x, Binary y, Binary&amp; q, Binary&amp; r) noexcept</code></li>
 </ul>
 <p>Arithmetic operations. Most of these just have the obvious semantics, with the
 usual wraparound behaviour on overflow or underflow. For all of the division
@@ -177,19 +177,19 @@ divisor is zero.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>constexpr Binary Binary::</code><strong><code>operator~</code></strong><code>() const noexcept</code></li>
-<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator&amp;=</code></strong><code>(Binary y) noexcept</code></li>
-<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator|=</code></strong><code>(Binary y) noexcept</code></li>
-<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator^=</code></strong><code>(Binary y) noexcept</code></li>
-<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator&lt;&lt;=</code></strong><code>(int y) noexcept</code></li>
-<li><code>constexpr Binary&amp; Binary::</code><strong><code>operator&gt;&gt;=</code></strong><code>(int y) noexcept</code></li>
-<li><code>constexpr Binary</code> <strong><code>operator&amp;</code></strong><code>(Binary x, Binary y) noexcept</code></li>
-<li><code>constexpr Binary</code> <strong><code>operator|</code></strong><code>(Binary x, Binary y) noexcept</code></li>
-<li><code>constexpr Binary</code> <strong><code>operator^</code></strong><code>(Binary x, Binary y) noexcept</code></li>
-<li><code>constexpr Binary</code> <strong><code>operator&lt;&lt;</code></strong><code>(Binary x, int y) noexcept</code></li>
-<li><code>constexpr Binary</code> <strong><code>operator&gt;&gt;</code></strong><code>(Binary x, int y) noexcept</code></li>
-<li><code>constexpr Binary</code> <strong><code>rotl</code></strong><code>(Binary x, int y) noexcept</code></li>
-<li><code>constexpr Binary</code> <strong><code>rotr</code></strong><code>(Binary x, int y) noexcept</code></li>
+<li><code>Binary Binary::</code><strong><code>operator~</code></strong><code>() const noexcept</code></li>
+<li><code>Binary&amp; Binary::</code><strong><code>operator&amp;=</code></strong><code>(Binary y) noexcept</code></li>
+<li><code>Binary&amp; Binary::</code><strong><code>operator|=</code></strong><code>(Binary y) noexcept</code></li>
+<li><code>Binary&amp; Binary::</code><strong><code>operator^=</code></strong><code>(Binary y) noexcept</code></li>
+<li><code>Binary&amp; Binary::</code><strong><code>operator&lt;&lt;=</code></strong><code>(int y) noexcept</code></li>
+<li><code>Binary&amp; Binary::</code><strong><code>operator&gt;&gt;=</code></strong><code>(int y) noexcept</code></li>
+<li><code>Binary</code> <strong><code>operator&amp;</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>Binary</code> <strong><code>operator|</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>Binary</code> <strong><code>operator^</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>Binary</code> <strong><code>operator&lt;&lt;</code></strong><code>(Binary x, int y) noexcept</code></li>
+<li><code>Binary</code> <strong><code>operator&gt;&gt;</code></strong><code>(Binary x, int y) noexcept</code></li>
+<li><code>Binary</code> <strong><code>rotl</code></strong><code>(Binary x, int y) noexcept</code></li>
+<li><code>Binary</code> <strong><code>rotr</code></strong><code>(Binary x, int y) noexcept</code></li>
 </ul>
 <p>Bitwise operations. These have their usual semantics. The bit count argument
 to the shift and rotate operations can be any value, including out of range or
@@ -198,18 +198,18 @@ in the opposite direction.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>constexpr bool</code> <strong><code>operator==</code></strong><code>(Binary x, Binary y) noexcept</code></li>
-<li><code>constexpr bool</code> <strong><code>operator!=</code></strong><code>(Binary x, Binary y) noexcept</code></li>
-<li><code>constexpr bool</code> <strong><code>operator&lt;</code></strong><code>(Binary x, Binary y) noexcept</code></li>
-<li><code>constexpr bool</code> <strong><code>operator&gt;</code></strong><code>(Binary x, Binary y) noexcept</code></li>
-<li><code>constexpr bool</code> <strong><code>operator&lt;=</code></strong><code>(Binary x, Binary y) noexcept</code></li>
-<li><code>constexpr bool</code> <strong><code>operator&gt;=</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator==</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator!=</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&lt;</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&gt;</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&lt;=</code></strong><code>(Binary x, Binary y) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&gt;=</code></strong><code>(Binary x, Binary y) noexcept</code></li>
 </ul>
 <p>Comparison operators.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>static constexpr Binary Binary::</code><strong><code>max</code></strong><code>() noexcept</code></li>
+<li><code>static Binary Binary::</code><strong><code>max</code></strong><code>() noexcept</code></li>
 </ul>
 <p>Returns the maximum value of the type (the complement of zero).</p>
 </div>

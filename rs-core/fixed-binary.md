@@ -29,7 +29,7 @@ function is documented as taking a `Binary` argument by value, usually the
 Member constants.
 
 * `constexpr Binary::`**`Binary`**`() noexcept`
-* `constexpr explicit Binary::`**`Binary`**`(uint64_t x) noexcept`
+* `constexpr Binary::`**`Binary`**`(uint64_t x) noexcept`
 * `template <size_t M> constexpr explicit Binary::`**`Binary`**`(Binary<M> x) noexcept`
 * `constexpr explicit Binary::`**`Binary`**`(std::initializer_list<uint64_t> init) noexcept`
 * `constexpr explicit Binary::`**`Binary`**`(const Ustring& str, int base = 10) noexcept`
@@ -67,15 +67,6 @@ equivalent of converting the significand exactly and then shifting by a number
 of bits based on the exponent; behaviour is undefined if the argument is
 negative.
 
-* `constexpr uint64_t Binary::`**`as_uint64`**`() const noexcept`
-* `constexpr bool Binary::`**`is_uint64`**`() const noexcept`
-* `constexpr explicit Binary::`**`operator uint64_t`**`() const noexcept`
-
-Conversions between `Binary` and a native 64-bit integer. Depending on the
-size of the value involved, either conversion may truncate the high order
-bits. The `is_uint64()` function tests whether the value will fit in a
-`uint64_t`.
-
 * `constexpr void Binary::`**`clear`**`() noexcept`
 
 Sets the value to zero.
@@ -90,6 +81,11 @@ Compares the current value (`x`) to `y`, returning `-1` if `x<y`, `0` if
 
 Pointers to the internal representation, which will consist of a number of
 bytes equal to the `bytes` constant, in little endian order.
+
+* `template <typename T> constexpr bool Binary::`**`fits_in`**`() const noexcept`
+
+True if the current value of the `Binary` will fit in a `T` without loss of
+information. Behaviour is undefined if `T` is not a primitive arithmetic type.
 
 * `size_t Binary::`**`parse`**`(const Ustring& str, int base = 10) noexcept`
 
@@ -108,6 +104,13 @@ Returns the number of significant bits in the value.
 * `constexpr explicit Binary::`**`operator bool`**`() const noexcept`
 
 Returns true if the value is not zero.
+
+* `template <typename T> constexpr explicit Binary::`**`operator T`**`() const noexcept`
+
+Converts a `Binary` into a standard integer type. The usual arithmetic
+overflow rules apply if the value is out of range for the result type.
+Behaviour is undefined if `T` is not a primitive arithmetic type, or if `T` is
+signed and `fits_in<T>()` is false.
 
 * `constexpr Binary Binary::`**`operator+`**`() const noexcept`
 * `constexpr Binary Binary::`**`operator-`**`() const noexcept`
@@ -143,8 +146,8 @@ divisor is zero.
 * `constexpr Binary` **`operator^`**`(Binary x, Binary y) noexcept`
 * `constexpr Binary` **`operator<<`**`(Binary x, int y) noexcept`
 * `constexpr Binary` **`operator>>`**`(Binary x, int y) noexcept`
-* `constexpr Binary& Binary::`**`rotate_left`**`(int n) noexcept`
-* `constexpr Binary& Binary::`**`rotate_right`**`(int n) noexcept`
+* `constexpr Binary` **`rotl`**`(Binary x, int y) noexcept`
+* `constexpr Binary` **`rotr`**`(Binary x, int y) noexcept`
 
 Bitwise operations. These have their usual semantics. The bit count argument
 to the shift and rotate operations can be any value, including out of range or

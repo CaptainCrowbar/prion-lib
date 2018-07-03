@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cmath>
 #include <initializer_list>
+#include <limits>
 #include <ostream>
 #include <type_traits>
 
@@ -52,26 +53,23 @@ namespace RS {
         static constexpr size_t bytes = sizeof(value_type);
         static constexpr size_t hex_digits = (N + 3) / 4;
         constexpr SmallBinary() noexcept: value(0) {}
-        constexpr explicit SmallBinary(uint64_t x) noexcept: value(x & mask) {}
-        template <size_t M> constexpr explicit SmallBinary(SmallBinary<M> x) noexcept: SmallBinary(x.as_uint64()) {}
+        constexpr SmallBinary(uint64_t x) noexcept: value(x & mask) {}
+        template <size_t M> constexpr explicit SmallBinary(SmallBinary<M> x) noexcept: SmallBinary(static_cast<uint64_t>(x)) {}
         constexpr explicit SmallBinary(std::initializer_list<uint64_t> init) noexcept: value(init.size() ? *init.begin() & mask : 0) {}
         constexpr explicit SmallBinary(const Ustring& str, int base = 10) noexcept: value() { parse(str, base); }
         Ustring as_binary() const { return RS::bin(value, N); }
         Ustring as_decimal() const { return RS::dec(value); }
         Ustring as_hex() const { return RS::hex(value, hex_digits); }
         double as_double() const noexcept { return double(value); }
-        constexpr uint64_t as_uint64() const noexcept { return value; }
-        constexpr bool is_uint64() const noexcept { return true; }
         constexpr void clear() noexcept { value = 0; }
         constexpr int compare(SmallBinary y) const noexcept { return value < y.value ? -1 : value > y.value ? 1 : 0; }
         constexpr auto data() noexcept { return reinterpret_cast<uint8_t*>(&value); }
         constexpr auto data() const noexcept { return reinterpret_cast<const uint8_t*>(&value); }
+        template <typename T> bool fits_in() const noexcept { return significant_bits() <= std::numeric_limits<T>::digits; }
         size_t parse(const Ustring& str, int base = 10) noexcept { return RS_Detail::parse_binary(str, base, *this); }
-        constexpr SmallBinary& rotate_left(int n) noexcept { n %= int(N); *this = (*this << n) + (*this >> (int(N) - n)); return *this; }
-        constexpr SmallBinary& rotate_right(int n) noexcept { n %= int(N); *this = (*this >> n) + (*this << (int(N) - n)); return *this; }
         constexpr size_t significant_bits() const noexcept { return ilog2p1(value); }
         constexpr explicit operator bool() const noexcept { return value != 0; }
-        constexpr explicit operator uint64_t() const noexcept { return value; }
+        template <typename T> constexpr explicit operator T() const noexcept { return static_cast<T>(value); }
         constexpr SmallBinary operator+() const noexcept { return *this; }
         constexpr SmallBinary operator-() const noexcept { auto x = ~ *this; ++x; return x; }
         constexpr SmallBinary operator~() const noexcept { return SmallBinary(~ value); }
@@ -95,6 +93,8 @@ namespace RS {
         template <typename RNG> static SmallBinary random(RNG& rng) { return SmallBinary(random_integer(rng, uint64_t(0), uint64_t(mask))); }
         template <typename RNG> static SmallBinary random(RNG& rng, SmallBinary x) { return SmallBinary(x.value > 1 ? random_integer(rng, uint64_t(0), uint64_t(x.value - 1)) : 0); }
         template <typename RNG> static SmallBinary random(RNG& rng, SmallBinary x, SmallBinary y) { return SmallBinary(random_integer(rng, uint64_t(x.value), uint64_t(y.value))); }
+        friend constexpr SmallBinary rotl(SmallBinary x, int y) noexcept { y %= int(N); return (x << y) | (x >> (int(N) - y)); }
+        friend constexpr SmallBinary rotr(SmallBinary x, int y) noexcept { y %= int(N); return (x >> y) | (x << (int(N) - y)); }
         friend constexpr SmallBinary operator+(SmallBinary x, SmallBinary y) noexcept { auto z = x; z += y; return z; }
         friend constexpr SmallBinary operator-(SmallBinary x, SmallBinary y) noexcept { auto z = x; z -= y; return z; }
         friend constexpr SmallBinary operator*(SmallBinary x, SmallBinary y) noexcept { auto z = x; z *= y; return z; }
@@ -128,28 +128,25 @@ namespace RS {
         static constexpr size_t bytes = units * unit_bytes;
         static constexpr size_t hex_digits = (N + 3) / 4;
         constexpr LargeBinary() noexcept: array() { clear(); }
-        constexpr explicit LargeBinary(uint64_t x) noexcept;
+        constexpr LargeBinary(uint64_t x) noexcept;
         constexpr explicit LargeBinary(std::initializer_list<uint64_t> init) noexcept;
         constexpr explicit LargeBinary(const Ustring& str) noexcept: array() { parse(str); }
-        template <size_t M> constexpr explicit LargeBinary(SmallBinary<M> x) noexcept: LargeBinary(x.as_uint64()) {}
+        template <size_t M> constexpr explicit LargeBinary(SmallBinary<M> x) noexcept: LargeBinary(static_cast<uint64_t>(x)) {}
         template <size_t M> constexpr explicit LargeBinary(const LargeBinary<M>& x) noexcept;
-        template <size_t M> constexpr explicit operator SmallBinary<M>() const noexcept { return SmallBinary<M>(as_uint64()); }
+        template <size_t M> constexpr explicit operator SmallBinary<M>() const noexcept { return SmallBinary<M>(static_cast<uint64_t>(*this)); }
         Ustring as_binary() const;
         Ustring as_decimal() const;
         Ustring as_hex() const;
         double as_double() const noexcept;
-        constexpr uint64_t as_uint64() const noexcept;
-        constexpr bool is_uint64() const noexcept;
         constexpr void clear() noexcept { for (auto& u: array) u = 0; }
         constexpr int compare(const LargeBinary& y) const noexcept;
         constexpr auto data() noexcept { return reinterpret_cast<uint8_t*>(array); }
         constexpr auto data() const noexcept { return reinterpret_cast<const uint8_t*>(array); }
+        template <typename T> bool fits_in() const noexcept { return significant_bits() <= std::numeric_limits<T>::digits; }
         size_t parse(const Ustring& str, int base = 10) noexcept { return RS_Detail::parse_binary(str, base, *this); }
-        constexpr LargeBinary& rotate_left(int n) noexcept { n %= int(N); *this = (*this << n) + (*this >> (int(N) - n)); return *this; }
-        constexpr LargeBinary& rotate_right(int n) noexcept { n %= int(N); *this = (*this >> n) + (*this << (int(N) - n)); return *this; }
         constexpr size_t significant_bits() const noexcept;
         constexpr explicit operator bool() const noexcept;
-        constexpr explicit operator uint64_t() const noexcept { return as_uint64(); }
+        template <typename T> constexpr explicit operator T() const noexcept;
         constexpr LargeBinary operator+() const noexcept { return *this; }
         constexpr LargeBinary operator-() const noexcept { auto x = ~ *this; ++x; return x; }
         constexpr LargeBinary operator~() const noexcept;
@@ -173,6 +170,8 @@ namespace RS {
         template <typename RNG> static LargeBinary random(RNG& rng);
         template <typename RNG> static LargeBinary random(RNG& rng, const LargeBinary& x);
         template <typename RNG> static LargeBinary random(RNG& rng, const LargeBinary& x, const LargeBinary& y);
+        friend constexpr LargeBinary rotl(const LargeBinary& x, int y) noexcept { y %= int(N); return (x << y) | (x >> (int(N) - y)); }
+        friend constexpr LargeBinary rotr(const LargeBinary& x, int y) noexcept { y %= int(N); return (x >> y) | (x << (int(N) - y)); }
         friend constexpr LargeBinary operator+(const LargeBinary& x, const LargeBinary& y) noexcept { auto z = x; z += y; return z; }
         friend constexpr LargeBinary operator-(const LargeBinary& x, const LargeBinary& y) noexcept { auto z = x; z -= y; return z; }
         friend constexpr LargeBinary operator*(const LargeBinary& x, const LargeBinary& y) noexcept { auto z = x; z *= y; return z; }
@@ -284,22 +283,6 @@ namespace RS {
         }
 
         template <size_t N>
-        constexpr uint64_t LargeBinary<N>::as_uint64() const noexcept {
-            uint64_t x = array[0];
-            if (units > 1)
-                x += uint64_t(array[1]) << unit_bits;
-            return x;
-        }
-
-        template <size_t N>
-        constexpr bool LargeBinary<N>::is_uint64() const noexcept {
-            for (size_t i = 2; i < units; ++i)
-                if (array[i])
-                    return false;
-            return true;
-        }
-
-        template <size_t N>
         constexpr int LargeBinary<N>::compare(const LargeBinary& y) const noexcept {
             for (size_t i = units - 1; i != npos; --i)
                 if (array[i] != y.array[i])
@@ -321,6 +304,20 @@ namespace RS {
                 if (u)
                     return true;
             return false;
+        }
+
+        template <size_t N>
+        template <typename T>
+        constexpr LargeBinary<N>::operator T() const noexcept {
+            constexpr size_t t_bits = std::numeric_limits<T>::digits;
+            constexpr size_t t_units = (t_bits + unit_bits - 1) / unit_bits;
+            constexpr size_t n_units = std::min(t_units, units);
+            if (n_units < 2)
+                return static_cast<T>(array[0]);
+            uintmax_t u = 0;
+            for (int i = int(n_units) - 1; i >= 0; --i)
+                u = (u << unit_bits) + array[i];
+            return static_cast<T>(u);
         }
 
         template <size_t N>
@@ -521,9 +518,10 @@ namespace RS {
         template <size_t N>
         template <typename RNG>
         LargeBinary<N> LargeBinary<N>::random(RNG& rng, const LargeBinary& x) {
-            if (x.is_uint64() && x.as_uint64() < 2)
+            size_t req_bits = x.significant_bits();
+            if (req_bits < 2)
                 return {};
-            size_t req_bytes = (x.significant_bits() + 7) / 8;
+            size_t req_bytes = (req_bits + 7) / 8;
             LargeBinary y;
             do {
                 random_bytes(rng, y.array, req_bytes);

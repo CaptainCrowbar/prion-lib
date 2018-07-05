@@ -280,14 +280,37 @@ namespace RS {
         return v;
     }
 
-    template <typename T, size_t N>
-    bool operator==(const Vector<T, N>& lhs, const Vector<T, N>& rhs) noexcept {
+    template <typename T1, typename T2, size_t N>
+    bool operator==(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept {
         return std::equal(lhs.begin(), lhs.end(), rhs.begin());
     }
 
-    template <typename T, size_t N>
-    bool operator!=(const Vector<T, N>& lhs, const Vector<T, N>& rhs) noexcept {
-        return ! (rhs == lhs);
+    template <typename T1, typename T2, size_t N>
+    bool operator!=(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept {
+        return ! (lhs == rhs);
+    }
+
+    template <typename T1, typename T2, size_t N>
+    bool operator<(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept {
+        for (size_t i = 0; i < N; ++i)
+            if (lhs[i] != rhs[i])
+                return lhs[i] < rhs[i];
+        return false;
+    }
+
+    template <typename T1, typename T2, size_t N>
+    bool operator>(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept {
+        return rhs < lhs;
+    }
+
+    template <typename T1, typename T2, size_t N>
+    bool operator<=(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept {
+        return ! (rhs < lhs);
+    }
+
+    template <typename T1, typename T2, size_t N>
+    bool operator>=(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept {
+        return ! (lhs < rhs);
     }
 
     template <typename T, size_t N>
@@ -1271,26 +1294,6 @@ namespace std {
     template <typename T, size_t N>
     struct hash<RS::Vector<T, N>> {
         size_t operator()(const RS::Vector<T, N>& v) const noexcept { return RS::hash_range(v); }
-    };
-
-    template <typename T, size_t N>
-    struct less<RS::Vector<T, N>> {
-        bool operator()(const RS::Vector<T, N>& v1, const RS::Vector<T, N>& v2) const noexcept {
-            for (size_t i = 0; i < N; ++i)
-                if (v1[i] != v2[i])
-                    return std::less<T>()(v1[i], v2[i]);
-            return false;
-        }
-    };
-
-    template <typename T, size_t N>
-    struct greater<RS::Vector<T, N>> {
-        bool operator()(const RS::Vector<T, N>& v1, const RS::Vector<T, N>& v2) const noexcept {
-            for (size_t i = 0; i < N; ++i)
-                if (v1[i] != v2[i])
-                    return std::greater<T>()(v1[i], v2[i]);
-            return false;
-        }
     };
 
     template <typename T, size_t N, RS::MatrixLayout L>

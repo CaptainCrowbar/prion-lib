@@ -16,9 +16,9 @@ An `N`-dimensional vector type. `T` must be an arithmetic type; `N` must be a
 positive integer.
 
 `Vector` supports mixed mode arithmetic, in which the operands of a binary
-operator (or in some cases a named function) may have different value types.
-In these cases the return type is given as `CT`, meaning the
-`std::common_type` of the operands' value types.
+operator or function may have different value types. In these cases the return
+type is given as `CT`, meaning the `std::common_type` of the operands' value
+types.
 
 * `using` **`Int[1-4]`** `= Vector<int, [1-4]>`
 * `using` **`Int8_[1-4]`** `= Vector<int8_t, [1-4]>`
@@ -104,10 +104,10 @@ null terminator).
 
 Unary arithmetic operators.
 
-* `template <typename T1, typename T2> Vector<CT, 3>` **`operator^`**`(const Vector<T1, 3>& lhs, const Vector<T2, 3>& rhs) noexcept`
-* `template <typename T1, typename T2, size_t N> CT` **`operator%`**`(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept`
 * `template <typename T1, typename T2> Vector<CT, 3>` **`cross`**`(const Vector<T1, 3>& lhs, const Vector<T2, 3>& rhs) noexcept`
+* `template <typename T1, typename T2> Vector<CT, 3>` **`operator^`**`(const Vector<T1, 3>& lhs, const Vector<T2, 3>& rhs) noexcept`
 * `template <typename T1, typename T2, size_t N> CT` **`dot`**`(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept`
+* `template <typename T1, typename T2, size_t N> CT` **`operator%`**`(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept`
 
 Vector cross (`^`) and dot (`%`) product operators, and equivalent functions.
 
@@ -133,6 +133,17 @@ zero.
 Vector-scalar arithmetic operators. In each case the corresponding operation
 between `T1` and `T2` must be defined. Behaviour is undefined on division by
 zero.
+
+* `template <typename T1, typename T2, size_t N> bool` **`operator==`**`(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept`
+* `template <typename T1, typename T2, size_t N> bool` **`operator!=`**`(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept`
+* `template <typename T1, typename T2, size_t N> bool` **`operator<`**`(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept`
+* `template <typename T1, typename T2, size_t N> bool` **`operator>`**`(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept`
+* `template <typename T1, typename T2, size_t N> bool` **`operator<=`**`(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept`
+* `template <typename T1, typename T2, size_t N> bool` **`operator>=`**`(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept`
+
+Comparison operators. These apply lexicographical ordering over the vector's
+components. (These exist mainly to allow `Vector` to be used as the key in an
+ordered container.)
 
 * `T Vector::`**`angle`**`(const Vector& v) const noexcept`
 
@@ -176,17 +187,6 @@ index is out of range.
 
 Returns the zero vector (the same value as the default constructor).
 
-* `bool` **`operator==`**`(const Vector& lhs, const Vector& rhs) noexcept`
-* `bool` **`operator!=`**`(const Vector& lhs, const Vector& rhs) noexcept`
-
-Comparison operators.
-
-* `std::ostream&` **`operator<<`**`(std::ostream& out, const Vector& v)`
-* `Ustring` **`to_str`**`(const Vector& v)`
-
-Simple string formatting; this simply writes the vector's elements in their
-default format, enclosed in square brackets.
-
 * `template <typename T1, typename T2, typename T3> Vector<T1, N>` **`clamp`**`(Vector<T1, N> x, Vector<T2, N> min, Vector<T3, N> max) noexcept`
 * `Vector` **`min`**`(Vector x, Vector y) noexcept`
 * `Vector` **`max`**`(Vector x, Vector y) noexcept`
@@ -195,16 +195,15 @@ default format, enclosed in square brackets.
 Vector algorithms. These apply the corresponding scalar operations to each
 member.
 
+* `Ustring` **`to_str`**`(const Vector& v)`
+* `std::ostream&` **`operator<<`**`(std::ostream& out, const Vector& v)`
+
+Simple string formatting; this simply writes the vector's elements in their
+default format, enclosed in square brackets.
+
 * `template <typename T, size_t N> struct std::`**`hash`**`<Vector<T, N>>`
 
 Hash function.
-
-* `template <typename T, size_t N> struct std::`**`greater`**`<Vector<T, N>>`
-* `template <typename T, size_t N> struct std::`**`less`**`<Vector<T, N>>`
-
-`Vector` has no natural ordering and therefore no less-than operator, but
-these specializations are provided to allow `Vector` to be used as the key in
-ordered containers.
 
 ## Matrix ##
 

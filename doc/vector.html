@@ -38,9 +38,9 @@
 <p>An <code>N</code>-dimensional vector type. <code>T</code> must be an arithmetic type; <code>N</code> must be a
 positive integer.</p>
 <p><code>Vector</code> supports mixed mode arithmetic, in which the operands of a binary
-operator (or in some cases a named function) may have different value types.
-In these cases the return type is given as <code>CT</code>, meaning the
-<code>std::common_type</code> of the operands' value types.</p>
+operator or function may have different value types. In these cases the return
+type is given as <code>CT</code>, meaning the <code>std::common_type</code> of the operands' value
+types.</p>
 </div>
 <div class="defns">
 <ul>
@@ -142,10 +142,10 @@ null terminator).</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T1, typename T2&gt; Vector&lt;CT, 3&gt;</code> <strong><code>operator^</code></strong><code>(const Vector&lt;T1, 3&gt;&amp; lhs, const Vector&lt;T2, 3&gt;&amp; rhs) noexcept</code></li>
-<li><code>template &lt;typename T1, typename T2, size_t N&gt; CT</code> <strong><code>operator%</code></strong><code>(const Vector&lt;T1, N&gt;&amp; lhs, const Vector&lt;T2, N&gt;&amp; rhs) noexcept</code></li>
 <li><code>template &lt;typename T1, typename T2&gt; Vector&lt;CT, 3&gt;</code> <strong><code>cross</code></strong><code>(const Vector&lt;T1, 3&gt;&amp; lhs, const Vector&lt;T2, 3&gt;&amp; rhs) noexcept</code></li>
+<li><code>template &lt;typename T1, typename T2&gt; Vector&lt;CT, 3&gt;</code> <strong><code>operator^</code></strong><code>(const Vector&lt;T1, 3&gt;&amp; lhs, const Vector&lt;T2, 3&gt;&amp; rhs) noexcept</code></li>
 <li><code>template &lt;typename T1, typename T2, size_t N&gt; CT</code> <strong><code>dot</code></strong><code>(const Vector&lt;T1, N&gt;&amp; lhs, const Vector&lt;T2, N&gt;&amp; rhs) noexcept</code></li>
+<li><code>template &lt;typename T1, typename T2, size_t N&gt; CT</code> <strong><code>operator%</code></strong><code>(const Vector&lt;T1, N&gt;&amp; lhs, const Vector&lt;T2, N&gt;&amp; rhs) noexcept</code></li>
 </ul>
 <p>Vector cross (<code>^</code>) and dot (<code>%</code>) product operators, and equivalent functions.</p>
 </div>
@@ -175,6 +175,19 @@ zero.</p>
 <p>Vector-scalar arithmetic operators. In each case the corresponding operation
 between <code>T1</code> and <code>T2</code> must be defined. Behaviour is undefined on division by
 zero.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T1, typename T2, size_t N&gt; bool</code> <strong><code>operator==</code></strong><code>(const Vector&lt;T1, N&gt;&amp; lhs, const Vector&lt;T2, N&gt;&amp; rhs) noexcept</code></li>
+<li><code>template &lt;typename T1, typename T2, size_t N&gt; bool</code> <strong><code>operator!=</code></strong><code>(const Vector&lt;T1, N&gt;&amp; lhs, const Vector&lt;T2, N&gt;&amp; rhs) noexcept</code></li>
+<li><code>template &lt;typename T1, typename T2, size_t N&gt; bool</code> <strong><code>operator&lt;</code></strong><code>(const Vector&lt;T1, N&gt;&amp; lhs, const Vector&lt;T2, N&gt;&amp; rhs) noexcept</code></li>
+<li><code>template &lt;typename T1, typename T2, size_t N&gt; bool</code> <strong><code>operator&gt;</code></strong><code>(const Vector&lt;T1, N&gt;&amp; lhs, const Vector&lt;T2, N&gt;&amp; rhs) noexcept</code></li>
+<li><code>template &lt;typename T1, typename T2, size_t N&gt; bool</code> <strong><code>operator&lt;=</code></strong><code>(const Vector&lt;T1, N&gt;&amp; lhs, const Vector&lt;T2, N&gt;&amp; rhs) noexcept</code></li>
+<li><code>template &lt;typename T1, typename T2, size_t N&gt; bool</code> <strong><code>operator&gt;=</code></strong><code>(const Vector&lt;T1, N&gt;&amp; lhs, const Vector&lt;T2, N&gt;&amp; rhs) noexcept</code></li>
+</ul>
+<p>Comparison operators. These apply lexicographical ordering over the vector's
+components. (These exist mainly to allow <code>Vector</code> to be used as the key in an
+ordered container.)</p>
 </div>
 <div class="defns">
 <ul>
@@ -236,21 +249,6 @@ index is out of range.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>bool</code> <strong><code>operator==</code></strong><code>(const Vector&amp; lhs, const Vector&amp; rhs) noexcept</code></li>
-<li><code>bool</code> <strong><code>operator!=</code></strong><code>(const Vector&amp; lhs, const Vector&amp; rhs) noexcept</code></li>
-</ul>
-<p>Comparison operators.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const Vector&amp; v)</code></li>
-<li><code>Ustring</code> <strong><code>to_str</code></strong><code>(const Vector&amp; v)</code></li>
-</ul>
-<p>Simple string formatting; this simply writes the vector's elements in their
-default format, enclosed in square brackets.</p>
-</div>
-<div class="defns">
-<ul>
 <li><code>template &lt;typename T1, typename T2, typename T3&gt; Vector&lt;T1, N&gt;</code> <strong><code>clamp</code></strong><code>(Vector&lt;T1, N&gt; x, Vector&lt;T2, N&gt; min, Vector&lt;T3, N&gt; max) noexcept</code></li>
 <li><code>Vector</code> <strong><code>min</code></strong><code>(Vector x, Vector y) noexcept</code></li>
 <li><code>Vector</code> <strong><code>max</code></strong><code>(Vector x, Vector y) noexcept</code></li>
@@ -261,18 +259,17 @@ member.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T, size_t N&gt; struct std::</code><strong><code>hash</code></strong><code>&lt;Vector&lt;T, N&gt;&gt;</code></li>
+<li><code>Ustring</code> <strong><code>to_str</code></strong><code>(const Vector&amp; v)</code></li>
+<li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const Vector&amp; v)</code></li>
 </ul>
-<p>Hash function.</p>
+<p>Simple string formatting; this simply writes the vector's elements in their
+default format, enclosed in square brackets.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T, size_t N&gt; struct std::</code><strong><code>greater</code></strong><code>&lt;Vector&lt;T, N&gt;&gt;</code></li>
-<li><code>template &lt;typename T, size_t N&gt; struct std::</code><strong><code>less</code></strong><code>&lt;Vector&lt;T, N&gt;&gt;</code></li>
+<li><code>template &lt;typename T, size_t N&gt; struct std::</code><strong><code>hash</code></strong><code>&lt;Vector&lt;T, N&gt;&gt;</code></li>
 </ul>
-<p><code>Vector</code> has no natural ordering and therefore no less-than operator, but
-these specializations are provided to allow <code>Vector</code> to be used as the key in
-ordered containers.</p>
+<p>Hash function.</p>
 </div>
 <h2 id="matrix">Matrix</h2>
 <div class="defns">

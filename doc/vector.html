@@ -267,11 +267,12 @@ member.</p>
 </div>
 <div class="defns">
 <ul>
+<li><code>template &lt;typename T, size_t N&gt; struct std::</code><strong><code>greater</code></strong><code>&lt;Vector&lt;T, N&gt;&gt;</code></li>
 <li><code>template &lt;typename T, size_t N&gt; struct std::</code><strong><code>less</code></strong><code>&lt;Vector&lt;T, N&gt;&gt;</code></li>
 </ul>
-<p><code>Vector</code> has no natural ordering and therefore no less-than operator, but a
-specialization of <code>std::less</code> is provided to allow <code>Vector</code> to be sued as the
-key in ordered containers.</p>
+<p><code>Vector</code> has no natural ordering and therefore no less-than operator, but
+these specializations are provided to allow <code>Vector</code> to be used as the key in
+ordered containers.</p>
 </div>
 <h2 id="matrix">Matrix</h2>
 <div class="defns">

@@ -92,12 +92,13 @@ namespace RS {
         Int3 as_rgb24() const noexcept { return is_rgb() ? Int3(c8(r()), c8(g()), c8(b())) : is_grey() ? Int3(y8(grey())) : Int3(); }
         Ustring fg() const { return code == 0 ? Ustring() : "\x1b[38;5;" + std::to_string(code) + "m"; }
         Ustring bg() const { return code == 0 ? Ustring() : "\x1b[48;5;" + std::to_string(code) + "m"; }
-        Ustring repr() const;
+        Ustring str() const;
         static constexpr Xcolour from_index(int i) noexcept { Xcolour xc; xc.code = uint8_t(clamp(i, 0, 255)); return xc; }
+        static Xcolour from_str(Uview str);
         friend bool operator==(Xcolour lhs, Xcolour rhs) noexcept { return lhs.index() == rhs.index(); }
         friend bool operator<(Xcolour lhs, Xcolour rhs) noexcept { return lhs.index() < rhs.index(); }
-        friend std::ostream& operator<<(std::ostream& out, Xcolour xc) { return out << xc.fg(); }
-        friend Ustring to_str(Xcolour xc) { return xc.fg(); }
+        friend std::ostream& operator<<(std::ostream& out, Xcolour xc) { return out << xc.str(); }
+        friend Ustring to_str(Xcolour xc) { return xc.str(); }
     private:
         uint8_t code = 0;
         static constexpr int cc(int i) noexcept { return clamp(i, 0, 5); }

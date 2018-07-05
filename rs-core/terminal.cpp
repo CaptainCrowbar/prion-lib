@@ -3,6 +3,7 @@
 #include "rs-core/time.hpp"
 #include <algorithm>
 #include <cstdlib>
+#include <stdexcept>
 
 using namespace std::chrono;
 
@@ -71,15 +72,35 @@ namespace RS {
 
     // Terminal colours
 
-    Ustring Xcolour::repr() const {
-        if (is_null())
-            return "Xcolour()";
-        else if (is_grey())
-            return "Xcolour(" + std::to_string(grey()) + ")";
+    Ustring Xcolour::str() const {
+        if (is_grey())
+            return '[' + std::to_string(grey()) + ']';
         else if (is_rgb())
-            return "Xcolour(" + std::to_string(r()) + "," + std::to_string(g()) + "," + std::to_string(b()) + ")";
+            return '[' + std::to_string(r()) + ',' + std::to_string(g()) + ',' + std::to_string(b()) + ']';
         else
-            return "Xcolour::from_index(" + std::to_string(code) + ")";
+            return {};
+    }
+
+    Xcolour Xcolour::from_str(Uview str) {
+        int val[3], nval = 0;
+        auto p = str.data(), end = p + str.size();
+        while (p != end) {
+            p = std::find_if_not(p, end, [] (char c) { return ascii_ispunct(c) || ascii_isspace(c); });
+            if (p == end)
+                break;
+            if (! ascii_isdigit(*p) || nval == 3)
+                throw std::invalid_argument("Invalid Xcolour: " + quote(str));
+            auto q = std::find_if_not(p, end, ascii_isdigit);
+            Uview v(p, q - p);
+            val[nval++] = int(decnum(v));
+            p = q;
+        }
+        switch (nval) {
+            case 0:   return Xcolour();
+            case 1:   return Xcolour(val[0]);
+            case 3:   return Xcolour(val[0], val[1], val[2]);
+            default:  throw std::invalid_argument("Invalid Xcolour: " + quote(str));
+        }
     }
 
     // Terminal I/O functions

@@ -4,6 +4,7 @@
 #include "rs-core/vector.hpp"
 #include <chrono>
 #include <iostream>
+#include <stdexcept>
 #include <thread>
 
 using namespace RS;
@@ -128,16 +129,6 @@ void test_core_terminal_xterm_colour_class() {
     TRY(xc = Xcolour(5, 4, 3));  TRY(s = xc.fg());  TEST_EQUAL(s, "\x1b[38;5;223m");  TRY(s = xc.bg());  TEST_EQUAL(s, "\x1b[48;5;223m");
     TRY(xc = Xcolour(5, 5, 5));  TRY(s = xc.fg());  TEST_EQUAL(s, "\x1b[38;5;231m");  TRY(s = xc.bg());  TEST_EQUAL(s, "\x1b[48;5;231m");
 
-    TRY(xc = {});                      TRY(s = xc.repr());  TEST_EQUAL(s, "Xcolour()");
-    TRY(xc = Xcolour(1));              TRY(s = xc.repr());  TEST_EQUAL(s, "Xcolour(1)");
-    TRY(xc = Xcolour(10));             TRY(s = xc.repr());  TEST_EQUAL(s, "Xcolour(10)");
-    TRY(xc = Xcolour(24));             TRY(s = xc.repr());  TEST_EQUAL(s, "Xcolour(24)");
-    TRY(xc = Xcolour(0, 0, 0));        TRY(s = xc.repr());  TEST_EQUAL(s, "Xcolour(0,0,0)");
-    TRY(xc = Xcolour(1, 2, 3));        TRY(s = xc.repr());  TEST_EQUAL(s, "Xcolour(1,2,3)");
-    TRY(xc = Xcolour(5, 4, 3));        TRY(s = xc.repr());  TEST_EQUAL(s, "Xcolour(5,4,3)");
-    TRY(xc = Xcolour(5, 5, 5));        TRY(s = xc.repr());  TEST_EQUAL(s, "Xcolour(5,5,5)");
-    TRY(xc = Xcolour::from_index(1));  TRY(s = xc.repr());  TEST_EQUAL(s, "Xcolour::from_index(1)");
-
     TRY(xc = Xcolour::from_index(0));    TEST_EQUAL(xc.index(), 0);    TEST(xc.is_null());    TEST(! xc.is_grey());  TEST(! xc.is_rgb());
     TRY(xc = Xcolour::from_index(16));   TEST_EQUAL(xc.index(), 16);   TEST(! xc.is_null());  TEST(! xc.is_grey());  TEST(xc.is_rgb());
     TRY(xc = Xcolour::from_index(67));   TEST_EQUAL(xc.index(), 67);   TEST(! xc.is_null());  TEST(! xc.is_grey());  TEST(xc.is_rgb());
@@ -157,5 +148,27 @@ void test_core_terminal_xterm_colour_class() {
     TRY(xc = Xcolour::from_index(241));  TEST_EQUAL(xc.grey(), 10);  TEST_EQUAL(xc.r(), 0);  TEST_EQUAL(xc.g(), 0);  TEST_EQUAL(xc.b(), 0);
     TRY(xc = Xcolour::from_index(255));  TEST_EQUAL(xc.grey(), 24);  TEST_EQUAL(xc.r(), 0);  TEST_EQUAL(xc.g(), 0);  TEST_EQUAL(xc.b(), 0);
     TRY(xc = Xcolour::from_index(999));  TEST_EQUAL(xc.grey(), 24);  TEST_EQUAL(xc.r(), 0);  TEST_EQUAL(xc.g(), 0);  TEST_EQUAL(xc.b(), 0);
+
+    TRY(xc = {});                      TRY(s = xc.str());  TEST_EQUAL(s, "");
+    TRY(xc = Xcolour(1));              TRY(s = xc.str());  TEST_EQUAL(s, "[1]");
+    TRY(xc = Xcolour(10));             TRY(s = xc.str());  TEST_EQUAL(s, "[10]");
+    TRY(xc = Xcolour(24));             TRY(s = xc.str());  TEST_EQUAL(s, "[24]");
+    TRY(xc = Xcolour(0, 0, 0));        TRY(s = xc.str());  TEST_EQUAL(s, "[0,0,0]");
+    TRY(xc = Xcolour(1, 2, 3));        TRY(s = xc.str());  TEST_EQUAL(s, "[1,2,3]");
+    TRY(xc = Xcolour(5, 4, 3));        TRY(s = xc.str());  TEST_EQUAL(s, "[5,4,3]");
+    TRY(xc = Xcolour(5, 5, 5));        TRY(s = xc.str());  TEST_EQUAL(s, "[5,5,5]");
+    TRY(xc = Xcolour::from_index(1));  TRY(s = xc.str());  TEST_EQUAL(s, "");
+
+    TRY(xc = Xcolour::from_str(""));         TEST(xc.is_null());
+    TRY(xc = Xcolour::from_str("[1]"));      TEST(xc.is_grey());  TEST_EQUAL(xc.grey(), 1);
+    TRY(xc = Xcolour::from_str("24"));       TEST(xc.is_grey());  TEST_EQUAL(xc.grey(), 24);
+    TRY(xc = Xcolour::from_str("[0,0,0]"));  TEST(xc.is_rgb());   TEST_EQUAL(xc.r(), 0);  TEST_EQUAL(xc.g(), 0);  TEST_EQUAL(xc.b(), 0);
+    TRY(xc = Xcolour::from_str("1,2,3"));    TEST(xc.is_rgb());   TEST_EQUAL(xc.r(), 1);  TEST_EQUAL(xc.g(), 2);  TEST_EQUAL(xc.b(), 3);
+    TRY(xc = Xcolour::from_str("5 4 3"));    TEST(xc.is_rgb());   TEST_EQUAL(xc.r(), 5);  TEST_EQUAL(xc.g(), 4);  TEST_EQUAL(xc.b(), 3);
+
+    TEST_THROW(Xcolour::from_str("[1,2]"), std::invalid_argument);
+    TEST_THROW(Xcolour::from_str("[1,2,3,4]"), std::invalid_argument);
+    TEST_THROW(Xcolour::from_str("[a]"), std::invalid_argument);
+    TEST_THROW(Xcolour::from_str("z"), std::invalid_argument);
 
 }

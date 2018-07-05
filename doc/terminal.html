@@ -125,8 +125,9 @@ be taken into account in estimating the run time.</p>
 <li><code>Int3 Xcolour::</code><strong><code>as_rgb24</code></strong><code>() const noexcept</code></li>
 <li><code>Ustring Xcolour::</code><strong><code>fg</code></strong><code>() const</code></li>
 <li><code>Ustring Xcolour::</code><strong><code>bg</code></strong><code>() const</code></li>
-<li><code>Ustring Xcolour::</code><strong><code>repr</code></strong><code>() const</code></li>
+<li><code>Ustring Xcolour::</code><strong><code>str</code></strong><code>() const</code></li>
 <li><code>static constexpr Xcolour Xcolour::</code><strong><code>from_index</code></strong><code>(int i) noexcept</code></li>
+<li><code>static constexpr Xcolour Xcolour::</code><strong><code>from_str</code></strong><code>(Uview str)</code></li>
 </ul>
 </li>
 <li><code>bool</code> <strong><code>operator==</code></strong><code>(Xcolour lhs, Xcolour rhs) noexcept</code></li>
@@ -143,16 +144,19 @@ be taken into account in estimating the run time.</p>
 be null (which produces no output), a grey level from 1 to 24, or a set of RGB
 levels from 0 to 5. Grey and RGB levels are clamped to their respective
 ranges.</p>
-<p>The <code>as_rgb24()</code> function converts the colour code to a 24-bit RGB triple. The
-<code>index()</code> function returns the index (0-255) used in the control sequence.</p>
 <p>The <code>fg()</code> and <code>bg()</code> functions return the terminal control strings to set the
-foreground or background colour. The output operator and <code>to_str()</code> function
-generate the same string as <code>fg()</code>.</p>
+foreground or background colour.</p>
 <pre><code>&lt;esc&gt; [38;5; &lt;16-231&gt; m   = Set foreground colour to an RGB value
 &lt;esc&gt; [38;5; &lt;232-255&gt; m  = Set foreground colour to a grey level
 &lt;esc&gt; [48;5; &lt;16-231&gt; m   = Set background colour to an RGB value
 &lt;esc&gt; [48;5; &lt;232-255&gt; m  = Set background colour to a grey level
 </code></pre>
+<p>The <code>as_rgb24()</code> function converts the colour code to a 24-bit RGB triple. The
+<code>index()</code> function returns the index (0-255) used in the control sequence.</p>
+<p>The <code>str()</code> function (and the output operator and <code>to_str()</code> function) format
+the colour as <code>"[grey]"</code>, <code>"[r,g,b]"</code>, or an empty string. The <code>from_str()</code>
+function reads this format back; punctuation is not significant, but it will
+throw <code>std:invalid_argument</code> if the string is otherwise invalid.</p>
 <p>The comparison functions order colours by index.</p>
 </div>
 <h2 id="terminal-io-functions">Terminal I/O functions</h2>

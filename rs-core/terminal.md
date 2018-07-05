@@ -102,8 +102,9 @@ Functions for generating variable terminal control codes.
     * `Int3 Xcolour::`**`as_rgb24`**`() const noexcept`
     * `Ustring Xcolour::`**`fg`**`() const`
     * `Ustring Xcolour::`**`bg`**`() const`
-    * `Ustring Xcolour::`**`repr`**`() const`
+    * `Ustring Xcolour::`**`str`**`() const`
     * `static constexpr Xcolour Xcolour::`**`from_index`**`(int i) noexcept`
+    * `static constexpr Xcolour Xcolour::`**`from_str`**`(Uview str)`
 * `bool` **`operator==`**`(Xcolour lhs, Xcolour rhs) noexcept`
 * `bool` **`operator!=`**`(Xcolour lhs, Xcolour rhs) noexcept`
 * `bool` **`operator<`**`(Xcolour lhs, Xcolour rhs) noexcept`
@@ -119,17 +120,21 @@ be null (which produces no output), a grey level from 1 to 24, or a set of RGB
 levels from 0 to 5. Grey and RGB levels are clamped to their respective
 ranges.
 
-The `as_rgb24()` function converts the colour code to a 24-bit RGB triple. The
-`index()` function returns the index (0-255) used in the control sequence.
-
 The `fg()` and `bg()` functions return the terminal control strings to set the
-foreground or background colour. The output operator and `to_str()` function
-generate the same string as `fg()`.
+foreground or background colour.
 
     <esc> [38;5; <16-231> m   = Set foreground colour to an RGB value
     <esc> [38;5; <232-255> m  = Set foreground colour to a grey level
     <esc> [48;5; <16-231> m   = Set background colour to an RGB value
     <esc> [48;5; <232-255> m  = Set background colour to a grey level
+
+The `as_rgb24()` function converts the colour code to a 24-bit RGB triple. The
+`index()` function returns the index (0-255) used in the control sequence.
+
+The `str()` function (and the output operator and `to_str()` function) format
+the colour as `"[grey]"`, `"[r,g,b]"`, or an empty string. The `from_str()`
+function reads this format back; punctuation is not significant, but it will
+throw `std:invalid_argument` if the string is otherwise invalid.
 
 The comparison functions order colours by index.
 

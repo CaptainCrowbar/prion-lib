@@ -38,6 +38,10 @@ $(BUILD)/grid-test.o: rs-core/grid-test.cpp rs-core/common.hpp rs-core/grid.hpp 
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/index-table-test.o: rs-core/index-table-test.cpp rs-core/common.hpp rs-core/index-table.hpp rs-core/string.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
+$(BUILD)/int128-test.o: rs-core/int128-test.cpp rs-core/common.hpp rs-core/int128.hpp rs-core/unit-test.hpp \
+    /usr/local/include/unicorn/utility.hpp
+$(BUILD)/int128.o: rs-core/int128.cpp rs-core/common.hpp rs-core/int128.hpp \
+    /usr/local/include/unicorn/utility.hpp
 $(BUILD)/io-test.o: rs-core/io-test.cpp rs-core/common.hpp rs-core/io.hpp rs-core/string.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/path.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/io.o: rs-core/io.cpp rs-core/common.hpp rs-core/io.hpp rs-core/string.hpp \

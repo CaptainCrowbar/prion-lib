@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>128-Bit Unsigned Integer</title>
+<link type="text/css" rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<h1 id="128-bit-unsigned-integer">128-Bit Unsigned Integer</h1>
+<p>By Ross Smith</p>
+<ul>
+<li><code>#include "rs-core/int128.hpp"</code></li>
+</ul>
+<h2 id="contents">Contents</h2>
+<div class="toc">
+<ul>
+<li><a href="#128-bit-unsigned-integer">128-Bit Unsigned Integer</a><ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#class-uint128">Class Uint128</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="class-uint128">Class Uint128</h2>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>Uint128</code></strong><ul>
+<li><code>constexpr Uint128::</code><strong><code>Uint128</code></strong><code>() noexcept</code></li>
+<li><code>constexpr Uint128::</code><strong><code>Uint128</code></strong><code>(uint64_t x) noexcept</code></li>
+<li><code>constexpr Uint128::</code><strong><code>Uint128</code></strong><code>(uint64_t high, uint64_t low) noexcept</code></li>
+<li><code>explicit Uint128::</code><strong><code>Uint128</code></strong><code>(Uview str, int base = 10)</code></li>
+<li><code>Ustring Uint128::</code><strong><code>str</code></strong><code>(int base = 10, int digits = 1) const</code></li>
+<li><code>constexpr explicit Uint128::</code><strong><code>operator bool</code></strong><code>() const noexcept</code></li>
+<li><code>template &lt;typename T&gt; constexpr explicit Uint128::</code><strong><code>operator T</code></strong><code>() const noexcept</code></li>
+<li><code>constexpr Uint128 Uint128::</code><strong><code>operator~</code></strong><code>() const noexcept</code></li>
+<li><code>constexpr Uint128&amp; Uint128::</code><strong><code>operator++</code></strong><code>() noexcept</code></li>
+<li><code>constexpr Uint128 Uint128::</code><strong><code>operator++</code></strong><code>(int) noexcept</code></li>
+<li><code>constexpr Uint128&amp; Uint128::</code><strong><code>operator--</code></strong><code>() noexcept</code></li>
+<li><code>constexpr Uint128 Uint128::</code><strong><code>operator--</code></strong><code>(int) noexcept</code></li>
+<li><code>constexpr Uint128&amp; Uint128::</code><strong><code>operator+=</code></strong><code>(Uint128 y) noexcept</code></li>
+<li><code>constexpr Uint128&amp; Uint128::</code><strong><code>operator-=</code></strong><code>(Uint128 y) noexcept</code></li>
+<li><code>constexpr Uint128&amp; Uint128::</code><strong><code>operator*=</code></strong><code>(Uint128 y) noexcept</code></li>
+<li><code>constexpr Uint128&amp; Uint128::</code><strong><code>operator/=</code></strong><code>(Uint128 y) noexcept</code></li>
+<li><code>constexpr Uint128&amp; Uint128::</code><strong><code>operator%=</code></strong><code>(Uint128 y) noexcept</code></li>
+<li><code>constexpr Uint128&amp; Uint128::</code><strong><code>operator&amp;=</code></strong><code>(Uint128 y) noexcept</code></li>
+<li><code>constexpr Uint128&amp; Uint128::</code><strong><code>operator|=</code></strong><code>(Uint128 y) noexcept</code></li>
+<li><code>constexpr Uint128&amp; Uint128::</code><strong><code>operator^=</code></strong><code>(Uint128 y) noexcept</code></li>
+<li><code>constexpr Uint128&amp; Uint128::</code><strong><code>operator&lt;&lt;=</code></strong><code>(int y) noexcept</code></li>
+<li><code>constexpr Uint128&amp; Uint128::</code><strong><code>operator&gt;&gt;=</code></strong><code>(int y) noexcept</code></li>
+</ul>
+</li>
+<li><code>constexpr Uint128</code><strong><code>operator+</code></strong><code>(Uint128 x, Uint128 y) noexcept</code></li>
+<li><code>constexpr Uint128</code><strong><code>operator-</code></strong><code>(Uint128 x, Uint128 y) noexcept</code></li>
+<li><code>constexpr Uint128</code><strong><code>operator*</code></strong><code>(Uint128 x, Uint128 y) noexcept</code></li>
+<li><code>constexpr Uint128</code><strong><code>operator/</code></strong><code>(Uint128 x, Uint128 y) noexcept</code></li>
+<li><code>constexpr Uint128</code><strong><code>operator%</code></strong><code>(Uint128 x, Uint128 y) noexcept</code></li>
+<li><code>constexpr Uint128</code><strong><code>operator&amp;</code></strong><code>(Uint128 x, Uint128 y) noexcept</code></li>
+<li><code>constexpr Uint128</code><strong><code>operator|</code></strong><code>(Uint128 x, Uint128 y) noexcept</code></li>
+<li><code>constexpr Uint128</code><strong><code>operator^</code></strong><code>(Uint128 x, Uint128 y) noexcept</code></li>
+<li><code>constexpr Uint128</code><strong><code>operator&lt;&lt;</code></strong><code>(Uint128 x, int y) noexcept</code></li>
+<li><code>constexpr Uint128</code><strong><code>operator&gt;&gt;</code></strong><code>(Uint128 x, int y) noexcept</code></li>
+<li><code>constexpr bool</code><strong><code>operator==</code></strong><code>(Uint128 x, Uint128 y) noexcept</code></li>
+<li><code>constexpr bool</code><strong><code>operator!=</code></strong><code>(Uint128 x, Uint128 y) noexcept</code></li>
+<li><code>constexpr bool</code><strong><code>operator&lt;</code></strong><code>(Uint128 x, Uint128 y) noexcept</code></li>
+<li><code>constexpr bool</code><strong><code>operator&gt;</code></strong><code>(Uint128 x, Uint128 y) noexcept</code></li>
+<li><code>constexpr bool</code><strong><code>operator&lt;=</code></strong><code>(Uint128 x, Uint128 y) noexcept</code></li>
+<li><code>constexpr bool</code><strong><code>operator&gt;=</code></strong><code>(Uint128 x, Uint128 y) noexcept</code></li>
+<li><code>constexpr std::pair&lt;Uint128, Uint128&gt;</code> <strong><code>divide</code></strong><code>(Uint128 x, Uint128 y) noexcept</code></li>
+<li><code>constexpr int</code> <strong><code>ilog2p1</code></strong><code>(Uint128 x) noexcept</code></li>
+<li><code>constexpr Uint128</code> <strong><code>rotl</code></strong><code>(Uint128 x, int y) noexcept</code></li>
+<li><code>constexpr Uint128</code> <strong><code>rotr</code></strong><code>(Uint128 x, int y) noexcept</code></li>
+<li><code>Ustring</code> <strong><code>bin</code></strong><code>(Uint128 x, int digits = 128)</code></li>
+<li><code>Ustring</code> <strong><code>dec</code></strong><code>(Uint128 x, int digits = 1)</code></li>
+<li><code>Ustring</code> <strong><code>hex</code></strong><code>(Uint128 x, int digits = 32)</code></li>
+<li><code>Ustring</code> <strong><code>to_str</code></strong><code>(Uint128 x)</code></li>
+<li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, Uint128 x) noexcept</code></li>
+</ul>
+<p>A 128-bit unsigned integer. The <a href="fixed-binary.html"><code>rs-core/fixed-binary</code></a>
+module provides essentially the same type, but being restricted to a specific
+size allows this version to be fully <code>constexpr</code> in all operations not
+involving string allocation.</p>
+<p>The operations listed here have their natural semantics as far as possible, or
+the semantics of the equivalent function from <a href="common.html"><code>rs-core/common</code></a>.
+The RHS of the shift operators is unrestricted; a negative shift is
+interpreted as a positive shift in the other direction. Behaviour is undefined
+if the RHS of a division or remainder function is zero, if the base in a
+string conversion function is outside the range 2-35, or if the output type in
+<code>operator T()</code> is not a primitive arithmetic type.</p></body>
+</html>

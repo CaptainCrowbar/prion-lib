@@ -40,6 +40,7 @@
 * _Numerics_
     * [`"rs-core/fixed-binary.hpp"`](fixed-binary.html) - Fixed precision integers
     * [`"rs-core/float.hpp"`](float.html) - Floating point utilities
+    * [`"rs-core/int128.hpp"`](int128.html) - 128-bit unsigned integer
     * [`"rs-core/mp-integer.hpp"`](mp-integer.html) -- Multiple precision integers
     * [`"rs-core/random.hpp"`](random.html) - Random numbers
     * [`"rs-core/rational.hpp"`](rational.html) -- Rational numbers

@@ -2,6 +2,7 @@
 
 #include "rs-core/common.hpp"
 #include "rs-core/float.hpp"
+#include "rs-core/int128.hpp"
 #include "rs-core/meta.hpp"
 #include "rs-core/string.hpp"
 #include "rs-core/vector.hpp"
@@ -60,6 +61,82 @@ namespace RS {
         static constexpr uint64_t max() noexcept { return ~ uint64_t(0); }
     private:
         uint64_t x;
+    };
+
+    // ISAAC generators
+
+    class Isaac32 {
+    public:
+        using result_type = uint32_t;
+        Isaac32() noexcept { seed(nullptr, 0); }
+        explicit Isaac32(uint32_t s) noexcept { seed(&s, 1); }
+        Isaac32(const uint32_t* sptr, size_t len) noexcept { seed(sptr, len); }
+        Isaac32(std::initializer_list<uint32_t> s) noexcept { seed(s); }
+        uint32_t operator()() noexcept;
+        void seed() noexcept { seed(nullptr, 0); }
+        void seed(uint32_t s) noexcept { seed(&s, 1); }
+        void seed(const uint32_t* sptr, size_t len) noexcept;
+        void seed(std::initializer_list<uint32_t> s) noexcept;
+        static constexpr uint32_t min() noexcept { return 0; }
+        static constexpr uint32_t max() noexcept { return ~ uint32_t(0); }
+    private:
+        uint32_t res[256];
+        uint32_t mem[256];
+        uint32_t a, b, c, index;
+        void next_block() noexcept;
+    };
+
+    class Isaac64 {
+    public:
+        using result_type = uint64_t;
+        Isaac64() noexcept { seed(nullptr, 0); }
+        explicit Isaac64(uint64_t s) noexcept { seed(&s, 1); }
+        Isaac64(const uint64_t* sptr, size_t len) noexcept { seed(sptr, len); }
+        Isaac64(std::initializer_list<uint64_t> s) noexcept { seed(s); }
+        uint64_t operator()() noexcept;
+        void seed() noexcept { seed(nullptr, 0); }
+        void seed(uint64_t s) noexcept { seed(&s, 1); }
+        void seed(const uint64_t* sptr, size_t len) noexcept;
+        void seed(std::initializer_list<uint64_t> s) noexcept;
+        static constexpr uint64_t min() noexcept { return 0; }
+        static constexpr uint64_t max() noexcept { return ~ uint64_t(0); }
+    private:
+        uint64_t res[256];
+        uint64_t mem[256];
+        uint64_t a, b, c, index;
+        void next_block() noexcept;
+    };
+
+    // PCG generators
+
+    class Pcg32 {
+    public:
+        using result_type = uint32_t;
+        Pcg32() noexcept;
+        explicit Pcg32(uint64_t s) noexcept { seed(s); }
+        uint32_t operator()() noexcept;
+        void advance(int64_t offset) noexcept;
+        void seed(uint64_t s) noexcept;
+        static constexpr uint32_t min() noexcept { return 0; }
+        static constexpr uint32_t max() noexcept { return ~ uint32_t(0); }
+    private:
+        uint64_t state;
+    };
+
+    class Pcg64 {
+    public:
+        using result_type = uint64_t;
+        Pcg64() noexcept;
+        explicit Pcg64(Uint128 s) noexcept { seed(s); }
+        explicit Pcg64(uint64_t hi, uint64_t lo) noexcept { seed(hi, lo); }
+        uint64_t operator()() noexcept;
+        void advance(int64_t offset) noexcept;
+        void seed(Uint128 s) noexcept;
+        void seed(uint64_t hi, uint64_t lo) noexcept { seed(Uint128{hi, lo}); }
+        static constexpr uint64_t min() noexcept { return 0; }
+        static constexpr uint64_t max() noexcept { return ~ uint64_t(0); }
+    private:
+        Uint128 state;
     };
 
     // Xoroshiro generator

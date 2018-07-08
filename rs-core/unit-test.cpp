@@ -188,6 +188,10 @@ extern void test_core_process_shell_commands();
 extern void test_core_process_stream();
 extern void test_core_process_text();
 extern void test_core_random_lcg();
+extern void test_core_random_isaac32();
+extern void test_core_random_isaac64();
+extern void test_core_random_pcg32();
+extern void test_core_random_pcg64();
 extern void test_core_random_xoroshiro();
 extern void test_core_random_basic_distributions();
 extern void test_core_random_sample();
@@ -538,6 +542,10 @@ int main() {
         { "core/process/stream", test_core_process_stream },
         { "core/process/text", test_core_process_text },
         { "core/random/lcg", test_core_random_lcg },
+        { "core/random/isaac32", test_core_random_isaac32 },
+        { "core/random/isaac64", test_core_random_isaac64 },
+        { "core/random/pcg32", test_core_random_pcg32 },
+        { "core/random/pcg64", test_core_random_pcg64 },
         { "core/random/xoroshiro", test_core_random_xoroshiro },
         { "core/random/basic-distributions", test_core_random_basic_distributions },
         { "core/random/sample", test_core_random_sample },

@@ -18,6 +18,8 @@
 <li><a href="#contents">Contents</a></li>
 <li><a href="#random-number-sources">Random number sources</a><ul>
 <li><a href="#lcg-functions">LCG functions</a></li>
+<li><a href="#isaac-generators">ISAAC generators</a></li>
+<li><a href="#pcg-generators">PCG generators</a></li>
 <li><a href="#xoroshiro-generator">Xoroshiro generator</a></li>
 </ul>
 </li>
@@ -75,6 +77,72 @@ from Pierre L'Ecuyer (1999),
 </ul>
 <p>Random number engine classes based on the above functions.</p>
 </div>
+<h3 id="isaac-generators">ISAAC generators</h3>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>Isaac32</code></strong><ul>
+<li><code>using Isaac32::</code><strong><code>result_type</code></strong> <code>= uint32_t</code></li>
+<li><code>Isaac32::</code><strong><code>Isaac32</code></strong><code>() noexcept</code></li>
+<li><code>explicit Isaac32::</code><strong><code>Isaac32</code></strong><code>(uint32_t s) noexcept</code></li>
+<li><code>Isaac32::</code><strong><code>Isaac32</code></strong><code>(const uint32_t* sptr, size_t len) noexcept</code></li>
+<li><code>Isaac32::</code><strong><code>Isaac32</code></strong><code>(std::initializer_list&lt;uint32_t&gt; s) noexcept</code></li>
+<li><code>uint32_t Isaac32::</code><strong><code>operator()</code></strong><code>() noexcept</code></li>
+<li><code>void Isaac32::</code><strong><code>seed</code></strong><code>() noexcept</code></li>
+<li><code>void Isaac32::</code><strong><code>seed</code></strong><code>(uint32_t s) noexcept</code></li>
+<li><code>void Isaac32::</code><strong><code>seed</code></strong><code>(const uint32_t* sptr, size_t len) noexcept</code></li>
+<li><code>void Isaac32::</code><strong><code>seed</code></strong><code>(std::initializer_list&lt;uint32_t&gt; s) noexcept</code></li>
+<li><code>static constexpr uint32_t Isaac32::</code><strong><code>min</code></strong><code>() noexcept</code> <em>= 0</em></li>
+<li><code>static constexpr uint32_t Isaac32::</code><strong><code>max</code></strong><code>() noexcept</code> <em>= 2<sup>32</sup>-1</em></li>
+</ul>
+</li>
+<li><code>class</code> <strong><code>Isaac64</code></strong><ul>
+<li><code>using Isaac64::</code><strong><code>result_type</code></strong> <code>= uint64_t</code></li>
+<li><code>Isaac64::</code><strong><code>Isaac64</code></strong><code>() noexcept</code></li>
+<li><code>explicit Isaac64::</code><strong><code>Isaac64</code></strong><code>(uint64_t s) noexcept</code></li>
+<li><code>Isaac64::</code><strong><code>Isaac64</code></strong><code>(const uint64_t* sptr, size_t len) noexcept</code></li>
+<li><code>Isaac64::</code><strong><code>Isaac64</code></strong><code>(std::initializer_list&lt;uint64_t&gt; s) noexcept</code></li>
+<li><code>uint64_t Isaac64::</code><strong><code>operator()</code></strong><code>() noexcept</code></li>
+<li><code>void Isaac64::</code><strong><code>seed</code></strong><code>() noexcept</code></li>
+<li><code>void Isaac64::</code><strong><code>seed</code></strong><code>(uint64_t s) noexcept</code></li>
+<li><code>void Isaac64::</code><strong><code>seed</code></strong><code>(const uint64_t* sptr, size_t len) noexcept</code></li>
+<li><code>void Isaac64::</code><strong><code>seed</code></strong><code>(std::initializer_list&lt;uint64_t&gt; s) noexcept</code></li>
+<li><code>static constexpr uint64_t Isaac64::</code><strong><code>min</code></strong><code>() noexcept</code> <em>= 0</em></li>
+<li><code>static constexpr uint64_t Isaac64::</code><strong><code>max</code></strong><code>() noexcept</code> <em>= 2<sup>64</sup>-1</em></li>
+</ul>
+</li>
+</ul>
+<p>ISAAC cryptographic quality generator by <a href="http://burtleburtle.net/bob/rand/isaacafa.html">Bob Jenkins</a>.</p>
+</div>
+<h3 id="pcg-generators">PCG generators</h3>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>Pcg32</code></strong><ul>
+<li><code>using Pcg32::</code><strong><code>result_type</code></strong> <code>= uint32_t</code></li>
+<li><code>Pcg32::</code><strong><code>Pcg32</code></strong><code>() noexcept</code></li>
+<li><code>explicit Pcg32::</code><strong><code>Pcg32</code></strong><code>(uint64_t s) noexcept</code></li>
+<li><code>uint32_t Pcg32::</code><strong><code>operator()</code></strong><code>() noexcept</code></li>
+<li><code>void Pcg32::</code><strong><code>advance</code></strong><code>(int64_t offset) noexcept</code></li>
+<li><code>void Pcg32::</code><strong><code>seed</code></strong><code>(uint64_t s) noexcept</code></li>
+<li><code>static constexpr uint32_t Pcg32::</code><strong><code>min</code></strong><code>() noexcept</code> <em>= 0</em></li>
+<li><code>static constexpr uint32_t Pcg32::</code><strong><code>max</code></strong><code>() noexcept</code> <em>= 2<sup>32</sup>-1</em></li>
+</ul>
+</li>
+<li><code>class</code> <strong><code>Pcg64</code></strong><ul>
+<li><code>using Pcg64::</code><strong><code>result_type</code></strong> <code>= uint64_t</code></li>
+<li><code>Pcg64::</code><strong><code>Pcg64</code></strong><code>() noexcept</code></li>
+<li><code>explicit Pcg64::</code><strong><code>Pcg64</code></strong><code>(Uint128 s) noexcept</code></li>
+<li><code>explicit Pcg64::</code><strong><code>Pcg64</code></strong><code>(uint64_t hi, uint64_t lo) noexcept</code></li>
+<li><code>uint64_t Pcg64::</code><strong><code>operator()</code></strong><code>() noexcept</code></li>
+<li><code>void Pcg64::</code><strong><code>advance</code></strong><code>(int64_t offset) noexcept</code></li>
+<li><code>void Pcg64::</code><strong><code>seed</code></strong><code>(Uint128 s) noexcept</code></li>
+<li><code>void Pcg64::</code><strong><code>seed</code></strong><code>(uint64_t hi, uint64_t lo) noexcept</code></li>
+<li><code>static constexpr uint64_t Pcg64::</code><strong><code>min</code></strong><code>() noexcept</code> <em>= 0</em></li>
+<li><code>static constexpr uint64_t Pcg64::</code><strong><code>max</code></strong><code>() noexcept</code> <em>= 2<sup>64</sup>-1</em></li>
+</ul>
+</li>
+</ul>
+<p>PCG generators by <a href="http://www.pcg-random.org/">Melissa O'Neill</a>.</p>
+</div>
 <h3 id="xoroshiro-generator">Xoroshiro generator</h3>
 <div class="defns">
 <ul>
@@ -93,8 +161,7 @@ from Pierre L'Ecuyer (1999),
 </ul>
 </li>
 </ul>
-<p>Xoroshiro128+ algorithm by <a href="http://xoroshiro.di.unimi.it">David Blackman and Sebastiano
-Vigna</a>.</p>
+<p>Xoroshiro128+ algorithm by <a href="http://xoroshiro.di.unimi.it">David Blackman and Sebastiano Vigna</a>.</p>
 </div>
 <h2 id="random-distributions">Random distributions</h2>
 <h3 id="basic-random-distributions">Basic random distributions</h3>

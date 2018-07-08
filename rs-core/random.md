@@ -42,6 +42,62 @@ from Pierre L'Ecuyer (1999),
 
 Random number engine classes based on the above functions.
 
+### ISAAC generators ###
+
+* `class` **`Isaac32`**
+    * `using Isaac32::`**`result_type`** `= uint32_t`
+    * `Isaac32::`**`Isaac32`**`() noexcept`
+    * `explicit Isaac32::`**`Isaac32`**`(uint32_t s) noexcept`
+    * `Isaac32::`**`Isaac32`**`(const uint32_t* sptr, size_t len) noexcept`
+    * `Isaac32::`**`Isaac32`**`(std::initializer_list<uint32_t> s) noexcept`
+    * `uint32_t Isaac32::`**`operator()`**`() noexcept`
+    * `void Isaac32::`**`seed`**`() noexcept`
+    * `void Isaac32::`**`seed`**`(uint32_t s) noexcept`
+    * `void Isaac32::`**`seed`**`(const uint32_t* sptr, size_t len) noexcept`
+    * `void Isaac32::`**`seed`**`(std::initializer_list<uint32_t> s) noexcept`
+    * `static constexpr uint32_t Isaac32::`**`min`**`() noexcept` _= 0_
+    * `static constexpr uint32_t Isaac32::`**`max`**`() noexcept` _= 2<sup>32</sup>-1_
+* `class` **`Isaac64`**
+    * `using Isaac64::`**`result_type`** `= uint64_t`
+    * `Isaac64::`**`Isaac64`**`() noexcept`
+    * `explicit Isaac64::`**`Isaac64`**`(uint64_t s) noexcept`
+    * `Isaac64::`**`Isaac64`**`(const uint64_t* sptr, size_t len) noexcept`
+    * `Isaac64::`**`Isaac64`**`(std::initializer_list<uint64_t> s) noexcept`
+    * `uint64_t Isaac64::`**`operator()`**`() noexcept`
+    * `void Isaac64::`**`seed`**`() noexcept`
+    * `void Isaac64::`**`seed`**`(uint64_t s) noexcept`
+    * `void Isaac64::`**`seed`**`(const uint64_t* sptr, size_t len) noexcept`
+    * `void Isaac64::`**`seed`**`(std::initializer_list<uint64_t> s) noexcept`
+    * `static constexpr uint64_t Isaac64::`**`min`**`() noexcept` _= 0_
+    * `static constexpr uint64_t Isaac64::`**`max`**`() noexcept` _= 2<sup>64</sup>-1_
+
+ISAAC cryptographic quality generator by [Bob Jenkins](http://burtleburtle.net/bob/rand/isaacafa.html).
+
+### PCG generators ###
+
+* `class` **`Pcg32`**
+    * `using Pcg32::`**`result_type`** `= uint32_t`
+    * `Pcg32::`**`Pcg32`**`() noexcept`
+    * `explicit Pcg32::`**`Pcg32`**`(uint64_t s) noexcept`
+    * `uint32_t Pcg32::`**`operator()`**`() noexcept`
+    * `void Pcg32::`**`advance`**`(int64_t offset) noexcept`
+    * `void Pcg32::`**`seed`**`(uint64_t s) noexcept`
+    * `static constexpr uint32_t Pcg32::`**`min`**`() noexcept` _= 0_
+    * `static constexpr uint32_t Pcg32::`**`max`**`() noexcept` _= 2<sup>32</sup>-1_
+* `class` **`Pcg64`**
+    * `using Pcg64::`**`result_type`** `= uint64_t`
+    * `Pcg64::`**`Pcg64`**`() noexcept`
+    * `explicit Pcg64::`**`Pcg64`**`(Uint128 s) noexcept`
+    * `explicit Pcg64::`**`Pcg64`**`(uint64_t hi, uint64_t lo) noexcept`
+    * `uint64_t Pcg64::`**`operator()`**`() noexcept`
+    * `void Pcg64::`**`advance`**`(int64_t offset) noexcept`
+    * `void Pcg64::`**`seed`**`(Uint128 s) noexcept`
+    * `void Pcg64::`**`seed`**`(uint64_t hi, uint64_t lo) noexcept`
+    * `static constexpr uint64_t Pcg64::`**`min`**`() noexcept` _= 0_
+    * `static constexpr uint64_t Pcg64::`**`max`**`() noexcept` _= 2<sup>64</sup>-1_
+
+PCG generators by [Melissa O'Neill](http://www.pcg-random.org/).
+
 ### Xoroshiro generator ###
 
 * `class` **`Xoroshiro`**
@@ -57,8 +113,7 @@ Random number engine classes based on the above functions.
     * `static constexpr uint64_t Xoroshiro::`**`min`**`() noexcept` _= 0_
     * `static constexpr uint64_t Xoroshiro::`**`max`**`() noexcept` _= 2<sup>64</sup>-1_
 
-Xoroshiro128+ algorithm by [David Blackman and Sebastiano
-Vigna](http://xoroshiro.di.unimi.it).
+Xoroshiro128+ algorithm by [David Blackman and Sebastiano Vigna](http://xoroshiro.di.unimi.it).
 
 ## Random distributions ##
 

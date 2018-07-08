@@ -1,6 +1,248 @@
 #include "rs-core/random.hpp"
+#include <cstring>
+
+using namespace RS::Literals;
 
 namespace RS {
+
+    // Class Isaac32
+
+    namespace {
+
+        void mix32(uint32_t* a) noexcept {
+            a[0] ^= a[1] << 11;  a[3] += a[0];  a[1] += a[2];
+            a[1] ^= a[2] >> 2;   a[4] += a[1];  a[2] += a[3];
+            a[2] ^= a[3] << 8;   a[5] += a[2];  a[3] += a[4];
+            a[3] ^= a[4] >> 16;  a[6] += a[3];  a[4] += a[5];
+            a[4] ^= a[5] << 10;  a[7] += a[4];  a[5] += a[6];
+            a[5] ^= a[6] >> 4;   a[0] += a[5];  a[6] += a[7];
+            a[6] ^= a[7] << 8;   a[1] += a[6];  a[7] += a[0];
+            a[7] ^= a[0] >> 9;   a[2] += a[7];  a[0] += a[1];
+        }
+
+        void step32(const uint32_t* mem, uint32_t*& m1, uint32_t*& m2, uint32_t*& r, uint32_t& a, uint32_t& b, uint32_t& x, uint32_t& y, uint32_t mix) noexcept {
+            x = *m1;
+            a = (a ^ mix) + *m2++;
+            *m1++ = y = mem[(x >> 2) & 255] + a + b;
+            *r++ = b = mem[(y >> 10) & 255] + x;
+        }
+
+    }
+
+    uint32_t Isaac32::operator()() noexcept {
+        if (index == 256)
+            next_block();
+        return res[index++];
+    }
+
+    void Isaac32::seed(const uint32_t* sptr, size_t len) noexcept {
+        std::memcpy(res, sptr, 4 * std::min(len, 256_sz));
+        if (len < 256)
+            std::memset(res + len, 0, 4 * (256 - len));
+        for (size_t i = 256; i < len; ++i)
+            res[i % 256] ^= sptr[i];
+        std::memset(mem, 0, sizeof(mem));
+        a = b = c = 0;
+        uint32_t array[8];
+        std::fill_n(array, 8, 0x9e3779b9_u32);
+        for (int i = 0; i < 4; ++i)
+            mix32(array);
+        for (int i = 0; i < 256; i += 8) {
+            for (int j = 0; j < 8; ++j)
+                array[j] += res[i + j];
+            mix32(array);
+            for (int j = 0; j < 8; ++j)
+                mem[i + j] = array[j];
+        }
+        for (int i = 0; i < 256; i += 8) {
+            for (int j = 0; j < 8; ++j)
+                array[j] += mem[i + j];
+            mix32(array);
+            for (int j = 0; j < 8; ++j)
+                mem[i + j] = array[j];
+        }
+        next_block();
+    }
+
+    void Isaac32::seed(std::initializer_list<uint32_t> s) noexcept {
+        std::vector<uint32_t> v{s};
+        seed(v.data(), v.size());
+    }
+
+    void Isaac32::next_block() noexcept {
+        b += ++c;
+        uint32_t* end = mem + 128;
+        uint32_t* m1 = mem;
+        uint32_t* m2 = end;
+        uint32_t* r = res;
+        uint32_t x = 0, y = 0;
+        while (m1 < end) {
+            step32(mem, m1, m2, r, a, b, x, y, a << 13);
+            step32(mem, m1, m2, r, a, b, x, y, a >> 6);
+            step32(mem, m1, m2, r, a, b, x, y, a << 2);
+            step32(mem, m1, m2, r, a, b, x, y, a >> 16);
+        }
+        m2 = mem;
+        while (m2 < end) {
+            step32(mem, m1, m2, r, a, b, x, y, a << 13);
+            step32(mem, m1, m2, r, a, b, x, y, a >> 6);
+            step32(mem, m1, m2, r, a, b, x, y, a << 2);
+            step32(mem, m1, m2, r, a, b, x, y, a >> 16);
+        }
+        index = 0;
+    }
+
+    // Class Isaac64
+
+    namespace {
+
+        void mix64(uint64_t* a) noexcept {
+            a[0] -= a[4];  a[5] ^= a[7] >> 9;   a[7] += a[0];
+            a[1] -= a[5];  a[6] ^= a[0] << 9;   a[0] += a[1];
+            a[2] -= a[6];  a[7] ^= a[1] >> 23;  a[1] += a[2];
+            a[3] -= a[7];  a[0] ^= a[2] << 15;  a[2] += a[3];
+            a[4] -= a[0];  a[1] ^= a[3] >> 14;  a[3] += a[4];
+            a[5] -= a[1];  a[2] ^= a[4] << 20;  a[4] += a[5];
+            a[6] -= a[2];  a[3] ^= a[5] >> 17;  a[5] += a[6];
+            a[7] -= a[3];  a[4] ^= a[6] << 14;  a[6] += a[7];
+        }
+
+        void step64(const uint64_t* mem, uint64_t*& m1, uint64_t*& m2, uint64_t*& r, uint64_t& a, uint64_t& b, uint64_t& x, uint64_t& y, uint64_t mix) noexcept {
+            x = *m1;
+            a = mix + *m2++;
+            *m1++ = y = mem[(x >> 3) & 255] + a + b;
+            *r++ = b = mem[(y >> 11) & 255] + x;
+        }
+
+    }
+
+    uint64_t Isaac64::operator()() noexcept {
+        if (index == 256)
+            next_block();
+        return res[index++];
+    }
+
+    void Isaac64::seed(const uint64_t* sptr, size_t len) noexcept {
+        std::memcpy(res, sptr, 8 * std::min(len, 256_sz));
+        if (len < 256)
+            std::memset(res + len, 0, 8 * (256 - len));
+        for (size_t i = 256; i < len; ++i)
+            res[i % 256] ^= sptr[i];
+        std::memset(mem, 0, sizeof(mem));
+        a = b = c = 0;
+        uint64_t array[8];
+        std::fill_n(array, 8, 0x9e3779b97f4a7c13_u64);
+        for (int i = 0; i < 4; ++i)
+            mix64(array);
+        for (int i = 0; i < 256; i += 8) {
+            for (int j = 0; j < 8; ++j)
+                array[j] += res[i + j];
+            mix64(array);
+            for (int j = 0; j < 8; ++j)
+                mem[i + j] = array[j];
+        }
+        for (int i = 0; i < 256; i += 8) {
+            for (int j = 0; j < 8; ++j)
+                array[j] += mem[i + j];
+            mix64(array);
+            for (int j = 0; j < 8; ++j)
+                mem[i + j] = array[j];
+        }
+        next_block();
+    }
+
+    void Isaac64::seed(std::initializer_list<uint64_t> s) noexcept {
+        std::vector<uint64_t> v{s};
+        seed(v.data(), v.size());
+    }
+
+    void Isaac64::next_block() noexcept {
+        b += ++c;
+        uint64_t* end = mem + 128;
+        uint64_t* m1 = mem;
+        uint64_t* m2 = end;
+        uint64_t* r = res;
+        uint64_t x = 0, y = 0;
+        while (m1 < end) {
+            step64(mem, m1, m2, r, a, b, x, y, ~ (a ^ (a << 21)));
+            step64(mem, m1, m2, r, a, b, x, y, a ^ (a >> 5));
+            step64(mem, m1, m2, r, a, b, x, y, a ^ (a << 12));
+            step64(mem, m1, m2, r, a, b, x, y, a ^ (a >> 33));
+        }
+        m2 = mem;
+        while (m2 < end) {
+            step64(mem, m1, m2, r, a, b, x, y, ~ (a ^ (a << 21)));
+            step64(mem, m1, m2, r, a, b, x, y, a ^ (a >> 5));
+            step64(mem, m1, m2, r, a, b, x, y, a ^ (a << 12));
+            step64(mem, m1, m2, r, a, b, x, y, a ^ (a >> 33));
+        }
+        index = 0;
+    }
+
+    namespace {
+
+        constexpr uint64_t pcg_default = 0xcafef00dd15ea5e5ull;
+        constexpr uint64_t pcg_a32 = 0x5851f42d4c957f2d_u64;
+        constexpr uint64_t pcg_b32 = 0x14057b7ef767814f_u64;
+        const Uint128 pcg_a64{0x2360ed051fc65da4_u64, 0x4385df649fccf645_u64};
+        const Uint128 pcg_b64{0x5851f42d4c957f2d_u64, 0x14057b7ef767814f_u64};
+
+        template <typename S>
+        void pcg_advance(S& state, S a, S b, int64_t offset) noexcept {
+            S u = offset < 0 ? ~ S(0) - ~ uint64_t(offset) : S(offset);
+            S mul = 1, add = 0;
+            while (u) {
+                if (u & 1) {
+                    mul *= a;
+                    add = add * a + b;
+                }
+                b = (a + 1) * b;
+                a *= a;
+                u >>= 1;
+            }
+            state = mul * state + add;
+        }
+
+    }
+
+    // Class Pcg32
+
+    Pcg32::Pcg32() noexcept {
+        seed(pcg_default);
+    }
+
+    uint32_t Pcg32::operator()() noexcept {
+        auto s = state;
+        state = pcg_a32 * state + pcg_b32;
+        return rotr(uint32_t((s ^ (s >> 18)) >> 27), int(s >> 59) & 31);
+    }
+
+    void Pcg32::advance(int64_t offset) noexcept {
+        pcg_advance(state, pcg_a32, pcg_b32, offset);
+    }
+
+    void Pcg32::seed(uint64_t s) noexcept {
+        state = pcg_a32 * (s + pcg_b32) + pcg_b32;
+    }
+
+    // Class Pcg64
+
+    Pcg64::Pcg64() noexcept {
+        seed(pcg_default);
+    }
+
+    uint64_t Pcg64::operator()() noexcept {
+        state = pcg_a64 * state + pcg_b64;
+        return rotr(uint64_t(state ^ (state >> 64)), int(state >> 122) & 63);
+    }
+
+    void Pcg64::advance(int64_t offset) noexcept {
+        pcg_advance(state, pcg_a64, pcg_b64, offset);
+    }
+
+    void Pcg64::seed(Uint128 s) noexcept {
+        state = pcg_a64 * (s + pcg_b64) + pcg_b64;
+    }
 
     // Class UniformIntegerProperties
 

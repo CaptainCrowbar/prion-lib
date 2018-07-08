@@ -97,6 +97,7 @@ extern void test_core_index_table_classes();
 extern void test_core_int128_uint128_basics();
 extern void test_core_int128_uint128_arithmetic();
 extern void test_core_int128_uint128_conversion();
+extern void test_core_int128_uint128_literals();
 extern void test_core_io_cstdio();
 extern void test_core_io_fdio();
 extern void test_core_io_pipe();
@@ -451,6 +452,7 @@ int main() {
         { "core/int128/uint128-basics", test_core_int128_uint128_basics },
         { "core/int128/uint128-arithmetic", test_core_int128_uint128_arithmetic },
         { "core/int128/uint128-conversion", test_core_int128_uint128_conversion },
+        { "core/int128/uint128-literals", test_core_int128_uint128_literals },
         { "core/io/cstdio", test_core_io_cstdio },
         { "core/io/fdio", test_core_io_fdio },
         { "core/io/pipe", test_core_io_pipe },

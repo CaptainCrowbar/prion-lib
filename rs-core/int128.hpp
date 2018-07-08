@@ -137,4 +137,10 @@ namespace RS {
             return {q, r};
         }
 
+    namespace Literals {
+
+        inline Uint128 operator""_u128(const char* ptr, size_t len) noexcept { return Uint128(Uview(ptr, len)); }
+
+    }
+
 }

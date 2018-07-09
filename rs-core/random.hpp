@@ -172,35 +172,204 @@ namespace RS {
         Uint128 state;
     };
 
-    // Xoroshiro generator
+    // Xoshiro and related generators
 
-    class Xoroshiro:
-    public EqualityComparable<Xoroshiro> {
+    class SplitMix64 {
     public:
         using result_type = uint64_t;
-        Xoroshiro() noexcept { seed(0); }
-        explicit Xoroshiro(uint64_t s) noexcept { seed(s); }
-        Xoroshiro(uint64_t s1, uint64_t s2) noexcept { seed(s1, s2); }
-        uint64_t operator()() noexcept {
-            y ^= x;
-            x = rotl(x, 55) ^ y ^ (y << 14);
-            y = rotl(y, 36);
-            return x + y;
+        constexpr SplitMix64() noexcept: x(0) {}
+        constexpr explicit SplitMix64(uint64_t s) noexcept: x (s) {}
+        constexpr uint64_t operator()() noexcept {
+            using namespace RS::Literals;
+            x += 0x9e3779b97f4a7c15_u64;
+            uint64_t y = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9_u64;
+            y = (y ^ (y >> 27)) * 0x94d049bb133111eb_u64;
+            return y ^ (y >> 31);
         }
-        bool operator==(const Xoroshiro& rhs) const noexcept { return x == rhs.x && y == rhs.y; }
-        void seed(uint64_t s) noexcept {
-            x = s + 0x9e3779b97f4a7c15ull;
-            x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9ull;
-            x = (x ^ (x >> 27)) * 0x94d049bb133111ebull;
-            x ^= (x >> 31);
-            y = s;
-        }
-        void seed(uint64_t s1, uint64_t s2) noexcept { x = s1; y = s2; }
+        constexpr void seed(uint64_t s = 0) noexcept { x = s; }
         static constexpr uint64_t min() noexcept { return 0; }
         static constexpr uint64_t max() noexcept { return ~ uint64_t(0); }
     private:
-        uint64_t x, y;
+        uint64_t x;
     };
+
+    namespace RS_Detail {
+
+        constexpr void seed_sm64(SplitMix64&) noexcept {}
+        template <typename T, typename... Args> constexpr void seed_sm64(SplitMix64& g, T& t, Args&... args) noexcept
+            { t = T(g()); seed_sm64(g, args...); }
+        template <typename... Args> constexpr void seed_sm64(uint64_t s, Args&... args) noexcept
+            { SplitMix64 g(s); seed_sm64(g, args...); }
+
+    }
+
+    class Xoroshiro64s {
+    public:
+        using result_type = uint32_t;
+        constexpr Xoroshiro64s() noexcept { seed(0); }
+        constexpr explicit Xoroshiro64s(uint32_t s) noexcept { seed(s); }
+        constexpr Xoroshiro64s(uint32_t s, uint32_t t) noexcept { seed(s, t); }
+        constexpr uint32_t operator()() noexcept {
+            using namespace RS::Literals;
+            uint32_t x = a * 0x9e3779bb_u32;
+            b ^= a;
+            a = rotl(a, 26) ^ b ^ (b << 9);
+            b = rotl(b, 13);
+            return x;
+        }
+        constexpr void seed(uint32_t s = 0) noexcept { RS_Detail::seed_sm64(s, a, b); }
+        constexpr void seed(uint32_t s, uint32_t t) noexcept { a = s; b = t; }
+        static constexpr uint32_t min() noexcept { return 0; }
+        static constexpr uint32_t max() noexcept { return ~ uint32_t(0); }
+    private:
+        uint32_t a = 0, b = 0;
+    };
+
+    class Xoroshiro64ss {
+    public:
+        using result_type = uint32_t;
+        constexpr Xoroshiro64ss() noexcept { seed(0); }
+        constexpr explicit Xoroshiro64ss(uint32_t s) noexcept { seed(s); }
+        constexpr Xoroshiro64ss(uint32_t s, uint32_t t) noexcept { seed(s, t); }
+        constexpr uint32_t operator()() noexcept {
+            using namespace RS::Literals;
+            uint32_t x = rotl(a * 0x9e3779bb_u32, 5) * 5;
+            b ^= a;
+            a = rotl(a, 26) ^ b ^ (b << 9);
+            b = rotl(b, 13);
+            return x;
+        }
+        constexpr void seed(uint32_t s = 0) noexcept { RS_Detail::seed_sm64(s, a, b); }
+        constexpr void seed(uint32_t s, uint32_t t) noexcept { a = s; b = t; }
+        static constexpr uint32_t min() noexcept { return 0; }
+        static constexpr uint32_t max() noexcept { return ~ uint32_t(0); }
+    private:
+        uint32_t a = 0, b = 0;
+    };
+
+    class Xoroshiro128p {
+    public:
+        using result_type = uint64_t;
+        constexpr Xoroshiro128p() noexcept { seed(0); }
+        constexpr explicit Xoroshiro128p(uint64_t s) noexcept { seed(s); }
+        constexpr Xoroshiro128p(uint64_t s, uint64_t t) noexcept { seed(s, t); }
+        constexpr uint64_t operator()() noexcept {
+            uint64_t x = a + b;
+            b ^= a;
+            a = rotl(a, 24) ^ b ^ (b << 16);
+            b = rotl(b, 37);
+            return x;
+        }
+        constexpr void seed(uint64_t s = 0) noexcept { RS_Detail::seed_sm64(s, a, b); }
+        constexpr void seed(uint64_t s, uint64_t t) noexcept { a = s; b = t; }
+        static constexpr uint64_t min() noexcept { return 0; }
+        static constexpr uint64_t max() noexcept { return ~ uint64_t(0); }
+    private:
+        uint64_t a = 0, b = 0;
+    };
+
+    class Xoroshiro128ss {
+    public:
+        using result_type = uint64_t;
+        constexpr Xoroshiro128ss() noexcept { seed(0); }
+        constexpr explicit Xoroshiro128ss(uint64_t s) noexcept { seed(s); }
+        constexpr Xoroshiro128ss(uint64_t s, uint64_t t) noexcept { seed(s, t); }
+        constexpr uint64_t operator()() noexcept {
+            uint64_t x = rotl(a * 5, 7) * 9;
+            b ^= a;
+            a = rotl(a, 24) ^ b ^ (b << 16);
+            b = rotl(b, 37);
+            return x;
+        }
+        constexpr void seed(uint64_t s = 0) noexcept { RS_Detail::seed_sm64(s, a, b); }
+        constexpr void seed(uint64_t s, uint64_t t) noexcept { a = s; b = t; }
+        static constexpr uint64_t min() noexcept { return 0; }
+        static constexpr uint64_t max() noexcept { return ~ uint64_t(0); }
+    private:
+        uint64_t a = 0, b = 0;
+    };
+
+    class Xoshiro128p {
+    public:
+        using result_type = uint32_t;
+        constexpr Xoshiro128p() noexcept { seed(0); }
+        constexpr explicit Xoshiro128p(uint32_t s) noexcept { seed(s); }
+        constexpr Xoshiro128p(uint32_t s, uint32_t t, uint32_t u, uint32_t v) noexcept { seed(s, t, u, v); }
+        constexpr uint32_t operator()() noexcept {
+            uint32_t x = a + d, y = b << 9;
+            c ^= a; d ^= b; b ^= c; a ^= d; c ^= y;
+            d = rotl(d, 11);
+            return x;
+        }
+        constexpr void seed(uint32_t s = 0) noexcept { RS_Detail::seed_sm64(s, a, b, c, d); }
+        constexpr void seed(uint32_t s, uint32_t t, uint32_t u, uint32_t v) noexcept { a = s; b = t; c = u; d = v; }
+        static constexpr uint32_t min() noexcept { return 0; }
+        static constexpr uint32_t max() noexcept { return ~ uint32_t(0); }
+    private:
+        uint32_t a = 0, b = 0, c = 0, d = 0;
+    };
+
+    class Xoshiro128ss {
+    public:
+        using result_type = uint32_t;
+        constexpr Xoshiro128ss() noexcept { seed(0); }
+        constexpr explicit Xoshiro128ss(uint32_t s) noexcept { seed(s); }
+        constexpr Xoshiro128ss(uint32_t s, uint32_t t, uint32_t u, uint32_t v) noexcept { seed(s, t, u, v); }
+        constexpr uint32_t operator()() noexcept {
+            uint32_t x = rotl(a * 5, 7) * 9, y = b << 9;
+            c ^= a; d ^= b; b ^= c; a ^= d; c ^= y;
+            d = rotl(d, 11);
+            return x;
+        }
+        constexpr void seed(uint32_t s = 0) noexcept { RS_Detail::seed_sm64(s, a, b, c, d); }
+        constexpr void seed(uint32_t s, uint32_t t, uint32_t u, uint32_t v) noexcept { a = s; b = t; c = u; d = v; }
+        static constexpr uint32_t min() noexcept { return 0; }
+        static constexpr uint32_t max() noexcept { return ~ uint32_t(0); }
+    private:
+        uint32_t a = 0, b = 0, c = 0, d = 0;
+    };
+
+    class Xoshiro256p {
+    public:
+        using result_type = uint64_t;
+        constexpr Xoshiro256p() noexcept { seed(0); }
+        constexpr explicit Xoshiro256p(uint64_t s) noexcept { seed(s); }
+        constexpr Xoshiro256p(uint64_t s, uint64_t t, uint64_t u, uint64_t v) noexcept { seed(s, t, u, v); }
+        constexpr uint64_t operator()() noexcept {
+            uint64_t x = a + d, y = b << 17;
+            c ^= a; d ^= b; b ^= c; a ^= d; c ^= y;
+            d = rotl(d, 45);
+            return x;
+        }
+        constexpr void seed(uint64_t s = 0) noexcept { RS_Detail::seed_sm64(s, a, b, c, d); }
+        constexpr void seed(uint64_t s, uint64_t t, uint64_t u, uint64_t v) noexcept { a = s; b = t; c = u; d = v; }
+        static constexpr uint64_t min() noexcept { return 0; }
+        static constexpr uint64_t max() noexcept { return ~ uint64_t(0); }
+    private:
+        uint64_t a = 0, b = 0, c = 0, d = 0;
+    };
+
+    class Xoshiro256ss {
+    public:
+        using result_type = uint64_t;
+        constexpr Xoshiro256ss() noexcept { seed(0); }
+        constexpr explicit Xoshiro256ss(uint64_t s) noexcept { seed(s); }
+        constexpr Xoshiro256ss(uint64_t s, uint64_t t, uint64_t u, uint64_t v) noexcept { seed(s, t, u, v); }
+        constexpr uint64_t operator()() noexcept {
+            uint64_t x = rotl(b * 5, 7) * 9, y = b << 17;
+            c ^= a; d ^= b; b ^= c; a ^= d; c ^= y;
+            d = rotl(d, 45);
+            return x;
+        }
+        constexpr void seed(uint64_t s = 0) noexcept { RS_Detail::seed_sm64(s, a, b, c, d); }
+        constexpr void seed(uint64_t s, uint64_t t, uint64_t u, uint64_t v) noexcept { a = s; b = t; c = u; d = v; }
+        static constexpr uint64_t min() noexcept { return 0; }
+        static constexpr uint64_t max() noexcept { return ~ uint64_t(0); }
+    private:
+        uint64_t a = 0, b = 0, c = 0, d = 0;
+    };
+
+    using Xoshiro = Xoshiro256ss;
 
     // Basic random distributions
 

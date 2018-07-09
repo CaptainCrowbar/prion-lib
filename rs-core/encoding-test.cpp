@@ -69,7 +69,7 @@ void test_core_encoding_base32() {
 
     Base32Encoding code;
     Ustring s1, s2, s3;
-    Xoroshiro rng(42);
+    Xoshiro rng(42);
 
     for (size_t n = 0; n <= limit; ++n) {
         s1.resize(n, '\0');

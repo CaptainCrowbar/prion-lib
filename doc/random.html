@@ -20,7 +20,7 @@
 <li><a href="#lcg-functions">LCG functions</a></li>
 <li><a href="#isaac-generators">ISAAC generators</a></li>
 <li><a href="#pcg-generators">PCG generators</a></li>
-<li><a href="#xoroshiro-generator">Xoroshiro generator</a></li>
+<li><a href="#xoshiro-and-related-generators">Xoshiro and related generators</a></li>
 </ul>
 </li>
 <li><a href="#random-distributions">Random distributions</a><ul>
@@ -143,25 +143,116 @@ from Pierre L'Ecuyer (1999),
 </ul>
 <p>PCG generators by <a href="http://www.pcg-random.org/">Melissa O'Neill</a>.</p>
 </div>
-<h3 id="xoroshiro-generator">Xoroshiro generator</h3>
+<h3 id="xoshiro-and-related-generators">Xoshiro and related generators</h3>
 <div class="defns">
 <ul>
-<li><code>class</code> <strong><code>Xoroshiro</code></strong><ul>
-<li><code>using Xoroshiro::</code><strong><code>result_type</code></strong> <code>= uint64_t</code></li>
-<li><code>Xoroshiro::</code><strong><code>Xoroshiro</code></strong><code>() noexcept</code></li>
-<li><code>explicit Xoroshiro::</code><strong><code>Xoroshiro</code></strong><code>(uint64_t s) noexcept</code></li>
-<li><code>Xoroshiro::</code><strong><code>Xoroshiro</code></strong><code>(uint64_t s1, uint64_t s2) noexcept</code></li>
-<li><code>uint64_t Xoroshiro::</code><strong><code>operator()</code></strong><code>() noexcept</code></li>
-<li><code>bool Xoroshiro::</code><strong><code>operator==</code></strong><code>(const Xoroshiro&amp; rhs) const noexcept</code></li>
-<li><code>bool Xoroshiro::</code><strong><code>operator!=</code></strong><code>(const Xoroshiro&amp; rhs) const noexcept</code></li>
-<li><code>void Xoroshiro::</code><strong><code>seed</code></strong><code>(uint64_t s) noexcept</code></li>
-<li><code>void Xoroshiro::</code><strong><code>seed</code></strong><code>(uint64_t s1, uint64_t s2) noexcept</code></li>
-<li><code>static constexpr uint64_t Xoroshiro::</code><strong><code>min</code></strong><code>() noexcept</code> <em>= 0</em></li>
-<li><code>static constexpr uint64_t Xoroshiro::</code><strong><code>max</code></strong><code>() noexcept</code> <em>= 2<sup>64</sup>-1</em></li>
+<li><code>class</code> <strong><code>SplitMix64</code></strong><ul>
+<li><code>using SplitMix64::</code><strong><code>result_type</code></strong> <code>= uint64_t</code></li>
+<li><code>constexpr SplitMix64::</code><strong><code>SplitMix64</code></strong><code>() noexcept: x(0)</code></li>
+<li><code>constexpr explicit SplitMix64::</code><strong><code>SplitMix64</code></strong><code>(uint64_t s) noexcept: x (s)</code></li>
+<li><code>constexpr uint64_t SplitMix64::</code><strong><code>operator()</code></strong><code>() noexcept</code></li>
+<li><code>constexpr void SplitMix64::</code><strong><code>seed</code></strong><code>(uint64_t s = 0) noexcept</code></li>
+<li><code>static constexpr uint64_t SplitMix64::</code><strong><code>min</code></strong><code>() noexcept</code></li>
+<li><code>static constexpr uint64_t SplitMix64::</code><strong><code>max</code></strong><code>() noexcept</code></li>
 </ul>
 </li>
+<li><code>class</code> <strong><code>Xoroshiro64s</code></strong></li>
+<li><code>class</code> <strong><code>Xoroshiro64ss</code></strong></li>
+<li><code>class</code> <strong><code>Xoroshiro128p</code></strong></li>
+<li><code>class</code> <strong><code>Xoroshiro128ss</code></strong></li>
+<li><code>class</code> <strong><code>Xoshiro128p</code></strong></li>
+<li><code>class</code> <strong><code>Xoshiro128ss</code></strong></li>
+<li><code>class</code> <strong><code>Xoshiro256p</code></strong></li>
+<li><code>class</code> <strong><code>Xoshiro256ss</code></strong><ul>
+<li><code>using [Xoroshiro64,Xoshiro128]::</code><strong><code>result_type</code></strong> <code>= uint32_t</code></li>
+<li><code>using [Xoroshiro128,Xoshiro256]::</code><strong><code>result_type</code></strong> <code>= uint64_t</code></li>
+<li><code>constexpr [Class]::</code><strong><code>[Class]</code></strong><code>() noexcept</code></li>
+<li><code>constexpr explicit [Class]::</code><strong><code>[Class]</code></strong><code>(result_type s) noexcept</code></li>
+<li><code>constexpr [Xoroshiro]::</code><strong><code>[Class]</code></strong><code>(result_type s, result_type t) noexcept</code></li>
+<li><code>constexpr [Xoshiro]::</code><strong><code>[Class]</code></strong><code>(result_type s, result_type t, result_type u, result_type v) noexcept</code></li>
+<li><code>constexpr result_type [Class]::</code><strong><code>operator()</code></strong><code>() noexcept</code></li>
+<li><code>constexpr void [Class]::</code><strong><code>seed</code></strong><code>(result_type s = 0) noexcept</code></li>
+<li><code>constexpr void [Xoroshiro]::</code><strong><code>seed</code></strong><code>(result_type s, result_type t) noexcept</code></li>
+<li><code>constexpr void [Xoshiro]::</code><strong><code>seed</code></strong><code>(result_type s, result_type t, result_type u, result_type v) noexcept</code></li>
+<li><code>static constexpr result_type [Class]::</code><strong><code>min</code></strong><code>() noexcept</code></li>
+<li><code>static constexpr result_type [Class]::</code><strong><code>max</code></strong><code>() noexcept</code></li>
 </ul>
-<p>Xoroshiro128+ algorithm by <a href="http://xoroshiro.di.unimi.it">David Blackman and Sebastiano Vigna</a>.</p>
+</li>
+<li><code>using</code> <strong><code>Xoshiro</code></strong> <code>= Xoshiro256ss</code></li>
+</ul>
+<p>Xoshiro and related algorithms by <a href="http://xoshiro.di.unimi.it/">David Blackman and Sebastiano Vigna</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Algorithm</th>
+<th>Result</th>
+<th>State</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SplitMix64</code></td>
+<td><code>uint64_t</code></td>
+<td>8 bytes</td>
+<td>Used internally in <code>Xoshiro/Xoroshiro</code>; not recommended for general purpose</td>
+</tr>
+<tr>
+<td><code>Xoroshiro64s</code></td>
+<td><code>uint32_t</code></td>
+<td>8 bytes</td>
+<td>Substitute for <code>Xoshiro128p</code> when small state is important</td>
+</tr>
+<tr>
+<td><code>Xoroshiro64ss</code></td>
+<td><code>uint32_t</code></td>
+<td>8 bytes</td>
+<td>Substitute for <code>Xoshiro128ss</code> when small state is important</td>
+</tr>
+<tr>
+<td><code>Xoroshiro128p</code></td>
+<td><code>uint64_t</code></td>
+<td>16 bytes</td>
+<td>Substitute for <code>Xoshiro256p</code> when small state is important</td>
+</tr>
+<tr>
+<td><code>Xoroshiro128ss</code></td>
+<td><code>uint64_t</code></td>
+<td>16 bytes</td>
+<td>Substitute for <code>Xoshiro256ss</code> when small state is important</td>
+</tr>
+<tr>
+<td><code>Xoshiro128p</code></td>
+<td><code>uint32_t</code></td>
+<td>16 bytes</td>
+<td>Faster than <code>Xoshiro128ss</code>, but low bits are poor</td>
+</tr>
+<tr>
+<td><code>Xoshiro128ss</code></td>
+<td><code>uint32_t</code></td>
+<td>16 bytes</td>
+<td>Best general purpose 32-bit</td>
+</tr>
+<tr>
+<td><code>Xoshiro256p</code></td>
+<td><code>uint64_t</code></td>
+<td>32 bytes</td>
+<td>Faster than <code>Xoshiro256ss</code>, but low bits are poor</td>
+</tr>
+<tr>
+<td><code>Xoshiro256ss</code></td>
+<td><code>uint64_t</code></td>
+<td>32 bytes</td>
+<td>Best general purpose</td>
+</tr>
+<tr>
+<td><code>Xoshiro</code></td>
+<td><code>uint64_t</code></td>
+<td>32 bytes</td>
+<td>Synonym for <code>Xoshiro256ss</code></td>
+</tr>
+</tbody>
+</table>
 </div>
 <h2 id="random-distributions">Random distributions</h2>
 <h3 id="basic-random-distributions">Basic random distributions</h3>

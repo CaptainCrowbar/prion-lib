@@ -98,22 +98,52 @@ ISAAC cryptographic quality generator by [Bob Jenkins](http://burtleburtle.net/b
 
 PCG generators by [Melissa O'Neill](http://www.pcg-random.org/).
 
-### Xoroshiro generator ###
+### Xoshiro and related generators ###
 
-* `class` **`Xoroshiro`**
-    * `using Xoroshiro::`**`result_type`** `= uint64_t`
-    * `Xoroshiro::`**`Xoroshiro`**`() noexcept`
-    * `explicit Xoroshiro::`**`Xoroshiro`**`(uint64_t s) noexcept`
-    * `Xoroshiro::`**`Xoroshiro`**`(uint64_t s1, uint64_t s2) noexcept`
-    * `uint64_t Xoroshiro::`**`operator()`**`() noexcept`
-    * `bool Xoroshiro::`**`operator==`**`(const Xoroshiro& rhs) const noexcept`
-    * `bool Xoroshiro::`**`operator!=`**`(const Xoroshiro& rhs) const noexcept`
-    * `void Xoroshiro::`**`seed`**`(uint64_t s) noexcept`
-    * `void Xoroshiro::`**`seed`**`(uint64_t s1, uint64_t s2) noexcept`
-    * `static constexpr uint64_t Xoroshiro::`**`min`**`() noexcept` _= 0_
-    * `static constexpr uint64_t Xoroshiro::`**`max`**`() noexcept` _= 2<sup>64</sup>-1_
+* `class` **`SplitMix64`**
+    * `using SplitMix64::`**`result_type`** `= uint64_t`
+    * `constexpr SplitMix64::`**`SplitMix64`**`() noexcept: x(0)`
+    * `constexpr explicit SplitMix64::`**`SplitMix64`**`(uint64_t s) noexcept: x (s)`
+    * `constexpr uint64_t SplitMix64::`**`operator()`**`() noexcept`
+    * `constexpr void SplitMix64::`**`seed`**`(uint64_t s = 0) noexcept`
+    * `static constexpr uint64_t SplitMix64::`**`min`**`() noexcept`
+    * `static constexpr uint64_t SplitMix64::`**`max`**`() noexcept`
+* `class` **`Xoroshiro64s`**
+* `class` **`Xoroshiro64ss`**
+* `class` **`Xoroshiro128p`**
+* `class` **`Xoroshiro128ss`**
+* `class` **`Xoshiro128p`**
+* `class` **`Xoshiro128ss`**
+* `class` **`Xoshiro256p`**
+* `class` **`Xoshiro256ss`**
+    * `using [Xoroshiro64,Xoshiro128]::`**`result_type`** `= uint32_t`
+    * `using [Xoroshiro128,Xoshiro256]::`**`result_type`** `= uint64_t`
+    * `constexpr [Class]::`**`[Class]`**`() noexcept`
+    * `constexpr explicit [Class]::`**`[Class]`**`(result_type s) noexcept`
+    * `constexpr [Xoroshiro]::`**`[Class]`**`(result_type s, result_type t) noexcept`
+    * `constexpr [Xoshiro]::`**`[Class]`**`(result_type s, result_type t, result_type u, result_type v) noexcept`
+    * `constexpr result_type [Class]::`**`operator()`**`() noexcept`
+    * `constexpr void [Class]::`**`seed`**`(result_type s = 0) noexcept`
+    * `constexpr void [Xoroshiro]::`**`seed`**`(result_type s, result_type t) noexcept`
+    * `constexpr void [Xoshiro]::`**`seed`**`(result_type s, result_type t, result_type u, result_type v) noexcept`
+    * `static constexpr result_type [Class]::`**`min`**`() noexcept`
+    * `static constexpr result_type [Class]::`**`max`**`() noexcept`
+* `using` **`Xoshiro`** `= Xoshiro256ss`
 
-Xoroshiro128+ algorithm by [David Blackman and Sebastiano Vigna](http://xoroshiro.di.unimi.it).
+Xoshiro and related algorithms by [David Blackman and Sebastiano Vigna](http://xoshiro.di.unimi.it/).
+
+Algorithm         | Result      | State     | Recommendation
+---------         | ------      | -----     | --------------
+`SplitMix64`      | `uint64_t`  | 8 bytes   | Used internally in `Xoshiro/Xoroshiro`; not recommended for general purpose
+`Xoroshiro64s`    | `uint32_t`  | 8 bytes   | Substitute for `Xoshiro128p` when small state is important
+`Xoroshiro64ss`   | `uint32_t`  | 8 bytes   | Substitute for `Xoshiro128ss` when small state is important
+`Xoroshiro128p`   | `uint64_t`  | 16 bytes  | Substitute for `Xoshiro256p` when small state is important
+`Xoroshiro128ss`  | `uint64_t`  | 16 bytes  | Substitute for `Xoshiro256ss` when small state is important
+`Xoshiro128p`     | `uint32_t`  | 16 bytes  | Faster than `Xoshiro128ss`, but low bits are poor
+`Xoshiro128ss`    | `uint32_t`  | 16 bytes  | Best general purpose 32-bit
+`Xoshiro256p`     | `uint64_t`  | 32 bytes  | Faster than `Xoshiro256ss`, but low bits are poor
+`Xoshiro256ss`    | `uint64_t`  | 32 bytes  | Best general purpose
+`Xoshiro`         | `uint64_t`  | 32 bytes  | Synonym for `Xoshiro256ss`
 
 ## Random distributions ##
 

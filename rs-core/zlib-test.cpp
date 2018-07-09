@@ -14,7 +14,7 @@ using namespace RS::Unicorn;
 void test_core_zlib_compression() {
 
     std::string src, comp, dst;
-    Xoroshiro rng(42);
+    Xoshiro rng(42);
 
     for (size_t i = 1; i <= 10; ++i) {
         size_t bytes = 1000 * i;

@@ -356,76 +356,218 @@ void test_core_random_pcg64() {
 
 }
 
-void test_core_random_xoroshiro() {
+void test_core_random_splitmix64() {
 
     static constexpr uint64_t expect[] = {
-
-        0xd1bcc1a836d606e0ull, 0x31a9ec020430aa62ull, 0x8f8675ab98e71e0aull, 0x7113e550368ee7d6ull, 0x7b2850c603cd8481ull, 0x95f90415825b6823ull, 0xb6ca3ea01ec695e0ull, 0x52f372a0170d28b3ull,
-        0xf2e27b444983b5daull, 0x8f1724d4be6a8950ull, 0x88cc05b84d479027ull, 0x43218138d79a0127ull, 0x758afb9a8a357c65ull, 0xee0607eb13a122e4ull, 0x30d47fd0b3b4ed1aull, 0xdf56fa408b6a8082ull,
-
-        0x0adf56c3f919bcb6ull, 0x994e16b24f2e2387ull, 0x9b9dcb6c6e800a7bull, 0x7ed32f4be7e81cecull, 0x42ece17ce0779cc4ull, 0x02ee5dade45d46a2ull, 0x470ca08ffcfb0a85ull, 0x41f168d0ae2a90cdull,
-        0xde14300ac09a3a24ull, 0x8c2d99bcbfc6469aull, 0x8c07c516a6b696e2ull, 0x2c00a6e1968e9fecull, 0x8691026432c52499ull, 0x838f8cf41c367a3aull, 0x544078f44660ff41ull, 0x50d82724507881bcull,
-        0x734a7d5c8f82f590ull, 0x260b283e50dd1fddull, 0x2cb40476b4c6810aull, 0x737b048b63f55130ull, 0x62548028d94d8857ull, 0x807529e4335f1c47ull, 0x642ca811fafed83bull, 0x09f73dd42caf9ffeull,
-        0x296233aa4cff3c12ull, 0xe9ca4adc7d089f9eull, 0x6d8506f6d15b74b2ull, 0x73431bf91cda359bull, 0x7a84e2e1686fbc79ull, 0xb544040388cc6d0dull, 0xe2a275bdf57c89f4ull, 0x7c8040197da2076full,
-        0x41ae8ab8bc7acc78ull, 0x9ab356c1835cb32dull, 0xa8d03a92b867dbf7ull, 0x282bb9e2972ed6e1ull, 0x0462702741130241ull, 0x375f8ef460ad9fccull, 0xc704a88305e7d8faull, 0xec46182a4d9cb02aull,
-        0x6adf87e5ae36ade9ull, 0xd57f86088ea1dc4cull, 0x2dec1091aab5a4c5ull, 0x9b3606c2fdac2feeull, 0x965aea495e003c80ull, 0x96abc0e9e6b3fac3ull, 0x23ad3380071d5a10ull, 0x547a56ce2892ed58ull,
-        0x6af80fe7d7e1a2c3ull, 0x4a276288a57a3d95ull, 0x5451293baf49d436ull, 0x64c0fb06a80d1402ull, 0xfcf13995da9319baull, 0x6f233da81431d137ull, 0xe01d2fc1ea2dcfb1ull, 0x8adbe27bcf0a6dddull,
-        0xe258cee72c3db1e2ull, 0x2d56f62f65053154ull, 0x37dca74bdc39f6acull, 0xe9b2eca72620fabcull, 0xc521fbe6c3710bdeull, 0x23142019bbfa927full, 0xefeefad1711ba66dull, 0xc961ea080909cd86ull,
-        0xa6822d71a34d3630ull, 0x65bec949f0550b18ull, 0xc992bfd1f6f7c9c9ull, 0x6abdc09788f2b3eaull, 0x2961fe8fbd197729ull, 0xd3eac1fbd8cbb908ull, 0x0e469d054c8464c9ull, 0x4ee5fa51acb06a26ull,
-        0x282b2f2718b28477ull, 0xf9ee62490c4cdbd4ull, 0x80f0cd22494f1666ull, 0xf5ae17d7bea724feull, 0xdd6c174b6510b64eull, 0x75a66c4987d44fc0ull, 0xba839f1aeba177c0ull, 0xb7c878e9b409428cull,
-        0xc83ddf7be0530af6ull, 0xf1b66ed87feee274ull, 0x0ab003364a531eebull, 0x98524c955b421c55ull, 0xb1cfeef97810bff2ull, 0x5f7ec6a38717f4abull, 0xc82c8a8867a48e28ull, 0xde0707ca51006c2aull,
-        0xd62b59baa1ce767aull, 0x62c5e514e524610aull, 0x076aaf5e8cefd517ull, 0x06a3af0d5b65cb7aull, 0x08c3e6d12ae91829ull, 0x9fd67be26e31da25ull, 0x7c9942feb5f421a3ull, 0x92547a099685683eull,
-        0x1da620eea7513bcdull, 0x67b696d81dc46e51ull, 0xf0090fa07828eaeeull, 0x2d7a2f58b7a83d38ull, 0xb41120d03264fa88ull, 0x330b7d48d305485dull, 0xefc11de6250f049aull, 0xeefde75aea3a7bc1ull,
-        0x9fd511dc7ed66647ull, 0xca052cd3f656d3ecull, 0x11a57e8edbdda17eull, 0x275017051653f070ull, 0x3ca5624edece80b7ull, 0xbbff3ab0fbfb2eacull, 0xba804648892adaadull, 0xc49817dd37202242ull,
-        0x32502bd9cc1f0498ull, 0x2ce2e40ee837bd69ull, 0x460c29d11d6e14c2ull, 0x6223b324b94e1ba0ull, 0x4a250948a7a991c2ull, 0x2f01adecfadafc4bull, 0xe86ff1c190570d31ull, 0x3c909488f5568b1full,
-        0xdfe5eb8ce57dd216ull, 0x09c46e8f414aedf9ull, 0xd36eb3637a1f5ca1ull, 0xb8aba83f8b7b5b5dull, 0xed8b2f2b44489638ull, 0x22eeae8bdab29c63ull, 0xe69fc9cc899f10ffull, 0xe58ba1b129c73082ull,
-
-        0x008000700001c007ull, 0x033840e0780007e7ull, 0xe0824e9071c5c7eeull, 0x950270d718380c0aull, 0x06f03885dba79908ull, 0x7d3580f0bced0f1cull, 0xb4489b3ba01b03e2ull, 0x5c2718e08923258bull,
-        0x021f67b09c4b0bc4ull, 0xe9bb22285e42236bull, 0x558ff481d9690ed9ull, 0xc1be4130e10b7c61ull, 0xb8115f6c5d54c590ull, 0x9535a7febbd67d19ull, 0xd036f3d1a4e23e31ull, 0xc38616aaa58e208eull,
-        0x0f8008300020c083ull, 0x4e17d069280093e3ull, 0x4fad3621d15c5477ull, 0x12005279ecea80cfull, 0xb57e22ca753e473eull, 0x77bdec893d79bd92ull, 0x6621b63f0bf0cdaaull, 0xc4051e1e71d9050dull,
-        0x55832aad7aaf360full, 0x79aa3cce04cfd401ull, 0x5176c97962a14563ull, 0x17a11a44a2e2fc38ull, 0x0c72ad765e8dda8full, 0xd11e2084b5e0dac4ull, 0x0c4b50558889d3c4ull, 0xafe3072a97f15f51ull,
-        0x8680c4f00313cc4eull, 0xc23c491d580e14a8ull, 0x2694c3a7fd139813ull, 0xfb8c0ad3ea4661c5ull, 0x96da85d4b7f655e9ull, 0xa6bffa09fb2bf8d2ull, 0x8d8de302d4e5b481ull, 0x1faeface16906af6ull,
-        0x70a3d3bd4fdca089ull, 0x4889b13502b0dbfdull, 0x96e90392b116cd3cull, 0xac88241b84db987cull, 0xefddde77aa8edec8ull, 0x79edc226efe42af0ull, 0xbf56109bb343df16ull, 0x2cef98c7d888fd46ull,
-        0x259313304c4df115ull, 0x30acd175895fcaf1ull, 0x7ff5bc7182eb0ab8ull, 0xeeb3122673076f13ull, 0x97aeec02a8c58dadull, 0x41cc09e62329e3acull, 0x57a39e94313e9df8ull, 0x617fb8434b6771feull,
-        0x733f079c3037735aull, 0x285ca02e8043bda1ull, 0xef7d50d24fccca18ull, 0xff7b7dc4a4789997ull, 0x153145cf7428c2fdull, 0xd91ff61d71b1ed8cull, 0x9b863dd2133b48a7ull, 0x11ad3599a93d4712ull,
-        0xaea33e788cdbf05eull, 0x1c2a63395ebe052eull, 0x3279ed8c844dc969ull, 0xec50f2951992f63dull, 0x0284af160c110592ull, 0x784530c205e0fa35ull, 0xead6f49a0d55911bull, 0x931fd88bb9d0ddbfull,
-        0xd267eb3a3b07f4afull, 0x2ada0c837a4a049cull, 0x49535a45e8834c7dull, 0xd7efb116d1760159ull, 0x4061630dced8939full, 0x75cbd20097af5150ull, 0xe2f72477e83701b2ull, 0x156a4638cf8777b4ull,
-        0x0d1112f647518c02ull, 0x24da0350e883d428ull, 0x3e861443434063c0ull, 0x4217ec6509d3d9a8ull, 0x26da2c603e522479ull, 0x1d8a10b49f24add1ull, 0xf1a6304f4a9f5819ull, 0x9a927f6c83eec19aull,
-        0xaa4a77c4a7226718ull, 0x620b5ad3c8b8b216ull, 0x01f7ccea21d0f214ull, 0x9621c06b410c4e29ull, 0xb1106b5590f4ff01ull, 0x51350b075d26d2f7ull, 0x0f0b15cb110bc253ull, 0x9a33fb95f73b6660ull,
-        0xfeb8dc20abed54d5ull, 0x5fc6fe92d21b9e89ull, 0xeef5af47663e1f54ull, 0x1ee6347ceb9773beull, 0xedc53cb34ac13fbbull, 0x6a552c7aab100002ull, 0xfb20c26cfc27f22aull, 0xfe502aa28ad9e239ull,
-        0x7bf69ff7d8937ecaull, 0x32a9e2aa2fe3a272ull, 0x41f7f80b731a41fcull, 0xc22d3645a26ae299ull, 0x7acebfdb4a28c4fdull, 0x17e027eaa3182529ull, 0xc04865b6e1341ef9ull, 0xe0981fb762c91de9ull,
-        0xa1bee2f9d58456ccull, 0x40ddcf4040b1a420ull, 0xa540ffab15cd5cd7ull, 0xf8371a7ad08a679bull, 0xa9692ad88fd1f235ull, 0xe652f48aec947936ull, 0x814ce4dd2110c7adull, 0xc2135135a4cfd8f6ull,
-        0x8116cd30f069c317ull, 0x9c995c3c44c72e88ull, 0x9121be49b224a694ull, 0x6e9490e39593b482ull, 0x843f93939ba8515cull, 0x4ecaaa81e13ebf4dull, 0xe5f5386f8eb970cfull, 0xb0e1173cf140fc23ull,
-
+        0xe220a8397b1dcdaf_u64, 0x6e789e6aa1b965f4_u64, 0x06c45d188009454f_u64, 0xf88bb8a8724c81ec_u64, 0x1b39896a51a8749b_u64, 0x53cb9f0c747ea2ea_u64, 0x2c829abe1f4532e1_u64, 0xc584133ac916ab3c_u64,
+        0x3ee5789041c98ac3_u64, 0xf3b8488c368cb0a6_u64, 0x657eecdd3cb13d09_u64, 0xc2d326e0055bdef6_u64, 0x8621a03fe0bbdb7b_u64, 0x8e1f7555983aa92f_u64, 0xb54e0f1600cc4d19_u64, 0x84bb3f97971d80ab_u64,
+        0x7d29825c75521255_u64, 0xc3cf17102b7f7f86_u64, 0x3466e9a083914f64_u64, 0xd81a8d2b5a4485ac_u64, 0xdb01602b100b9ed7_u64, 0xa9038a921825f10d_u64, 0xedf5f1d90dca2f6a_u64, 0x54496ad67bd2634c_u64,
+        0xdd7c01d4f5407269_u64, 0x935e82f1db4c4f7b_u64, 0x69b82ebc92233300_u64, 0x40d29eb57de1d510_u64, 0xa2f09dabb45c6316_u64, 0xee521d7a0f4d3872_u64, 0xf16952ee72f3454f_u64, 0x377d35dea8e40225_u64,
+        0x0c7de8064963bab0_u64, 0x05582d37111ac529_u64, 0xd254741f599dc6f7_u64, 0x69630f7593d108c3_u64, 0x417ef96181daa383_u64, 0x3c3c41a3b43343a1_u64, 0x6e19905dcbe531df_u64, 0x4fa9fa7324851729_u64,
+        0x84eb4454a792922a_u64, 0x134f7096918175ce_u64, 0x07dc930b302278a8_u64, 0x12c015a97019e937_u64, 0xcc06c31652ebf438_u64, 0xecee65630a691e37_u64, 0x3e84ecb1763e79ad_u64, 0x690ed476743aae49_u64,
+        0x774615d7b1a1f2e1_u64, 0x22b353f04f4f52da_u64, 0xe3ddd86ba71a5eb1_u64, 0xdf268adeb6513356_u64, 0x2098eb73d4367d77_u64, 0x03d6845323ce3c71_u64, 0xc952c5620043c714_u64, 0x9b196bca844f1705_u64,
+        0x30260345dd9e0ec1_u64, 0xcf448a5882bb9698_u64, 0xf4a578dccbc87656_u64, 0xbfdeaed9a17b3c8f_u64, 0xed79402d1d5c5d7b_u64, 0x55f070ab1cbbf170_u64, 0x3e00a34929a88f1d_u64, 0xe255b237b8bb18fb_u64,
     };
 
-    Xoroshiro rng;
-    size_t i = 0;
-    uint64_t s1 = 0, s2 = 0;
+    SplitMix64 rng;
+    uint64_t x = 0;
+    size_t n = array_count(expect);
 
-    for (size_t k = 0; k < 16; ++k) {
-        uint64_t x = rng();
-        TEST_EQUAL(x, expect[i++]);
+    for (size_t i = 0; i < n; ++i) {
+        TRY(x = rng());
+        TEST_EQUAL(x, expect[i]);
     }
 
-    for (size_t j = 0; j < 8; ++j) {
-        s1 = 5 * s1 + 1;
-        rng = Xoroshiro(s1);
-        for (size_t k = 0; k < 16; ++k) {
-            uint64_t x = rng();
-            TEST_EQUAL(x, expect[i++]);
-        }
+}
+
+void test_core_random_xoroshiro64s() {
+
+    static constexpr uint32_t expect[] = {
+        0x3795f5d5_u32, 0x2214879f_u32, 0x93bce8f4_u32, 0xeae89f28_u32, 0x043c51be_u32, 0xe135e838_u32, 0xf468a321_u32, 0x37239236_u32,
+        0x16763156_u32, 0xac4a190f_u32, 0x2402e88b_u32, 0xe83cd88a_u32, 0x496b43cb_u32, 0x8c5c9931_u32, 0xd9910ad5_u32, 0xd6ebf60b_u32,
+        0xda554908_u32, 0x71cd89dc_u32, 0xd190ad83_u32, 0xe499cf7c_u32, 0x0467e2f1_u32, 0xef4f0ccc_u32, 0x64c26321_u32, 0x75ceaad5_u32,
+        0x2681f469_u32, 0xb8fda07d_u32, 0x271ca098_u32, 0x0c731aa5_u32, 0x6e917801_u32, 0x67402d28_u32, 0xd2152bdc_u32, 0xe24754a4_u32,
+        0xd09b0758_u32, 0xe1b03282_u32, 0x7229dc1e_u32, 0xdb8906c3_u32, 0x0afc1507_u32, 0x3abc2f34_u32, 0x81a785fa_u32, 0xe83f2cf4_u32,
+        0xf6a7c913_u32, 0x0b3d2791_u32, 0xae9027c0_u32, 0xbb7c54f2_u32, 0x9b3b4460_u32, 0xf93a0776_u32, 0x6608bb91_u32, 0xcd5b36ec_u32,
+        0x3263d76c_u32, 0x5dbcb360_u32, 0x6394c104_u32, 0x7375b635_u32, 0x5e7d1b44_u32, 0x815a730b_u32, 0xb0844eb0_u32, 0xe682396a_u32,
+        0xc4998351_u32, 0x70f20464_u32, 0xf0e24b5a_u32, 0x093ae4ad_u32, 0x98d8531f_u32, 0xb3d719c3_u32, 0x397c1b5f_u32, 0xfd21b73b_u32,
+    };
+
+    Xoroshiro64s rng;
+    uint32_t x = 0;
+    size_t n = array_count(expect);
+
+    for (size_t i = 0; i < n; ++i) {
+        TRY(x = rng());
+        TEST_EQUAL(x, expect[i]);
     }
 
-    s1 = s2 = 0;
-    for (size_t j = 0; j < 8; ++j) {
-        s1 = 5 * s2 + 1;
-        s2 = 5 * s1 + 1;
-        rng = Xoroshiro(s1, s2);
-        for (size_t k = 0; k < 16; ++k) {
-            uint64_t x = rng();
-            TEST_EQUAL(x, expect[i++]);
-        }
+}
+
+void test_core_random_xoroshiro64ss() {
+
+    static constexpr uint32_t expect[] = {
+        0xbdb9a53e_u32, 0x4cd4c374_u32, 0x561198da_u32, 0xd1637991_u32, 0xa5b316c0_u32, 0xc1b1238c_u32, 0xc165f536_u32, 0x763b61de_u32,
+        0x09ded5ca_u32, 0xae4fa9c9_u32, 0x81d156f4_u32, 0x260756d1_u32, 0xe30a5f0d_u32, 0xb9dfbef5_u32, 0xfaa6c5a7_u32, 0x5379c762_u32,
+        0x754da587_u32, 0x207629c6_u32, 0xfa6c7262_u32, 0xe021ae0c_u32, 0xc0edd6a0_u32, 0x91680011_u32, 0xf97df4dc_u32, 0xa12ac566_u32,
+        0x1138c1b4_u32, 0x9e844e93_u32, 0x71e45f14_u32, 0xc7f0a725_u32, 0x1aeb00e1_u32, 0x881c393c_u32, 0x4d3b6a02_u32, 0x6c94e70c_u32,
+        0x60e49782_u32, 0x0e1f91cc_u32, 0x5a299306_u32, 0x35a43a67_u32, 0xdd8d2465_u32, 0xb59d80a3_u32, 0x08b3bc90_u32, 0x277c1911_u32,
+        0x28ddac76_u32, 0x0638baa5_u32, 0x1a18d869_u32, 0x2db517b3_u32, 0x050abc5f_u32, 0xc444aa5b_u32, 0xc5753adc_u32, 0x590253fd_u32,
+        0x7e66a39e_u32, 0x95f01c37_u32, 0x3cf8a2bc_u32, 0x2991e166_u32, 0x0e310ab7_u32, 0xd887e730_u32, 0x52b12e6e_u32, 0x1163e2cc_u32,
+        0xdff21318_u32, 0x9742bec6_u32, 0x8d6f18d6_u32, 0xc4ceec25_u32, 0x8733f3bf_u32, 0x66701a4e_u32, 0xed911b83_u32, 0x3512857b_u32,
+    };
+
+    Xoroshiro64ss rng;
+    uint32_t x = 0;
+    size_t n = array_count(expect);
+
+    for (size_t i = 0; i < n; ++i) {
+        TRY(x = rng());
+        TEST_EQUAL(x, expect[i]);
+    }
+
+}
+
+void test_core_random_xoroshiro128p() {
+
+    static constexpr uint64_t expect[] = {
+        0x509946a41cd733a3_u64, 0xd805fcac6824536e_u64, 0xdadc02f3e3cf7be3_u64, 0x622e4dd99d2720e5_u64, 0xaacfd52d630b52bd_u64, 0xa94fc32eb4128023_u64, 0x9ee359839e68f625_u64, 0xd9f180e03b686e4f_u64,
+        0xd6825e7d8fc65068_u64, 0x0887f15071c20b9d_u64, 0x6dc39f8336eeaa66_u64, 0x013d17509661b69b_u64, 0xdbe703ea4e61caec_u64, 0x1a4deda7c51c5b7b_u64, 0xe2f2259fb30bafcc_u64, 0x7eb5a4d5f053fcbf_u64,
+        0x4704d55257921919_u64, 0xcfeb1c70eacd6734_u64, 0xed98c92a0d6b8b3e_u64, 0x4efb928a052188b7_u64, 0x15617edcea5e98ab_u64, 0x8ac022e71a4d1a40_u64, 0xe0ae2cdf81cc05bf_u64, 0x11ae6d329bc72f19_u64,
+        0x5369885a834c1073_u64, 0x7a865692c8495a12_u64, 0xaf752d7df50f6968_u64, 0x4b81c799c968e005_u64, 0x4104e06972751b34_u64, 0x8600214cf598d6f6_u64, 0x444545884a4b0a80_u64, 0x2d13243847e43cfe_u64,
+        0x6064921c3b70601c_u64, 0x1b2c2f204185130e_u64, 0xac1e21160f7e90f4_u64, 0xa718d564118e2bca_u64, 0x25fb8750f330bdc1_u64, 0x0cdd8329cb365e06_u64, 0xfdcfbff05c3470e3_u64, 0xcbce143aec5155a5_u64,
+        0x01d17b5b1e2c3c21_u64, 0x68fe2fbabc30aa23_u64, 0x19086e8dbd448c02_u64, 0xdb7d8126e6f3d1c6_u64, 0x1865e34fb131a69f_u64, 0xce3be151debb3e9a_u64, 0xdf573313ce569b70_u64, 0x3a7fcf8ef4fd495a_u64,
+        0xe26450c5ec487bcc_u64, 0x00e99eaeeb35354e_u64, 0x959e7e6cb8bf55d4_u64, 0x3ba4778a79b1b758_u64, 0x30e4f35a940c2e04_u64, 0x67717bb8a50f2c22_u64, 0xa9b3e9db4934cd8e_u64, 0xe22bc184e5d2ad8d_u64,
+        0x7390583f39dfbb76_u64, 0x19e7ba95b2482b72_u64, 0x549b0c65abc1615f_u64, 0x43989e0d7268118a_u64, 0x1376e3b4f7319b9c_u64, 0x41bc4dd69e4a3eca_u64, 0xdb5b777a0a90e830_u64, 0x4885cae86597a2fd_u64,
+    };
+
+    Xoroshiro128p rng;
+    uint64_t x = 0;
+    size_t n = array_count(expect);
+
+    for (size_t i = 0; i < n; ++i) {
+        TRY(x = rng());
+        TEST_EQUAL(x, expect[i]);
+    }
+
+}
+
+void test_core_random_xoroshiro128ss() {
+
+    static constexpr uint64_t expect[] = {
+        0xdec90d521e93e35d_u64, 0x6d33ac6f18895e08_u64, 0xab21904eec6fa48a_u64, 0x87afdbc188423fbe_u64, 0x64c1fc972d0be37f_u64, 0x747f0f97a0cd98a5_u64, 0x489b61f9632ef474_u64, 0x271460c1092811f0_u64,
+        0xff0e6c13c9f16f25_u64, 0xb56a31da37149983_u64, 0x723cf04fbd1ed4ff_u64, 0x56005057f9b3c167_u64, 0x651fdcd95e939ac4_u64, 0xcef2e967455e8ec5_u64, 0xa5d2339bc18f65c2_u64, 0x1d78a2b9225b2d0b_u64,
+        0xba1d2f21d5cd5a53_u64, 0x4285a103cfe4d0f4_u64, 0x9e08c676b3bfacd9_u64, 0x98408859d60e39c6_u64, 0xc7fe90ba06b117d7_u64, 0x8d4593fe66f33a21_u64, 0x55cfc98da3a10a09_u64, 0x7be557d58d92032e_u64,
+        0x6684625db992b15f_u64, 0xbd2697ac0075de4a_u64, 0x2c22301f50be9f7f_u64, 0xa3213ec8380d1802_u64, 0x4bd7ac2db68daf02_u64, 0x1bf4239726976c9c_u64, 0x533a75a8b9608877_u64, 0xb553616c53cd1d95_u64,
+        0x8a0adb01b456085c_u64, 0xf487d847bde8cd13_u64, 0xebe2aef97ce43cbf_u64, 0x5c738c6117fde71a_u64, 0xac04a59edcde7d9f_u64, 0xa3d5368934b5869a_u64, 0xf618422a9cfff4b6_u64, 0xf7107446daa38c0f_u64,
+        0xb7af4f8f4bb041c5_u64, 0x593c4eb86ccf1640_u64, 0x7409f19ac95b9690_u64, 0xc22923f095ba2952_u64, 0x637c0241e949fe10_u64, 0xd4e3f6bec873e93d_u64, 0xf589fb02ee70952b_u64, 0x351665af60d237b4_u64,
+        0x207e20bf0be9ddff_u64, 0xc9f9d12430ccc59f_u64, 0xda4860db4a3219b8_u64, 0x83929c51fe2345f3_u64, 0xbae2a4f4521110cb_u64, 0xbad3f5abebd97e76_u64, 0x0d817e828a254c05_u64, 0x1be5283403ca04ed_u64,
+        0x913c90a1a2896963_u64, 0x7ab003dfe38381c3_u64, 0x24fa75fe2ea53355_u64, 0x48bcf534dc08c41d_u64, 0xb4ed3644df9b9c1d_u64, 0x84532e01d5f62e96_u64, 0x28b18f91ccbe5a7f_u64, 0xb7b4cf4443d7ba70_u64,
+    };
+
+    Xoroshiro128ss rng;
+    uint64_t x = 0;
+    size_t n = array_count(expect);
+
+    for (size_t i = 0; i < n; ++i) {
+        TRY(x = rng());
+        TEST_EQUAL(x, expect[i]);
+    }
+
+}
+
+void test_core_random_xoshiro128p() {
+
+    static constexpr uint32_t expect[] = {
+        0xed6a4f9b_u32, 0x5808f056_u32, 0xc6c161e8_u32, 0x87837269_u32, 0x926c39cb_u32, 0xaa28e207_u32, 0x1967d667_u32, 0x284a00cd_u32,
+        0x1cc16af1_u32, 0x05562c54_u32, 0x2651882e_u32, 0xcbd6a196_u32, 0xe840c9cc_u32, 0xf6aec4ce_u32, 0xc9533372_u32, 0xa8cefc97_u32,
+        0xdc0f9422_u32, 0xc97e9a1e_u32, 0x82785f4e_u32, 0xc0e2e5f8_u32, 0x175e882e_u32, 0x4d280126_u32, 0x41948197_u32, 0x5f693e28_u32,
+        0x3b398e5b_u32, 0x7671574b_u32, 0xcb7bc615_u32, 0xa119f128_u32, 0xee77b120_u32, 0xdaa38801_u32, 0x3e32fda8_u32, 0xb7938030_u32,
+        0x9067bdd9_u32, 0x6e3c4fd6_u32, 0x29d322b6_u32, 0x207e4218_u32, 0x535a1cbd_u32, 0x80b3d77f_u32, 0x9bc4a1a4_u32, 0x2dd85ae6_u32,
+        0xa6e415ad_u32, 0x4cb4f461_u32, 0xaf463cbc_u32, 0xbe733f4e_u32, 0x32f70cb7_u32, 0x8874031e_u32, 0x16d40503_u32, 0x8d7fdb92_u32,
+        0x368e4e7e_u32, 0x6fc2d778_u32, 0x72bc8eef_u32, 0xe463c0d7_u32, 0xbf7202dc_u32, 0xcdc89669_u32, 0x0b2e9d83_u32, 0x89f53a13_u32,
+        0x8de8dcc3_u32, 0xb982c498_u32, 0xd0c937ff_u32, 0xe838e5bb_u32, 0xae0f534f_u32, 0xe794ca4c_u32, 0x0456916e_u32, 0x2e4a3e83_u32,
+    };
+
+    Xoshiro128p rng;
+    uint32_t x = 0;
+    size_t n = array_count(expect);
+
+    for (size_t i = 0; i < n; ++i) {
+        TRY(x = rng());
+        TEST_EQUAL(x, expect[i]);
+    }
+
+}
+
+void test_core_random_xoshiro128ss() {
+
+    static constexpr uint32_t expect[] = {
+        0x1e93e34b_u32, 0x67aa96d6_u32, 0x60b249b1_u32, 0xe9750dff_u32, 0xb13097b3_u32, 0xe6b95566_u32, 0xa0f96e32_u32, 0x3a8f63d4_u32,
+        0x0e0a1364_u32, 0x8ef9a37f_u32, 0xffce15bb_u32, 0x7de23908_u32, 0x3ed7642e_u32, 0xf7354168_u32, 0x7c3facd5_u32, 0xe25c2b99_u32,
+        0x2f9b0c30_u32, 0x61f6b941_u32, 0xd2569373_u32, 0x19a60a38_u32, 0xd887a3a2_u32, 0x2784415c_u32, 0xd63b1976_u32, 0x4054d2c8_u32,
+        0xcec5f8cf_u32, 0xec4831a8_u32, 0x6effc1df_u32, 0xe6411bd8_u32, 0x49276f78_u32, 0x84147a74_u32, 0x5e5dbe1f_u32, 0x90817412_u32,
+        0x75fb6cec_u32, 0x3146f7ed_u32, 0x8931b77b_u32, 0x9398dedf_u32, 0xa93a7549_u32, 0xed484db6_u32, 0xc7d0bdce_u32, 0x460c2f9d_u32,
+        0x16b5cd94_u32, 0x7ed1c47c_u32, 0x213bcd58_u32, 0x19a68ec5_u32, 0xeb378961_u32, 0x30cc69a9_u32, 0x66b03488_u32, 0x2ebd705b_u32,
+        0x6378d0cb_u32, 0xa8e13335_u32, 0x0744ea53_u32, 0xc7026fbb_u32, 0x4df587cd_u32, 0xa719dc9d_u32, 0xd9a190c2_u32, 0x62df092c_u32,
+        0x4c435563_u32, 0xa22e802f_u32, 0x656ddbaf_u32, 0xb9cf9876_u32, 0xda4463ca_u32, 0x6c634b45_u32, 0xaa1163f6_u32, 0x4d2209a4_u32,
+    };
+
+    Xoshiro128ss rng;
+    uint32_t x = 0;
+    size_t n = array_count(expect);
+
+    for (size_t i = 0; i < n; ++i) {
+        TRY(x = rng());
+        TEST_EQUAL(x, expect[i]);
+    }
+
+}
+
+void test_core_random_xoshiro256p() {
+
+    static constexpr uint64_t expect[] = {
+        0xdaac60e1ed6a4f9b_u64, 0x3156a1da0dc08435_u64, 0xf9ba3e3285d046ab_u64, 0x4fd194611dba7b01_u64, 0x40b78599c31791bf_u64, 0x03b1dd310503d6f4_u64, 0xb238d3a721d5092b_u64, 0x11017bba8a0f8adf_u64,
+        0xa6a988bed1f59149_u64, 0xdb4000fb8d550622_u64, 0x5b3947becb71ef9d_u64, 0x53cda86134220dba_u64, 0x95aa43de2a55bfe9_u64, 0x2a6a597cc890c649_u64, 0xa159be94778c6782_u64, 0x057cc5712467f9be_u64,
+        0xfd5116670c452eca_u64, 0x5965ef754974bedb_u64, 0x7e6232b5e4d2282d_u64, 0x13bf0121edf46ac4_u64, 0xa94e36da9dd60992_u64, 0xa81fff375842e458_u64, 0xb7231663870094e4_u64, 0x5d9d875117ce4fa6_u64,
+        0x48866f1f33861ff6_u64, 0x7d81c7249ff3a3ac_u64, 0xa508fa0999faa2f2_u64, 0xbfc74758a9c688ce_u64, 0x202904f83161ec8f_u64, 0x4deb77e04e9cf9c8_u64, 0x7c01f8423f2707b6_u64, 0x7b54ce2dc2cf13d8_u64,
+        0x8bec36638cc8f5f9_u64, 0xa574dc7678d27bc0_u64, 0x9befb631355b1aea_u64, 0xd3d99cdeb778a6ab_u64, 0xc3836774a5dbe8c4_u64, 0x6db2562ecf20a562_u64, 0x6da00089eab2d146_u64, 0x6cac37d84a3031b8_u64,
+        0x4174278caa6594c2_u64, 0x690ab3d3ddf0f7be_u64, 0x82c8b2113b18231e_u64, 0x0792bc36e381ab78_u64, 0x7554d278039ea3c5_u64, 0x907ebf5863fac86b_u64, 0xce3f163d82fa3e12_u64, 0x76e4df602f109d6f_u64,
+        0xd0393d8f83280007_u64, 0xd1e195d20b1f658e_u64, 0x8f36b79f4151a99b_u64, 0x146ae01666c7119e_u64, 0x54ef0e4b14c985c2_u64, 0xf8a1370e5fb05419_u64, 0x3a50cb142c99e296_u64, 0xb4591e7b9a5550ba_u64,
+        0x126633b1e0336f84_u64, 0xa656ad6a8af9ed4f_u64, 0xd7b339bc36a7657e_u64, 0xd5561040dd97530c_u64, 0xde6e5d06840240ba_u64, 0x977f5479ea8214e9_u64, 0xa559406954adbf11_u64, 0x30e7b06bd913ad64_u64,
+    };
+
+    Xoshiro256p rng;
+    uint64_t x = 0;
+    size_t n = array_count(expect);
+
+    for (size_t i = 0; i < n; ++i) {
+        TRY(x = rng());
+        TEST_EQUAL(x, expect[i]);
+    }
+
+}
+
+void test_core_random_xoshiro256ss() {
+
+    static constexpr uint64_t expect[] = {
+        0x99ec5f36cb75f2b4_u64, 0xbf6e1f784956452a_u64, 0x1a5f849d4933e6e0_u64, 0x6aa594f1262d2d2c_u64, 0xbba5ad4a1f842e59_u64, 0xffef8375d9ebcaca_u64, 0x6c160deed2f54c98_u64, 0x8920ad648fc30a3f_u64,
+        0xdb032c0ba7539731_u64, 0xeb3a475a3e749a3d_u64, 0x1d42993fa43f2a54_u64, 0x11361bf526a14bb5_u64, 0x1b4f07a5ab3d8e9c_u64, 0xa7a3257f6986db7f_u64, 0x7efdaa95605dfc9c_u64, 0x4bde97c0a78eaab8_u64,
+        0xb455eac43518666c_u64, 0x304dbf6c06730690_u64, 0x8cbe7776598a798c_u64, 0x0ecbdf7ffcd727e5_u64, 0x4ff52157533fe270_u64, 0x7e61475b87242f2e_u64, 0x52558c68a9316824_u64, 0xa0bd00c592471176_u64,
+        0xfc9b83a3a0c63b9e_u64, 0x4d786c0f0a8b88ef_u64, 0xa52473c4f62f2338_u64, 0xe9dc0037db25d6d9_u64, 0xfce5eba9d25094c3_u64, 0xe3dbe61ee2d64b51_u64, 0x23f62e432b1272df_u64, 0x4ac7443a342c4913_u64,
+        0xc31cf1a9658c1991_u64, 0x290c97ffce918b1d_u64, 0xf54455e02e90636a_u64, 0xf57745758bb8f33f_u64, 0xe5e1b685122823d9_u64, 0x2c16cde0fd8097ec_u64, 0x3cdebc44a5bc1936_u64, 0x6833bafa723c2dbd_u64,
+        0xb6fa6c4ba1d3d39e_u64, 0xe5b932b656c2edc3_u64, 0x09cf0b6121615c9f_u64, 0x214e25d57fc636d5_u64, 0xcf3d1721806e2537_u64, 0xcf796fc6335ddc02_u64, 0x353c8b86489b0322_u64, 0xfc4865822547b6aa_u64,
+        0xe8c93d84ee8b3f8c_u64, 0xd1b42120a323f2d6_u64, 0xa73a11d247ff36b2_u64, 0xae42236958bba58c_u64, 0xb622679e2affcf3a_u64, 0xcc3bab0060f645f4_u64, 0x2e01e45c78f0daa7_u64, 0x08566c5f16be948a_u64,
+        0x73beac2187e1f640_u64, 0x8e903d752c1b5d6e_u64, 0x5b34681094d7511d_u64, 0x70ebad382047f5c1_u64, 0xeae5ca1448d4e9cc_u64, 0x3d2d62775b631bd5_u64, 0x8cb72ebc5b4f7dc3_u64, 0x099c2939ea690a80_u64,
+    };
+
+    Xoshiro256ss rng;
+    uint64_t x = 0;
+    size_t n = array_count(expect);
+
+    for (size_t i = 0; i < n; ++i) {
+        TRY(x = rng());
+        TEST_EQUAL(x, expect[i]);
     }
 
 }
@@ -1142,7 +1284,7 @@ void test_core_random_text_generators() {
         static constexpr int max_iterations = 70;
     #endif
 
-    Xoroshiro rng(42);
+    Xoshiro rng(42);
     Ustring s;
     TRY(s = lorem_ipsum(rng(), 0));
     TEST(s.empty());

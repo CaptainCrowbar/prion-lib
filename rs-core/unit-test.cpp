@@ -193,7 +193,15 @@ extern void test_core_random_isaac32();
 extern void test_core_random_isaac64();
 extern void test_core_random_pcg32();
 extern void test_core_random_pcg64();
-extern void test_core_random_xoroshiro();
+extern void test_core_random_splitmix64();
+extern void test_core_random_xoroshiro64s();
+extern void test_core_random_xoroshiro64ss();
+extern void test_core_random_xoroshiro128p();
+extern void test_core_random_xoroshiro128ss();
+extern void test_core_random_xoshiro128p();
+extern void test_core_random_xoshiro128ss();
+extern void test_core_random_xoshiro256p();
+extern void test_core_random_xoshiro256ss();
 extern void test_core_random_basic_distributions();
 extern void test_core_random_sample();
 extern void test_core_random_triangular();
@@ -548,7 +556,15 @@ int main() {
         { "core/random/isaac64", test_core_random_isaac64 },
         { "core/random/pcg32", test_core_random_pcg32 },
         { "core/random/pcg64", test_core_random_pcg64 },
-        { "core/random/xoroshiro", test_core_random_xoroshiro },
+        { "core/random/splitmix64", test_core_random_splitmix64 },
+        { "core/random/xoroshiro64s", test_core_random_xoroshiro64s },
+        { "core/random/xoroshiro64ss", test_core_random_xoroshiro64ss },
+        { "core/random/xoroshiro128p", test_core_random_xoroshiro128p },
+        { "core/random/xoroshiro128ss", test_core_random_xoroshiro128ss },
+        { "core/random/xoshiro128p", test_core_random_xoshiro128p },
+        { "core/random/xoshiro128ss", test_core_random_xoshiro128ss },
+        { "core/random/xoshiro256p", test_core_random_xoshiro256p },
+        { "core/random/xoshiro256ss", test_core_random_xoshiro256ss },
         { "core/random/basic-distributions", test_core_random_basic_distributions },
         { "core/random/sample", test_core_random_sample },
         { "core/random/triangular", test_core_random_triangular },

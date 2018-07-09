@@ -361,7 +361,7 @@ namespace RS {
         static constexpr size_t n_lines = sizeof(classic) / sizeof(classic[0]);
         if (bytes == 0)
             return {};
-        Xoroshiro rng(seed, 0x05b6b84c03ae03d2ull);
+        Xoshiro rng(seed);
         Ustring text;
         text.reserve(bytes + 20);
         for (size_t i = 0; i < n_lines && text.size() <= bytes; ++i)

@@ -29,6 +29,7 @@
 <li><code>constexpr Uint128::</code><strong><code>Uint128</code></strong><code>(uint64_t x) noexcept</code></li>
 <li><code>constexpr Uint128::</code><strong><code>Uint128</code></strong><code>(uint64_t high, uint64_t low) noexcept</code></li>
 <li><code>explicit Uint128::</code><strong><code>Uint128</code></strong><code>(Uview str, int base = 10)</code></li>
+<li><code>size_t Uint128::</code><strong><code>hash</code></strong><code>() const noexcept</code></li>
 <li><code>Ustring Uint128::</code><strong><code>str</code></strong><code>(int base = 10, int digits = 1) const</code></li>
 <li><code>constexpr explicit Uint128::</code><strong><code>operator bool</code></strong><code>() const noexcept</code></li>
 <li><code>template &lt;typename T&gt; constexpr explicit Uint128::</code><strong><code>operator T</code></strong><code>() const noexcept</code></li>
@@ -78,6 +79,7 @@
 <li><code>Uint128</code> <strong><code>operator""_u128</code></strong><code>(const char* ptr, size_t len) noexcept</code></li>
 </ul>
 </li>
+<li><code>struct std::</code><strong><code>hash</code></strong><code>&lt;Uint128&gt;</code></li>
 </ul>
 <p>A 128-bit unsigned integer. The <a href="fixed-binary.html"><code>rs-core/fixed-binary</code></a>
 module provides essentially the same type, but being restricted to a specific

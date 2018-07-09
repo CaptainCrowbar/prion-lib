@@ -12,6 +12,7 @@ namespace RS {
         constexpr Uint128(uint64_t x) noexcept: lo(x), hi(0) {}
         constexpr Uint128(uint64_t high, uint64_t low) noexcept: lo(low), hi(high) {}
         explicit Uint128(Uview str, int base = 10);
+        size_t hash() const noexcept;
         Ustring str(int base = 10, int digits = 1) const;
         constexpr explicit operator bool() const noexcept { return lo || hi; }
         template <typename T> constexpr explicit operator T() const noexcept { return static_cast<T>(lo); }
@@ -144,3 +145,5 @@ namespace RS {
     }
 
 }
+
+RS_DEFINE_STD_HASH(RS::Uint128);

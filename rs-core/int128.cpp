@@ -1,5 +1,6 @@
 #include "rs-core/int128.hpp"
 #include <algorithm>
+#include <functional>
 #include <stdexcept>
 #include <string>
 
@@ -31,6 +32,13 @@ namespace RS {
         }
         if (! any)
             throw std::invalid_argument("Invalid integer: " + quote(str));
+    }
+
+    size_t Uint128::hash() const noexcept {
+        using h64 = std::hash<uint64_t>;
+        size_t h = 0;
+        hash_combine(h, h64()(lo), h64()(hi));
+        return h;
     }
 
     Ustring Uint128::str(int base, int digits) const {

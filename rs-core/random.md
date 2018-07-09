@@ -77,22 +77,22 @@ ISAAC cryptographic quality generator by [Bob Jenkins](http://burtleburtle.net/b
 
 * `class` **`Pcg32`**
     * `using Pcg32::`**`result_type`** `= uint32_t`
-    * `Pcg32::`**`Pcg32`**`() noexcept`
-    * `explicit Pcg32::`**`Pcg32`**`(uint64_t s) noexcept`
-    * `uint32_t Pcg32::`**`operator()`**`() noexcept`
-    * `void Pcg32::`**`advance`**`(int64_t offset) noexcept`
-    * `void Pcg32::`**`seed`**`(uint64_t s) noexcept`
+    * `constexpr Pcg32::`**`Pcg32`**`() noexcept`
+    * `constexpr explicit Pcg32::`**`Pcg32`**`(uint64_t s) noexcept`
+    * `constexpr uint32_t Pcg32::`**`operator()`**`() noexcept`
+    * `constexpr void Pcg32::`**`advance`**`(int64_t offset) noexcept`
+    * `constexpr void Pcg32::`**`seed`**`(uint64_t s) noexcept`
     * `static constexpr uint32_t Pcg32::`**`min`**`() noexcept` _= 0_
     * `static constexpr uint32_t Pcg32::`**`max`**`() noexcept` _= 2<sup>32</sup>-1_
 * `class` **`Pcg64`**
     * `using Pcg64::`**`result_type`** `= uint64_t`
-    * `Pcg64::`**`Pcg64`**`() noexcept`
-    * `explicit Pcg64::`**`Pcg64`**`(Uint128 s) noexcept`
-    * `explicit Pcg64::`**`Pcg64`**`(uint64_t hi, uint64_t lo) noexcept`
-    * `uint64_t Pcg64::`**`operator()`**`() noexcept`
-    * `void Pcg64::`**`advance`**`(int64_t offset) noexcept`
-    * `void Pcg64::`**`seed`**`(Uint128 s) noexcept`
-    * `void Pcg64::`**`seed`**`(uint64_t hi, uint64_t lo) noexcept`
+    * `constexpr Pcg64::`**`Pcg64`**`() noexcept`
+    * `constexpr explicit Pcg64::`**`Pcg64`**`(Uint128 s) noexcept`
+    * `constexpr explicit Pcg64::`**`Pcg64`**`(uint64_t hi, uint64_t lo) noexcept`
+    * `constexpr uint64_t Pcg64::`**`operator()`**`() noexcept`
+    * `constexpr void Pcg64::`**`advance`**`(int64_t offset) noexcept`
+    * `constexpr void Pcg64::`**`seed`**`(Uint128 s) noexcept`
+    * `constexpr void Pcg64::`**`seed`**`(uint64_t hi, uint64_t lo) noexcept`
     * `static constexpr uint64_t Pcg64::`**`min`**`() noexcept` _= 0_
     * `static constexpr uint64_t Pcg64::`**`max`**`() noexcept` _= 2<sup>64</sup>-1_
 

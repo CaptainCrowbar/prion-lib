@@ -118,24 +118,24 @@ from Pierre L'Ecuyer (1999),
 <ul>
 <li><code>class</code> <strong><code>Pcg32</code></strong><ul>
 <li><code>using Pcg32::</code><strong><code>result_type</code></strong> <code>= uint32_t</code></li>
-<li><code>Pcg32::</code><strong><code>Pcg32</code></strong><code>() noexcept</code></li>
-<li><code>explicit Pcg32::</code><strong><code>Pcg32</code></strong><code>(uint64_t s) noexcept</code></li>
-<li><code>uint32_t Pcg32::</code><strong><code>operator()</code></strong><code>() noexcept</code></li>
-<li><code>void Pcg32::</code><strong><code>advance</code></strong><code>(int64_t offset) noexcept</code></li>
-<li><code>void Pcg32::</code><strong><code>seed</code></strong><code>(uint64_t s) noexcept</code></li>
+<li><code>constexpr Pcg32::</code><strong><code>Pcg32</code></strong><code>() noexcept</code></li>
+<li><code>constexpr explicit Pcg32::</code><strong><code>Pcg32</code></strong><code>(uint64_t s) noexcept</code></li>
+<li><code>constexpr uint32_t Pcg32::</code><strong><code>operator()</code></strong><code>() noexcept</code></li>
+<li><code>constexpr void Pcg32::</code><strong><code>advance</code></strong><code>(int64_t offset) noexcept</code></li>
+<li><code>constexpr void Pcg32::</code><strong><code>seed</code></strong><code>(uint64_t s) noexcept</code></li>
 <li><code>static constexpr uint32_t Pcg32::</code><strong><code>min</code></strong><code>() noexcept</code> <em>= 0</em></li>
 <li><code>static constexpr uint32_t Pcg32::</code><strong><code>max</code></strong><code>() noexcept</code> <em>= 2<sup>32</sup>-1</em></li>
 </ul>
 </li>
 <li><code>class</code> <strong><code>Pcg64</code></strong><ul>
 <li><code>using Pcg64::</code><strong><code>result_type</code></strong> <code>= uint64_t</code></li>
-<li><code>Pcg64::</code><strong><code>Pcg64</code></strong><code>() noexcept</code></li>
-<li><code>explicit Pcg64::</code><strong><code>Pcg64</code></strong><code>(Uint128 s) noexcept</code></li>
-<li><code>explicit Pcg64::</code><strong><code>Pcg64</code></strong><code>(uint64_t hi, uint64_t lo) noexcept</code></li>
-<li><code>uint64_t Pcg64::</code><strong><code>operator()</code></strong><code>() noexcept</code></li>
-<li><code>void Pcg64::</code><strong><code>advance</code></strong><code>(int64_t offset) noexcept</code></li>
-<li><code>void Pcg64::</code><strong><code>seed</code></strong><code>(Uint128 s) noexcept</code></li>
-<li><code>void Pcg64::</code><strong><code>seed</code></strong><code>(uint64_t hi, uint64_t lo) noexcept</code></li>
+<li><code>constexpr Pcg64::</code><strong><code>Pcg64</code></strong><code>() noexcept</code></li>
+<li><code>constexpr explicit Pcg64::</code><strong><code>Pcg64</code></strong><code>(Uint128 s) noexcept</code></li>
+<li><code>constexpr explicit Pcg64::</code><strong><code>Pcg64</code></strong><code>(uint64_t hi, uint64_t lo) noexcept</code></li>
+<li><code>constexpr uint64_t Pcg64::</code><strong><code>operator()</code></strong><code>() noexcept</code></li>
+<li><code>constexpr void Pcg64::</code><strong><code>advance</code></strong><code>(int64_t offset) noexcept</code></li>
+<li><code>constexpr void Pcg64::</code><strong><code>seed</code></strong><code>(Uint128 s) noexcept</code></li>
+<li><code>constexpr void Pcg64::</code><strong><code>seed</code></strong><code>(uint64_t hi, uint64_t lo) noexcept</code></li>
 <li><code>static constexpr uint64_t Pcg64::</code><strong><code>min</code></strong><code>() noexcept</code> <em>= 0</em></li>
 <li><code>static constexpr uint64_t Pcg64::</code><strong><code>max</code></strong><code>() noexcept</code> <em>= 2<sup>64</sup>-1</em></li>
 </ul>

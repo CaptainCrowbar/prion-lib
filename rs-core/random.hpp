@@ -109,33 +109,66 @@ namespace RS {
 
     // PCG generators
 
+    namespace RS_Detail {
+
+        template <typename S>
+        constexpr void pcg_advance(S& state, S a, S b, int64_t offset) noexcept {
+            S u = offset < 0 ? ~ S(0) - ~ uint64_t(offset) : S(offset);
+            S mul = 1, add = 0;
+            while (u) {
+                if (u & 1) {
+                    mul *= a;
+                    add = add * a + b;
+                }
+                b = (a + 1) * b;
+                a *= a;
+                u >>= 1;
+            }
+            state = mul * state + add;
+        }
+
+    }
+
     class Pcg32 {
     public:
         using result_type = uint32_t;
-        Pcg32() noexcept;
-        explicit Pcg32(uint64_t s) noexcept { seed(s); }
-        uint32_t operator()() noexcept;
-        void advance(int64_t offset) noexcept;
-        void seed(uint64_t s) noexcept;
+        constexpr Pcg32() noexcept { seed(pcg_default); }
+        constexpr explicit Pcg32(uint64_t s) noexcept { seed(s); }
+        constexpr uint32_t operator()() noexcept {
+            auto s = state;
+            state = pcg_a32 * state + pcg_b32;
+            return rotr(uint32_t((s ^ (s >> 18)) >> 27), int(s >> 59) & 31);
+        }
+        constexpr void advance(int64_t offset) noexcept { RS_Detail::pcg_advance(state, pcg_a32, pcg_b32, offset); }
+        constexpr void seed(uint64_t s) noexcept { state = pcg_a32 * (s + pcg_b32) + pcg_b32; }
         static constexpr uint32_t min() noexcept { return 0; }
         static constexpr uint32_t max() noexcept { return ~ uint32_t(0); }
     private:
-        uint64_t state;
+        static constexpr uint64_t pcg_default = 0xcafef00dd15ea5e5ull;
+        static constexpr uint64_t pcg_a32 = 0x5851f42d4c957f2dull;
+        static constexpr uint64_t pcg_b32 = 0x14057b7ef767814full;
+        uint64_t state = 0;
     };
 
     class Pcg64 {
     public:
         using result_type = uint64_t;
-        Pcg64() noexcept;
-        explicit Pcg64(Uint128 s) noexcept { seed(s); }
-        explicit Pcg64(uint64_t hi, uint64_t lo) noexcept { seed(hi, lo); }
-        uint64_t operator()() noexcept;
-        void advance(int64_t offset) noexcept;
-        void seed(Uint128 s) noexcept;
-        void seed(uint64_t hi, uint64_t lo) noexcept { seed(Uint128{hi, lo}); }
+        constexpr Pcg64() noexcept { seed(pcg_default); }
+        constexpr explicit Pcg64(Uint128 s) noexcept { seed(s); }
+        constexpr explicit Pcg64(uint64_t hi, uint64_t lo) noexcept { seed(hi, lo); }
+        constexpr uint64_t operator()() noexcept {
+            state = pcg_a64 * state + pcg_b64;
+            return rotr(uint64_t(state ^ (state >> 64)), int(state >> 122) & 63);
+        }
+        constexpr void advance(int64_t offset) noexcept { RS_Detail::pcg_advance(state, pcg_a64, pcg_b64, offset); }
+        constexpr void seed(Uint128 s) noexcept { state = pcg_a64 * (s + pcg_b64) + pcg_b64; }
+        constexpr void seed(uint64_t hi, uint64_t lo) noexcept { seed(Uint128{hi, lo}); }
         static constexpr uint64_t min() noexcept { return 0; }
         static constexpr uint64_t max() noexcept { return ~ uint64_t(0); }
     private:
+        static constexpr uint64_t pcg_default = 0xcafef00dd15ea5e5ull;
+        static constexpr Uint128 pcg_a64{0x2360ed051fc65da4ull, 0x4385df649fccf645ull};
+        static constexpr Uint128 pcg_b64{0x5851f42d4c957f2dull, 0x14057b7ef767814full};
         Uint128 state;
     };
 

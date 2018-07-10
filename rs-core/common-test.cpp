@@ -7,6 +7,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <set>
 #include <sstream>
 #include <string>
@@ -1664,11 +1665,14 @@ void test_core_common_logging() {
 
 namespace {
 
+    std::mutex wit_mtx;
+
     struct WriteInThread {
         Ustring src;
         Ustring* dst = nullptr;
         void operator()() {
             std::this_thread::sleep_for(100ms);
+            auto lock = make_lock(wit_mtx);
             if (dst)
                 *dst += src;
         }

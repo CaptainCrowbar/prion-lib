@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rs-core/channel.hpp"
+#include "unicorn/utf.hpp"
 #include <algorithm>
 #include <atomic>
 #include <functional>

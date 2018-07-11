@@ -2,6 +2,7 @@
 
 #include "rs-core/common.hpp"
 #include "rs-core/time.hpp"
+#include "unicorn/utf.hpp"
 #include <chrono>
 #include <string>
 

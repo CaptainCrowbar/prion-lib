@@ -1,7 +1,6 @@
 #include "rs-core/net.hpp"
 #include "rs-core/digest.hpp"
 #include "rs-core/string.hpp"
-#include "unicorn/utf.hpp"
 #include <algorithm>
 #include <cerrno>
 #include <chrono>

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rs-core/common.hpp"
+#include "unicorn/utf.hpp"
 #include <ostream>
 #include <vector>
 

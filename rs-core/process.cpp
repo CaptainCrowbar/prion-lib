@@ -1,6 +1,5 @@
 #include "rs-core/process.hpp"
 #include "rs-core/io.hpp"
-#include "unicorn/utf.hpp"
 #include <algorithm>
 #include <chrono>
 #include <system_error>
@@ -9,13 +8,9 @@ using namespace RS::Unicorn;
 
 #ifdef _XOPEN_SOURCE
     #include <sys/select.h>
-#else
-    #include <io.h>
-#endif
-
-#ifdef _XOPEN_SOURCE
     #define IO_FUNCTION(f) ::f
 #else
+    #include <io.h>
     #define IO_FUNCTION(f) _##f
 #endif
 

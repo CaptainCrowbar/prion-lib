@@ -46,6 +46,7 @@ namespace RS {
         void set_bit(size_t i, bool b = true);
         void set_byte(size_t i, uint8_t b);
         void flip_bit(size_t i);
+        size_t hash() const noexcept { return hash_range(rep); }
         bool is_even() const noexcept { return rep.empty() || (rep.front() & 1) == 0; }
         bool is_odd() const noexcept { return ! is_even(); }
         Nat pow(const Nat& n) const;
@@ -146,6 +147,7 @@ namespace RS {
         Int& operator%=(const Int& rhs) { Int q, r; do_divide(*this, rhs, q, r); std::swap(*this, r); return *this; }
         Nat abs() const { return mag; }
         int compare(const Int& rhs) const noexcept;
+        size_t hash() const noexcept { return hash_value(mag, neg); }
         bool is_even() const noexcept { return mag.is_even(); }
         bool is_odd() const noexcept { return mag.is_odd(); }
         Int pow(const Int& n) const;
@@ -230,3 +232,6 @@ namespace RS {
     };
 
 }
+
+RS_DEFINE_STD_HASH(RS::Nat);
+RS_DEFINE_STD_HASH(RS::Int);

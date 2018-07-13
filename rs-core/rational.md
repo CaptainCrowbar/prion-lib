@@ -97,6 +97,11 @@ Return the absolute value of a rational number.
 Convert a rational to an integer. These follow the rules implied by the names
 of the functions; `round()` rounds halves toward positive infinity.
 
+* `size_t Rational::`**`hash`**`() const noexcept`
+* `struct` **`std::hash`**`<Rational>`
+
+Hash function.
+
 * `bool Rational::`**`is_integer`**`() const noexcept`
 
 True if the rational is an exact integer (equivalent to `den()==1`).

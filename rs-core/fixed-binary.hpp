@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <functional>
 #include <initializer_list>
 #include <limits>
 #include <ostream>
@@ -67,6 +68,7 @@ namespace RS {
         constexpr auto data() noexcept { return reinterpret_cast<uint8_t*>(&value); }
         constexpr auto data() const noexcept { return reinterpret_cast<const uint8_t*>(&value); }
         template <typename T> bool fits_in() const noexcept { return significant_bits() <= std::numeric_limits<T>::digits; }
+        size_t hash() const noexcept { return std::hash<value_type>()(value); }
         size_t parse(const Ustring& str, int base = 10) noexcept { return RS_Detail::parse_binary(str, base, *this); }
         size_t significant_bits() const noexcept { return ilog2p1(value); }
         explicit operator bool() const noexcept { return value != 0; }
@@ -144,6 +146,7 @@ namespace RS {
         constexpr auto data() noexcept { return reinterpret_cast<uint8_t*>(store.data()); }
         constexpr auto data() const noexcept { return reinterpret_cast<const uint8_t*>(store.data()); }
         template <typename T> bool fits_in() const noexcept { return significant_bits() <= std::numeric_limits<T>::digits; }
+        size_t hash() const noexcept { return hash_range(store); }
         size_t parse(const Ustring& str, int base = 10) noexcept { return RS_Detail::parse_binary(str, base, *this); }
         size_t significant_bits() const noexcept;
         explicit operator bool() const noexcept;
@@ -548,5 +551,19 @@ namespace RS {
             x += y + c;
             c = unit_type(x < y || (x == y && c));
         }
+
+}
+
+namespace std {
+
+    template <size_t N>
+    struct hash<RS::SmallBinary<N>> {
+        size_t operator()(const RS::SmallBinary<N>& x) const noexcept { return x.hash(); }
+    };
+
+    template <size_t N>
+    struct hash<RS::LargeBinary<N>> {
+        size_t operator()(const RS::LargeBinary<N>& x) const noexcept { return x.hash(); }
+    };
 
 }

@@ -6,6 +6,7 @@
 #include <random>
 #include <stdexcept>
 #include <tuple>
+#include <unordered_set>
 #include <vector>
 
 using namespace RS;
@@ -860,6 +861,24 @@ void test_core_mp_integer_core_functions() {
     TRY(y = gcd(w, x));  TEST_EQUAL(y, 3);
     TRY(c = lcm(a, b));  TEST_EQUAL(c, 1386);
     TRY(y = lcm(w, x));  TEST_EQUAL(y, 1386);
+
+}
+
+void test_core_mp_integer_hash_set() {
+
+    std::unordered_set<Nat> natset;
+    std::unordered_set<Int> intset;
+
+    TEST(natset.empty());
+    TEST(intset.empty());
+
+    for (int i = 1; i <= 10; ++i) {
+        TRY(natset.insert(Nat(i)));
+        TRY(intset.insert(Int(i)));
+    }
+
+    TEST_EQUAL(natset.size(), 10);
+    TEST_EQUAL(intset.size(), 10);
 
 }
 

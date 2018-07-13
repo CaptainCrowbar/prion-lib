@@ -4,6 +4,7 @@
 #include "rs-core/unit-test.hpp"
 #include <limits>
 #include <random>
+#include <unordered_set>
 
 using namespace RS;
 using namespace RS::Literals;
@@ -822,5 +823,31 @@ void test_core_fixed_binary_string_parsing() {
     TRY(n = y.parse("123456789", 16));          TEST_EQUAL(n, 9);   TEST_EQUAL(uint64_t(y), 0x123456789_u64);
     TRY(n = y.parse("123456789xyz", 16));       TEST_EQUAL(n, 9);   TEST_EQUAL(uint64_t(y), 0x123456789_u64);
     TRY(n = y.parse("101010110011001100", 2));  TEST_EQUAL(n, 18);  TEST_EQUAL(uint64_t(y), 0x00002accc_u64);
+
+}
+
+void test_core_fixed_binary_hash_set() {
+
+    std::unordered_set<SmallBinary<5>> set_s5;
+    std::unordered_set<SmallBinary<50>> set_s50;
+    std::unordered_set<LargeBinary<50>> set_l50;
+    std::unordered_set<LargeBinary<500>> set_l500;
+
+    TEST(set_s5.empty());
+    TEST(set_s50.empty());
+    TEST(set_l50.empty());
+    TEST(set_l500.empty());
+
+    for (int i = 1; i <= 10; ++i) {
+        TRY(set_s5.insert(SmallBinary<5>(i)));
+        TRY(set_s50.insert(SmallBinary<50>(i)));
+        TRY(set_l50.insert(LargeBinary<50>(i)));
+        TRY(set_l500.insert(LargeBinary<500>(i)));
+    }
+
+    TEST_EQUAL(set_s5.size(), 10);
+    TEST_EQUAL(set_s50.size(), 10);
+    TEST_EQUAL(set_l50.size(), 10);
+    TEST_EQUAL(set_l500.size(), 10);
 
 }

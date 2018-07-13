@@ -87,6 +87,11 @@ bytes equal to the `bytes` constant, in little endian order.
 True if the current value of the `Binary` will fit in a `T` without loss of
 information. Behaviour is undefined if `T` is not a primitive arithmetic type.
 
+* `size_t Binary::`**`hash`**`() const noexcept`
+* `struct` **`std::hash`**`<Binary>`
+
+Hash function.
+
 * `size_t Binary::`**`parse`**`(const Ustring& str, int base = 10) noexcept`
 
 Attempts to parse a string as an unsigned integer, writing the value into the

@@ -3,6 +3,7 @@
 #include "rs-core/common.hpp"
 #include "rs-core/string.hpp"
 #include <algorithm>
+#include <functional>
 #include <ostream>
 #include <stdexcept>
 #include <vector>
@@ -38,6 +39,7 @@ namespace RS {
         T floor() const { return quo(numer, denom); }
         T ceil() const;
         T round() const;
+        size_t hash() const noexcept { return hash_value(numer, denom); }
         bool is_integer() const noexcept { return denom == T(1); }
         Rational reciprocal() const;
         int sign() const noexcept { return numer > T(0) ? 1 : numer == T(0) ? 0 : -1; }
@@ -240,5 +242,14 @@ namespace RS {
     template <typename T> int sign_of(const Rational<T>& r) noexcept { return r.sign(); }
     template <typename T> Ustring to_str(const Rational<T>& r) { return r.str(); }
     template <typename T> std::ostream& operator<<(std::ostream& o, const Rational<T>& r) { return o << r.str(); }
+
+}
+
+namespace std {
+
+    template <typename T>
+    struct hash<RS::Rational<T>> {
+        size_t operator()(const RS::Rational<T>& x) const noexcept { return x.hash(); }
+    };
 
 }

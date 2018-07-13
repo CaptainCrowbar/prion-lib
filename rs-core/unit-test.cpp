@@ -81,6 +81,7 @@ extern void test_core_fixed_binary_random_numbers();
 extern void test_core_fixed_binary_random_arithmetic_tests();
 extern void test_core_fixed_binary_type_conversions();
 extern void test_core_fixed_binary_string_parsing();
+extern void test_core_fixed_binary_hash_set();
 extern void test_core_float_arithmetic_constants();
 extern void test_core_float_arithmetic_functions();
 extern void test_core_float_arithmetic_literals();
@@ -165,6 +166,7 @@ extern void test_core_mp_integer_signed_arithmetic();
 extern void test_core_mp_integer_signed_random();
 extern void test_core_mp_integer_literals();
 extern void test_core_mp_integer_core_functions();
+extern void test_core_mp_integer_hash_set();
 extern void test_core_mp_integer_rational_basics();
 extern void test_core_mp_integer_rational_reduction();
 extern void test_core_mp_integer_rational_arithmetic();
@@ -290,6 +292,7 @@ extern void test_core_rational_properties();
 extern void test_core_rational_comparison();
 extern void test_core_rational_mixed();
 extern void test_core_rational_parsing();
+extern void test_core_rational_hash_set();
 extern void test_core_ring_buffer_basics();
 extern void test_core_ring_buffer_accounting_with_copy();
 extern void test_core_ring_buffer_accounting_with_move();
@@ -444,6 +447,7 @@ int main() {
         { "core/fixed-binary/random-arithmetic-tests", test_core_fixed_binary_random_arithmetic_tests },
         { "core/fixed-binary/type-conversions", test_core_fixed_binary_type_conversions },
         { "core/fixed-binary/string-parsing", test_core_fixed_binary_string_parsing },
+        { "core/fixed-binary/hash-set", test_core_fixed_binary_hash_set },
         { "core/float/arithmetic-constants", test_core_float_arithmetic_constants },
         { "core/float/arithmetic-functions", test_core_float_arithmetic_functions },
         { "core/float/arithmetic-literals", test_core_float_arithmetic_literals },
@@ -528,6 +532,7 @@ int main() {
         { "core/mp-integer/signed-random", test_core_mp_integer_signed_random },
         { "core/mp-integer/literals", test_core_mp_integer_literals },
         { "core/mp-integer/core-functions", test_core_mp_integer_core_functions },
+        { "core/mp-integer/hash-set", test_core_mp_integer_hash_set },
         { "core/mp-integer/rational-basics", test_core_mp_integer_rational_basics },
         { "core/mp-integer/rational-reduction", test_core_mp_integer_rational_reduction },
         { "core/mp-integer/rational-arithmetic", test_core_mp_integer_rational_arithmetic },
@@ -653,6 +658,7 @@ int main() {
         { "core/rational/comparison", test_core_rational_comparison },
         { "core/rational/mixed", test_core_rational_mixed },
         { "core/rational/parsing", test_core_rational_parsing },
+        { "core/rational/hash-set", test_core_rational_hash_set },
         { "core/ring-buffer/basics", test_core_ring_buffer_basics },
         { "core/ring-buffer/accounting-with-copy", test_core_ring_buffer_accounting_with_copy },
         { "core/ring-buffer/accounting-with-move", test_core_ring_buffer_accounting_with_move },

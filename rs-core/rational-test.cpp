@@ -1,6 +1,7 @@
 #include "rs-core/rational.hpp"
 #include "rs-core/unit-test.hpp"
 #include <stdexcept>
+#include <unordered_set>
 
 using namespace RS;
 
@@ -191,5 +192,18 @@ void test_core_rational_parsing() {
     TEST_THROW(r = Rat::parse(""), std::invalid_argument);
     TEST_THROW(r = Rat::parse("1 2"), std::invalid_argument);
     TEST_THROW(r = Rat::parse("1 -2/3"), std::invalid_argument);
+
+}
+
+void test_core_rational_hash_set() {
+
+    std::unordered_set<Rat> ratset;
+
+    TEST(ratset.empty());
+
+    for (int i = 1; i <= 10; ++i)
+        TRY(ratset.insert(Rat(i)));
+
+    TEST_EQUAL(ratset.size(), 10);
 
 }

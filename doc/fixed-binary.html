@@ -119,6 +119,13 @@ information. Behaviour is undefined if <code>T</code> is not a primitive arithme
 </div>
 <div class="defns">
 <ul>
+<li><code>size_t Binary::</code><strong><code>hash</code></strong><code>() const noexcept</code></li>
+<li><code>struct</code> <strong><code>std::hash</code></strong><code>&lt;Binary&gt;</code></li>
+</ul>
+<p>Hash function.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>size_t Binary::</code><strong><code>parse</code></strong><code>(const Ustring&amp; str, int base = 10) noexcept</code></li>
 </ul>
 <p>Attempts to parse a string as an unsigned integer, writing the value into the

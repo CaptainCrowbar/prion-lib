@@ -69,6 +69,7 @@ could be.</p>
 <li><code>void Nat::</code><strong><code>set_bit</code></strong><code>(size_t i, bool b = true)</code></li>
 <li><code>void Nat::</code><strong><code>set_byte</code></strong><code>(size_t i, uint8_t b)</code></li>
 <li><code>void Nat::</code><strong><code>flip_bit</code></strong><code>(size_t i)</code></li>
+<li><code>size_t Nat::</code><strong><code>hash</code></strong><code>() const noexcept</code></li>
 <li><code>bool Nat::</code><strong><code>is_even</code></strong><code>() const noexcept</code></li>
 <li><code>bool Nat::</code><strong><code>is_odd</code></strong><code>() const noexcept</code></li>
 <li><code>Nat Nat::</code><strong><code>pow</code></strong><code>(const Nat&amp; n) const</code></li>
@@ -108,6 +109,7 @@ could be.</p>
 <li><code>Ustring</code> <strong><code>hex</code></strong><code>(const Nat&amp; x, size_t digits = 1)</code></li>
 <li><code>Ustring</code> <strong><code>to_str</code></strong><code>(const Nat&amp; x)</code></li>
 <li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const Nat&amp; x)</code></li>
+<li><code>struct</code> <strong><code>std::hash</code></strong><code>&lt;Nat&gt;</code></li>
 </ul>
 <p>An arbitrary precision unsigned integer (natural number). Most of its methods
 are conventional arithmetic operations with their natural behaviour.</p>
@@ -168,6 +170,7 @@ is undefined if <code>n&lt;1</code>.</p>
 <li><code>Int&amp; Int::</code><strong><code>operator%=</code></strong><code>(const Int&amp; rhs)</code></li>
 <li><code>Nat Int::</code><strong><code>abs</code></strong><code>() const</code></li>
 <li><code>int Int::</code><strong><code>compare</code></strong><code>(const Int&amp; rhs) const noexcept</code></li>
+<li><code>size_t Int::</code><strong><code>hash</code></strong><code>() const noexcept</code></li>
 <li><code>bool Int::</code><strong><code>is_even</code></strong><code>() const noexcept</code></li>
 <li><code>bool Int::</code><strong><code>is_odd</code></strong><code>() const noexcept</code></li>
 <li><code>Int Int::</code><strong><code>pow</code></strong><code>(const Int&amp; n) const</code></li>
@@ -198,6 +201,7 @@ is undefined if <code>n&lt;1</code>.</p>
 <li><code>Ustring</code> <strong><code>hex</code></strong><code>(const Int&amp; x, size_t digits = 1)</code></li>
 <li><code>Ustring</code> <strong><code>to_str</code></strong><code>(const Int&amp; x)</code></li>
 <li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const Int&amp; x)</code></li>
+<li><code>struct</code> <strong><code>std::hash</code></strong><code>&lt;Int&gt;</code></li>
 </ul>
 <p>An arbitrary precision signed integer. Most of its operations do the same
 thing as the corresponding functions on <code>Nat</code> or plain <code>int</code>.</p>

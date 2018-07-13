@@ -50,6 +50,7 @@ could be.
     * `void Nat::`**`set_bit`**`(size_t i, bool b = true)`
     * `void Nat::`**`set_byte`**`(size_t i, uint8_t b)`
     * `void Nat::`**`flip_bit`**`(size_t i)`
+    * `size_t Nat::`**`hash`**`() const noexcept`
     * `bool Nat::`**`is_even`**`() const noexcept`
     * `bool Nat::`**`is_odd`**`() const noexcept`
     * `Nat Nat::`**`pow`**`(const Nat& n) const`
@@ -87,6 +88,7 @@ could be.
 * `Ustring` **`hex`**`(const Nat& x, size_t digits = 1)`
 * `Ustring` **`to_str`**`(const Nat& x)`
 * `std::ostream&` **`operator<<`**`(std::ostream& out, const Nat& x)`
+* `struct` **`std::hash`**`<Nat>`
 
 An arbitrary precision unsigned integer (natural number). Most of its methods
 are conventional arithmetic operations with their natural behaviour.
@@ -156,6 +158,7 @@ is undefined if `n<1`.
     * `Int& Int::`**`operator%=`**`(const Int& rhs)`
     * `Nat Int::`**`abs`**`() const`
     * `int Int::`**`compare`**`(const Int& rhs) const noexcept`
+    * `size_t Int::`**`hash`**`() const noexcept`
     * `bool Int::`**`is_even`**`() const noexcept`
     * `bool Int::`**`is_odd`**`() const noexcept`
     * `Int Int::`**`pow`**`(const Int& n) const`
@@ -184,6 +187,7 @@ is undefined if `n<1`.
 * `Ustring` **`hex`**`(const Int& x, size_t digits = 1)`
 * `Ustring` **`to_str`**`(const Int& x)`
 * `std::ostream&` **`operator<<`**`(std::ostream& out, const Int& x)`
+* `struct` **`std::hash`**`<Int>`
 
 An arbitrary precision signed integer. Most of its operations do the same
 thing as the corresponding functions on `Nat` or plain `int`.

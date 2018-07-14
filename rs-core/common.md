@@ -177,6 +177,55 @@ Signed and unsigned integer types with the specified number of bits (the same
 types as `int8_t`, `int16_t`, etc). These will fail to compile if `Bits` is
 not a power of 2 in the supported range (8-64).
 
+### Smart pointers ###
+
+* `template <typename T> class` **`CopyPtr`**
+    * `using CopyPtr::`**`element_type`** `= T`
+    * `CopyPtr::`**`CopyPtr`**`() noexcept`
+    * `CopyPtr::`**`CopyPtr`**`(T* p) noexcept`
+    * `CopyPtr::`**`CopyPtr`**`(std::nullptr_t) noexcept`
+    * `CopyPtr::`**`CopyPtr`**`(const CopyPtr& cp)`
+    * `CopyPtr::`**`CopyPtr`**`(CopyPtr&& cp) noexcept`
+    * `CopyPtr::`**`~CopyPtr`**`() noexcept`
+    * `CopyPtr& CopyPtr::`**`operator=`**`(T* p) noexcept`
+    * `CopyPtr& CopyPtr::`**`operator=`**`(std::nullptr_t) noexcept`
+    * `CopyPtr& CopyPtr::`**`operator=`**`(const CopyPtr& cp)`
+    * `CopyPtr& CopyPtr::`**`operator=`**`(CopyPtr&& cp) noexcept`
+    * `T& CopyPtr::`**`operator*`**`() const noexcept`
+    * `T* CopyPtr::`**`operator->`**`() const noexcept`
+    * `explicit CopyPtr::`**`operator bool`**`() const noexcept`
+    * `T* CopyPtr::`**`get`**`() const noexcept`
+    * `T* CopyPtr::`**`release`**`() noexcept`
+    * `void CopyPtr::`**`reset`**`(T* p = nullptr) noexcept`
+* `void` **`swap`**`(CopyPtr<T>& a, CopyPtr<T>& b) noexcept`
+* `template <typename T, typename... Args> CopyPtr<T>` **`make_copy_ptr`**`(Args&&... args)`
+* `template <typename T> class` **`ClonePtr`**
+    * `using ClonePtr::`**`element_type`** `= T`
+    * `ClonePtr::`**`ClonePtr`**`() noexcept`
+    * `ClonePtr::`**`ClonePtr`**`(T* p) noexcept`
+    * `ClonePtr::`**`ClonePtr`**`(std::nullptr_t) noexcept`
+    * `ClonePtr::`**`ClonePtr`**`(const ClonePtr& cp)`
+    * `ClonePtr::`**`ClonePtr`**`(ClonePtr&& cp) noexcept`
+    * `ClonePtr::`**`~ClonePtr`**`() noexcept`
+    * `ClonePtr& ClonePtr::`**`operator=`**`(T* p) noexcept`
+    * `ClonePtr& ClonePtr::`**`operator=`**`(std::nullptr_t) noexcept`
+    * `ClonePtr& ClonePtr::`**`operator=`**`(const ClonePtr& cp)`
+    * `ClonePtr& ClonePtr::`**`operator=`**`(ClonePtr&& cp) noexcept`
+    * `T& ClonePtr::`**`operator*`**`() const noexcept`
+    * `T* ClonePtr::`**`operator->`**`() const noexcept`
+    * `explicit ClonePtr::`**`operator bool`**`() const noexcept`
+    * `T* ClonePtr::`**`get`**`() const noexcept`
+    * `T* ClonePtr::`**`release`**`() noexcept`
+    * `void ClonePtr::`**`reset`**`(T* p = nullptr) noexcept`
+* `void` **`swap`**`(ClonePtr<T>& a, ClonePtr<T>& b) noexcept`
+* `template <typename T, typename... Args> ClonePtr<T>` **`make_clone_ptr`**`(Args&&... args)`
+
+Pointers that automatically copy their target object when the pointer is
+copied, if the pointer is not null. `CopyPtr` calls `T`'s copy constructor,
+while `ClonePtr` expects `T` to have a `clone()` member function that returns
+a raw pointer to a newly created object. Moving a `CopyPtr` or `ClonePtr`
+always leaves the moved-from pointer null.
+
 ### Type adapters ###
 
 * `template <typename T, int Def = 0> struct` **`AutoMove`**

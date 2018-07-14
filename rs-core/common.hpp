@@ -207,6 +207,68 @@ namespace RS {
     template <size_t Bits> using SignedInteger = typename RS_Detail::IntegerType<Bits>::signed_type;
     template <size_t Bits> using UnsignedInteger = typename RS_Detail::IntegerType<Bits>::unsigned_type;
 
+    // Smart pointers
+
+    template <typename T>
+    class CopyPtr {
+    public:
+        using element_type = T;
+        CopyPtr() = default;
+        CopyPtr(T* p) noexcept: ptr(p) {}
+        CopyPtr(std::nullptr_t) noexcept {}
+        CopyPtr(const CopyPtr& cp) { if (cp) ptr = new T(*cp); }
+        CopyPtr(CopyPtr&& cp) noexcept: ptr(std::exchange(cp.ptr, nullptr)) {}
+        ~CopyPtr() noexcept { reset(); }
+        CopyPtr& operator=(T* p) noexcept { CopyPtr cp2(p); swap(*this, cp2); return *this; }
+        CopyPtr& operator=(std::nullptr_t) noexcept { reset(); return *this; }
+        CopyPtr& operator=(const CopyPtr& cp) { CopyPtr cp2(cp); swap(*this, cp2); return *this; }
+        CopyPtr& operator=(CopyPtr&& cp) noexcept { reset(); ptr = std::exchange(cp.ptr, nullptr); return *this; }
+        T& operator*() const noexcept { return *ptr; }
+        T* operator->() const noexcept { return ptr; }
+        explicit operator bool() const noexcept { return ptr != nullptr; }
+        T* get() const noexcept { return ptr; }
+        T* release() noexcept { return std::exchange(ptr, nullptr); }
+        void reset(T* p = nullptr) noexcept { delete ptr; ptr = p; }
+        friend void swap(CopyPtr& a, CopyPtr& b) noexcept { std::swap(a.ptr, b.ptr); }
+    private:
+        T* ptr = nullptr;
+    };
+
+    template <typename T, typename... Args>
+    CopyPtr<T> make_copy_ptr(Args&&... args) {
+        return CopyPtr<T>(new T(std::forward<Args>(args)...));
+    }
+
+    template <typename T>
+    class ClonePtr {
+    public:
+        using element_type = T;
+        ClonePtr() = default;
+        ClonePtr(T* p) noexcept: ptr(p) {}
+        ClonePtr(std::nullptr_t) noexcept {}
+        ClonePtr(const ClonePtr& cp) { if (cp) ptr = cp->clone(); }
+        ClonePtr(ClonePtr&& cp) noexcept: ptr(std::exchange(cp.ptr, nullptr)) {}
+        ~ClonePtr() noexcept { reset(); }
+        ClonePtr& operator=(T* p) noexcept { ClonePtr cp2(p); swap(*this, cp2); return *this; }
+        ClonePtr& operator=(std::nullptr_t) noexcept { reset(); return *this; }
+        ClonePtr& operator=(const ClonePtr& cp) { ClonePtr cp2(cp); swap(*this, cp2); return *this; }
+        ClonePtr& operator=(ClonePtr&& cp) noexcept { reset(); ptr = std::exchange(cp.ptr, nullptr); return *this; }
+        T& operator*() const noexcept { return *ptr; }
+        T* operator->() const noexcept { return ptr; }
+        explicit operator bool() const noexcept { return ptr != nullptr; }
+        T* get() const noexcept { return ptr; }
+        T* release() noexcept { return std::exchange(ptr, nullptr); }
+        void reset(T* p = nullptr) noexcept { delete ptr; ptr = p; }
+        friend void swap(ClonePtr& a, ClonePtr& b) noexcept { std::swap(a.ptr, b.ptr); }
+    private:
+        T* ptr = nullptr;
+    };
+
+    template <typename T, typename... Args>
+    ClonePtr<T> make_clone_ptr(Args&&... args) {
+        return ClonePtr<T>(new T(std::forward<Args>(args)...));
+    }
+
     // Type adapters
 
     namespace RS_Detail {

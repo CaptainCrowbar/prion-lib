@@ -7,6 +7,7 @@ extern void test_core_common_preprocessor_macros();
 extern void test_core_common_integer_types();
 extern void test_core_common_string_types();
 extern void test_core_common_metaprogramming();
+extern void test_core_common_smart_pointers();
 extern void test_core_common_type_adapters();
 extern void test_core_common_type_related_functions();
 extern void test_core_common_arithmetic_literals();
@@ -373,6 +374,7 @@ int main() {
         { "core/common/integer-types", test_core_common_integer_types },
         { "core/common/string-types", test_core_common_string_types },
         { "core/common/metaprogramming", test_core_common_metaprogramming },
+        { "core/common/smart-pointers", test_core_common_smart_pointers },
         { "core/common/type-adapters", test_core_common_type_adapters },
         { "core/common/type-related-functions", test_core_common_type_related_functions },
         { "core/common/arithmetic-literals", test_core_common_arithmetic_literals },

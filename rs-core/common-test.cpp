@@ -469,6 +469,145 @@ void test_core_common_metaprogramming() {
 
 }
 
+void test_core_common_smart_pointers() {
+
+    using A = Accountable<int>;
+
+    class C:
+    public Accountable<long> {
+    public:
+        C() = default;
+        C(int i): Accountable<long>(i) {}
+        C* clone() const { return new C(*this); }
+    };
+
+    {
+
+        A::reset();
+        CopyPtr<A> a;
+        TEST(! a);
+        TEST_EQUAL(A::count(), 0);
+
+        CopyPtr<A> b(new A(42));
+        REQUIRE(b);
+        TEST_EQUAL(b->get(), 42);
+        TEST_EQUAL(A::count(), 1);
+
+        CopyPtr<A> c(std::move(b));
+        TEST(! b);
+        REQUIRE(c);
+        TEST_EQUAL(c->get(), 42);
+        TEST_EQUAL(A::count(), 1);
+
+        CopyPtr<A> d(c);
+        REQUIRE(c);
+        REQUIRE(d);
+        TEST_EQUAL(c->get(), 42);
+        TEST_EQUAL(d->get(), 42);
+        TEST_EQUAL(A::count(), 2);
+
+        TRY(a = std::move(b));
+        TEST(! a);
+        TEST(! b);
+        TEST_EQUAL(A::count(), 2);
+
+        TRY(a = std::move(c));
+        REQUIRE(a);
+        TEST(! c);
+        TEST_EQUAL(a->get(), 42);
+        TEST_EQUAL(A::count(), 2);
+
+        TRY(b = a);
+        REQUIRE(a);
+        REQUIRE(b);
+        TEST_EQUAL(a->get(), 42);
+        TEST_EQUAL(b->get(), 42);
+        TEST_EQUAL(A::count(), 3);
+
+        TRY(a.reset());
+        TEST(! a);
+        TEST_EQUAL(A::count(), 2);
+
+        TRY(b = nullptr);
+        TEST(! b);
+        TEST_EQUAL(A::count(), 1);
+
+    }
+
+    TEST_EQUAL(A::count(), 0);
+
+    CopyPtr<std::string> p;
+    TRY(p = make_copy_ptr<std::string>(5, 'a'));
+    REQUIRE(p);
+    TEST_EQUAL(*p, "aaaaa");
+
+    {
+
+        C::reset();
+        ClonePtr<C> a;
+        TEST(! a);
+        TEST_EQUAL(C::count(), 0);
+
+        ClonePtr<C> b(new C(42));
+        REQUIRE(b);
+        TEST_EQUAL(b->get(), 42);
+        TEST_EQUAL(C::count(), 1);
+
+        ClonePtr<C> c(std::move(b));
+        TEST(! b);
+        REQUIRE(c);
+        TEST_EQUAL(c->get(), 42);
+        TEST_EQUAL(C::count(), 1);
+
+        ClonePtr<C> d(c);
+        REQUIRE(c);
+        REQUIRE(d);
+        TEST_EQUAL(c->get(), 42);
+        TEST_EQUAL(d->get(), 42);
+        TEST_EQUAL(C::count(), 2);
+
+        TRY(a = std::move(b));
+        TEST(! a);
+        TEST(! b);
+        TEST_EQUAL(C::count(), 2);
+
+        TRY(a = std::move(c));
+        REQUIRE(a);
+        TEST(! c);
+        TEST_EQUAL(a->get(), 42);
+        TEST_EQUAL(C::count(), 2);
+
+        TRY(b = a);
+        REQUIRE(a);
+        REQUIRE(b);
+        TEST_EQUAL(a->get(), 42);
+        TEST_EQUAL(b->get(), 42);
+        TEST_EQUAL(C::count(), 3);
+
+        TRY(a.reset());
+        TEST(! a);
+        TEST_EQUAL(C::count(), 2);
+
+        TRY(b = nullptr);
+        TEST(! b);
+        TEST_EQUAL(C::count(), 1);
+
+        TRY(a = make_clone_ptr<C>(86));
+        REQUIRE(a);
+        TEST_EQUAL(a->get(), 86);
+        TEST_EQUAL(C::count(), 2);
+
+    }
+
+    TEST_EQUAL(C::count(), 0);
+
+    ClonePtr<C> q;
+    TRY(q = make_clone_ptr<C>(99));
+    REQUIRE(q);
+    TEST_EQUAL(q->get(), 99);
+
+}
+
 void test_core_common_type_adapters() {
 
     Adapt x, y;

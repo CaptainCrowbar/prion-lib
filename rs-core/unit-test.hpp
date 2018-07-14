@@ -280,6 +280,7 @@ namespace RS {
         Accountable& operator=(const Accountable& a) { value = a.value; return *this; }
         Accountable& operator=(Accountable&& a) noexcept { if (&a != this) value = std::exchange(a.value, T()); return *this; }
         const T& get() const noexcept { return value; }
+        void set(const T& t) { value = t; }
         static int count() noexcept { return number(); }
         static void reset() noexcept { number() = 0; }
     private:
@@ -298,6 +299,7 @@ namespace RS {
         Accountable& operator=(const Accountable& a) = delete;
         Accountable& operator=(Accountable&& a) noexcept { if (&a != this) value = std::exchange(a.value, T()); return *this; }
         const T& get() const noexcept { return value; }
+        void set(const T& t) { value = t; }
         static int count() noexcept { return number(); }
         static void reset() noexcept { number() = 0; }
     private:

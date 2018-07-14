@@ -115,6 +115,7 @@ an exception is thrown.
     * `Accountable& Accountable::`**`operator=`**`(const Accountable& a)` _[deleted if Copy is false]_
     * `Accountable& Accountable::`**`operator=`**`(Accountable&& a) noexcept`
     * `const T& Accountable::`**`get`**`() const noexcept` _[not defined if T is void]_
+    * `void Accountable::`**`set`**`(const T& t)` _[not defined if T is void]_
     * `static int Accountable::`**`count`**`() noexcept`
     * `static void Accountable::`**`reset`**`() noexcept`
 

@@ -144,6 +144,7 @@ an exception is thrown.</p>
 <li><code>Accountable&amp; Accountable::</code><strong><code>operator=</code></strong><code>(const Accountable&amp; a)</code> <em>[deleted if Copy is false]</em></li>
 <li><code>Accountable&amp; Accountable::</code><strong><code>operator=</code></strong><code>(Accountable&amp;&amp; a) noexcept</code></li>
 <li><code>const T&amp; Accountable::</code><strong><code>get</code></strong><code>() const noexcept</code> <em>[not defined if T is void]</em></li>
+<li><code>void Accountable::</code><strong><code>set</code></strong><code>(const T&amp; t)</code> <em>[not defined if T is void]</em></li>
 <li><code>static int Accountable::</code><strong><code>count</code></strong><code>() noexcept</code></li>
 <li><code>static void Accountable::</code><strong><code>reset</code></strong><code>() noexcept</code></li>
 </ul>

@@ -21,6 +21,7 @@
 <li><a href="#integer-types">Integer types</a></li>
 <li><a href="#exceptions">Exceptions</a></li>
 <li><a href="#metaprogramming-and-type-traits">Metaprogramming and type traits</a></li>
+<li><a href="#smart-pointers">Smart pointers</a></li>
 <li><a href="#type-adapters">Type adapters</a></li>
 <li><a href="#type-related-functions">Type related functions</a></li>
 </ul>
@@ -250,6 +251,60 @@ const string&gt;</code> yields <code>string</code>, while <code>CopyConst&lt;con
 <p>Signed and unsigned integer types with the specified number of bits (the same
 types as <code>int8_t</code>, <code>int16_t</code>, etc). These will fail to compile if <code>Bits</code> is
 not a power of 2 in the supported range (8-64).</p>
+</div>
+<h3 id="smart-pointers">Smart pointers</h3>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>CopyPtr</code></strong><ul>
+<li><code>using CopyPtr::</code><strong><code>element_type</code></strong> <code>= T</code></li>
+<li><code>CopyPtr::</code><strong><code>CopyPtr</code></strong><code>() noexcept</code></li>
+<li><code>CopyPtr::</code><strong><code>CopyPtr</code></strong><code>(T* p) noexcept</code></li>
+<li><code>CopyPtr::</code><strong><code>CopyPtr</code></strong><code>(std::nullptr_t) noexcept</code></li>
+<li><code>CopyPtr::</code><strong><code>CopyPtr</code></strong><code>(const CopyPtr&amp; cp)</code></li>
+<li><code>CopyPtr::</code><strong><code>CopyPtr</code></strong><code>(CopyPtr&amp;&amp; cp) noexcept</code></li>
+<li><code>CopyPtr::</code><strong><code>~CopyPtr</code></strong><code>() noexcept</code></li>
+<li><code>CopyPtr&amp; CopyPtr::</code><strong><code>operator=</code></strong><code>(T* p) noexcept</code></li>
+<li><code>CopyPtr&amp; CopyPtr::</code><strong><code>operator=</code></strong><code>(std::nullptr_t) noexcept</code></li>
+<li><code>CopyPtr&amp; CopyPtr::</code><strong><code>operator=</code></strong><code>(const CopyPtr&amp; cp)</code></li>
+<li><code>CopyPtr&amp; CopyPtr::</code><strong><code>operator=</code></strong><code>(CopyPtr&amp;&amp; cp) noexcept</code></li>
+<li><code>T&amp; CopyPtr::</code><strong><code>operator*</code></strong><code>() const noexcept</code></li>
+<li><code>T* CopyPtr::</code><strong><code>operator-&gt;</code></strong><code>() const noexcept</code></li>
+<li><code>explicit CopyPtr::</code><strong><code>operator bool</code></strong><code>() const noexcept</code></li>
+<li><code>T* CopyPtr::</code><strong><code>get</code></strong><code>() const noexcept</code></li>
+<li><code>T* CopyPtr::</code><strong><code>release</code></strong><code>() noexcept</code></li>
+<li><code>void CopyPtr::</code><strong><code>reset</code></strong><code>(T* p = nullptr) noexcept</code></li>
+</ul>
+</li>
+<li><code>void</code> <strong><code>swap</code></strong><code>(CopyPtr&lt;T&gt;&amp; a, CopyPtr&lt;T&gt;&amp; b) noexcept</code></li>
+<li><code>template &lt;typename T, typename... Args&gt; CopyPtr&lt;T&gt;</code> <strong><code>make_copy_ptr</code></strong><code>(Args&amp;&amp;... args)</code></li>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>ClonePtr</code></strong><ul>
+<li><code>using ClonePtr::</code><strong><code>element_type</code></strong> <code>= T</code></li>
+<li><code>ClonePtr::</code><strong><code>ClonePtr</code></strong><code>() noexcept</code></li>
+<li><code>ClonePtr::</code><strong><code>ClonePtr</code></strong><code>(T* p) noexcept</code></li>
+<li><code>ClonePtr::</code><strong><code>ClonePtr</code></strong><code>(std::nullptr_t) noexcept</code></li>
+<li><code>ClonePtr::</code><strong><code>ClonePtr</code></strong><code>(const ClonePtr&amp; cp)</code></li>
+<li><code>ClonePtr::</code><strong><code>ClonePtr</code></strong><code>(ClonePtr&amp;&amp; cp) noexcept</code></li>
+<li><code>ClonePtr::</code><strong><code>~ClonePtr</code></strong><code>() noexcept</code></li>
+<li><code>ClonePtr&amp; ClonePtr::</code><strong><code>operator=</code></strong><code>(T* p) noexcept</code></li>
+<li><code>ClonePtr&amp; ClonePtr::</code><strong><code>operator=</code></strong><code>(std::nullptr_t) noexcept</code></li>
+<li><code>ClonePtr&amp; ClonePtr::</code><strong><code>operator=</code></strong><code>(const ClonePtr&amp; cp)</code></li>
+<li><code>ClonePtr&amp; ClonePtr::</code><strong><code>operator=</code></strong><code>(ClonePtr&amp;&amp; cp) noexcept</code></li>
+<li><code>T&amp; ClonePtr::</code><strong><code>operator*</code></strong><code>() const noexcept</code></li>
+<li><code>T* ClonePtr::</code><strong><code>operator-&gt;</code></strong><code>() const noexcept</code></li>
+<li><code>explicit ClonePtr::</code><strong><code>operator bool</code></strong><code>() const noexcept</code></li>
+<li><code>T* ClonePtr::</code><strong><code>get</code></strong><code>() const noexcept</code></li>
+<li><code>T* ClonePtr::</code><strong><code>release</code></strong><code>() noexcept</code></li>
+<li><code>void ClonePtr::</code><strong><code>reset</code></strong><code>(T* p = nullptr) noexcept</code></li>
+</ul>
+</li>
+<li><code>void</code> <strong><code>swap</code></strong><code>(ClonePtr&lt;T&gt;&amp; a, ClonePtr&lt;T&gt;&amp; b) noexcept</code></li>
+<li><code>template &lt;typename T, typename... Args&gt; ClonePtr&lt;T&gt;</code> <strong><code>make_clone_ptr</code></strong><code>(Args&amp;&amp;... args)</code></li>
+</ul>
+<p>Pointers that automatically copy their target object when the pointer is
+copied, if the pointer is not null. <code>CopyPtr</code> calls <code>T</code>'s copy constructor,
+while <code>ClonePtr</code> expects <code>T</code> to have a <code>clone()</code> member function that returns
+a raw pointer to a newly created object. Moving a <code>CopyPtr</code> or <code>ClonePtr</code>
+always leaves the moved-from pointer null.</p>
 </div>
 <h3 id="type-adapters">Type adapters</h3>
 <div class="defns">

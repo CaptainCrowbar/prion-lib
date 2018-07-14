@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Prime Numbers</title>
+<link type="text/css" rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<h1 id="prime-numbers">Prime Numbers</h1>
+<p>By Ross Smith</p>
+<ul>
+<li><code>#include "rs-core/prime.hpp"</code></li>
+</ul>
+<h2 id="contents">Contents</h2>
+<div class="toc">
+<ul>
+<li><a href="#prime-numbers">Prime Numbers</a><ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#prime-number-generators">Prime number generators</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="introduction">Introduction</h2>
+<p>This module implements some basic prime number algorithms. Although they can
+be used with extended precision integers as well as primitive types, they do
+not implement the sophisticated algorithms required for practical use with
+very large integers, and are not intended for cryptographic applications.</p>
+<p>In all of the templates in this module, <code>T</code> may be a primitive integer type,
+or any of the integer types in the <a href="fixed-binary.html"><code>fixed-binary</code></a>,
+<a href="int128.html"><code>int128</code></a>, or <a href="mp-integer.html"><code>mp-integer</code></a> modules.</p>
+<h2 id="prime-number-generators">Prime number generators</h2>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>PrimeGenerator</code></strong><ul>
+<li><code>const T&amp; PrimeGenerator::</code><strong><code>get</code></strong><code>() const noexcept</code></li>
+<li><code>void PrimeGenerator::</code><strong><code>next</code></strong><code>()</code></li>
+<li><code>T PrimeGenerator::</code><strong><code>operator</code></strong><code>()()</code></li>
+</ul>
+</li>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>PrimeIterator</code></strong><ul>
+<li><code>using PrimeIterator::</code><strong><code>iterator_category</code></strong> <code>= std::forward_iterator_tag</code></li>
+<li><code>using PrimeIterator::</code><strong><code>value_type</code></strong> <code>= T</code></li>
+<li><code>PrimeIterator::</code><strong><code>PrimeIterator</code></strong><code>()</code></li>
+<li><code>explicit PrimeIterator::</code><strong><code>PrimeIterator</code></strong><code>(bool init)</code></li>
+<li><em>standard iterator operations</em></li>
+</ul>
+</li>
+<li><code>template &lt;typename T&gt; Irange&lt;PrimeIterator&lt;T&gt;&gt;</code> <strong><code>prime_range</code></strong><code>()</code></li>
+</ul>
+<p><code>PrimeGenerator</code> generates prime numbers using
+<a href="https://stackoverflow.com/questions/2211990/how-to-implement-an-efficient-infinite-generator-of-prime-numbers-in-python">Will Ness's recursive algorithm</a>.</p>
+<p><code>PrimeIterator</code> wraps the prime generator in an iterator interface. If the
+second constructor is called with <code>init=false</code>, a null iterator is created
+that will compare unequal to any valid iterator; behaviour is undefined if
+this iterator is dereferenced.</p>
+<p>Calling <code>PrimeGenerator::next()</code>, or <code>PrimeIterator::operator++()</code>, increments
+the generator to the next prime. <code>PrimeGenerator::get()</code>, or
+<code>PrimeIterator::operator*()</code>, returns the current prime number. Behaviour is
+undefined if <code>get()</code> is called before the first call to <code>next()</code> (this does
+not apply to the iterator, whose constructor calls <code>next()</code>).</p>
+<p>The <code>prime_numbers()</code> function returns an infinite range of prime numbers (the
+second member is a null iterator).</p>
+<p>Time complexity for generating the first <code>n</code> prime numbers is approximately
+<code>O(n<sup>1.5</sup>)</code>; space complexity is <code>O(sqrt(n))</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; bool</code> <strong><code>is_prime</code></strong><code>(T n)</code></li>
+</ul>
+<p>True if the number is prime. If <code>T</code> is signed, this will always return false
+for negative arguments.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; T</code> <strong><code>next_prime</code></strong><code>(T n)</code></li>
+<li><code>template &lt;typename T&gt; T</code> <strong><code>prev_prime</code></strong><code>(T n)</code></li>
+</ul>
+<p>Return the next or previous prime (both of these will return <code>n</code> if it is
+already prime). The <code>prev_prime()</code> function will return zero if <code>n&lt;2</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; std::vector&lt;T&gt;</code> <strong><code>prime_factors</code></strong><code>(T n)</code></li>
+<li><code>template &lt;typename T&gt; std::map&lt;T, T&gt;</code> <strong><code>prime_factors_map</code></strong><code>(T n)</code></li>
+</ul>
+<p>Determine the prime factorization of a number. The <code>prime_factors()</code> function
+returns a list of all prime factors, including any duplicates, in ascending
+order. The <code>prime_factors_map()</code> function returns the same list in the form of
+a map, with each entry consisting of a prime factor and the number of times it
+occurs.</p>
+<p>Example:</p>
+<pre><code>auto vec = prime_factors(720);      // returns [2,2,2,2,3,3,5]
+auto map = prime_factors_map(720);  // returns [2:4,3:2,5:1]
+</code></pre>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; std::vector&lt;T&gt;</code> <strong><code>prime_list</code></strong><code>(T n)</code></li>
+<li><code>template &lt;typename T&gt; std::vector&lt;T&gt;</code> <strong><code>prime_list</code></strong><code>(T m, T n)</code></li>
+</ul>
+<p>Return a list of prime numbers up to <code>n</code>, or from <code>m</code> to <code>n</code> inclusive. These
+will use a <code>PrimeGenerator</code> if <code>m&lt;=2</code>; otherwise they will use a less
+efficient algorithm that checks each number in the range for primality. They
+will return an empty array if <code>m&gt;n</code> or <code>n&lt;2</code>.</p></body>
+</html>

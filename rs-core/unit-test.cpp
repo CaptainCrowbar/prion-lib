@@ -188,6 +188,26 @@ extern void test_core_optional_comparison_operators();
 extern void test_core_optional_coalescing_operators();
 extern void test_core_optional_function_calls();
 extern void test_core_ordered_map_class();
+extern void test_core_prime_iterator_basic_int();
+extern void test_core_prime_iterator_fixed_binary();
+extern void test_core_prime_iterator_int128();
+extern void test_core_prime_iterator_mp_integer();
+extern void test_core_prime_primality_basic_int();
+extern void test_core_prime_primality_fixed_binary();
+extern void test_core_prime_primality_int128();
+extern void test_core_prime_primality_mp_integer();
+extern void test_core_prime_next_prev_prime_basic_int();
+extern void test_core_prime_next_prev_prime_fixed_binary();
+extern void test_core_prime_next_prev_prime_int128();
+extern void test_core_prime_next_prev_prime_mp_integer();
+extern void test_core_prime_factorization_basic_int();
+extern void test_core_prime_factorization_fixed_binary();
+extern void test_core_prime_factorization_int128();
+extern void test_core_prime_factorization_mp_integer();
+extern void test_core_prime_list_primes_basic_int();
+extern void test_core_prime_list_primes_fixed_binary();
+extern void test_core_prime_list_primes_int128();
+extern void test_core_prime_list_primes_mp_integer();
 extern void test_core_process_shell_commands();
 extern void test_core_process_stream();
 extern void test_core_process_text();
@@ -555,6 +575,26 @@ int main() {
         { "core/optional/coalescing-operators", test_core_optional_coalescing_operators },
         { "core/optional/function-calls", test_core_optional_function_calls },
         { "core/ordered-map/class", test_core_ordered_map_class },
+        { "core/prime/iterator-basic-int", test_core_prime_iterator_basic_int },
+        { "core/prime/iterator-fixed-binary", test_core_prime_iterator_fixed_binary },
+        { "core/prime/iterator-int128", test_core_prime_iterator_int128 },
+        { "core/prime/iterator-mp-integer", test_core_prime_iterator_mp_integer },
+        { "core/prime/primality-basic-int", test_core_prime_primality_basic_int },
+        { "core/prime/primality-fixed-binary", test_core_prime_primality_fixed_binary },
+        { "core/prime/primality-int128", test_core_prime_primality_int128 },
+        { "core/prime/primality-mp-integer", test_core_prime_primality_mp_integer },
+        { "core/prime/next-prev-prime-basic-int", test_core_prime_next_prev_prime_basic_int },
+        { "core/prime/next-prev-prime-fixed-binary", test_core_prime_next_prev_prime_fixed_binary },
+        { "core/prime/next-prev-prime-int128", test_core_prime_next_prev_prime_int128 },
+        { "core/prime/next-prev-prime-mp-integer", test_core_prime_next_prev_prime_mp_integer },
+        { "core/prime/factorization-basic-int", test_core_prime_factorization_basic_int },
+        { "core/prime/factorization-fixed-binary", test_core_prime_factorization_fixed_binary },
+        { "core/prime/factorization-int128", test_core_prime_factorization_int128 },
+        { "core/prime/factorization-mp-integer", test_core_prime_factorization_mp_integer },
+        { "core/prime/list-primes-basic-int", test_core_prime_list_primes_basic_int },
+        { "core/prime/list-primes-fixed-binary", test_core_prime_list_primes_fixed_binary },
+        { "core/prime/list-primes-int128", test_core_prime_list_primes_int128 },
+        { "core/prime/list-primes-mp-integer", test_core_prime_list_primes_mp_integer },
         { "core/process/shell-commands", test_core_process_shell_commands },
         { "core/process/stream", test_core_process_stream },
         { "core/process/text", test_core_process_text },

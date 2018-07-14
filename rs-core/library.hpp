@@ -25,6 +25,7 @@
 #include "rs-core/net.hpp"
 #include "rs-core/optional.hpp"
 #include "rs-core/ordered-map.hpp"
+#include "rs-core/prime.hpp"
 #include "rs-core/process.hpp"
 #include "rs-core/random.hpp"
 #include "rs-core/range-aggregation.hpp"

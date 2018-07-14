@@ -66,6 +66,8 @@ $(BUILD)/optional-test.o: rs-core/optional-test.cpp rs-core/common.hpp rs-core/o
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/ordered-map-test.o: rs-core/ordered-map-test.cpp rs-core/common.hpp rs-core/ordered-map.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
+$(BUILD)/prime-test.o: rs-core/prime-test.cpp rs-core/common.hpp rs-core/fixed-binary.hpp rs-core/float.hpp rs-core/int128.hpp rs-core/meta.hpp rs-core/mp-integer.hpp rs-core/prime.hpp rs-core/random.hpp rs-core/rational.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp \
+    /usr/local/include/unicorn/utility.hpp
 $(BUILD)/process-test.o: rs-core/process-test.cpp rs-core/channel.hpp rs-core/common.hpp rs-core/optional.hpp rs-core/process.hpp rs-core/string.hpp rs-core/time.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/process.o: rs-core/process.cpp rs-core/channel.hpp rs-core/common.hpp rs-core/io.hpp rs-core/optional.hpp rs-core/process.hpp rs-core/string.hpp rs-core/time.hpp \

@@ -76,7 +76,7 @@
 <li><code>Ustring</code> <strong><code>to_str</code></strong><code>(Uint128 x)</code></li>
 <li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, Uint128 x) noexcept</code></li>
 <li><code>namespace RS::Literals</code><ul>
-<li><code>Uint128</code> <strong><code>operator""_u128</code></strong><code>(const char* ptr, size_t len) noexcept</code></li>
+<li><code>template &lt;char... Str&gt; constexpr Uint128</code> <strong><code>operator""_u128</code></strong><code>() noexcept</code></li>
 </ul>
 </li>
 <li><code>struct std::</code><strong><code>hash</code></strong><code>&lt;Uint128&gt;</code></li>

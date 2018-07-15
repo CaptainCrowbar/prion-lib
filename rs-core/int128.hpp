@@ -138,9 +138,50 @@ namespace RS {
             return {q, r};
         }
 
+    namespace RS_Detail {
+
+        constexpr int u128_digit(char c) noexcept {
+            return c >= '0' && c <= '9' ? int(c - '0') :
+                c >= 'A' && c <= 'Z' ? int(c - 'A' + 10) :
+                c >= 'a' && c <= 'z' ? int(c - 'a' + 10) : 999;
+        }
+
+        // MSVC gets confused doing 128 bit arithmetic
+        #ifdef _MSC_VER
+            #pragma warning(push)
+            #pragma warning(disable: 4307) // integral constant overflow
+        #endif
+
+        template <int Base, char... Str> struct U128LiteralBase;
+        template <int Base, char C, char... Str> struct U128LiteralBase<Base, C, Str...> {
+            using next = U128LiteralBase<Base, Str...>;
+            static constexpr int digit = u128_digit(C);
+            static_assert(digit < Base);
+            static constexpr Uint128 scale = Uint128(Base) * next::scale;
+            static constexpr Uint128 value = Uint128(digit) * next::scale + next::value;
+        };
+        template <int Base> struct U128LiteralBase<Base> {
+            static constexpr Uint128 scale = 1;
+            static constexpr Uint128 value = 0;
+        };
+
+        template <char... Str> struct U128Literal: U128LiteralBase<10, Str...> {};
+        template <char... Str> struct U128Literal<'0', 'b', Str...>: U128LiteralBase<2, Str...> {};
+        template <char... Str> struct U128Literal<'0', 'B', Str...>: U128LiteralBase<2, Str...> {};
+        template <char... Str> struct U128Literal<'0', 'x', Str...>: U128LiteralBase<16, Str...> {};
+        template <char... Str> struct U128Literal<'0', 'X', Str...>: U128LiteralBase<16, Str...> {};
+
+        #ifdef _MSC_VER
+            #pragma warning(pop)
+        #endif
+
+    }
+
     namespace Literals {
 
-        inline Uint128 operator""_u128(const char* ptr, size_t len) noexcept { return Uint128(Uview(ptr, len)); }
+        template <char... Str> constexpr Uint128 operator""_u128() noexcept {
+            return RS_Detail::U128Literal<Str...>::value;
+        }
 
     }
 

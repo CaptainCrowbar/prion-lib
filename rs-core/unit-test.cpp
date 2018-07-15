@@ -53,7 +53,6 @@ extern void test_core_compact_array_capacity();
 extern void test_core_compact_array_insertion();
 extern void test_core_compact_array_accounting();
 extern void test_core_compact_array_keys();
-extern void test_core_digest_adler32();
 extern void test_core_digest_crc32();
 extern void test_core_digest_djb2a();
 extern void test_core_digest_fnv1a_32();
@@ -440,7 +439,6 @@ int main() {
         { "core/compact-array/insertion", test_core_compact_array_insertion },
         { "core/compact-array/accounting", test_core_compact_array_accounting },
         { "core/compact-array/keys", test_core_compact_array_keys },
-        { "core/digest/adler32", test_core_digest_adler32 },
         { "core/digest/crc32", test_core_digest_crc32 },
         { "core/digest/djb2a", test_core_digest_djb2a },
         { "core/digest/fnv1a-32", test_core_digest_fnv1a_32 },

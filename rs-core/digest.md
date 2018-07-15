@@ -32,7 +32,6 @@ are not present in the base class or have significant semantic differences.
 
 ## General purpose hash functions ##
 
-* `class` **`Adler32`**`: public HashFunction<32>`
 * `class` **`Crc32`**`: public HashFunction<32>`
 * `class` **`Djb2a`**`: public HashFunction<32>`
 * `class` **`Fnv1a_32`**`: public HashFunction<32>`

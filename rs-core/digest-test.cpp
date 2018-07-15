@@ -41,17 +41,6 @@ namespace {
 
 }
 
-void test_core_digest_adler32() {
-
-    uint32_t h = 0;
-
-    TRY(h = Adler32()(text1));  TEST_EQUAL(h, 0x18ab043d);
-    TRY(h = Adler32()(text2));  TEST_EQUAL(h, 0x55d5a572);
-
-    // TRY(check_similar_strings<Adler32>());
-
-}
-
 void test_core_digest_crc32() {
 
     uint32_t h = 0;

@@ -50,20 +50,6 @@ namespace RS {
         result_type operator()(const std::string& str) const noexcept { return hash(str.data(), str.size()); }
     };
 
-    class Adler32:
-    public HashFunction<32> {
-    public:
-        virtual uint32_t hash(const void* ptr, size_t len) const noexcept {
-            const auto data = static_cast<const uint8_t*>(ptr);
-            uint32_t s1 = 1, s2 = 0;
-            for (size_t i = 0; i < len; ++i) {
-                s1 = (s1 + data[i]) % 65521;
-                s2 = (s2 + s1) % 65521;
-            }
-            return (s2 << 16) + s1;
-        }
-    };
-
     class Crc32:
     public HashFunction<32> {
     public:

@@ -30,6 +30,8 @@
 <li><code>constexpr Uint128::</code><strong><code>Uint128</code></strong><code>(uint64_t high, uint64_t low) noexcept</code></li>
 <li><code>explicit Uint128::</code><strong><code>Uint128</code></strong><code>(Uview str, int base = 10)</code></li>
 <li><code>size_t Uint128::</code><strong><code>hash</code></strong><code>() const noexcept</code></li>
+<li><code>constexpr uint64_t Uint128::</code><strong><code>high</code></strong><code>() const noexcept</code></li>
+<li><code>constexpr uint64_t Uint128::</code><strong><code>low</code></strong><code>() const noexcept</code></li>
 <li><code>Ustring Uint128::</code><strong><code>str</code></strong><code>(int base = 10, int digits = 1) const</code></li>
 <li><code>constexpr explicit Uint128::</code><strong><code>operator bool</code></strong><code>() const noexcept</code></li>
 <li><code>template &lt;typename T&gt; constexpr explicit Uint128::</code><strong><code>operator T</code></strong><code>() const noexcept</code></li>
@@ -87,10 +89,11 @@ size allows this version to be fully <code>constexpr</code> in all operations no
 involving strings.</p>
 <p>The operations listed here have their natural semantics as far as possible, or
 the semantics of the equivalent function from <a href="common.html"><code>rs-core/common</code></a>.
-The default constructor initializes the value to zero. The RHS of the shift
-operators is unrestricted; a negative shift is interpreted as a positive shift
-in the other direction. Behaviour is undefined if the RHS of a division or
-remainder function is zero, if the base in a string conversion function is
-outside the range 2-35, or if the output type in <code>operator T()</code> is not a
-primitive arithmetic type.</p></body>
+The default constructor initializes the value to zero. The <code>high()</code> and
+<code>low()</code> functions return the upper and lower 64 bits of the value. The RHS of
+the shift operators is unrestricted; a negative shift is interpreted as a
+positive shift in the other direction. Behaviour is undefined if the RHS of a
+division or remainder function is zero, if the base in a string conversion
+function is outside the range 2-35, or if the output type in <code>operator T()</code> is
+not a primitive arithmetic type.</p></body>
 </html>

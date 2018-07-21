@@ -467,8 +467,12 @@ void test_core_string_manipulation() {
 
 void test_core_string_formatting() {
 
-    std::array<uint8_t, 4> a4 = {{10,20,30,40}};
-    std::array<uint8_t, 8> a8 = {{10,20,30,40,50,60,70,80}};
+    static constexpr std::array<uint8_t, 4> a4 = {{10,20,30,40}};
+    static constexpr std::array<uint8_t, 8> a8 = {{10,20,30,40,50,60,70,80}};
+
+    std::string s;
+    Strings svec;
+    std::vector<int> ivec;
 
     TEST_EQUAL(hex(a4), "0a141e28");
     TEST_EQUAL(hex(a8), "0a141e28323c4650");
@@ -484,8 +488,6 @@ void test_core_string_formatting() {
     TEST_EQUAL(yn(true), "yes");
     TEST_EQUAL(yn(false), "no");
 
-    std::string s;
-
     TRY(s = fmt(""));                               TEST_EQUAL(s, "");
     TRY(s = fmt("Hello world"));                    TEST_EQUAL(s, "Hello world");
     TRY(s = fmt("Hello $1"));                       TEST_EQUAL(s, "Hello ");
@@ -495,6 +497,12 @@ void test_core_string_formatting() {
     TRY(s = fmt("${1} ${2} ${3}", 10, 20, 30));     TEST_EQUAL(s, "10 20 30");
     TRY(s = fmt("$3,$3,$2,$2,$1,$1", 10, 20, 30));  TEST_EQUAL(s, "30,30,20,20,10,10");
     TRY(s = fmt("Hello $1 $$ ${}", 42));            TEST_EQUAL(s, "Hello 42 $ {}");
+
+    ivec = {1,2,3,4,5};
+    TRY(svec = to_strings(ivec));
+    TEST_EQUAL(svec.size(), 5);
+    TRY(s = to_str(svec));
+    TEST_EQUAL(s, "[1,2,3,4,5]");
 
 }
 

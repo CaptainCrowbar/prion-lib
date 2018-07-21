@@ -223,6 +223,11 @@ line feed is inserted after each block.
 
 Convert a boolean to `"true/false"` or `"yes/no"`.
 
+* `template <typename Range> Strings` **`to_strings`**`(const Range& r)`
+
+Converts each element of the range to a string, using `to_str()`, and returns
+them as a vector.
+
 ## HTML/XML tags ##
 
 * `class` **`Tag`**

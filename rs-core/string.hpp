@@ -147,6 +147,14 @@ namespace RS {
     inline Ustring tf(bool b) { return b ? "true" : "false"; }
     inline Ustring yn(bool b) { return b ? "yes" : "no"; }
 
+    template <typename Range>
+    Strings to_strings(const Range& r) {
+        Strings s;
+        for (auto& x: r)
+            s.push_back(to_str(x));
+        return s;
+    }
+
     template <size_t N>
     Ustring hex(const std::array<uint8_t, N>& bytes) {
         using namespace RS_Detail;

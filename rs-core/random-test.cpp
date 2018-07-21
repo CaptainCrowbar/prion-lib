@@ -371,11 +371,10 @@ void test_core_random_splitmix64() {
 
     SplitMix64 rng;
     uint64_t x = 0;
-    size_t n = array_count(expect);
 
-    for (size_t i = 0; i < n; ++i) {
+    for (auto y: expect) {
         TRY(x = rng());
-        TEST_EQUAL(x, expect[i]);
+        TEST_EQUAL(x, y);
     }
 
 }
@@ -395,11 +394,10 @@ void test_core_random_xoroshiro64s() {
 
     Xoroshiro64s rng;
     uint32_t x = 0;
-    size_t n = array_count(expect);
 
-    for (size_t i = 0; i < n; ++i) {
+    for (auto y: expect) {
         TRY(x = rng());
-        TEST_EQUAL(x, expect[i]);
+        TEST_EQUAL(x, y);
     }
 
 }
@@ -419,11 +417,10 @@ void test_core_random_xoroshiro64ss() {
 
     Xoroshiro64ss rng;
     uint32_t x = 0;
-    size_t n = array_count(expect);
 
-    for (size_t i = 0; i < n; ++i) {
+    for (auto y: expect) {
         TRY(x = rng());
-        TEST_EQUAL(x, expect[i]);
+        TEST_EQUAL(x, y);
     }
 
 }
@@ -443,11 +440,10 @@ void test_core_random_xoroshiro128p() {
 
     Xoroshiro128p rng;
     uint64_t x = 0;
-    size_t n = array_count(expect);
 
-    for (size_t i = 0; i < n; ++i) {
+    for (auto y: expect) {
         TRY(x = rng());
-        TEST_EQUAL(x, expect[i]);
+        TEST_EQUAL(x, y);
     }
 
 }
@@ -467,11 +463,10 @@ void test_core_random_xoroshiro128ss() {
 
     Xoroshiro128ss rng;
     uint64_t x = 0;
-    size_t n = array_count(expect);
 
-    for (size_t i = 0; i < n; ++i) {
+    for (auto y: expect) {
         TRY(x = rng());
-        TEST_EQUAL(x, expect[i]);
+        TEST_EQUAL(x, y);
     }
 
 }
@@ -491,11 +486,10 @@ void test_core_random_xoshiro128p() {
 
     Xoshiro128p rng;
     uint32_t x = 0;
-    size_t n = array_count(expect);
 
-    for (size_t i = 0; i < n; ++i) {
+    for (auto y: expect) {
         TRY(x = rng());
-        TEST_EQUAL(x, expect[i]);
+        TEST_EQUAL(x, y);
     }
 
 }
@@ -515,11 +509,10 @@ void test_core_random_xoshiro128ss() {
 
     Xoshiro128ss rng;
     uint32_t x = 0;
-    size_t n = array_count(expect);
 
-    for (size_t i = 0; i < n; ++i) {
+    for (auto y: expect) {
         TRY(x = rng());
-        TEST_EQUAL(x, expect[i]);
+        TEST_EQUAL(x, y);
     }
 
 }
@@ -539,11 +532,10 @@ void test_core_random_xoshiro256p() {
 
     Xoshiro256p rng;
     uint64_t x = 0;
-    size_t n = array_count(expect);
 
-    for (size_t i = 0; i < n; ++i) {
+    for (auto y: expect) {
         TRY(x = rng());
-        TEST_EQUAL(x, expect[i]);
+        TEST_EQUAL(x, y);
     }
 
 }
@@ -563,11 +555,10 @@ void test_core_random_xoshiro256ss() {
 
     Xoshiro256ss rng;
     uint64_t x = 0;
-    size_t n = array_count(expect);
 
-    for (size_t i = 0; i < n; ++i) {
+    for (auto y: expect) {
         TRY(x = rng());
-        TEST_EQUAL(x, expect[i]);
+        TEST_EQUAL(x, y);
     }
 
 }

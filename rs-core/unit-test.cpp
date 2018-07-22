@@ -145,6 +145,7 @@ extern void test_core_meta_in_list();
 extern void test_core_meta_is_empty();
 extern void test_core_meta_is_unique();
 extern void test_core_meta_length_of();
+extern void test_core_meta_typelist_function_call();
 extern void test_core_meta_operator_detection();
 extern void test_core_meta_function_detection();
 extern void test_core_meta_type_categories();
@@ -531,6 +532,7 @@ int main() {
         { "core/meta/is-empty", test_core_meta_is_empty },
         { "core/meta/is-unique", test_core_meta_is_unique },
         { "core/meta/length-of", test_core_meta_length_of },
+        { "core/meta/typelist-function-call", test_core_meta_typelist_function_call },
         { "core/meta/operator-detection", test_core_meta_operator_detection },
         { "core/meta/function-detection", test_core_meta_function_detection },
         { "core/meta/type-categories", test_core_meta_type_categories },

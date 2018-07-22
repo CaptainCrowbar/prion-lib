@@ -25,6 +25,7 @@
 <li><a href="#typelist-transformation-metafunctions">Typelist transformation metafunctions</a></li>
 <li><a href="#other-typelist-operations">Other typelist operations</a></li>
 <li><a href="#typelist-property-metafunctions">Typelist property metafunctions</a></li>
+<li><a href="#typelist-function-call-operations">Typelist function call operations</a></li>
 </ul>
 </li>
 <li><a href="#introspection">Introspection</a><ul>
@@ -121,67 +122,67 @@ the same type are always equal). An output operator is defined for <code>Nil</co
 </thead>
 <tbody>
 <tr>
-<td><code>Append&lt;TL,T&gt;</code></td>
+<td><strong><code>Append</code></strong><code>&lt;TL,T&gt;</code></td>
 <td><code>TL</code></td>
 <td>Insert <code>T</code> at the end of <code>TL</code></td>
 </tr>
 <tr>
-<td><code>Concat&lt;TL,...&gt;</code></td>
+<td><strong><code>Concat</code></strong><code>&lt;TL,...&gt;</code></td>
 <td><code>TL</code></td>
 <td>Concatenate typelists or types; argument list may be empty</td>
 </tr>
 <tr>
-<td><code>Insert&lt;TL,T,CP&gt;</code></td>
+<td><strong><code>Insert</code></strong><code>&lt;TL,T,CP&gt;</code></td>
 <td><code>TL</code></td>
 <td>Insert <code>T</code> in a sorted list</td>
 </tr>
 <tr>
-<td><code>InsertAt&lt;TL,T,N&gt;</code></td>
+<td><strong><code>InsertAt</code></strong><code>&lt;TL,T,N&gt;</code></td>
 <td><code>TL</code></td>
 <td>Insert <code>T</code> at index <code>N</code> in <code>TL</code></td>
 </tr>
 <tr>
-<td><code>Most&lt;TL&gt;</code></td>
+<td><strong><code>Most</code></strong><code>&lt;TL&gt;</code></td>
 <td><code>TL</code></td>
 <td>All but the last element in <code>TL</code>; <code>Nil</code> if <code>TL</code> is <code>Nil</code></td>
 </tr>
 <tr>
-<td><code>Prefix&lt;T,TL&gt;</code></td>
+<td><strong><code>Prefix</code></strong><code>&lt;T,TL&gt;</code></td>
 <td><code>TL</code></td>
 <td>Insert <code>T</code> at the beginning of <code>TL</code></td>
 </tr>
 <tr>
-<td><code>RepList&lt;TL,N&gt;</code></td>
+<td><strong><code>RepList</code></strong><code>&lt;TL,N&gt;</code></td>
 <td><code>TL</code></td>
 <td>Concatenate <code>N</code> copies of <code>TL</code></td>
 </tr>
 <tr>
-<td><code>RepType&lt;T,N&gt;</code></td>
+<td><strong><code>RepType</code></strong><code>&lt;T,N&gt;</code></td>
 <td><code>TL</code></td>
 <td>Concatenate <code>N</code> copies of <code>T</code></td>
 </tr>
 <tr>
-<td><code>Resize&lt;TL,N,T&gt;</code></td>
+<td><strong><code>Resize</code></strong><code>&lt;TL,N,T&gt;</code></td>
 <td><code>TL</code></td>
 <td>Resize list to length <code>N</code>; use <code>T</code> for padding</td>
 </tr>
 <tr>
-<td><code>Skip&lt;TL,N&gt;</code></td>
+<td><strong><code>Skip</code></strong><code>&lt;TL,N&gt;</code></td>
 <td><code>TL</code></td>
 <td>Discard the first <code>N</code> elements from <code>TL</code></td>
 </tr>
 <tr>
-<td><code>Sublist&lt;TL,N1,N2&gt;</code></td>
+<td><strong><code>Sublist</code></strong><code>&lt;TL,N1,N2&gt;</code></td>
 <td><code>TL</code></td>
 <td>Discard <code>N1</code> elements and return next <code>N2</code> elements</td>
 </tr>
 <tr>
-<td><code>Tail&lt;TL&gt;</code></td>
+<td><strong><code>Tail</code></strong><code>&lt;TL&gt;</code></td>
 <td><code>TL</code></td>
 <td>All but the first element in <code>TL</code>; <code>Nil</code> if <code>TL</code> is <code>Nil</code></td>
 </tr>
 <tr>
-<td><code>Take&lt;TL,N&gt;</code></td>
+<td><strong><code>Take</code></strong><code>&lt;TL,N&gt;</code></td>
 <td><code>TL</code></td>
 <td>First <code>N</code> elements in <code>TL</code></td>
 </tr>
@@ -198,27 +199,27 @@ the same type are always equal). An output operator is defined for <code>Nil</co
 </thead>
 <tbody>
 <tr>
-<td><code>Head&lt;TL&gt;</code></td>
+<td><strong><code>Head</code></strong><code>&lt;TL&gt;</code></td>
 <td><code>T</code></td>
 <td>First element in <code>TL</code>; <code>Nil</code> if <code>TL</code> is <code>Nil</code></td>
 </tr>
 <tr>
-<td><code>Last&lt;TL&gt;</code></td>
+<td><strong><code>Last</code></strong><code>&lt;TL&gt;</code></td>
 <td><code>T</code></td>
 <td>Last element in <code>TL</code>; <code>Nil</code> if <code>TL</code> is <code>Nil</code></td>
 </tr>
 <tr>
-<td><code>MaxType&lt;TL,CP&gt;</code></td>
+<td><strong><code>MaxType</code></strong><code>&lt;TL,CP&gt;</code></td>
 <td><code>T</code></td>
 <td>Maximum element in <code>TL</code> according to <code>CP</code>; <code>Nil</code> if <code>TL</code> is <code>Nil</code></td>
 </tr>
 <tr>
-<td><code>MinType&lt;TL,CP&gt;</code></td>
+<td><strong><code>MinType</code></strong><code>&lt;TL,CP&gt;</code></td>
 <td><code>T</code></td>
 <td>Minimum element in <code>TL</code> according to <code>CP</code>; <code>Nil</code> if <code>TL</code> is <code>Nil</code></td>
 </tr>
 <tr>
-<td><code>TypeAt&lt;TL,N&gt;</code></td>
+<td><strong><code>TypeAt</code></strong><code>&lt;TL,N&gt;</code></td>
 <td><code>T</code></td>
 <td><code>Nth</code> element in <code>TL</code>; <code>Nil</code> if <code>N</code> is out of bounds</td>
 </tr>
@@ -235,72 +236,72 @@ the same type are always equal). An output operator is defined for <code>Nil</co
 </thead>
 <tbody>
 <tr>
-<td><code>FoldLeft&lt;TL,BF,T&gt;</code></td>
+<td><strong><code>FoldLeft</code></strong><code>&lt;TL,BF,T&gt;</code></td>
 <td><code>T</code></td>
 <td>Left-to-right reduce, with <code>T</code> as initial value</td>
 </tr>
 <tr>
-<td><code>FoldRight&lt;TL,BF,T&gt;</code></td>
+<td><strong><code>FoldRight</code></strong><code>&lt;TL,BF,T&gt;</code></td>
 <td><code>T</code></td>
 <td>Right-to-left reduce, with <code>T</code> as initial value</td>
 </tr>
 <tr>
-<td><code>FullyUnique&lt;TL&gt;</code></td>
+<td><strong><code>FullyUnique</code></strong><code>&lt;TL&gt;</code></td>
 <td><code>TL</code></td>
 <td>Drop all duplicate elements</td>
 </tr>
 <tr>
-<td><code>MakeSet&lt;TL,CP&gt;</code></td>
+<td><strong><code>MakeSet</code></strong><code>&lt;TL,CP&gt;</code></td>
 <td><code>TL</code></td>
 <td><code>Sort</code> followed by <code>Unique</code></td>
 </tr>
 <tr>
-<td><code>Map&lt;TL,UF&gt;</code></td>
+<td><strong><code>Map</code></strong><code>&lt;TL,UF&gt;</code></td>
 <td><code>TL</code></td>
 <td>Replace each element <code>T</code> in <code>TL</code> with <code>UF&lt;T&gt;</code></td>
 </tr>
 <tr>
-<td><code>PartialReduce&lt;TL,BP,BF&gt;</code></td>
+<td><strong><code>PartialReduce</code></strong><code>&lt;TL,BP,BF&gt;</code></td>
 <td><code>TL</code></td>
 <td>Reduce adjacent elements matched with <code>BP</code></td>
 </tr>
 <tr>
-<td><code>Reduce&lt;TL,BF&gt;</code></td>
+<td><strong><code>Reduce</code></strong><code>&lt;TL,BF&gt;</code></td>
 <td><code>T</code></td>
 <td>Left-to-right reduce, with no initial value; <code>Nil</code> if <code>TL</code> is <code>Nil</code></td>
 </tr>
 <tr>
-<td><code>Remove&lt;TL,T&gt;</code></td>
+<td><strong><code>Remove</code></strong><code>&lt;TL,T&gt;</code></td>
 <td><code>TL</code></td>
 <td>Remove all occurrences of <code>T</code> in <code>TL</code></td>
 </tr>
 <tr>
-<td><code>RemoveIf&lt;TL,UP&gt;</code></td>
+<td><strong><code>RemoveIf</code></strong><code>&lt;TL,UP&gt;</code></td>
 <td><code>TL</code></td>
 <td>Remove all elements for which <code>UP&lt;T&gt;</code> is true</td>
 </tr>
 <tr>
-<td><code>Reverse&lt;TL&gt;</code></td>
+<td><strong><code>Reverse</code></strong><code>&lt;TL&gt;</code></td>
 <td><code>TL</code></td>
 <td>Reverse the order of <code>TL</code></td>
 </tr>
 <tr>
-<td><code>Select&lt;TL,UP&gt;</code></td>
+<td><strong><code>Select</code></strong><code>&lt;TL,UP&gt;</code></td>
 <td><code>TL</code></td>
 <td>All elements in <code>TL</code> for which <code>UP&lt;T&gt;</code> is true</td>
 </tr>
 <tr>
-<td><code>Sort&lt;TL,CP&gt;</code></td>
+<td><strong><code>Sort</code></strong><code>&lt;TL,CP&gt;</code></td>
 <td><code>TL</code></td>
 <td>Sort <code>TL</code> according to <code>CP</code> (stable sort)</td>
 </tr>
 <tr>
-<td><code>Unique&lt;TL&gt;</code></td>
+<td><strong><code>Unique</code></strong><code>&lt;TL&gt;</code></td>
 <td><code>TL</code></td>
 <td>Drop consecutive duplicate elements</td>
 </tr>
 <tr>
-<td><code>Zip&lt;TL1,TL2,BF&gt;</code></td>
+<td><strong><code>Zip</code></strong><code>&lt;TL1,TL2,BF&gt;</code></td>
 <td><code>TL</code></td>
 <td>Map each pair of elements to <code>BF&lt;T1,T2&gt;</code> (output has length of shorter list)</td>
 </tr>
@@ -317,17 +318,17 @@ the same type are always equal). An output operator is defined for <code>Nil</co
 </thead>
 <tbody>
 <tr>
-<td><code>InheritTypelist&lt;TL&gt;</code></td>
+<td><strong><code>InheritTypelist</code></strong><code>&lt;TL&gt;</code></td>
 <td><code>type</code></td>
 <td>Inherits from all unique types in the list</td>
 </tr>
 <tr>
-<td><code>TypelistToTuple&lt;TL&gt;</code></td>
+<td><strong><code>TypelistToTuple</code></strong><code>&lt;TL&gt;</code></td>
 <td><code>tuple</code></td>
 <td>Tuple with the same types as the list</td>
 </tr>
 <tr>
-<td><code>TupleToTypelist&lt;T&gt;</code></td>
+<td><strong><code>TupleToTypelist</code></strong><code>&lt;T&gt;</code></td>
 <td><code>TL</code></td>
 <td>List with the same types as a tuple or pair</td>
 </tr>
@@ -345,88 +346,120 @@ the same type are always equal). An output operator is defined for <code>Nil</co
 </thead>
 <tbody>
 <tr>
-<td><code>AllOf&lt;TL,UP&gt;</code></td>
-<td><code>all_of&lt;TL,UP&gt;</code></td>
+<td><strong><code>AllOf</code></strong><code>&lt;TL,UP&gt;</code></td>
+<td><strong><code>all_of</code></strong><code>&lt;TL,UP&gt;</code></td>
 <td><code>bool</code></td>
 <td>True if all types match <code>UP</code>; true if <code>TL</code> is <code>Nil</code></td>
 </tr>
 <tr>
-<td><code>AnyOf&lt;TL,UP&gt;</code></td>
-<td><code>any_of&lt;TL,UP&gt;</code></td>
+<td><strong><code>AnyOf</code></strong><code>&lt;TL,UP&gt;</code></td>
+<td><strong><code>any_of</code></strong><code>&lt;TL,UP&gt;</code></td>
 <td><code>bool</code></td>
 <td>True if at least one type matches <code>UP</code>; false if <code>TL</code> is <code>Nil</code></td>
 </tr>
 <tr>
-<td><code>CountIf&lt;TL,UP&gt;</code></td>
-<td><code>count_if&lt;TL,UP&gt;</code></td>
+<td><strong><code>CountIf</code></strong><code>&lt;TL,UP&gt;</code></td>
+<td><strong><code>count_if</code></strong><code>&lt;TL,UP&gt;</code></td>
 <td><code>int</code></td>
 <td>Number of elements in <code>TL</code> for which <code>UP&lt;T&gt;</code> is true</td>
 </tr>
 <tr>
-<td><code>CountIfNot&lt;TL,UP&gt;</code></td>
-<td><code>count_if_not&lt;TL,UP&gt;</code></td>
+<td><strong><code>CountIfNot</code></strong><code>&lt;TL,UP&gt;</code></td>
+<td><strong><code>count_if_not</code></strong><code>&lt;TL,UP&gt;</code></td>
 <td><code>int</code></td>
 <td>Number of elements in <code>TL</code> for which <code>UP&lt;T&gt;</code> is false</td>
 </tr>
 <tr>
-<td><code>CountType&lt;TL,T&gt;</code></td>
-<td><code>count_type&lt;TL,T&gt;</code></td>
+<td><strong><code>CountType</code></strong><code>&lt;TL,T&gt;</code></td>
+<td><strong><code>count_type</code></strong><code>&lt;TL,T&gt;</code></td>
 <td><code>int</code></td>
 <td>Number of times <code>T</code> occurs in <code>TL</code></td>
 </tr>
 <tr>
-<td><code>FindIf&lt;TL,UP&gt;</code></td>
-<td><code>find_if&lt;TL,UP&gt;</code></td>
+<td><strong><code>FindIf</code></strong><code>&lt;TL,UP&gt;</code></td>
+<td><strong><code>find_if</code></strong><code>&lt;TL,UP&gt;</code></td>
 <td><code>int</code></td>
 <td>Index of the first matching element in <code>TL</code>; -1 if not found</td>
 </tr>
 <tr>
-<td><code>FindIfNot&lt;TL,UP&gt;</code></td>
-<td><code>find_if_not&lt;TL,UP&gt;</code></td>
+<td><strong><code>FindIfNot</code></strong><code>&lt;TL,UP&gt;</code></td>
+<td><strong><code>find_if_not</code></strong><code>&lt;TL,UP&gt;</code></td>
 <td><code>int</code></td>
 <td>Index of the first non-matching element in <code>TL</code>; -1 if not found</td>
 </tr>
 <tr>
-<td><code>FindType&lt;TL,T&gt;</code></td>
-<td><code>find_type&lt;TL,T&gt;</code></td>
+<td><strong><code>FindType</code></strong><code>&lt;TL,T&gt;</code></td>
+<td><strong><code>find_type</code></strong><code>&lt;TL,T&gt;</code></td>
 <td><code>int</code></td>
 <td>Index of the first <code>T</code> in <code>TL</code>; -1 if not found</td>
 </tr>
 <tr>
-<td><code>InList&lt;TL,T&gt;</code></td>
-<td><code>in_list&lt;TL,T&gt;</code></td>
+<td><strong><code>InList</code></strong><code>&lt;TL,T&gt;</code></td>
+<td><strong><code>in_list</code></strong><code>&lt;TL,T&gt;</code></td>
 <td><code>bool</code></td>
 <td>True if <code>T</code> is in <code>TL</code></td>
 </tr>
 <tr>
-<td><code>IsEmpty&lt;TL&gt;</code></td>
-<td><code>is_empty&lt;TL&gt;</code></td>
+<td><strong><code>IsEmpty</code></strong><code>&lt;TL&gt;</code></td>
+<td><strong><code>is_empty</code></strong><code>&lt;TL&gt;</code></td>
 <td><code>bool</code></td>
 <td>True if <code>TL</code> is <code>Nil</code></td>
 </tr>
 <tr>
-<td><code>IsNotEmpty&lt;TL&gt;</code></td>
-<td><code>is_not_empty&lt;TL&gt;</code></td>
+<td><strong><code>IsNotEmpty</code></strong><code>&lt;TL&gt;</code></td>
+<td><strong><code>is_not_empty</code></strong><code>&lt;TL&gt;</code></td>
 <td><code>bool</code></td>
 <td>True if <code>TL</code> is a typelist and is not <code>Nil</code></td>
 </tr>
 <tr>
-<td><code>IsUnique&lt;TL&gt;</code></td>
-<td><code>is_unique&lt;TL&gt;</code></td>
+<td><strong><code>IsUnique</code></strong><code>&lt;TL&gt;</code></td>
+<td><strong><code>is_unique</code></strong><code>&lt;TL&gt;</code></td>
 <td><code>bool</code></td>
 <td>True if <code>TL</code> contains no duplicates</td>
 </tr>
 <tr>
-<td><code>LengthOf&lt;TL&gt;</code></td>
-<td><code>length_of&lt;TL&gt;</code></td>
+<td><strong><code>LengthOf</code></strong><code>&lt;TL&gt;</code></td>
+<td><strong><code>length_of</code></strong><code>&lt;TL&gt;</code></td>
 <td><code>int</code></td>
 <td>Number of entries in <code>TL</code></td>
 </tr>
 <tr>
-<td><code>NoneOf&lt;TL,UP&gt;</code></td>
-<td><code>none_of&lt;TL,UP&gt;</code></td>
+<td><strong><code>NoneOf</code></strong><code>&lt;TL,UP&gt;</code></td>
+<td><strong><code>none_of</code></strong><code>&lt;TL,UP&gt;</code></td>
 <td><code>bool</code></td>
 <td>True if no types match <code>UP</code>; true if <code>TL</code> is <code>Nil</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="typelist-function-call-operations">Typelist function call operations</h3>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Returns</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>call_for_each</code></strong><code>&lt;TL&gt;(args...)</code></td>
+<td><code>void</code></td>
+<td>For each <code>T</code> in <code>TL</code>, construct <code>T t(args...)</code> and call <code>t()</code></td>
+</tr>
+<tr>
+<td><strong><code>call_for_each_with</code></strong><code>&lt;TL&gt;(args...)</code></td>
+<td><code>void</code></td>
+<td>For each <code>T</code> in <code>TL</code>, construct <code>T t</code> and call <code>t(args...)</code></td>
+</tr>
+<tr>
+<td><strong><code>function_for_each</code></strong><code>&lt;TL&gt;(f,args...)</code></td>
+<td><code>void</code></td>
+<td>For each <code>T</code> in <code>TL</code>, construct <code>T t(args...)</code> and call <code>f(t)</code></td>
+</tr>
+<tr>
+<td><strong><code>function_for_each_with</code></strong><code>&lt;TL&gt;(f,args...)</code></td>
+<td><code>void</code></td>
+<td>For each <code>T</code> in <code>TL</code>, construct <code>T t</code> and call <code>f(t,args...)</code></td>
 </tr>
 </tbody>
 </table>

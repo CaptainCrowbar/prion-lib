@@ -53,6 +53,35 @@ namespace {
     template <typename T> struct UnifyType<T, T> { using type = T; };
     template <typename T1, typename T2> using Unify = typename UnifyType<T1, T2>::type;
 
+    Ustring thing_str;
+
+    template <char C>
+    struct Thing {
+        Thing(): list() { thing_str += catstr(C, "; "); }
+        Thing(Uview a, Uview b): list{Ustring(a), Ustring(b)} { thing_str += catstr(C, "(", a, ",", b, "); "); }
+        void operator()() const { thing_str += catstr(C, to_str(list), "; "); }
+        void operator()(Uview a, Uview b) const { std::vector<Uview> v{a, b}; thing_str += catstr(C, to_str(v), "; "); }
+        Strings list;
+    };
+
+    using ThingA = Thing<'A'>;
+    using ThingB = Thing<'B'>;
+    using ThingC = Thing<'C'>;
+    using ThingList = Typelist<ThingA, ThingB, ThingC>;
+
+    struct ThingF1 {
+        template <char C> void operator()(const Thing<C>& t) const {
+            thing_str += catstr("F1 ", C, to_str(t.list), "; ");
+        }
+    };
+
+    struct ThingF2 {
+        template <char C> void operator()(const Thing<C>& t, Uview a, Uview b) const {
+            std::vector<Uview> v{a, b};
+            thing_str += catstr("F2 ", C, to_str(t.list), " ", to_str(v), "; ");
+        }
+    };
+
     struct NoBar {};
     struct Bar0 { int bar() const; };
     struct Bar1 { int bar(int) const; };
@@ -1052,6 +1081,42 @@ void test_core_meta_length_of() {
     TEST_EQUAL(length_of<list_is>,    2);
     TEST_EQUAL(length_of<list_isp>,   3);
     TEST_EQUAL(length_of<list_isps>,  4);
+
+}
+
+void test_core_meta_typelist_function_call() {
+
+    thing_str.clear();
+    TRY(call_for_each<ThingList>());
+    TEST_EQUAL(thing_str, "A; A[]; B; B[]; C; C[]; ");
+
+    thing_str.clear();
+    TRY(call_for_each<ThingList>("x", "y"));
+    TEST_EQUAL(thing_str, "A(x,y); A[x,y]; B(x,y); B[x,y]; C(x,y); C[x,y]; ");
+
+    thing_str.clear();
+    TRY(call_for_each_with<ThingList>());
+    TEST_EQUAL(thing_str, "A; A[]; B; B[]; C; C[]; ");
+
+    thing_str.clear();
+    TRY(call_for_each_with<ThingList>("x", "y"));
+    TEST_EQUAL(thing_str, "A; A[x,y]; B; B[x,y]; C; C[x,y]; ");
+
+    thing_str.clear();
+    TRY(function_for_each<ThingList>(ThingF1()));
+    TEST_EQUAL(thing_str, "A; F1 A[]; B; F1 B[]; C; F1 C[]; ");
+
+    thing_str.clear();
+    TRY(function_for_each<ThingList>(ThingF1(), "x", "y"));
+    TEST_EQUAL(thing_str, "A(x,y); F1 A[x,y]; B(x,y); F1 B[x,y]; C(x,y); F1 C[x,y]; ");
+
+    thing_str.clear();
+    TRY(function_for_each_with<ThingList>(ThingF1()));
+    TEST_EQUAL(thing_str, "A; F1 A[]; B; F1 B[]; C; F1 C[]; ");
+
+    thing_str.clear();
+    TRY(function_for_each_with<ThingList>(ThingF2(), "x", "y"));
+    TEST_EQUAL(thing_str, "A; F2 A[] [x,y]; B; F2 B[] [x,y]; C; F2 C[] [x,y]; ");
 
 }
 

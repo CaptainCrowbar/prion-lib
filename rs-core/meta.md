@@ -87,77 +87,86 @@ the same type are always equal). An output operator is defined for `Nil`
 
 ### Typelist composition and decomposition metafunctions ###
 
-| Name                 | Returns  | Description                                                 |
-| ----                 | -------  | -----------                                                 |
-| `Append<TL,T>`       | `TL`     | Insert `T` at the end of `TL`                               |
-| `Concat<TL,...>`     | `TL`     | Concatenate typelists or types; argument list may be empty  |
-| `Insert<TL,T,CP>`    | `TL`     | Insert `T` in a sorted list                                 |
-| `InsertAt<TL,T,N>`   | `TL`     | Insert `T` at index `N` in `TL`                             |
-| `Most<TL>`           | `TL`     | All but the last element in `TL`; `Nil` if `TL` is `Nil`    |
-| `Prefix<T,TL>`       | `TL`     | Insert `T` at the beginning of `TL`                         |
-| `RepList<TL,N>`      | `TL`     | Concatenate `N` copies of `TL`                              |
-| `RepType<T,N>`       | `TL`     | Concatenate `N` copies of `T`                               |
-| `Resize<TL,N,T>`     | `TL`     | Resize list to length `N`; use `T` for padding              |
-| `Skip<TL,N>`         | `TL`     | Discard the first `N` elements from `TL`                    |
-| `Sublist<TL,N1,N2>`  | `TL`     | Discard `N1` elements and return next `N2` elements         |
-| `Tail<TL>`           | `TL`     | All but the first element in `TL`; `Nil` if `TL` is `Nil`   |
-| `Take<TL,N>`         | `TL`     | First `N` elements in `TL`                                  |
+| Name                       | Returns  | Description                                                 |
+| ----                       | -------  | -----------                                                 |
+| **`Append`**`<TL,T>`       | `TL`     | Insert `T` at the end of `TL`                               |
+| **`Concat`**`<TL,...>`     | `TL`     | Concatenate typelists or types; argument list may be empty  |
+| **`Insert`**`<TL,T,CP>`    | `TL`     | Insert `T` in a sorted list                                 |
+| **`InsertAt`**`<TL,T,N>`   | `TL`     | Insert `T` at index `N` in `TL`                             |
+| **`Most`**`<TL>`           | `TL`     | All but the last element in `TL`; `Nil` if `TL` is `Nil`    |
+| **`Prefix`**`<T,TL>`       | `TL`     | Insert `T` at the beginning of `TL`                         |
+| **`RepList`**`<TL,N>`      | `TL`     | Concatenate `N` copies of `TL`                              |
+| **`RepType`**`<T,N>`       | `TL`     | Concatenate `N` copies of `T`                               |
+| **`Resize`**`<TL,N,T>`     | `TL`     | Resize list to length `N`; use `T` for padding              |
+| **`Skip`**`<TL,N>`         | `TL`     | Discard the first `N` elements from `TL`                    |
+| **`Sublist`**`<TL,N1,N2>`  | `TL`     | Discard `N1` elements and return next `N2` elements         |
+| **`Tail`**`<TL>`           | `TL`     | All but the first element in `TL`; `Nil` if `TL` is `Nil`   |
+| **`Take`**`<TL,N>`         | `TL`     | First `N` elements in `TL`                                  |
 
 ### Type selection metafunctions ###
 
-| Name              | Returns  | Description                                                        |
-| ----              | -------  | -----------                                                        |
-| `Head<TL>`        | `T`      | First element in `TL`; `Nil` if `TL` is `Nil`                      |
-| `Last<TL>`        | `T`      | Last element in `TL`; `Nil` if `TL` is `Nil`                       |
-| `MaxType<TL,CP>`  | `T`      | Maximum element in `TL` according to `CP`; `Nil` if `TL` is `Nil`  |
-| `MinType<TL,CP>`  | `T`      | Minimum element in `TL` according to `CP`; `Nil` if `TL` is `Nil`  |
-| `TypeAt<TL,N>`    | `T`      | `Nth` element in `TL`; `Nil` if `N` is out of bounds               |
+| Name                    | Returns  | Description                                                        |
+| ----                    | -------  | -----------                                                        |
+| **`Head`**`<TL>`        | `T`      | First element in `TL`; `Nil` if `TL` is `Nil`                      |
+| **`Last`**`<TL>`        | `T`      | Last element in `TL`; `Nil` if `TL` is `Nil`                       |
+| **`MaxType`**`<TL,CP>`  | `T`      | Maximum element in `TL` according to `CP`; `Nil` if `TL` is `Nil`  |
+| **`MinType`**`<TL,CP>`  | `T`      | Minimum element in `TL` according to `CP`; `Nil` if `TL` is `Nil`  |
+| **`TypeAt`**`<TL,N>`    | `T`      | `Nth` element in `TL`; `Nil` if `N` is out of bounds               |
 
 ### Typelist transformation metafunctions ###
 
-| Name                       | Returns  | Description                                                                   |
-| ----                       | -------  | -----------                                                                   |
-| `FoldLeft<TL,BF,T>`        | `T`      | Left-to-right reduce, with `T` as initial value                               |
-| `FoldRight<TL,BF,T>`       | `T`      | Right-to-left reduce, with `T` as initial value                               |
-| `FullyUnique<TL>`          | `TL`     | Drop all duplicate elements                                                   |
-| `MakeSet<TL,CP>`           | `TL`     | `Sort` followed by `Unique`                                                   |
-| `Map<TL,UF>`               | `TL`     | Replace each element `T` in `TL` with `UF<T>`                                 |
-| `PartialReduce<TL,BP,BF>`  | `TL`     | Reduce adjacent elements matched with `BP`                                    |
-| `Reduce<TL,BF>`            | `T`      | Left-to-right reduce, with no initial value; `Nil` if `TL` is `Nil`           |
-| `Remove<TL,T>`             | `TL`     | Remove all occurrences of `T` in `TL`                                         |
-| `RemoveIf<TL,UP>`          | `TL`     | Remove all elements for which `UP<T>` is true                                 |
-| `Reverse<TL>`              | `TL`     | Reverse the order of `TL`                                                     |
-| `Select<TL,UP>`            | `TL`     | All elements in `TL` for which `UP<T>` is true                                |
-| `Sort<TL,CP>`              | `TL`     | Sort `TL` according to `CP` (stable sort)                                     |
-| `Unique<TL>`               | `TL`     | Drop consecutive duplicate elements                                           |
-| `Zip<TL1,TL2,BF>`          | `TL`     | Map each pair of elements to `BF<T1,T2>` (output has length of shorter list)  |
+| Name                             | Returns  | Description                                                                   |
+| ----                             | -------  | -----------                                                                   |
+| **`FoldLeft`**`<TL,BF,T>`        | `T`      | Left-to-right reduce, with `T` as initial value                               |
+| **`FoldRight`**`<TL,BF,T>`       | `T`      | Right-to-left reduce, with `T` as initial value                               |
+| **`FullyUnique`**`<TL>`          | `TL`     | Drop all duplicate elements                                                   |
+| **`MakeSet`**`<TL,CP>`           | `TL`     | `Sort` followed by `Unique`                                                   |
+| **`Map`**`<TL,UF>`               | `TL`     | Replace each element `T` in `TL` with `UF<T>`                                 |
+| **`PartialReduce`**`<TL,BP,BF>`  | `TL`     | Reduce adjacent elements matched with `BP`                                    |
+| **`Reduce`**`<TL,BF>`            | `T`      | Left-to-right reduce, with no initial value; `Nil` if `TL` is `Nil`           |
+| **`Remove`**`<TL,T>`             | `TL`     | Remove all occurrences of `T` in `TL`                                         |
+| **`RemoveIf`**`<TL,UP>`          | `TL`     | Remove all elements for which `UP<T>` is true                                 |
+| **`Reverse`**`<TL>`              | `TL`     | Reverse the order of `TL`                                                     |
+| **`Select`**`<TL,UP>`            | `TL`     | All elements in `TL` for which `UP<T>` is true                                |
+| **`Sort`**`<TL,CP>`              | `TL`     | Sort `TL` according to `CP` (stable sort)                                     |
+| **`Unique`**`<TL>`               | `TL`     | Drop consecutive duplicate elements                                           |
+| **`Zip`**`<TL1,TL2,BF>`          | `TL`     | Map each pair of elements to `BF<T1,T2>` (output has length of shorter list)  |
 
 ### Other typelist operations ###
 
-| Name                   | Returns  | Description                                  |
-| ----                   | -------  | -----------                                  |
-| `InheritTypelist<TL>`  | `type`   | Inherits from all unique types in the list   |
-| `TypelistToTuple<TL>`  | `tuple`  | Tuple with the same types as the list        |
-| `TupleToTypelist<T>`   | `TL`     | List with the same types as a tuple or pair  |
+| Name                         | Returns  | Description                                  |
+| ----                         | -------  | -----------                                  |
+| **`InheritTypelist`**`<TL>`  | `type`   | Inherits from all unique types in the list   |
+| **`TypelistToTuple`**`<TL>`  | `tuple`  | Tuple with the same types as the list        |
+| **`TupleToTypelist`**`<T>`   | `TL`     | List with the same types as a tuple or pair  |
 
 ### Typelist property metafunctions ###
 
-| Type                 | Constant               | Returns  | Description                                                       |
-| ----                 | --------               | -------  | -----------                                                       |
-| `AllOf<TL,UP>`       | `all_of<TL,UP>`        | `bool`   | True if all types match `UP`; true if `TL` is `Nil`               |
-| `AnyOf<TL,UP>`       | `any_of<TL,UP>`        | `bool`   | True if at least one type matches `UP`; false if `TL` is `Nil`    |
-| `CountIf<TL,UP>`     | `count_if<TL,UP>`      | `int`    | Number of elements in `TL` for which `UP<T>` is true              |
-| `CountIfNot<TL,UP>`  | `count_if_not<TL,UP>`  | `int`    | Number of elements in `TL` for which `UP<T>` is false             |
-| `CountType<TL,T>`    | `count_type<TL,T>`     | `int`    | Number of times `T` occurs in `TL`                                |
-| `FindIf<TL,UP>`      | `find_if<TL,UP>`       | `int`    | Index of the first matching element in `TL`; -1 if not found      |
-| `FindIfNot<TL,UP>`   | `find_if_not<TL,UP>`   | `int`    | Index of the first non-matching element in `TL`; -1 if not found  |
-| `FindType<TL,T>`     | `find_type<TL,T>`      | `int`    | Index of the first `T` in `TL`; -1 if not found                   |
-| `InList<TL,T>`       | `in_list<TL,T>`        | `bool`   | True if `T` is in `TL`                                            |
-| `IsEmpty<TL>`        | `is_empty<TL>`         | `bool`   | True if `TL` is `Nil`                                             |
-| `IsNotEmpty<TL>`     | `is_not_empty<TL>`     | `bool`   | True if `TL` is a typelist and is not `Nil`                       |
-| `IsUnique<TL>`       | `is_unique<TL>`        | `bool`   | True if `TL` contains no duplicates                               |
-| `LengthOf<TL>`       | `length_of<TL>`        | `int`    | Number of entries in `TL`                                         |
-| `NoneOf<TL,UP>`      | `none_of<TL,UP>`       | `bool`   | True if no types match `UP`; true if `TL` is `Nil`                |
+| Type                       | Constant                     | Returns  | Description                                                       |
+| ----                       | --------                     | -------  | -----------                                                       |
+| **`AllOf`**`<TL,UP>`       | **`all_of`**`<TL,UP>`        | `bool`   | True if all types match `UP`; true if `TL` is `Nil`               |
+| **`AnyOf`**`<TL,UP>`       | **`any_of`**`<TL,UP>`        | `bool`   | True if at least one type matches `UP`; false if `TL` is `Nil`    |
+| **`CountIf`**`<TL,UP>`     | **`count_if`**`<TL,UP>`      | `int`    | Number of elements in `TL` for which `UP<T>` is true              |
+| **`CountIfNot`**`<TL,UP>`  | **`count_if_not`**`<TL,UP>`  | `int`    | Number of elements in `TL` for which `UP<T>` is false             |
+| **`CountType`**`<TL,T>`    | **`count_type`**`<TL,T>`     | `int`    | Number of times `T` occurs in `TL`                                |
+| **`FindIf`**`<TL,UP>`      | **`find_if`**`<TL,UP>`       | `int`    | Index of the first matching element in `TL`; -1 if not found      |
+| **`FindIfNot`**`<TL,UP>`   | **`find_if_not`**`<TL,UP>`   | `int`    | Index of the first non-matching element in `TL`; -1 if not found  |
+| **`FindType`**`<TL,T>`     | **`find_type`**`<TL,T>`      | `int`    | Index of the first `T` in `TL`; -1 if not found                   |
+| **`InList`**`<TL,T>`       | **`in_list`**`<TL,T>`        | `bool`   | True if `T` is in `TL`                                            |
+| **`IsEmpty`**`<TL>`        | **`is_empty`**`<TL>`         | `bool`   | True if `TL` is `Nil`                                             |
+| **`IsNotEmpty`**`<TL>`     | **`is_not_empty`**`<TL>`     | `bool`   | True if `TL` is a typelist and is not `Nil`                       |
+| **`IsUnique`**`<TL>`       | **`is_unique`**`<TL>`        | `bool`   | True if `TL` contains no duplicates                               |
+| **`LengthOf`**`<TL>`       | **`length_of`**`<TL>`        | `int`    | Number of entries in `TL`                                         |
+| **`NoneOf`**`<TL,UP>`      | **`none_of`**`<TL,UP>`       | `bool`   | True if no types match `UP`; true if `TL` is `Nil`                |
+
+### Typelist function call operations ###
+
+| Function                                       | Returns  | Description                                                     |
+| --------                                       | -------  | -----------                                                     |
+| **`call_for_each`**`<TL>(args...)`             | `void`   | For each `T` in `TL`, construct `T t(args...)` and call `t()`   |
+| **`call_for_each_with`**`<TL>(args...)`        | `void`   | For each `T` in `TL`, construct `T t` and call `t(args...)`     |
+| **`function_for_each`**`<TL>(f,args...)`       | `void`   | For each `T` in `TL`, construct `T t(args...)` and call `f(t)`  |
+| **`function_for_each_with`**`<TL>(f,args...)`  | `void`   | For each `T` in `TL`, construct `T t` and call `f(t,args...)`   |
 
 ## Introspection ##
 

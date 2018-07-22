@@ -319,6 +319,56 @@ namespace RS::Meta {
         template <typename T1, typename T2> struct TupleToTypelist<std::pair<T1, T2>>:
             ReturnT<Typelist<T1, T2>> {};
 
+        // Typelist function call operations
+
+        template <typename TL> struct CallForEach;
+        template <typename T, typename... TS> struct CallForEach<Typelist<T, TS...>> {
+            template <typename... Args> void operator()(Args&&... args) const {
+                T t(std::forward<Args>(args)...);
+                t();
+                CallForEach<Typelist<TS...>>()(std::forward<Args>(args)...);
+            }
+        };
+        template <> struct CallForEach<Nil> {
+            template <typename... Args> void operator()(Args&&...) const {}
+        };
+
+        template <typename TL> struct CallForEachWith;
+        template <typename T, typename... TS> struct CallForEachWith<Typelist<T, TS...>> {
+            template <typename... Args> void operator()(Args&&... args) const {
+                T t;
+                t(std::forward<Args>(args)...);
+                CallForEachWith<Typelist<TS...>>()(std::forward<Args>(args)...);
+            }
+        };
+        template <> struct CallForEachWith<Nil> {
+            template <typename... Args> void operator()(Args&&...) const {}
+        };
+
+        template <typename TL> struct FunctionForEach;
+        template <typename T, typename... TS> struct FunctionForEach<Typelist<T, TS...>> {
+            template <typename F, typename... Args> void operator()(F&& f, Args&&... args) const {
+                T t(std::forward<Args>(args)...);
+                f(t);
+                FunctionForEach<Typelist<TS...>>()(std::forward<F>(f), std::forward<Args>(args)...);
+            }
+        };
+        template <> struct FunctionForEach<Nil> {
+            template <typename F, typename... Args> void operator()(F&&, Args&&...) const {}
+        };
+
+        template <typename TL> struct FunctionForEachWith;
+        template <typename T, typename... TS> struct FunctionForEachWith<Typelist<T, TS...>> {
+            template <typename F, typename... Args> void operator()(F&& f, Args&&... args) const {
+                T t;
+                f(t, std::forward<Args>(args)...);
+                FunctionForEachWith<Typelist<TS...>>()(std::forward<F>(f), std::forward<Args>(args)...);
+            }
+        };
+        template <> struct FunctionForEachWith<Nil> {
+            template <typename F, typename... Args> void operator()(F&&, Args&&...) const {}
+        };
+
     }
 
     // Typelist property metafunctions
@@ -470,6 +520,24 @@ namespace RS::Meta {
     template <typename TL> constexpr bool is_unique                                  = IsUnique<TL>::value;
     template <typename TL> constexpr int length_of                                   = LengthOf<TL>::value;
     template <typename TL, template <typename> class UP> constexpr bool none_of      = NoneOf<TL, UP>::value;
+
+    // Typelist function call operations
+
+    template <typename TL, typename... Args> void call_for_each(Args&&... args) {
+        MetaDetail::CallForEach<TL>()(std::forward<Args>(args)...);
+    }
+
+    template <typename TL, typename... Args> void call_for_each_with(Args&&... args) {
+        MetaDetail::CallForEachWith<TL>()(std::forward<Args>(args)...);
+    }
+
+    template <typename TL, typename F, typename... Args> void function_for_each(F&& f, Args&&... args) {
+        MetaDetail::FunctionForEach<TL>()(f, std::forward<Args>(args)...);
+    }
+
+    template <typename TL, typename F, typename... Args> void function_for_each_with(F&& f, Args&&... args) {
+        MetaDetail::FunctionForEachWith<TL>()(f, std::forward<Args>(args)...);
+    }
 
     // Operator detection
 

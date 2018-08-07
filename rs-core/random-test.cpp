@@ -1,7 +1,9 @@
 #include "rs-core/random.hpp"
 #include "rs-core/unit-test.hpp"
+#include "rs-core/vector.hpp"
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
 #include <limits>
 #include <map>
 #include <numeric>
@@ -1033,99 +1035,88 @@ void test_core_random_vectors() {
 
 }
 
-void test_core_random_spherical_distributions() {
+namespace {
 
-    const int iterations = 100000;
-    std::map<int, int> census;
-    std::mt19937 rng(42);
-    auto freq = [&] (int x) { return double(census[x]) / double(iterations); };
-    Double2 v2, sum2;
-    Double3 v3, sum3;
-    Double4 v4, sum4;
-
-    RandomInSphere<double, 2> inner2(5);
-    census.clear();
-    sum2 = Double2();
-    for (int i = 0; i < iterations; ++i) {
-        TRY(v2 = inner2(rng));
-        ++census[int(std::floor(v2.r()))];
-        sum2 += v2;
+    template <typename T, size_t N>
+    void random_in_sphere_test() {
+        static constexpr int iterations = 100'000;
+        std::minstd_rand rng(42);
+        RandomInSphere<T, N> gen;
+        Vector<T, N> count_sides, point, total;
+        T count_inner = 0;
+        for (int i = 0; i < iterations; ++i) {
+            TRY(point = gen(rng));
+            for (size_t j = 0; j < N; ++j)
+                if (point[j] > 0)
+                    ++count_sides[j];
+            if (point.r() < T(0.5))
+                ++count_inner;
+            total += point;
+        }
+        T epsilon = 2 / std::sqrt(T(iterations));
+        T expect_inner = std::pow(T(2), - T(N));
+        for (auto& c: count_sides) {
+            c /= iterations;
+            TEST_NEAR_EPSILON(c, 0.5, epsilon);
+        }
+        count_inner /= iterations;
+        total /= iterations;
+        TEST_NEAR_EPSILON(count_inner, expect_inner, epsilon);
+        TEST_NEAR_EPSILON(total.r(), 0, epsilon);
     }
-    TEST_EQUAL(freq(-1), 0);
-    TEST_NEAR_EPSILON(freq(0), 0.04, 0.01);
-    TEST_NEAR_EPSILON(freq(1), 0.12, 0.01);
-    TEST_NEAR_EPSILON(freq(2), 0.20, 0.01);
-    TEST_NEAR_EPSILON(freq(3), 0.28, 0.01);
-    TEST_NEAR_EPSILON(freq(4), 0.36, 0.01);
-    TEST_EQUAL(freq(5), 0);
-    v2 = sum2 / iterations;
-    TEST_NEAR_EPSILON_RANGE(v2, Double2(), 0.02);
 
-    RandomInSphere<double, 3> inner3(5);
-    census.clear();
-    sum3 = Double3();
-    for (int i = 0; i < iterations; ++i) {
-        TRY(v3 = inner3(rng));
-        ++census[int(std::floor(v3.r()))];
-        sum3 += v3;
+    template <typename T, size_t N>
+    void random_on_sphere_test() {
+        static constexpr int iterations = 100'000;
+        std::minstd_rand rng(42);
+        RandomOnSphere<T, N> gen;
+        Vector<T, N> count_sides, point, total;
+        for (int i = 0; i < iterations; ++i) {
+            TRY(point = gen(rng));
+            TEST_NEAR(point.r(), 1);
+            for (size_t j = 0; j < N; ++j)
+                if (point[j] > 0)
+                    ++count_sides[j];
+            total += point;
+        }
+        T epsilon = 2 / std::sqrt(T(iterations));
+        for (auto& c: count_sides) {
+            c /= iterations;
+            TEST_NEAR_EPSILON(c, 0.5, epsilon);
+        }
+        total /= iterations;
+        TEST_NEAR_EPSILON(total.r(), 0, 2 * epsilon); // more variance in surface points
     }
-    TEST_EQUAL(freq(-1), 0);
-    TEST_NEAR_EPSILON(freq(0), 0.008, 0.005);
-    TEST_NEAR_EPSILON(freq(1), 0.056, 0.01);
-    TEST_NEAR_EPSILON(freq(2), 0.152, 0.01);
-    TEST_NEAR_EPSILON(freq(3), 0.296, 0.01);
-    TEST_NEAR_EPSILON(freq(4), 0.488, 0.01);
-    TEST_EQUAL(freq(5), 0);
-    v3 = sum3 / iterations;
-    TEST_NEAR_EPSILON_RANGE(v3, Double3(), 0.02);
 
-    RandomInSphere<double, 4> inner4(5);
-    census.clear();
-    sum4 = Double4();
-    for (int i = 0; i < iterations; ++i) {
-        TRY(v4 = inner4(rng));
-        ++census[int(std::floor(v4.r()))];
-        sum4 += v4;
-    }
-    TEST_EQUAL(freq(-1), 0);
-    TEST_NEAR_EPSILON(freq(0), 0.0016, 0.001);
-    TEST_NEAR_EPSILON(freq(1), 0.0240, 0.01);
-    TEST_NEAR_EPSILON(freq(2), 0.1040, 0.01);
-    TEST_NEAR_EPSILON(freq(3), 0.2800, 0.01);
-    TEST_NEAR_EPSILON(freq(4), 0.5904, 0.01);
-    TEST_EQUAL(freq(5), 0);
-    v4 = sum4 / iterations;
-    TEST_NEAR_EPSILON_RANGE(v4, Double4(), 0.02);
+}
 
-    RandomOnSphere<double, 2> outer2(5);
-    sum2 = Double2();
-    for (int i = 0; i < iterations; ++i) {
-        TRY(v2 = outer2(rng));
-        TEST_NEAR(v2.r(), 5);
-        sum2 += v2;
-    }
-    v2 = sum2 / iterations;
-    TEST_NEAR_EPSILON_RANGE(v2, Double2(), 0.02);
+void test_core_random_random_in_sphere() {
 
-    RandomOnSphere<double, 3> outer3(5);
-    sum3 = Double3();
-    for (int i = 0; i < iterations; ++i) {
-        TRY(v3 = outer3(rng));
-        TEST_NEAR(v3.r(), 5);
-        sum3 += v3;
-    }
-    v3 = sum3 / iterations;
-    TEST_NEAR_EPSILON_RANGE(v3, Double3(), 0.02);
+    random_in_sphere_test<double, 1>();
+    random_in_sphere_test<double, 2>();
+    random_in_sphere_test<double, 3>();
+    random_in_sphere_test<double, 4>();
+    random_in_sphere_test<double, 5>();
+    random_in_sphere_test<double, 6>();
+    random_in_sphere_test<double, 7>();
+    random_in_sphere_test<double, 8>();
+    random_in_sphere_test<double, 9>();
+    random_in_sphere_test<double, 10>();
 
-    RandomOnSphere<double, 4> outer4(5);
-    sum4 = Double4();
-    for (int i = 0; i < iterations; ++i) {
-        TRY(v4 = outer4(rng));
-        TEST_NEAR(v4.r(), 5);
-        sum4 += v4;
-    }
-    v4 = sum4 / iterations;
-    TEST_NEAR_EPSILON_RANGE(v4, Double4(), 0.02);
+}
+
+void test_core_random_random_on_sphere() {
+
+    random_on_sphere_test<double, 1>();
+    random_on_sphere_test<double, 2>();
+    random_on_sphere_test<double, 3>();
+    random_on_sphere_test<double, 4>();
+    random_on_sphere_test<double, 5>();
+    random_on_sphere_test<double, 6>();
+    random_on_sphere_test<double, 7>();
+    random_on_sphere_test<double, 8>();
+    random_on_sphere_test<double, 9>();
+    random_on_sphere_test<double, 10>();
 
 }
 

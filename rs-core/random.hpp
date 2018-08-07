@@ -680,101 +680,89 @@ namespace RS {
             return v;
         }
 
-    namespace RS_Detail {
+    template <typename T, size_t N>
+    class RandomInSphere {
+    public:
+        static_assert(N > 0);
+        using result_type = Vector<T, N>;
+        using scalar_type = T;
+        static constexpr size_t dim = N;
+        RandomInSphere(): rad(1) {}
+        explicit RandomInSphere(T r): rad(std::fabs(r)) {}
+        template <typename RNG> Vector<T, N> operator()(RNG& rng) const;
+        T radius() const noexcept { return rad; }
+    private:
+        T rad;
+    };
 
         template <typename T, size_t N>
-        struct RandomInSphere {
-            template <typename RNG> Vector<T, N> generate(RNG& rng) const {
-                Vector<T, N> v;
-                do std::generate(v.begin(), v.end(), [&] { return random_real<T>(rng, -1, 1); });
-                    while (v.r2() > T(1));
-                return v;
-            }
-        };
-
-        template <typename T>
-        struct RandomInSphere<T, 2> {
-            template <typename RNG> Vector<T, 2> generate(RNG& rng) const {
-                using std::sin;
-                using std::cos;
-                Vector<T, 2> v;
+        template <typename RNG>
+        Vector<T, N> RandomInSphere<T, N>::operator()(RNG& rng) const {
+            Vector<T, N> v;
+            if constexpr (N == 1) {
+                v[0] = random_real(rng, - rad, rad);
+            } else if constexpr (N <= 4) {
                 do {
-                    T phi = random_real<T>(rng, 0, 2 * pi_c<T>);
-                    T r = random_real<T>(rng) + random_real<T>(rng);
-                    if (r > T(1))
-                        r = T(2) - r;
-                    v = {r * cos(phi), r * sin(phi)};
-                } while (v.r2() > T(1));
-                return v;
+                    for (auto& x: v)
+                        x = random_real<T>(rng, -1, 1);
+                } while (v.r2() > 1);
+                v *= rad;
+            } else {
+                for (size_t i = 0; i < N; i += 2) {
+                    T a = std::sqrt(-2 * std::log(random_real<T>(rng)));
+                    T b = 2 * pi_c<T> * random_real<T>(rng);
+                    v[i] = a * std::cos(b);
+                    if (i + 1 < N)
+                        v[i + 1] = a * std::sin(b);
+                }
+                v *= rad * std::pow(random_real<T>(rng), T(1) / T(N)) / v.r();
             }
-        };
+            return v;
+        }
+
+    template <typename T, size_t N>
+    class RandomOnSphere {
+    public:
+        static_assert(N > 0);
+        using result_type = Vector<T, N>;
+        using scalar_type = T;
+        static constexpr size_t dim = N;
+        RandomOnSphere(): rad(1) {}
+        explicit RandomOnSphere(T r): rad(std::fabs(r)) {}
+        template <typename RNG> Vector<T, N> operator()(RNG& rng) const;
+        T radius() const noexcept { return rad; }
+    private:
+        T rad;
+    };
 
         template <typename T, size_t N>
-        struct RandomOnSphere {
-            template <typename RNG> Vector<T, N> generate(RNG& rng) const {
-                Vector<T, N> v;
-                do v = RandomInSphere<T, N>().generate(rng);
-                    while (v == Vector<T, N>());
-                return v.dir();
-            }
-        };
-
-        template <typename T>
-        struct RandomOnSphere<T, 2> {
-            template <typename RNG> Vector<T, 2> generate(RNG& rng) const {
-                using std::cos;
-                using std::sin;
+        template <typename RNG>
+        Vector<T, N> RandomOnSphere<T, N>::operator()(RNG& rng) const {
+            Vector<T, N> v;
+            if constexpr (N == 1) {
+                v[0] = random_bool(rng) ? rad : - rad;
+            } else if constexpr (N == 2) {
                 T phi = random_real<T>(rng, 0, 2 * pi_c<T>);
-                return Vector<T, 2>(cos(phi), sin(phi));
-            }
-        };
-
-        template <typename T>
-        struct RandomOnSphere<T, 3> {
-            template <typename RNG> Vector<T, 3> generate(RNG& rng) const {
-                using std::cos;
-                using std::sin;
-                using std::sqrt;
+                v[0] = rad * std::cos(phi);
+                v[1] = rad * std::sin(phi);
+            } else if constexpr (N == 3) {
                 T phi = random_real<T>(rng, 0, 2 * pi_c<T>);
-                T z = random_real<T>(rng, -1, 1);
-                T r = sqrt(T(1) - z * z);
-                T x = r * cos(phi);
-                T y = r * sin(phi);
-                return {x, y, z};
+                v[2] = random_real<T>(rng, - rad, rad);
+                T r = std::sqrt(rad * rad - v[2] * v[2]);
+                v[0] = r * std::cos(phi);
+                v[1] = r * std::sin(phi);
+            } else {
+                for (size_t i = 0; i < N; i += 2) {
+                    T a = std::sqrt(-2 * std::log(random_real<T>(rng)));
+                    T b = 2 * pi_c<T> * random_real<T>(rng);
+                    v[i] = a * std::cos(b);
+                    if (i + 1 < N)
+                        v[i + 1] = a * std::sin(b);
+                }
+                v *= rad / v.r();
             }
-        };
-
-    }
-
-    template <typename T, size_t N>
-    class RandomInSphere:
-    private RS_Detail::RandomInSphere<T, N> {
-    public:
-        using result_type = Vector<T, N>;
-        using scalar_type = T;
-        static constexpr size_t dim = N;
-        RandomInSphere(): rad{T(1)} {}
-        explicit RandomInSphere(T r): rad{std::fabs(r)} {}
-        template <typename RNG> Vector<T, N> operator()(RNG& rng) const { return rad * this->generate(rng); }
-        T radius() const noexcept { return rad; }
-    private:
-        T rad;
-    };
-
-    template <typename T, size_t N>
-    class RandomOnSphere:
-    private RS_Detail::RandomOnSphere<T, N> {
-    public:
-        using result_type = Vector<T, N>;
-        using scalar_type = T;
-        static constexpr size_t dim = N;
-        RandomOnSphere(): rad{T(1)} {}
-        explicit RandomOnSphere(T r): rad{std::fabs(r)} {}
-        template <typename RNG> Vector<T, N> operator()(RNG& rng) const { return rad * this->generate(rng); }
-        T radius() const noexcept { return rad; }
-    private:
-        T rad;
-    };
+            return v;
+        }
 
     // Unique distribution
 

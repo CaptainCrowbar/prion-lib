@@ -51,7 +51,9 @@ the string into words delimited by whitespace.</p>
 <p>The <code>""_doc</code> literal removes a leading blank line if present, strips all
 trailing whitespace, converts tab indentation to 4 spaces, and strips leading
 indentation from all text lines, using the indentation of the trailing line to
-indicate where the left margin is intended to be</p>
+indicate where the left margin is intended to be. Results are unspecified if
+the last line of the original string contains anything other than whitespace,
+or if its indentation contains a mixture of spaces and tabs.</p>
 <p>Example:</p>
 <pre><code>R"(
     Hello world.

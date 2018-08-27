@@ -89,8 +89,8 @@ void test_core_string_literals() {
         "\t\t"_doc);
     TEST_EQUAL(s,
         "Hello world.\n"
-        "    Hello again.\n"
-        "        Goodbye.\n"
+        "\tHello again.\n"
+        "\t\tGoodbye.\n"
     );
 }
 

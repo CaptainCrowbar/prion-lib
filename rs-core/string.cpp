@@ -440,31 +440,32 @@ namespace RS {
         }
 
         Ustring operator""_doc(const char* p, size_t n) {
-            using namespace RS_Detail;
-            Uview text(p, n);
-            size_t cut = text.find_last_of('\n') + 1, indent = 0;
-            if (text.find_first_not_of("\t ", cut) == npos) {
-                for (size_t i = cut; i < n; ++i)
-                    indent += text[i] == '\t' ? 4 : 1;
-                text = Uview(p, cut);
-            }
-            auto lines = splitv_lines(text);
-            for (auto& line: lines) {
-                line = trim_right(line);
-                size_t start = line.find_first_not_of("\t ");
-                if (start == npos) {
-                    line.clear();
-                } else {
-                    size_t leading = 0;
-                    for (size_t i = 0; i < start; ++i)
-                        leading += line[i] == '\t' ? 4 : 1;
-                    leading = leading > indent ? leading - indent : 0;
-                    line.replace(0, start, leading, ' ');
+            Strings lines;
+            size_t i = 0, margin = npos;
+            while (i < n) {
+                auto lf = static_cast<const char*>(std::memchr(p + i, '\n', n - i));
+                size_t len = lf ? lf - p - i : n - i;
+                lines.emplace_back(p + i, len);
+                auto& line = lines.back();
+                if (! line.empty()) {
+                    size_t spaces = line.find_first_not_of("\t ");
+                    margin = std::min({margin, spaces, line.size()});
                 }
+                i += len + 1;
             }
-            if (! lines.empty() && lines.front().empty())
-                lines.erase(lines.begin());
-            return join(lines, "\n", true);
+            Ustring result;
+            for (auto& line: lines) {
+                if (! line.empty())
+                    result.append(line, margin, npos);
+                result += '\n';
+            }
+            if (result.empty() || result == "\n" || result == "\n\n")
+                return {};
+            if (result[0] == '\n')
+                result.erase(0, 1);
+            if (ends_with(result, "\n\n"))
+                result.pop_back();
+            return result;
         }
 
         Strings operator""_qw(const char* p, size_t n) {

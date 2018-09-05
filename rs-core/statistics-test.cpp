@@ -23,8 +23,10 @@ void test_core_statistics_class() {
     TEST_EQUAL(stats.stdevs_x(), 0);
     TEST_EQUAL(stats.stdevs_y(), 0);
     TEST_EQUAL(stats.correlation(), 0);
-    TEST_EQUAL(stats.linear().first, 0);
-    TEST_EQUAL(stats.linear().second, 0);
+    TEST_EQUAL(stats.linear_xy().first, 0);
+    TEST_EQUAL(stats.linear_xy().second, 0);
+    TEST_EQUAL(stats.linear_yx().first, 0);
+    TEST_EQUAL(stats.linear_yx().second, 0);
 
     TRY(stats.clear());
     for (int i = 1; i <= 100; ++i)
@@ -53,8 +55,10 @@ void test_core_statistics_class() {
     TEST_NEAR(stats.stdevs_x(), 29.011492);
     TEST_NEAR(stats.stdevs_y(), 3024.355854);
     TEST_NEAR(stats.correlation(), 0.968854);
-    TEST_NEAR(stats.linear().first, 101);
-    TEST_NEAR(stats.linear().second, -1717);
+    TEST_NEAR(stats.linear_xy().first, 101);
+    TEST_NEAR(stats.linear_xy().second, -1717);
+    TEST_NEAR(stats.linear_yx().first, 0.009294);
+    TEST_NEAR(stats.linear_yx().second, 19.054254);
 
     for (int i = 1; i <= 100; ++i)
         v.push_back(i);
@@ -85,7 +89,9 @@ void test_core_statistics_class() {
     TEST_NEAR(stats.stdevs_x(), 29.011492);
     TEST_NEAR(stats.stdevs_y(), 3024.355854);
     TEST_NEAR(stats.correlation(), 0.968854);
-    TEST_NEAR(stats.linear().first, 101);
-    TEST_NEAR(stats.linear().second, -1717);
+    TEST_NEAR(stats.linear_xy().first, 101);
+    TEST_NEAR(stats.linear_xy().second, -1717);
+    TEST_NEAR(stats.linear_yx().first, 0.009294);
+    TEST_NEAR(stats.linear_yx().second, 19.054254);
 
 }

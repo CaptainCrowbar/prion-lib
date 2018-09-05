@@ -74,8 +74,9 @@ or a map-like range of pairs.</p>
 <div class="defns">
 <ul>
 <li><code>size_t Statistics::</code><strong><code>num</code></strong><code>() const noexcept</code></li>
+<li><code>T Statistics::</code><strong><code>t_num</code></strong><code>() const noexcept</code></li>
 </ul>
-<p>Returns the number of data points entered.</p>
+<p>Return the number of data points entered.</p>
 </div>
 <div class="defns">
 <ul>
@@ -128,10 +129,13 @@ degenerate and no correlation can be calculated.</p>
 <div class="defns">
 <ul>
 <li><code>std::pair&lt;T, T&gt; Statistics::</code><strong><code>linear</code></strong><code>() const noexcept</code></li>
+<li><code>std::pair&lt;T, T&gt; Statistics::</code><strong><code>linear_xy</code></strong><code>() const noexcept</code></li>
+<li><code>std::pair&lt;T, T&gt; Statistics::</code><strong><code>linear_yx</code></strong><code>() const noexcept</code></li>
 </ul>
-<p>Returns the coefficients of the least squares linear regression equation (the
-coefficients <em>(a,b)</em> in <em>y&#x302;=ax+b</em>). If the data set is empty, this will
-return <em>(0,0)</em>; if only one data point has been supplied, or if the data set
-is degenerate and no regression can be calculated, it will return
-<em>(0,y&#x304;)</em>.</p></body>
+<p>Return the coefficients of the least squares linear regression equation (the
+coefficients <em>(a,b)</em> in <em>y&#x302;=ax+b</em> or <em>x&#x302;=ay+b</em>); <code>linear()</code> is a
+synonym for <code>linear_xy()</code>. If the data set is empty, these will all return
+<em>(0,0)</em>; if only one data point has been supplied, or if the data set is
+degenerate and no regression can be calculated, they will return
+<em>(0,y&#x304;)</em> or <em>(0,x&#x304;)</em>.</p></body>
 </html>

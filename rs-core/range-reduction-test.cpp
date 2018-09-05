@@ -1,4 +1,5 @@
 #include "rs-core/range-reduction.hpp"
+#include "rs-core/statistics.hpp"
 #include "rs-core/string.hpp"
 #include "rs-core/unit-test.hpp"
 #include <functional>
@@ -136,75 +137,60 @@ void test_core_range_reduction_reduce() {
 
 void test_core_range_reduction_statistics() {
 
+    Statistics<double> stat;
     std::vector<int> v = {2,3,5,7,11,13,17,19,23,29};
-    Statistics<double> s;
-    TRY(s = v >> statistics);
-    TEST_EQUAL(s.n(), 10);
-    TEST_EQUAL(s.sum(), 129);
-    TEST_EQUAL(s.sum_squares(), 2397);
-    TEST_EQUAL(s.min(), 2);
-    TEST_EQUAL(s.max(), 29);
-    TEST_NEAR(s.mean(), 12.9);
-    TEST_NEAR(s.stdev(), 8.560958);
-    TEST_NEAR(s.pop_stdev(), 9.024042);
+    TRY(stat = v >> statistics);
+    TEST_EQUAL(stat.num(), 10);
+    TEST_EQUAL(stat.min(), 2);
+    TEST_EQUAL(stat.max(), 29);
+    TEST_NEAR(stat.mean(), 12.9);
+    TEST_NEAR(stat.stdevp(), 8.560958);
+    TEST_NEAR(stat.stdevs(), 9.024042);
 
-    TRY(s = v >> (passthrough * statistics));
-    TEST_EQUAL(s.n(), 10);
-    TEST_EQUAL(s.sum(), 129);
-    TEST_EQUAL(s.sum_squares(), 2397);
-    TEST_EQUAL(s.min(), 2);
-    TEST_EQUAL(s.max(), 29);
-    TEST_NEAR(s.mean(), 12.9);
-    TEST_NEAR(s.stdev(), 8.560958);
-    TEST_NEAR(s.pop_stdev(), 9.024042);
+    TRY(stat = v >> (passthrough * statistics));
+    TEST_EQUAL(stat.num(), 10);
+    TEST_EQUAL(stat.min(), 2);
+    TEST_EQUAL(stat.max(), 29);
+    TEST_NEAR(stat.mean(), 12.9);
+    TEST_NEAR(stat.stdevp(), 8.560958);
+    TEST_NEAR(stat.stdevs(), 9.024042);
 
     std::map<int, int> m = {{1,2},{2,3},{3,5},{4,7},{5,11},{6,13},{7,17},{8,19},{9,23},{10,29}};
-    Statistics<std::pair<double, double>> ps;
-    TRY(ps = m >> statistics);
-    TEST_EQUAL(ps.n(), 10);
-    TEST_EQUAL(ps.sum_x(), 55);
-    TEST_EQUAL(ps.sum_x2(), 385);
-    TEST_EQUAL(ps.sum_y(), 129);
-    TEST_EQUAL(ps.sum_y2(), 2397);
-    TEST_EQUAL(ps.sum_xy(), 952);
-    TEST_EQUAL(ps.min_x(), 1);
-    TEST_EQUAL(ps.max_x(), 10);
-    TEST_EQUAL(ps.min_y(), 2);
-    TEST_EQUAL(ps.max_y(), 29);
-    TEST_EQUAL(ps.mean_x(), 5.5);
-    TEST_NEAR(ps.mean_y(), 12.9);
-    TEST_NEAR(ps.stdev_x(), 2.872281);
-    TEST_NEAR(ps.stdev_y(), 8.560958);
-    TEST_NEAR(ps.pop_stdev_x(), 3.027650);
-    TEST_NEAR(ps.pop_stdev_y(), 9.024042);
-    TEST_NEAR(ps.r(), 0.986194);
-    TEST_NEAR(ps.linear_xy().first, 2.939394);
-    TEST_NEAR(ps.linear_xy().second, -3.266667);
-    TEST_NEAR(ps.linear_yx().first, 0.330877);
-    TEST_NEAR(ps.linear_yx().second, 1.231682);
+    TRY(stat = m >> statistics);
+    TEST_EQUAL(stat.num(), 10);
+    TEST_EQUAL(stat.min_x(), 1);
+    TEST_EQUAL(stat.max_x(), 10);
+    TEST_EQUAL(stat.min_y(), 2);
+    TEST_EQUAL(stat.max_y(), 29);
+    TEST_EQUAL(stat.mean_x(), 5.5);
+    TEST_NEAR(stat.mean_y(), 12.9);
+    TEST_NEAR(stat.stdevp_x(), 2.872281);
+    TEST_NEAR(stat.stdevp_y(), 8.560958);
+    TEST_NEAR(stat.stdevs_x(), 3.027650);
+    TEST_NEAR(stat.stdevs_y(), 9.024042);
+    TEST_NEAR(stat.correlation(), 0.986194);
+    TEST_NEAR(stat.linear_xy().first, 2.939394);
+    TEST_NEAR(stat.linear_xy().second, -3.266667);
+    TEST_NEAR(stat.linear_yx().first, 0.330877);
+    TEST_NEAR(stat.linear_yx().second, 1.231682);
 
-    TRY(ps = m >> (passthrough * statistics));
-    TEST_EQUAL(ps.n(), 10);
-    TEST_EQUAL(ps.sum_x(), 55);
-    TEST_EQUAL(ps.sum_x2(), 385);
-    TEST_EQUAL(ps.sum_y(), 129);
-    TEST_EQUAL(ps.sum_y2(), 2397);
-    TEST_EQUAL(ps.sum_xy(), 952);
-    TEST_EQUAL(ps.min_x(), 1);
-    TEST_EQUAL(ps.max_x(), 10);
-    TEST_EQUAL(ps.min_y(), 2);
-    TEST_EQUAL(ps.max_y(), 29);
-    TEST_EQUAL(ps.mean_x(), 5.5);
-    TEST_NEAR(ps.mean_y(), 12.9);
-    TEST_NEAR(ps.stdev_x(), 2.872281);
-    TEST_NEAR(ps.stdev_y(), 8.560958);
-    TEST_NEAR(ps.pop_stdev_x(), 3.027650);
-    TEST_NEAR(ps.pop_stdev_y(), 9.024042);
-    TEST_NEAR(ps.r(), 0.986194);
-    TEST_NEAR(ps.linear_xy().first, 2.939394);
-    TEST_NEAR(ps.linear_xy().second, -3.266667);
-    TEST_NEAR(ps.linear_yx().first, 0.330877);
-    TEST_NEAR(ps.linear_yx().second, 1.231682);
+    TRY(stat = m >> (passthrough * statistics));
+    TEST_EQUAL(stat.num(), 10);
+    TEST_EQUAL(stat.min_x(), 1);
+    TEST_EQUAL(stat.max_x(), 10);
+    TEST_EQUAL(stat.min_y(), 2);
+    TEST_EQUAL(stat.max_y(), 29);
+    TEST_EQUAL(stat.mean_x(), 5.5);
+    TEST_NEAR(stat.mean_y(), 12.9);
+    TEST_NEAR(stat.stdevp_x(), 2.872281);
+    TEST_NEAR(stat.stdevp_y(), 8.560958);
+    TEST_NEAR(stat.stdevs_x(), 3.027650);
+    TEST_NEAR(stat.stdevs_y(), 9.024042);
+    TEST_NEAR(stat.correlation(), 0.986194);
+    TEST_NEAR(stat.linear_xy().first, 2.939394);
+    TEST_NEAR(stat.linear_xy().second, -3.266667);
+    TEST_NEAR(stat.linear_yx().first, 0.330877);
+    TEST_NEAR(stat.linear_yx().second, 1.231682);
 
 }
 

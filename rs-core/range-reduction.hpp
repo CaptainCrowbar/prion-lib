@@ -2,6 +2,7 @@
 
 #include "rs-core/range-core.hpp"
 #include "rs-core/range-permutation.hpp"
+#include "rs-core/statistics.hpp"
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
@@ -306,142 +307,6 @@ namespace RS::Range {
 
     // statistics, pair_statistics
 
-    template <typename T>
-    class Statistics:
-    EqualityComparable<Statistics<T>> {
-    public:
-        using value_type = T;
-        void add(T x) noexcept {
-            ++count;
-            sumx += x;
-            sumx2 += x * x;
-            if (count == 1)
-                minx = maxx = x;
-            else if (x < minx)
-                minx = x;
-            else if (x > maxx)
-                maxx = x;
-        }
-        size_t n() const noexcept { return count; }
-        T sum() const noexcept { return sumx; }
-        T sum_squares() const noexcept { return sumx2; }
-        T min() const noexcept { return minx; }
-        T max() const noexcept { return maxx; }
-        T mean() const noexcept { return sumx / T(count); }
-        T stdev() const { return compute_sd(count, sumx, sumx2); }
-        T pop_stdev() const { return compute_psd(count, sumx, sumx2); }
-        bool operator==(const Statistics<T>& rhs) const noexcept {
-            return count == rhs.count && sumx == rhs.sumx && sumx2 == rhs.sumx2
-                && minx == rhs.minx && maxx == rhs.maxx;
-        }
-    private:
-        friend class Statistics<std::pair<T, T>>;
-        size_t count = 0;
-        T sumx = T(0);
-        T sumx2 = T(0);
-        T minx = T(0);
-        T maxx = T(0);
-        static T compute_sd(size_t n, T sx, T sx2) {
-            using std::sqrt;
-            if (n < 1)
-                return T(0);
-            T tn = T(n), m = sx / tn;
-            return sqrt(sx2 / tn - m * m);
-        }
-        static T compute_psd(size_t n, T sx, T sx2) {
-            using std::sqrt;
-            if (n < 2)
-                return T(0);
-            T tn = T(n), m = sx / tn;
-            return sqrt((sx2 - tn * m * m) / (tn - T(1)));
-        }
-    };
-
-    template <typename T>
-    class Statistics<std::pair<T, T>>:
-    EqualityComparable<Statistics<std::pair<T, T>>> {
-    public:
-        using value_type = T;
-        using pair_type = std::pair<T, T>;
-        void add(T x, T y) noexcept {
-            ++count;
-            sumx += x;
-            sumx2 += x * x;
-            sumy += y;
-            sumy2 += y * y;
-            sumxy += x * y;
-            if (count == 1) {
-                minx = maxx = x;
-                miny = maxy = y;
-            } else {
-                if (x < minx)
-                    minx = x;
-                else if (x > maxx)
-                    maxx = x;
-                if (y < miny)
-                    miny = y;
-                else if (y > maxy)
-                    maxy = y;
-            }
-        }
-        void add(const pair_type& xy) noexcept {
-            add(xy.first, xy.second);
-        }
-        size_t n() const noexcept { return count; }
-        T sum_x() const noexcept { return sumx; }
-        T sum_x2() const noexcept { return sumx2; }
-        T sum_y() const noexcept { return sumy; }
-        T sum_y2() const noexcept { return sumy2; }
-        T sum_xy() const noexcept { return sumxy; }
-        T min_x() const noexcept { return minx; }
-        T min_y() const noexcept { return miny; }
-        T max_x() const noexcept { return maxx; }
-        T max_y() const noexcept { return maxy; }
-        T mean_x() const noexcept { return sumx / T(count); }
-        T mean_y() const noexcept { return sumy / T(count); }
-        T stdev_x() const { return single::compute_sd(count, sumx, sumx2); }
-        T stdev_y() const { return single::compute_sd(count, sumy, sumy2); }
-        T pop_stdev_x() const { return single::compute_psd(count, sumx, sumx2); }
-        T pop_stdev_y() const { return single::compute_psd(count, sumy, sumy2); }
-        T r() const { return compute_r(count, sumx, sumx2, sumy, sumy2, sumxy); }
-        std::pair<T, T> linear_xy() const { return compute_linear(count, sumx, sumx2, sumy, sumxy); }
-        std::pair<T, T> linear_yx() const { return compute_linear(count, sumy, sumy2, sumx, sumxy); }
-        bool operator==(const Statistics<std::pair<T, T>>& rhs) const noexcept {
-            return count == rhs.count && sumx == rhs.sumx && sumx2 == rhs.sumx2
-                && sumy == rhs.sumy && sumy2 == rhs.sumy2 && sumxy == rhs.sumxy
-                && minx == rhs.minx && maxx == rhs.maxx && miny == rhs.miny && maxy == rhs.maxy;
-        }
-    private:
-        using single = Statistics<T>;
-        size_t count = 0;
-        T sumx = T(0);
-        T sumx2 = T(0);
-        T sumy = T(0);
-        T sumy2 = T(0);
-        T sumxy = T(0);
-        T minx = T(0);
-        T miny = T(0);
-        T maxx = T(0);
-        T maxy = T(0);
-        static T compute_r(size_t n, T sx, T sx2, T sy, T sy2, T sxy) {
-            using std::sqrt;
-            if (n < 2)
-                return T(0);
-            T tn = T(n);
-            return (tn * sxy - sx * sy) / sqrt((tn * sx2 - sx * sx) * (tn * sy2 - sy * sy));
-        }
-        static std::pair<T, T> compute_linear(size_t n, T sx, T sx2, T sy, T sxy) {
-            if (n == 0)
-                return {T(1), T(0)};
-            if (n == 1)
-                return {T(1), sy - sx};
-            T tn = T(n);
-            T a = (tn * sxy - sx * sy) / (tn * sx2 - sx * sx);
-            T b = sy / tn - a * sx / tn;
-            return {a, b};
-        }
-    };
-
     struct StatisticsObject:
     AlgorithmBase<StatisticsObject> {};
 
@@ -460,8 +325,8 @@ namespace RS::Range {
         using data_type1 = std::conditional_t<std::is_floating_point<base_type1>::value, base_type1, double>;
         using data_type2 = std::conditional_t<std::is_floating_point<base_type2>::value, base_type2, double>;
         using data_type = std::conditional_t<(sizeof(data_type2) > sizeof(data_type1)), data_type2, data_type1>;
-        using result_type = Statistics<std::pair<data_type, data_type>>;
-        static void tally(std::pair<T1, T2> xy, result_type& s) noexcept { s.add(xy); }
+        using result_type = Statistics<data_type>;
+        static void tally(std::pair<T1, T2> xy, result_type& s) noexcept { s.add(data_type(xy.first), data_type(xy.second)); }
     };
 
     template <typename Range>

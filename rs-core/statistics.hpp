@@ -18,6 +18,7 @@ namespace RS {
         void clear() noexcept { xmin = ymin = xmax = ymax = xsum = x2sum = xysum = ysum = y2sum = 0; n = 0; }
         bool empty() const noexcept { return n == 0; }
         size_t num() const noexcept { return n; }
+        T t_num() const noexcept { return T(n); }
         T min() const noexcept { return xmin; }
         T min_x() const noexcept { return xmin; }
         T min_y() const noexcept { return ymin; }
@@ -34,7 +35,9 @@ namespace RS {
         T stdevs_x() const noexcept { return get_stdevs(n, xsum, x2sum); }
         T stdevs_y() const noexcept { return get_stdevs(n, ysum, y2sum); }
         T correlation() const noexcept;
-        std::pair<T, T> linear() const noexcept;
+        std::pair<T, T> linear() const noexcept { return linear_xy(); }
+        std::pair<T, T> linear_xy() const noexcept;
+        std::pair<T, T> linear_yx() const noexcept;
     private:
         static_assert(std::is_floating_point<T>::value);
         T xmin = 0;
@@ -79,16 +82,30 @@ namespace RS {
     }
 
     template <typename T>
-    std::pair<T, T> Statistics<T>::linear() const noexcept {
+    std::pair<T, T> Statistics<T>::linear_xy() const noexcept {
         if (n == 0)
             return {T(0), T(0)};
         else if (n == 1)
             return {T(0), ysum};
-        T d = T(n) * x2sum - xsum * xsum;
-        if (d == 0)
+        T divisor = T(n) * x2sum - xsum * xsum;
+        if (divisor == 0)
             return {T(0), mean_y()};
-        T a = (T(n) * xysum - xsum * ysum) / d;
+        T a = (T(n) * xysum - xsum * ysum) / divisor;
         T b = (ysum - a * xsum) / T(n);
+        return {a, b};
+    }
+
+    template <typename T>
+    std::pair<T, T> Statistics<T>::linear_yx() const noexcept {
+        if (n == 0)
+            return {T(0), T(0)};
+        else if (n == 1)
+            return {T(0), xsum};
+        T divisor = T(n) * y2sum - ysum * ysum;
+        if (divisor == 0)
+            return {T(0), mean_x()};
+        T a = (T(n) * xysum - xsum * ysum) / divisor;
+        T b = (xsum - a * ysum) / T(n);
         return {a, b};
     }
 

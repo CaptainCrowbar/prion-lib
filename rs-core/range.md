@@ -557,7 +557,8 @@ comparison predicate.
 * `Range r >>` **`statistics`** `-> Statistics`
 
 Compiles statistics on the range, whose value type must be either an
-arithmetic type or a pair of arithmetic types.
+arithmetic type or a pair of arithmetic types. The `Statistics` type is
+defined in [`rs-core/statistics`](statistics.html).
 
 ### Selection algorithms ###
 

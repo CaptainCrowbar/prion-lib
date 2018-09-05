@@ -46,8 +46,9 @@ Resets all of the internal accumulators.
 True if the data set is empty (`num()==0`).
 
 * `size_t Statistics::`**`num`**`() const noexcept`
+* `T Statistics::`**`t_num`**`() const noexcept`
 
-Returns the number of data points entered.
+Return the number of data points entered.
 
 * `T Statistics::`**`min`**`() const noexcept`
 * `T Statistics::`**`min_x`**`() const noexcept`
@@ -90,9 +91,12 @@ zero if less than two data points are available, or if the data set is
 degenerate and no correlation can be calculated.
 
 * `std::pair<T, T> Statistics::`**`linear`**`() const noexcept`
+* `std::pair<T, T> Statistics::`**`linear_xy`**`() const noexcept`
+* `std::pair<T, T> Statistics::`**`linear_yx`**`() const noexcept`
 
-Returns the coefficients of the least squares linear regression equation (the
-coefficients _(a,b)_ in _y&#x302;=ax+b_). If the data set is empty, this will
-return _(0,0)_; if only one data point has been supplied, or if the data set
-is degenerate and no regression can be calculated, it will return
-_(0,y&#x304;)_.
+Return the coefficients of the least squares linear regression equation (the
+coefficients _(a,b)_ in _y&#x302;=ax+b_ or _x&#x302;=ay+b_); `linear()` is a
+synonym for `linear_xy()`. If the data set is empty, these will all return
+_(0,0)_; if only one data point has been supplied, or if the data set is
+degenerate and no regression can be calculated, they will return
+_(0,y&#x304;)_ or _(0,x&#x304;)_.

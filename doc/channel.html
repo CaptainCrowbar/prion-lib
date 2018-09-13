@@ -90,6 +90,8 @@ methods of this class.</p>
 <p>Derived classes need to implement at least <code>close()</code>, <code>is_closed()</code>, and one
 of the <code>do_wait_*()</code> functions from <a href="time.html"><code>Wait</code></a>; <code>close()</code> must be
 async safe and idempotent.</p>
+<p>Any of the wait functions will return true if the channel is either ready for
+reading or closed.</p>
 <p>If <code>is_async()</code> is false, the channel can only be used in a synchronous
 dispatch handler, usually because it calls an underlying native API that is
 only intended to be used from the main thread.</p>

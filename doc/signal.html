@@ -37,7 +37,9 @@
 </ul>
 <p>A channel that intercepts Unix signals, reporting them as channel messages. An
 attempt to listen for an unblockable signal such as <code>SIGKILL</code> will be quietly
-ignored. On Windows signals will never happen; waiting will always fail.</p>
+ignored. Behaviour is undefined if the same signal is assigned to more than
+one <code>PosixSignal</code> object (even if they are not simultaneously waiting).</p>
+<p>On Windows, only the signals required by the C99 standard are supported.</p>
 <p>The <code>name()</code> function returns the signal name corresponding to the given
 signal number. If the argument is not a valid signal number, this will simply
 return the integer value as a string.</p>

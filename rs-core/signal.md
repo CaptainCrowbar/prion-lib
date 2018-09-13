@@ -20,7 +20,10 @@ By Ross Smith
 
 A channel that intercepts Unix signals, reporting them as channel messages. An
 attempt to listen for an unblockable signal such as `SIGKILL` will be quietly
-ignored. On Windows signals will never happen; waiting will always fail.
+ignored. Behaviour is undefined if the same signal is assigned to more than
+one `PosixSignal` object (even if they are not simultaneously waiting).
+
+On Windows, only the signals required by the C99 standard are supported.
 
 The `name()` function returns the signal name corresponding to the given
 signal number. If the argument is not a valid signal number, this will simply

@@ -12,65 +12,93 @@ void test_core_signal_channel() {
 
     #ifdef _XOPEN_SOURCE
 
-        PosixSignal ps1{SIGINT};
-        PosixSignal ps2{SIGUSR1, SIGUSR2};
+        PosixSignal chan1{SIGINT};
+        PosixSignal chan2{SIGUSR1, SIGUSR2};
         std::vector<int> signals = {SIGCHLD, SIGHUP, SIGPIPE};
-        PosixSignal ps3{signals};
+        PosixSignal chan3{signals};
         int s = 0;
 
-        TEST(! ps1.wait_for(10ms));
+        TEST(! chan1.wait_for(10ms));
 
         raise(SIGINT);
-        TEST(ps1.wait_for(10ms));
-        TEST(ps1.read(s));
+        TEST(chan1.wait_for(10ms));
+        TEST(chan1.read(s));
         TEST_EQUAL(s, SIGINT);
-        TEST(! ps1.wait_for(10ms));
+        TEST(! chan1.wait_for(10ms));
 
         raise(SIGINT);
-        TEST(ps1.wait_for(10ms));
-        TEST(ps1.read(s));
+        TEST(chan1.wait_for(10ms));
+        TEST(chan1.read(s));
         TEST_EQUAL(s, SIGINT);
-        TEST(! ps1.wait_for(10ms));
+        TEST(! chan1.wait_for(10ms));
 
         raise(SIGURG);
-        TEST(! ps1.wait_for(1ms));
-        TEST(! ps2.wait_for(1ms));
-        TEST(! ps3.wait_for(1ms));
+        TEST(! chan1.wait_for(1ms));
+        TEST(! chan2.wait_for(1ms));
+        TEST(! chan3.wait_for(1ms));
 
         raise(SIGUSR1);
-        TEST(ps2.wait_for(10ms));
-        TEST(ps2.read(s));
+        TEST(chan2.wait_for(10ms));
+        TEST(chan2.read(s));
         TEST_EQUAL(s, SIGUSR1);
-        TEST(! ps2.wait_for(10ms));
+        TEST(! chan2.wait_for(10ms));
 
         raise(SIGUSR2);
-        TEST(ps2.wait_for(10ms));
-        TEST(ps2.read(s));
+        TEST(chan2.wait_for(10ms));
+        TEST(chan2.read(s));
         TEST_EQUAL(s, SIGUSR2);
-        TEST(! ps2.wait_for(10ms));
+        TEST(! chan2.wait_for(10ms));
 
         raise(SIGHUP);
-        TEST(! ps1.wait_for(1ms));
-        TEST(! ps2.wait_for(1ms));
-        TRY(ps2.close());
-        TEST(ps2.wait_for(10ms));
-        TEST(ps2.is_closed());
-        TEST(ps3.wait_for(10ms));
-        TEST(ps3.read(s));
+        TEST(! chan1.wait_for(1ms));
+        TEST(! chan2.wait_for(1ms));
+        TRY(chan2.close());
+        TEST(chan2.wait_for(10ms));
+        TEST(chan2.is_closed());
+        TEST(chan3.wait_for(10ms));
+        TEST(chan3.read(s));
         TEST_EQUAL(s, SIGHUP);
 
     #else
 
-        PosixSignal ps{SIGINT};
+        PosixSignal chan1{SIGINT};
+        PosixSignal chan2{SIGSEGV, SIGTERM};
         int s = 0;
 
-        TEST(! ps.wait_for(10ms));
-        TEST(! ps.read(s));
+        TEST(! chan1.wait_for(10ms));
 
-        TRY(ps.close());
-        TEST(ps.wait_for(10ms));
-        TEST(ps.is_closed());
-        TEST(! ps.read(s));
+        std::raise(SIGINT);
+        TEST(chan1.wait_for(10ms));
+        TEST(chan1.read(s));
+        TEST_EQUAL(s, SIGINT);
+        TEST(! chan1.wait_for(10ms));
+
+        std::raise(SIGINT);
+        TEST(chan1.wait_for(10ms));
+        TEST(chan1.read(s));
+        TEST_EQUAL(s, SIGINT);
+        TEST(! chan1.wait_for(10ms));
+
+        std::raise(SIGSEGV);
+        TEST(chan2.wait_for(10ms));
+        TEST(chan2.read(s));
+        TEST_EQUAL(s, SIGSEGV);
+        TEST(! chan2.wait_for(10ms));
+
+        std::raise(SIGTERM);
+        TEST(chan2.wait_for(10ms));
+        TEST(chan2.read(s));
+        TEST_EQUAL(s, SIGTERM);
+        TEST(! chan2.wait_for(10ms));
+
+        TEST(! chan1.wait_for(1ms));
+        TEST(! chan2.wait_for(1ms));
+        TRY(chan1.close());
+        TEST(chan1.wait_for(10ms));
+        TEST(chan1.is_closed());
+        TRY(chan2.close());
+        TEST(chan2.wait_for(10ms));
+        TEST(chan2.is_closed());
 
     #endif
 

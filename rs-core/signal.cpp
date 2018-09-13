@@ -2,6 +2,9 @@
 #include <algorithm>
 #include <chrono>
 #include <map>
+#include <stdexcept>
+#include <string>
+#include <system_error>
 #include <thread>
 
 using namespace std::chrono;
@@ -11,6 +14,9 @@ namespace RS {
     // Class PosixSignal
 
     #ifdef _XOPEN_SOURCE
+
+        PosixSignal::PosixSignal(std::initializer_list<int> list):
+        PosixSignal(signal_list{list}) {}
 
         PosixSignal::PosixSignal(const signal_list& list):
         MessageChannel<int>(), signals(list), newmask(), oldmask(), queue(), open(true) {
@@ -38,6 +44,14 @@ namespace RS {
                 open = false;
                 raise(SIGUSR1);
             }
+        }
+
+        bool PosixSignal::is_async() const noexcept {
+            return false;
+        }
+
+        bool PosixSignal::is_closed() const noexcept {
+            return ! open;
         }
 
         bool PosixSignal::read(int& t) {
@@ -100,26 +114,83 @@ namespace RS {
 
     #else
 
-        PosixSignal::PosixSignal(const signal_list& /*list*/):
-        MessageChannel<int>(), mutex(), cv(), open(true) {}
+        std::sig_atomic_t PosixSignal::signal_status[max_signals];
 
-        PosixSignal::~PosixSignal() noexcept {}
-
-        void PosixSignal::close() noexcept {
-            auto lock = make_lock(mutex);
-            open = false;
-            cv.notify_all();
+        PosixSignal::PosixSignal(std::initializer_list<int> list) {
+            for (int s: list)
+                enable(s);
         }
 
-        bool PosixSignal::read(int& /*t*/) {
+        PosixSignal::PosixSignal(const signal_list& list) {
+            for (int s: list)
+                enable(s);
+        }
+
+        PosixSignal::~PosixSignal() noexcept {
+            reset();
+        }
+
+        void PosixSignal::close() noexcept {
+            status = 0;
+        }
+
+        bool PosixSignal::is_async() const noexcept {
+            return false;
+        }
+
+        bool PosixSignal::is_closed() const noexcept {
+            return status == 0;
+        }
+
+        bool PosixSignal::read(int& t) {
+            if (status == 0)
+                return false;
+            for (int s: signals) {
+                int count = signal_status[s];
+                if (count > 0) {
+                    signal_status[s] = count - 1;
+                    t = s;
+                    return true;
+                }
+            }
             return false;
         }
 
         bool PosixSignal::do_wait_for(duration t) {
-            auto lock = make_lock(mutex);
-            if (t > duration())
-                cv.wait_for(lock, t, [&] { return ! open; });
-            return ! open;
+            return waiter.wait_for(t);
+        }
+
+        bool PosixSignal::available() const noexcept {
+            if (status == 0)
+                return true;
+            for (int s: signals)
+                if (signal_status[s] > 0)
+                    return true;
+            return false;
+        }
+
+        void PosixSignal::enable(int s) {
+            if (s == 0 || s >= max_signals)
+                throw std::invalid_argument("Invalid signal: " + std::to_string(s));
+            signal_status[s] = 0;
+            auto rc = std::signal(s, signal_handler);
+            int error = errno;
+            if (rc == SIG_ERR)
+                throw std::system_error(error, std::generic_category());
+            signals.push_back(s);
+            status = 1;
+        }
+
+        void PosixSignal::reset() noexcept {
+            for (int s: signals)
+                std::signal(s, SIG_DFL);
+            signals.clear();
+            status = 0;
+        }
+
+        void PosixSignal::signal_handler(int s) {
+            ++signal_status[s];
+            std::signal(s, signal_handler);
         }
 
     #endif

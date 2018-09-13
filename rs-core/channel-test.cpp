@@ -224,7 +224,7 @@ void test_core_channel_throttle() {
         TEST(chan.wait_for(250ms));
     auto t2 = ReliableClock::now();
     auto ms = duration_cast<milliseconds>(t2 - t1);
-    TEST_NEAR_EPSILON(ms.count(), 250, 50);
+    TEST_NEAR_EPSILON(ms.count(), 250, 100);
 
     TRY(chan.close());
     TEST(chan.wait_for(10ms));

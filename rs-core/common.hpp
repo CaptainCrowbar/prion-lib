@@ -707,6 +707,17 @@ namespace RS {
     namespace RS_Detail {
 
         template <typename T>
+        T global_abs(T t) noexcept {
+            using limits = std::numeric_limits<T>;
+            if constexpr (! limits::is_specialized || limits::is_signed) {
+                using std::abs;
+                return abs(t);
+            } else {
+                return t;
+            }
+        }
+
+        template <typename T>
         struct NumberMode {
             static constexpr char value =
                 std::is_floating_point<T>::value ? 'F' :
@@ -724,10 +735,11 @@ namespace RS {
         template <typename T>
         struct Divide<T, false, 'S'> {
             std::pair<T, T> operator()(T x, T y) const noexcept {
+                using std::abs;
                 auto q = x / y, r = x % y;
                 if (r < T(0)) {
                     q += y < T(0) ? T(1) : T(-1);
-                    r += std::abs(y);
+                    r += abs(y);
                 }
                 return {q, r};
             }
@@ -736,9 +748,10 @@ namespace RS {
         template <typename T>
         struct Divide<T, false, 'F'> {
             std::pair<T, T> operator()(T x, T y) const noexcept {
+                using std::abs;
                 auto q = std::floor(x / y), r = std::fmod(x, y);
                 if (r < T(0))
-                    r += std::abs(y);
+                    r += abs(y);
                 if (y < T(0) && r != T(0))
                     q += T(1);
                 return {q, r};
@@ -749,10 +762,11 @@ namespace RS {
         struct Divide<T, true, Mode> {
             std::pair<T, T> operator()(T x, T y) const noexcept {
                 static_assert(Mode != 'U', "Symmetric division on unsigned type");
+                using std::abs;
                 auto qr = Divide<T>()(x, y);
-                if (qr.second > std::abs(y) / T(2)) {
+                if (qr.second > abs(y) / T(2)) {
                     qr.first += y > T(0) ? T(1) : T(-1);
-                    qr.second -= std::abs(y);
+                    qr.second -= abs(y);
                 }
                 return qr;
             }
@@ -851,14 +865,14 @@ namespace RS {
 
     template <typename T>
     constexpr T gcd(T a, T b) noexcept {
-        using std::abs;
-        return RS_Detail::unsigned_gcd(abs(a), abs(b));
+        using namespace RS_Detail;
+        return RS_Detail::unsigned_gcd(global_abs(a), global_abs(b));
     }
 
     template <typename T>
     constexpr T lcm(T a, T b) noexcept {
-        using std::abs;
-        return a == T(0) || b == T(0) ? T(0) : abs((a / gcd(a, b)) * b);
+        using namespace RS_Detail;
+        return a == T(0) || b == T(0) ? T(0) : global_abs((a / gcd(a, b)) * b);
     }
 
     template <typename T>

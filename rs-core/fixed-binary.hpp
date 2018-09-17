@@ -75,7 +75,7 @@ namespace RS {
         template <typename T> explicit operator T() const noexcept { return static_cast<T>(value); }
         SmallBinary operator+() const noexcept { return *this; }
         SmallBinary operator-() const noexcept { auto x = ~ *this; ++x; return x; }
-        SmallBinary operator~() const noexcept { return SmallBinary(~ value); }
+        SmallBinary operator~() const noexcept { return SmallBinary(~ uint64_t(value)); }
         SmallBinary& operator++() noexcept { ++value; value &= mask; return *this; }
         SmallBinary operator++(int) noexcept { auto x = *this; ++*this; return x; }
         SmallBinary& operator--() noexcept { --value; value &= mask; return *this; }

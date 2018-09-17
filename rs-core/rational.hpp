@@ -202,10 +202,6 @@ namespace RS {
     void Rational<T>::reduce() {
         if (denom == T(0))
             throw std::domain_error("Division by zero");
-        if (denom < T(0)) {
-            numer = - numer;
-            denom = - denom;
-        }
         T g = gcd(numer, denom);
         numer /= g;
         denom /= g;

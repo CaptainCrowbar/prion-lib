@@ -245,8 +245,9 @@ void test_core_io_winio() {
         TRY(io = Winio(file));
         auto lines = io.lines();
         TRY(std::copy(lines.begin(), lines.end(), overwrite(vec)));
-        TRY(text = to_str(vec));
-        TEST_EQUAL(text, "[Hello world,Goodbye]");
+        TEST_EQUAL(vec.size(), 2);
+        TEST_EQUAL(vec.at(0), "Hello world\n");
+        TEST_EQUAL(vec.at(1), "Goodbye\n");
         TRY(io = {});
 
         TRY(io = Winio(file));

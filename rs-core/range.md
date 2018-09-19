@@ -209,6 +209,7 @@ reflex forms.
 |                 | `R >>` **`from`**`(T) -> CFR`                              | `C& <<` **`from`**`(T)`                             |
 |                 | `R >>` **`from_if`**`(UP) -> CFR`                          | `C& <<` **`from_if`**`(UP)`                         |
 |                 | `R >>` **`not_null`** `-> CFR`                             | `C& <<` **`not_null`**                              |
+|                 | `R >>` **`remove`**`(T) -> CFR`                            | `C& <<` **`remove`**`(T)`                           |
 |                 | `RR >>` **`sample_k`**`(N,RNG) -> TRR`                     | `C& <<` **`sample_k`**`(N,RNG)`                     |
 |                 | `R >>` **`sample_p`**`(FP,RNG) -> CFR`                     | `C& <<` **`sample_p`**`(FP,RNG)`                    |
 |                 | `RR >>` **`sample_replace`**`(N,RNG) -> TRR`               | `C& <<` **`sample_replace`**`(N,RNG)`               |
@@ -616,6 +617,11 @@ probability `p`; behaviour is undefined if `p<0` or `p>1`. The
 `sample_replace()` algorithm selects a random element `k` times, with
 replacement. For the first two the elements in the output range are in the
 same order as they were in the input.
+
+* `Range r >>` **`remove`**`(T t) -> ConditionalForwardRange`
+* `Container& c <<` **`remove`**`(T t)`
+
+Remove all elements equal to the argument.
 
 * `Range r >>` **`skip`**`(size_t k) -> ConditionalForwardRange`
 * `Range r >>` **`take`**`(size_t k) -> ConditionalForwardRange`

@@ -159,6 +159,20 @@ void test_core_range_selection_not_null() {
 
 }
 
+void test_core_range_selection_remove() {
+
+    Ustring s;
+
+    TRY("Hello"s >> remove('l') >> overwrite(s));  TEST_EQUAL(s, "Heo");
+
+    TRY("Hello"s >> passthrough >> remove('l') >> passthrough >> overwrite(s));  TEST_EQUAL(s, "Heo");
+
+    TRY("Hello"s >> passthrough * remove('l') * passthrough >> overwrite(s));  TEST_EQUAL(s, "Heo");
+
+    s = "Hello";  TRY(s << remove('l'));  TEST_EQUAL(s, "Heo");
+
+}
+
 void test_core_range_selection_sample() {
 
     std::vector<int> v1(100), v2, v3;

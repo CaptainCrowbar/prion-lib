@@ -562,6 +562,11 @@ reflex forms.</p>
 </tr>
 <tr>
 <td></td>
+<td><code>R &gt;&gt;</code> <strong><code>remove</code></strong><code>(T) -&gt; CFR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>remove</code></strong><code>(T)</code></td>
+</tr>
+<tr>
+<td></td>
 <td><code>RR &gt;&gt;</code> <strong><code>sample_k</code></strong><code>(N,RNG) -&gt; TRR</code></td>
 <td><code>C&amp; &lt;&lt;</code> <strong><code>sample_k</code></strong><code>(N,RNG)</code></td>
 </tr>
@@ -1149,6 +1154,13 @@ probability <code>p</code>; behaviour is undefined if <code>p&lt;0</code> or <co
 <code>sample_replace()</code> algorithm selects a random element <code>k</code> times, with
 replacement. For the first two the elements in the output range are in the
 same order as they were in the input.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>remove</code></strong><code>(T t) -&gt; ConditionalForwardRange</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>remove</code></strong><code>(T t)</code></li>
+</ul>
+<p>Remove all elements equal to the argument.</p>
 </div>
 <div class="defns">
 <ul>

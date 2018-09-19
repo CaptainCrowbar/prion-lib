@@ -151,18 +151,18 @@ namespace RS::Range {
     };
 
     template <typename Range, typename Predicate>
-    class SelectIterator:
-    public ForwardIterator<SelectIterator<Range, Predicate>, const Meta::RangeValue<Range>> {
+    class FilterIterator:
+    public ForwardIterator<FilterIterator<Range, Predicate>, const Meta::RangeValue<Range>> {
     public:
         using iterator_category = Meta::MinCategory<Range, std::forward_iterator_tag>;
         using underlying_iterator = Meta::RangeIterator<const Range>;
         using value_type = Meta::RangeValue<Range>;
         using predicate_type = std::function<bool(const value_type&)>;
-        SelectIterator() = default;
-        SelectIterator(underlying_iterator i, underlying_iterator e, Predicate p, bool s): iter(i), end(e), pred(p), sense(s) { update(); }
+        FilterIterator() = default;
+        FilterIterator(underlying_iterator i, underlying_iterator e, Predicate p, bool s): iter(i), end(e), pred(p), sense(s) { update(); }
         const auto& operator*() const noexcept { return *iter; }
-        SelectIterator& operator++() { ++iter; update(); return *this; }
-        bool operator==(const SelectIterator& rhs) const noexcept { return iter == rhs.iter; }
+        FilterIterator& operator++() { ++iter; update(); return *this; }
+        bool operator==(const FilterIterator& rhs) const noexcept { return iter == rhs.iter; }
     private:
         underlying_iterator iter;
         underlying_iterator end;
@@ -172,7 +172,7 @@ namespace RS::Range {
     };
 
     template <typename Range, typename Predicate>
-    Irange<SelectIterator<Range, Predicate>> operator>>(const Range& lhs, FilterObject<Predicate> rhs) {
+    Irange<FilterIterator<Range, Predicate>> operator>>(const Range& lhs, FilterObject<Predicate> rhs) {
         using std::begin;
         using std::end;
         auto b = begin(lhs), e = end(lhs);
@@ -181,11 +181,7 @@ namespace RS::Range {
 
     template <typename Container, typename Predicate>
     Container& operator<<(Container& lhs, FilterObject<Predicate> rhs) {
-        using std::begin;
-        using std::end;
-        Container temp;
-        std::copy_if(begin(lhs), end(lhs), append(temp), [=] (auto& x) { return rhs.pred(x) == rhs.sense; });
-        lhs = move(temp);
+        lhs.erase(std::remove_if(lhs.begin(), lhs.end(), [=] (auto& x) { return rhs.pred(x) != rhs.sense; }), lhs.end());
         return lhs;
     }
 
@@ -232,15 +228,59 @@ namespace RS::Range {
 
     template <typename Container>
     Container& operator<<(Container& lhs, NotNullObject) {
-        using std::begin;
-        using std::end;
-        Container temp;
-        std::copy_if(begin(lhs), end(lhs), append(temp), [] (auto& t) { return !!t; });
-        lhs = move(temp);
+        lhs.erase(std::remove_if(lhs.begin(), lhs.end(), [=] (auto& x) { return ! bool(x); }), lhs.end());
         return lhs;
     }
 
     constexpr NotNullObject not_null = {};
+
+    // remove
+
+    template <typename T>
+    struct RemoveObject:
+    AlgorithmBase<RemoveObject<T>> {
+        T value;
+        RemoveObject(const T& t): value(t) {}
+    };
+
+    template <typename Range, typename T>
+    class RemoveIterator:
+    public ForwardIterator<RemoveIterator<Range, T>, const Meta::RangeValue<Range>> {
+    public:
+        using iterator_category = Meta::MinCategory<Range, std::forward_iterator_tag>;
+        using underlying_iterator = Meta::RangeIterator<const Range>;
+        using value_type = Meta::RangeValue<Range>;
+        using predicate_type = std::function<bool(const value_type&)>;
+        RemoveIterator() = default;
+        RemoveIterator(underlying_iterator i, underlying_iterator e, const T& t): iter(i), end(e), value(t) { update(); }
+        const auto& operator*() const noexcept { return *iter; }
+        RemoveIterator& operator++() { ++iter; update(); return *this; }
+        bool operator==(const RemoveIterator& rhs) const noexcept { return iter == rhs.iter; }
+    private:
+        underlying_iterator iter;
+        underlying_iterator end;
+        T value;
+        void update() { while (iter != end && *iter == value) ++iter; }
+    };
+
+    template <typename Range, typename T>
+    Irange<RemoveIterator<Range, T>> operator>>(const Range& lhs, RemoveObject<T> rhs) {
+        using std::begin;
+        using std::end;
+        auto b = begin(lhs), e = end(lhs);
+        return {{b, e, rhs.value}, {e, e, rhs.value}};
+    }
+
+    template <typename Container, typename T>
+    Container& operator<<(Container& lhs, RemoveObject<T> rhs) {
+        lhs.erase(std::remove(lhs.begin(), lhs.end(), rhs.value), lhs.end());
+        return lhs;
+    }
+
+    template <typename T>
+    inline RemoveObject<T> remove(const T& t) {
+        return {t};
+    }
 
     // sample_k
 

@@ -295,6 +295,7 @@ extern void test_core_range_reduction_sum_product();
 extern void test_core_range_selection_before_etc();
 extern void test_core_range_selection_filter();
 extern void test_core_range_selection_not_null();
+extern void test_core_range_selection_remove();
 extern void test_core_range_selection_sample();
 extern void test_core_range_selection_skip_take();
 extern void test_core_range_selection_stride();
@@ -687,6 +688,7 @@ int main() {
         { "core/range-selection/before-etc", test_core_range_selection_before_etc },
         { "core/range-selection/filter", test_core_range_selection_filter },
         { "core/range-selection/not-null", test_core_range_selection_not_null },
+        { "core/range-selection/remove", test_core_range_selection_remove },
         { "core/range-selection/sample", test_core_range_selection_sample },
         { "core/range-selection/skip-take", test_core_range_selection_skip_take },
         { "core/range-selection/stride", test_core_range_selection_stride },

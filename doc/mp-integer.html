@@ -109,7 +109,8 @@ could be.</p>
 <li><code>Ustring</code> <strong><code>hex</code></strong><code>(const Nat&amp; x, size_t digits = 1)</code></li>
 <li><code>Ustring</code> <strong><code>to_str</code></strong><code>(const Nat&amp; x)</code></li>
 <li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const Nat&amp; x)</code></li>
-<li><code>struct</code> <strong><code>std::hash</code></strong><code>&lt;Nat&gt;</code></li>
+<li><code>struct std::</code><strong><code>hash</code></strong><code>&lt;Nat&gt;</code></li>
+<li><code>class std::</code><strong><code>numeric_limits</code></strong><code>&lt;Nat&gt;</code></li>
 </ul>
 <p>An arbitrary precision unsigned integer (natural number). Most of its methods
 are conventional arithmetic operations with their natural behaviour.</p>
@@ -201,7 +202,8 @@ is undefined if <code>n&lt;1</code>.</p>
 <li><code>Ustring</code> <strong><code>hex</code></strong><code>(const Int&amp; x, size_t digits = 1)</code></li>
 <li><code>Ustring</code> <strong><code>to_str</code></strong><code>(const Int&amp; x)</code></li>
 <li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const Int&amp; x)</code></li>
-<li><code>struct</code> <strong><code>std::hash</code></strong><code>&lt;Int&gt;</code></li>
+<li><code>struct std::</code><strong><code>hash</code></strong><code>&lt;Int&gt;</code></li>
+<li><code>class std::</code><strong><code>numeric_limits</code></strong><code>&lt;Int&gt;</code></li>
 </ul>
 <p>An arbitrary precision signed integer. Most of its operations do the same
 thing as the corresponding functions on <code>Nat</code> or plain <code>int</code>.</p>

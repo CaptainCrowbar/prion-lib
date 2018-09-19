@@ -21,6 +21,7 @@
 <li><a href="#integer-types">Integer types</a></li>
 <li><a href="#exceptions">Exceptions</a></li>
 <li><a href="#metaprogramming-and-type-traits">Metaprogramming and type traits</a></li>
+<li><a href="#mixins">Mixins</a></li>
 <li><a href="#smart-pointers">Smart pointers</a></li>
 <li><a href="#type-adapters">Type adapters</a></li>
 <li><a href="#type-related-functions">Type related functions</a></li>
@@ -251,6 +252,61 @@ const string&gt;</code> yields <code>string</code>, while <code>CopyConst&lt;con
 <p>Signed and unsigned integer types with the specified number of bits (the same
 types as <code>int8_t</code>, <code>int16_t</code>, etc). These will fail to compile if <code>Bits</code> is
 not a power of 2 in the supported range (8-64).</p>
+</div>
+<h3 id="mixins">Mixins</h3>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>NumericLimitsBase</code></strong><ul>
+<li><em>Universal properties</em><ul>
+<li><code>static constexpr bool is_specialized = true                                   // Always true</code></li>
+<li><code>static constexpr bool is_bounded = false                                      // Finite set of values</code></li>
+<li><code>static constexpr bool is_exact = false                                        // Exact representation</code></li>
+<li><code>static constexpr bool is_integer = false                                      // Integer type</code></li>
+<li><code>static constexpr bool is_modulo = false                                       // Modulo arithmetic</code></li>
+<li><code>static constexpr bool is_signed = false                                       // Signed type</code></li>
+<li><code>static constexpr bool traps = false                                           // Trap values exist</code></li>
+<li><code>static constexpr int radix = 0                                                // Basis of representation</code></li>
+</ul>
+</li>
+<li><em>Bounded type properties</em><ul>
+<li><code>static constexpr int digits = 0                                               // Radix digits in significand</code></li>
+<li><code>static constexpr int digits10 = 0                                             // Decimals represented without loss</code></li>
+<li><code>static constexpr T lowest() noexcept { return T(); }                          // Minimum finite value</code></li>
+<li><code>static constexpr T max() noexcept { return T(); }                             // Maximum finite value</code></li>
+<li><code>static constexpr T min() noexcept { return T(); }                             // Minimum finite integer or positive float</code></li>
+</ul>
+</li>
+<li><em>Floating point properties</em><ul>
+<li><code>static constexpr bool has_denorm_loss = false                                 // Loss of accuracy as denormalization</code></li>
+<li><code>static constexpr bool has_infinity = false                                    // Has positive infinity</code></li>
+<li><code>static constexpr bool has_quiet_NaN = false                                   // Has quiet NaN</code></li>
+<li><code>static constexpr bool has_signaling_NaN = false                               // Has signalling NaN</code></li>
+<li><code>static constexpr bool is_iec559 = false                                       // IEC 559 standard</code></li>
+<li><code>static constexpr bool tinyness_before = false                                 // Tinyness is detected before rounding</code></li>
+<li><code>static constexpr int max_digits10 = 0                                         // Decimals required for different values</code></li>
+<li><code>static constexpr int max_exponent = 0                                         // Maximum exponent</code></li>
+<li><code>static constexpr int max_exponent10 = 0                                       // Maximum decimal exponent</code></li>
+<li><code>static constexpr int min_exponent = 0                                         // Minimum exponent</code></li>
+<li><code>static constexpr int min_exponent10 = 0                                       // Minimum decimal exponent</code></li>
+<li><code>static constexpr std::float_denorm_style has_denorm = std::denorm_absent      // Has denormalized values</code></li>
+<li><code>static constexpr std::float_round_style round_style = std::round_toward_zero  // Rounding style</code></li>
+<li><code>static constexpr T denorm_min() noexcept { return T(); }                      // Minimum positive subnormal value</code></li>
+<li><code>static constexpr T epsilon() noexcept { return T(); }                         // Difference between 1 and next value</code></li>
+<li><code>static constexpr T infinity() noexcept { return T(); }                        // Positive infinity</code></li>
+<li><code>static constexpr T quiet_NaN() noexcept { return T(); }                       // Quiet NaN</code></li>
+<li><code>static constexpr T round_error() noexcept { return T(); }                     // Maximum rounding error</code></li>
+<li><code>static constexpr T signaling_NaN() noexcept { return T(); }                   // Signalling NaN</code></li>
+</ul>
+</li>
+<li><em>Helper functions</em><ul>
+<li><code>protected static constexpr int digits2_to_10(size_t bits) noexcept            // Convert bit count to decimal digits</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>A convenience class to help define specializations of <code>std::numeric_limits</code>
+for new arithmetic types.</p>
 </div>
 <h3 id="smart-pointers">Smart pointers</h3>
 <div class="defns">

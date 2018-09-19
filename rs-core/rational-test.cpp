@@ -207,3 +207,33 @@ void test_core_rational_hash_set() {
     TEST_EQUAL(ratset.size(), 10);
 
 }
+
+void test_core_rational_numeric_limits() {
+
+    using limits_rat64 = std::numeric_limits<Rat64>;
+    using limits_urat64 = std::numeric_limits<Urat64>;
+
+    constexpr uint64_t max63 = 0x7fff'ffff'ffff'ffffull;
+    constexpr uint64_t max64 = 0xffff'ffff'ffff'ffffull;
+
+    TEST(limits_rat64::is_specialized);
+    TEST(limits_rat64::is_bounded);
+    TEST(! limits_rat64::is_integer);
+    TEST(limits_rat64::is_signed);
+    TEST_EQUAL(limits_rat64::digits, 63);
+    TEST_EQUAL(limits_rat64::digits10, 18);
+    TEST_EQUAL(limits_rat64::lowest(), Rat64(- int64_t(max63) - 1));
+    TEST_EQUAL(limits_rat64::min(), Rat64(1) / Rat64(int64_t(max63)));
+    TEST_EQUAL(limits_rat64::max(), Rat64(int64_t(max63)));
+
+    TEST(limits_urat64::is_specialized);
+    TEST(limits_urat64::is_bounded);
+    TEST(! limits_urat64::is_integer);
+    TEST(! limits_urat64::is_signed);
+    TEST_EQUAL(limits_urat64::digits, 64);
+    TEST_EQUAL(limits_urat64::digits10, 19);
+    TEST_EQUAL(limits_urat64::lowest(), Urat64());
+    TEST_EQUAL(limits_urat64::min(), Urat64(1) / Urat64(max64));
+    TEST_EQUAL(limits_urat64::max(), Urat64(max64));
+
+}

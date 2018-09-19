@@ -207,6 +207,50 @@ namespace RS {
     template <size_t Bits> using SignedInteger = typename RS_Detail::IntegerType<Bits>::signed_type;
     template <size_t Bits> using UnsignedInteger = typename RS_Detail::IntegerType<Bits>::unsigned_type;
 
+    // Mixins
+
+    template <typename T>
+    class NumericLimitsBase {
+    public:
+        // Universal properties
+        static constexpr bool is_specialized = true;                                   // Always true
+        static constexpr bool is_bounded = false;                                      // Finite set of values
+        static constexpr bool is_exact = false;                                        // Exact representation
+        static constexpr bool is_integer = false;                                      // Integer type
+        static constexpr bool is_modulo = false;                                       // Modulo arithmetic
+        static constexpr bool is_signed = false;                                       // Signed type
+        static constexpr bool traps = false;                                           // Trap values exist
+        static constexpr int radix = 0;                                                // Basis of representation
+        // Bounded type properties
+        static constexpr int digits = 0;                                               // Radix digits in significand
+        static constexpr int digits10 = 0;                                             // Decimals represented without loss
+        static constexpr T lowest() noexcept { return T(); }                           // Minimum finite value
+        static constexpr T max() noexcept { return T(); }                              // Maximum finite value
+        static constexpr T min() noexcept { return T(); }                              // Minimum finite integer or positive float
+        // Floating point properties
+        static constexpr bool has_denorm_loss = false;                                 // Loss of accuracy as denormalization
+        static constexpr bool has_infinity = false;                                    // Has positive infinity
+        static constexpr bool has_quiet_NaN = false;                                   // Has quiet NaN
+        static constexpr bool has_signaling_NaN = false;                               // Has signalling NaN
+        static constexpr bool is_iec559 = false;                                       // IEC 559 standard
+        static constexpr bool tinyness_before = false;                                 // Tinyness is detected before rounding
+        static constexpr int max_digits10 = 0;                                         // Decimals required for different values
+        static constexpr int max_exponent = 0;                                         // Maximum exponent
+        static constexpr int max_exponent10 = 0;                                       // Maximum decimal exponent
+        static constexpr int min_exponent = 0;                                         // Minimum exponent
+        static constexpr int min_exponent10 = 0;                                       // Minimum decimal exponent
+        static constexpr std::float_denorm_style has_denorm = std::denorm_absent;      // Has denormalized values
+        static constexpr std::float_round_style round_style = std::round_toward_zero;  // Rounding style
+        static constexpr T denorm_min() noexcept { return T(); }                       // Minimum positive subnormal value
+        static constexpr T epsilon() noexcept { return T(); }                          // Difference between 1 and next value
+        static constexpr T infinity() noexcept { return T(); }                         // Positive infinity
+        static constexpr T quiet_NaN() noexcept { return T(); }                        // Quiet NaN
+        static constexpr T round_error() noexcept { return T(); }                      // Maximum rounding error
+        static constexpr T signaling_NaN() noexcept { return T(); }                    // Signalling NaN
+    protected:
+        static constexpr int digits2_to_10(size_t bits) noexcept { return int(bits * 12655ull / 42039ull); }
+    };
+
     // Smart pointers
 
     template <typename T>

@@ -566,4 +566,44 @@ namespace std {
         size_t operator()(const RS::LargeBinary<N>& x) const noexcept { return x.hash(); }
     };
 
+    template <size_t N>
+    class numeric_limits<RS::SmallBinary<N>>:
+    public RS::NumericLimitsBase<RS::SmallBinary<N>> {
+    private:
+        using type                               = RS::SmallBinary<N>;
+        using base                               = RS::NumericLimitsBase<type>;
+    public:
+        static constexpr bool is_bounded         = true;
+        static constexpr bool is_exact           = true;
+        static constexpr bool is_integer         = true;
+        static constexpr bool is_modulo          = true;
+        static constexpr bool is_signed          = false;
+        static constexpr int digits              = N;
+        static constexpr int digits10            = base::digits2_to_10(N);
+        static constexpr int radix               = 2;
+        static constexpr type lowest() noexcept  { return type(); }
+        static constexpr type max() noexcept     { return ~ type(); }
+        static constexpr type min() noexcept     { return type(); }
+    };
+
+    template <size_t N>
+    class numeric_limits<RS::LargeBinary<N>>:
+    public RS::NumericLimitsBase<RS::LargeBinary<N>> {
+    private:
+        using type                               = RS::LargeBinary<N>;
+        using base                               = RS::NumericLimitsBase<type>;
+    public:
+        static constexpr bool is_bounded         = true;
+        static constexpr bool is_exact           = true;
+        static constexpr bool is_integer         = true;
+        static constexpr bool is_modulo          = true;
+        static constexpr bool is_signed          = false;
+        static constexpr int digits              = N;
+        static constexpr int digits10            = base::digits2_to_10(N);
+        static constexpr int radix               = 2;
+        static constexpr type lowest() noexcept  { return type(); }
+        static constexpr type max() noexcept     { return ~ type(); }
+        static constexpr type min() noexcept     { return type(); }
+    };
+
 }

@@ -98,7 +98,7 @@ Convert a rational to an integer. These follow the rules implied by the names
 of the functions; `round()` rounds halves toward positive infinity.
 
 * `size_t Rational::`**`hash`**`() const noexcept`
-* `struct` **`std::hash`**`<Rational>`
+* `struct std::`**`hash`**`<Rational>`
 
 Hash function.
 
@@ -147,3 +147,7 @@ expresses it as a pure ratio (e.g. `"13/5"`). The `str()` format and the
 output operator will write the rational as a simple integer if it has no
 fractional part, otherwise they use the `simple()` format. All of these call
 `to_str(T)`.
+
+* `class std::`**`numeric_limits`**`<Rational>`
+
+Specializations of numeric limits.

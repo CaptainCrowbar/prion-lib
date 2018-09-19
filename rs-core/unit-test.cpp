@@ -82,6 +82,7 @@ extern void test_core_fixed_binary_random_arithmetic_tests();
 extern void test_core_fixed_binary_type_conversions();
 extern void test_core_fixed_binary_string_parsing();
 extern void test_core_fixed_binary_hash_set();
+extern void test_core_fixed_binary_numeric_limits();
 extern void test_core_float_arithmetic_constants();
 extern void test_core_float_arithmetic_functions();
 extern void test_core_float_arithmetic_literals();
@@ -99,6 +100,7 @@ extern void test_core_int128_uint128_basics();
 extern void test_core_int128_uint128_arithmetic();
 extern void test_core_int128_uint128_conversion();
 extern void test_core_int128_uint128_literals();
+extern void test_core_int128_uint128_numeric_limits();
 extern void test_core_io_cstdio();
 extern void test_core_io_fdio();
 extern void test_core_io_pipe();
@@ -168,6 +170,7 @@ extern void test_core_mp_integer_signed_random();
 extern void test_core_mp_integer_literals();
 extern void test_core_mp_integer_core_functions();
 extern void test_core_mp_integer_hash_set();
+extern void test_core_mp_integer_numeric_limits();
 extern void test_core_mp_integer_rational_basics();
 extern void test_core_mp_integer_rational_reduction();
 extern void test_core_mp_integer_rational_arithmetic();
@@ -315,6 +318,7 @@ extern void test_core_rational_comparison();
 extern void test_core_rational_mixed();
 extern void test_core_rational_parsing();
 extern void test_core_rational_hash_set();
+extern void test_core_rational_numeric_limits();
 extern void test_core_ring_buffer_basics();
 extern void test_core_ring_buffer_accounting_with_copy();
 extern void test_core_ring_buffer_accounting_with_move();
@@ -470,6 +474,7 @@ int main() {
         { "core/fixed-binary/type-conversions", test_core_fixed_binary_type_conversions },
         { "core/fixed-binary/string-parsing", test_core_fixed_binary_string_parsing },
         { "core/fixed-binary/hash-set", test_core_fixed_binary_hash_set },
+        { "core/fixed-binary/numeric-limits", test_core_fixed_binary_numeric_limits },
         { "core/float/arithmetic-constants", test_core_float_arithmetic_constants },
         { "core/float/arithmetic-functions", test_core_float_arithmetic_functions },
         { "core/float/arithmetic-literals", test_core_float_arithmetic_literals },
@@ -487,6 +492,7 @@ int main() {
         { "core/int128/uint128-arithmetic", test_core_int128_uint128_arithmetic },
         { "core/int128/uint128-conversion", test_core_int128_uint128_conversion },
         { "core/int128/uint128-literals", test_core_int128_uint128_literals },
+        { "core/int128/uint128-numeric-limits", test_core_int128_uint128_numeric_limits },
         { "core/io/cstdio", test_core_io_cstdio },
         { "core/io/fdio", test_core_io_fdio },
         { "core/io/pipe", test_core_io_pipe },
@@ -556,6 +562,7 @@ int main() {
         { "core/mp-integer/literals", test_core_mp_integer_literals },
         { "core/mp-integer/core-functions", test_core_mp_integer_core_functions },
         { "core/mp-integer/hash-set", test_core_mp_integer_hash_set },
+        { "core/mp-integer/numeric-limits", test_core_mp_integer_numeric_limits },
         { "core/mp-integer/rational-basics", test_core_mp_integer_rational_basics },
         { "core/mp-integer/rational-reduction", test_core_mp_integer_rational_reduction },
         { "core/mp-integer/rational-arithmetic", test_core_mp_integer_rational_arithmetic },
@@ -703,6 +710,7 @@ int main() {
         { "core/rational/mixed", test_core_rational_mixed },
         { "core/rational/parsing", test_core_rational_parsing },
         { "core/rational/hash-set", test_core_rational_hash_set },
+        { "core/rational/numeric-limits", test_core_rational_numeric_limits },
         { "core/ring-buffer/basics", test_core_ring_buffer_basics },
         { "core/ring-buffer/accounting-with-copy", test_core_ring_buffer_accounting_with_copy },
         { "core/ring-buffer/accounting-with-move", test_core_ring_buffer_accounting_with_move },

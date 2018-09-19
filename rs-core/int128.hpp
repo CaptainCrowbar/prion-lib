@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rs-core/common.hpp"
+#include <limits>
 #include <ostream>
 #include <utility>
 
@@ -186,6 +187,30 @@ namespace RS {
         }
 
     }
+
+}
+
+namespace std {
+
+    template <>
+    class numeric_limits<RS::Uint128>:
+    public RS::NumericLimitsBase<RS::Uint128> {
+    private:
+        using type                               = RS::Uint128;
+        using base                               = RS::NumericLimitsBase<type>;
+    public:
+        static constexpr bool is_bounded         = true;
+        static constexpr bool is_exact           = true;
+        static constexpr bool is_integer         = true;
+        static constexpr bool is_modulo          = true;
+        static constexpr bool is_signed          = false;
+        static constexpr int digits              = 128;
+        static constexpr int digits10            = 38;
+        static constexpr int radix               = 2;
+        static constexpr type lowest() noexcept  { return type(); }
+        static constexpr type max() noexcept     { return ~ type(); }
+        static constexpr type min() noexcept     { return type(); }
+    };
 
 }
 

@@ -851,3 +851,55 @@ void test_core_fixed_binary_hash_set() {
     TEST_EQUAL(set_l500.size(), 10);
 
 }
+
+void test_core_fixed_binary_numeric_limits() {
+
+    using s32 = SmallBinary<32>;
+    using s64 = SmallBinary<64>;
+    using l64 = LargeBinary<64>;
+    using l128 = LargeBinary<128>;
+    using limits_s32 = std::numeric_limits<s32>;
+    using limits_s64 = std::numeric_limits<s64>;
+    using limits_l64 = std::numeric_limits<l64>;
+    using limits_l128 = std::numeric_limits<l128>;
+
+    constexpr uint32_t max32 = 0xffff'fffful;
+    constexpr uint64_t max64 = 0xffff'ffff'ffff'ffffull;
+
+    TEST(limits_s32::is_specialized);
+    TEST(limits_s32::is_bounded);
+    TEST(limits_s32::is_integer);
+    TEST(! limits_s32::is_signed);
+    TEST_EQUAL(limits_s32::digits, 32);
+    TEST_EQUAL(limits_s32::digits10, 9);
+    TEST_EQUAL(limits_s32::min(), s32(0));
+    TEST_EQUAL(limits_s32::max(), s32(max32));
+
+    TEST(limits_s64::is_specialized);
+    TEST(limits_s64::is_bounded);
+    TEST(limits_s64::is_integer);
+    TEST(! limits_s64::is_signed);
+    TEST_EQUAL(limits_s64::digits, 64);
+    TEST_EQUAL(limits_s64::digits10, 19);
+    TEST_EQUAL(limits_s64::min(), s64(0));
+    TEST_EQUAL(limits_s64::max(), s64(max64));
+
+    TEST(limits_l64::is_specialized);
+    TEST(limits_l64::is_bounded);
+    TEST(limits_l64::is_integer);
+    TEST(! limits_l64::is_signed);
+    TEST_EQUAL(limits_l64::digits, 64);
+    TEST_EQUAL(limits_l64::digits10, 19);
+    TEST_EQUAL(limits_l64::min(), l64(0));
+    TEST_EQUAL(limits_l64::max(), l64(max64));
+
+    TEST(limits_l128::is_specialized);
+    TEST(limits_l128::is_bounded);
+    TEST(limits_l128::is_integer);
+    TEST(! limits_l128::is_signed);
+    TEST_EQUAL(limits_l128::digits, 128);
+    TEST_EQUAL(limits_l128::digits10, 38);
+    TEST_EQUAL(limits_l128::min(), l128(0));
+    TEST_EQUAL(limits_l128::max(), (l128{max64, max64}));
+
+}

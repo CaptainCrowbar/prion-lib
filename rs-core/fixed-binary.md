@@ -180,3 +180,7 @@ Generate a random integer. The first version generates a random value from the
 whole range of the type; the second generates a value from zero to `x-1` (this
 will always return zero if `x<2`); the third returns a value from `x` to `y`
 inclusive (the bounds can be supplied in either order).
+
+* `class std::`**`numeric_limits`**`<Binary>`
+
+Specializations of numeric limits.

@@ -4,6 +4,7 @@
 #include "rs-core/string.hpp"
 #include <algorithm>
 #include <functional>
+#include <limits>
 #include <ostream>
 #include <stdexcept>
 #include <vector>
@@ -246,6 +247,27 @@ namespace std {
     template <typename T>
     struct hash<RS::Rational<T>> {
         size_t operator()(const RS::Rational<T>& x) const noexcept { return x.hash(); }
+    };
+
+    template <typename T>
+    class numeric_limits<RS::Rational<T>>:
+    public RS::NumericLimitsBase<RS::Rational<T>> {
+    private:
+        using type                               = RS::Rational<T>;
+        using base                               = RS::NumericLimitsBase<type>;
+        using t_limits                           = std::numeric_limits<T>;
+    public:
+        static constexpr bool is_bounded         = t_limits::is_bounded;
+        static constexpr bool is_exact           = true;
+        static constexpr bool is_integer         = false;
+        static constexpr bool is_modulo          = false;
+        static constexpr bool is_signed          = t_limits::is_signed;
+        static constexpr int digits              = t_limits::digits;
+        static constexpr int digits10            = t_limits::digits10;
+        static constexpr int radix               = t_limits::radix;
+        static constexpr type lowest() noexcept  { return is_signed ? type(t_limits::min()) : type(); }
+        static constexpr type max() noexcept     { return is_bounded ? type(t_limits::max()) : type(); }
+        static constexpr type min() noexcept     { return is_bounded ? type(T(1)) / type(t_limits::max()) : type(); }
     };
 
 }

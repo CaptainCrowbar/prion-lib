@@ -88,7 +88,8 @@ could be.
 * `Ustring` **`hex`**`(const Nat& x, size_t digits = 1)`
 * `Ustring` **`to_str`**`(const Nat& x)`
 * `std::ostream&` **`operator<<`**`(std::ostream& out, const Nat& x)`
-* `struct` **`std::hash`**`<Nat>`
+* `struct std::`**`hash`**`<Nat>`
+* `class std::`**`numeric_limits`**`<Nat>`
 
 An arbitrary precision unsigned integer (natural number). Most of its methods
 are conventional arithmetic operations with their natural behaviour.
@@ -187,7 +188,8 @@ is undefined if `n<1`.
 * `Ustring` **`hex`**`(const Int& x, size_t digits = 1)`
 * `Ustring` **`to_str`**`(const Int& x)`
 * `std::ostream&` **`operator<<`**`(std::ostream& out, const Int& x)`
-* `struct` **`std::hash`**`<Int>`
+* `struct std::`**`hash`**`<Int>`
+* `class std::`**`numeric_limits`**`<Int>`
 
 An arbitrary precision signed integer. Most of its operations do the same
 thing as the corresponding functions on `Nat` or plain `int`.

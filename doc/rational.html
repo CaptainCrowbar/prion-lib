@@ -133,7 +133,7 @@ of the functions; <code>round()</code> rounds halves toward positive infinity.</
 <div class="defns">
 <ul>
 <li><code>size_t Rational::</code><strong><code>hash</code></strong><code>() const noexcept</code></li>
-<li><code>struct</code> <strong><code>std::hash</code></strong><code>&lt;Rational&gt;</code></li>
+<li><code>struct std::</code><strong><code>hash</code></strong><code>&lt;Rational&gt;</code></li>
 </ul>
 <p>Hash function.</p>
 </div>
@@ -193,5 +193,11 @@ rational as an integer and a fraction (e.g. <code>"2 3/5"</code>); the <code>sim
 expresses it as a pure ratio (e.g. <code>"13/5"</code>). The <code>str()</code> format and the
 output operator will write the rational as a simple integer if it has no
 fractional part, otherwise they use the <code>simple()</code> format. All of these call
-<code>to_str(T)</code>.</p></body>
+<code>to_str(T)</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>class std::</code><strong><code>numeric_limits</code></strong><code>&lt;Rational&gt;</code></li>
+</ul>
+<p>Specializations of numeric limits.</p></body>
 </html>

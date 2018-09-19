@@ -220,3 +220,20 @@ void test_core_int128_uint128_literals() {
     TRY(x = 0xfffffffffffffffffffffffffffffff0_u128);  TEST_EQUAL(hex(x), "fffffffffffffffffffffffffffffff0");
 
 }
+
+void test_core_int128_uint128_numeric_limits() {
+
+    using limits = std::numeric_limits<Uint128>;
+
+    constexpr uint64_t max64 = 0xffff'ffff'ffff'ffffull;
+
+    TEST(limits::is_specialized);
+    TEST(limits::is_bounded);
+    TEST(limits::is_integer);
+    TEST(! limits::is_signed);
+    TEST_EQUAL(limits::digits, 128);
+    TEST_EQUAL(limits::digits10, 38);
+    TEST_EQUAL(limits::min(), Uint128(0));
+    TEST_EQUAL(limits::max(), Uint128(max64, max64));
+
+}

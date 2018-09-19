@@ -882,6 +882,23 @@ void test_core_mp_integer_hash_set() {
 
 }
 
+void test_core_mp_integer_numeric_limits() {
+
+    using limits_nat = std::numeric_limits<Nat>;
+    using limits_int = std::numeric_limits<Int>;
+
+    TEST(limits_nat::is_specialized);
+    TEST(! limits_nat::is_bounded);
+    TEST(limits_nat::is_integer);
+    TEST(! limits_nat::is_signed);
+
+    TEST(limits_int::is_specialized);
+    TEST(! limits_int::is_bounded);
+    TEST(limits_int::is_integer);
+    TEST(limits_int::is_signed);
+
+}
+
 void test_core_mp_integer_rational_basics() {
 
     Ratmp r;

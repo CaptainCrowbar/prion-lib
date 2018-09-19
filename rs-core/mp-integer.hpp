@@ -4,6 +4,8 @@
 #include "rs-core/rational.hpp"
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
+#include <limits>
 #include <ostream>
 #include <random>
 #include <utility>
@@ -229,6 +231,40 @@ namespace RS {
     private:
         Int base;
         Nat range;
+    };
+
+}
+
+namespace std {
+
+    template <>
+    class numeric_limits<RS::Nat>:
+    public RS::NumericLimitsBase<RS::Nat> {
+    private:
+        using type                        = RS::Nat;
+        using base                        = RS::NumericLimitsBase<type>;
+    public:
+        static constexpr bool is_bounded  = false;
+        static constexpr bool is_exact    = true;
+        static constexpr bool is_integer  = true;
+        static constexpr bool is_modulo   = false;
+        static constexpr bool is_signed   = false;
+        static constexpr int radix        = 2;
+    };
+
+    template <>
+    class numeric_limits<RS::Int>:
+    public RS::NumericLimitsBase<RS::Int> {
+    private:
+        using type                        = RS::Int;
+        using base                        = RS::NumericLimitsBase<type>;
+    public:
+        static constexpr bool is_bounded  = false;
+        static constexpr bool is_exact    = true;
+        static constexpr bool is_integer  = true;
+        static constexpr bool is_modulo   = false;
+        static constexpr bool is_signed   = true;
+        static constexpr int radix        = 2;
     };
 
 }

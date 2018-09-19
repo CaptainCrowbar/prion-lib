@@ -148,7 +148,7 @@ namespace RS {
             }
             size_t lfpos = buf.find('\n', offset);
             if (lfpos != npos)
-                return buf.substr(0, lfpos);
+                return buf.substr(0, lfpos + 1);
             size_t ntpos = buf.find_last_not_of('\0') + 1;
             if (ntpos < block - 1)
                 return buf.substr(0, ntpos);

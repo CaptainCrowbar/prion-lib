@@ -57,8 +57,8 @@ void test_core_io_cstdio() {
     TRY(io = {});
 
     TRY(io = Cstdio(file));
-    TRY(text = io.read_line());  TEST(io.ok());  TEST_EQUAL(text, "Hello world");
-    TRY(text = io.read_line());  TEST(io.ok());  TEST_EQUAL(text, "Goodbye");
+    TRY(text = io.read_line());  TEST(io.ok());  TEST_EQUAL(text, "Hello world\n");
+    TRY(text = io.read_line());  TEST(io.ok());  TEST_EQUAL(text, "Goodbye\n");
     TRY(text = io.read_line());  TEST(io.ok());  TEST_EQUAL(text, "");
     TRY(io = {});
 
@@ -69,8 +69,9 @@ void test_core_io_cstdio() {
     TRY(io = Cstdio(file));
     auto lines = io.lines();
     TRY(std::copy(lines.begin(), lines.end(), overwrite(vec)));
-    TRY(text = to_str(vec));
-    TEST_EQUAL(text, "[Hello world,Goodbye]");
+    TEST_EQUAL(vec.size(), 2);
+    TEST_EQUAL(vec.at(0), "Hello world\n");
+    TEST_EQUAL(vec.at(1), "Goodbye\n");
     TRY(io = {});
 
     TRY(io = Cstdio(file));
@@ -134,8 +135,8 @@ void test_core_io_fdio() {
     TRY(io = {});
 
     TRY(io = Fdio(file));
-    TRY(text = io.read_line());  TEST(io.ok());  TEST_EQUAL(text, "Hello world");
-    TRY(text = io.read_line());  TEST(io.ok());  TEST_EQUAL(text, "Goodbye");
+    TRY(text = io.read_line());  TEST(io.ok());  TEST_EQUAL(text, "Hello world\n");
+    TRY(text = io.read_line());  TEST(io.ok());  TEST_EQUAL(text, "Goodbye\n");
     TRY(text = io.read_line());  TEST(io.ok());  TEST_EQUAL(text, "");
     TRY(io = {});
 
@@ -146,8 +147,9 @@ void test_core_io_fdio() {
     TRY(io = Fdio(file));
     auto lines = io.lines();
     TRY(std::copy(lines.begin(), lines.end(), overwrite(vec)));
-    TRY(text = to_str(vec));
-    TEST_EQUAL(text, "[Hello world,Goodbye]");
+    TEST_EQUAL(vec.size(), 2);
+    TEST_EQUAL(vec.at(0), "Hello world\n");
+    TEST_EQUAL(vec.at(1), "Goodbye\n");
     TRY(io = {});
 
     TRY(io = Fdio(file));
@@ -231,8 +233,8 @@ void test_core_io_winio() {
         TRY(io = {});
 
         TRY(io = Winio(file));
-        TRY(text = io.read_line());  TEST(io.ok());  TEST_EQUAL(text, "Hello world");
-        TRY(text = io.read_line());  TEST(io.ok());  TEST_EQUAL(text, "Goodbye");
+        TRY(text = io.read_line());  TEST(io.ok());  TEST_EQUAL(text, "Hello world\n");
+        TRY(text = io.read_line());  TEST(io.ok());  TEST_EQUAL(text, "Goodbye\n");
         TRY(text = io.read_line());  TEST(io.ok());  TEST_EQUAL(text, "");
         TRY(io = {});
 
@@ -397,16 +399,17 @@ void test_core_io_external_buffer() {
 
     TRY(buf.clear());
     TRY(buf.write_str("Hello world\nGoodbye\n"));
-    TRY(t = buf.read_line());  TEST(buf.ok());  TEST_EQUAL(t, "Hello world");
-    TRY(t = buf.read_line());  TEST(buf.ok());  TEST_EQUAL(t, "Goodbye");
+    TRY(t = buf.read_line());  TEST(buf.ok());  TEST_EQUAL(t, "Hello world\n");
+    TRY(t = buf.read_line());  TEST(buf.ok());  TEST_EQUAL(t, "Goodbye\n");
     TRY(t = buf.read_line());  TEST(buf.ok());  TEST_EQUAL(t, "");
 
     TRY(buf.clear());
     TRY(buf.write_str("Hello world\nGoodbye\n"));
     auto lines = buf.lines();
     TRY(std::copy(lines.begin(), lines.end(), overwrite(vec)));
-    TRY(t = to_str(vec));
-    TEST_EQUAL(t, "[Hello world,Goodbye]");
+    TEST_EQUAL(vec.size(), 2);
+    TEST_EQUAL(vec.at(0), "Hello world\n");
+    TEST_EQUAL(vec.at(1), "Goodbye\n");
 
 }
 
@@ -447,16 +450,17 @@ void test_core_io_internal_buffer() {
 
     TRY(buf.clear());
     TRY(buf.write_str("Hello world\nGoodbye\n"));
-    TRY(t = buf.read_line());  TEST_EQUAL(t, "Hello world");
-    TRY(t = buf.read_line());  TEST_EQUAL(t, "Goodbye");
+    TRY(t = buf.read_line());  TEST_EQUAL(t, "Hello world\n");
+    TRY(t = buf.read_line());  TEST_EQUAL(t, "Goodbye\n");
     TRY(t = buf.read_line());  TEST_EQUAL(t, "");
 
     TRY(buf.clear());
     TRY(buf.write_str("Hello world\nGoodbye\n"));
     auto lines = buf.lines();
     TRY(std::copy(lines.begin(), lines.end(), overwrite(vec)));
-    TRY(t = to_str(vec));
-    TEST_EQUAL(t, "[Hello world,Goodbye]");
+    TEST_EQUAL(vec.size(), 2);
+    TEST_EQUAL(vec.at(0), "Hello world\n");
+    TEST_EQUAL(vec.at(1), "Goodbye\n");
 
 }
 

@@ -67,12 +67,15 @@ True if the I/O stream is reading or writing to a terminal.
 Input functions. The `read()` function reads up to `maxlen` bytes into the
 destination buffer, returning the number of bytes actually read. The
 `read_line()` function reads up to the next line feed (or EOF), returning the
-line as a string (the line feed is discarded). The `getc()` function reads one
-byte, returning the byte value or `EOF`.
+line as a string (including the terminating line feed, if present). The
+`getc()` function reads one byte, returning the byte value or `EOF`.
 
 The `read_all()` function reads all available data until it reaches EOF or an
 error occurs. The `read_n()` and `read_str()` functions call `read()`, writing
 the incoming data into a string instead of a user supplied buffer.
+
+All of the `read*()` functions indicate end of file by returning an empty
+string or a zero byte count.
 
 * `virtual void IO::`**`seek`**`(ptrdiff_t offset, int which = SEEK_CUR) noexcept`
 * `virtual ptrdiff_t IO::`**`tell`**`() noexcept`

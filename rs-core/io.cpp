@@ -26,9 +26,11 @@ namespace RS {
         std::string s;
         for (;;) {
             int c = getc();
-            if (c == '\n' || c == EOF)
+            if (c == EOF)
                 break;
             s += char(c);
+            if (c == '\n')
+                break;
         }
         return s;
     }
@@ -215,7 +217,7 @@ namespace RS {
                 return buf.substr(0, offset);
             size_t lfpos = buf.find('\n', offset);
             if (lfpos != npos)
-                return buf.substr(0, lfpos);
+                return buf.substr(0, lfpos + 1);
             size_t ntpos = buf.find_last_not_of('\0') + 1;
             if (ntpos < block - 1)
                 return buf.substr(0, ntpos);
@@ -609,8 +611,8 @@ namespace RS {
             len = wpos - rpos;
             rpos = wpos;
         } else {
-            len = lfptr - begin();
-            rpos += len + 1;
+            len = lfptr - begin() + 1;
+            rpos += len;
         }
         return sptr->substr(ofs, len);
     }

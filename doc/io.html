@@ -105,11 +105,13 @@ class. Flushing an input stream usually does nothing.</p>
 <p>Input functions. The <code>read()</code> function reads up to <code>maxlen</code> bytes into the
 destination buffer, returning the number of bytes actually read. The
 <code>read_line()</code> function reads up to the next line feed (or EOF), returning the
-line as a string (the line feed is discarded). The <code>getc()</code> function reads one
-byte, returning the byte value or <code>EOF</code>.</p>
+line as a string (including the terminating line feed, if present). The
+<code>getc()</code> function reads one byte, returning the byte value or <code>EOF</code>.</p>
 <p>The <code>read_all()</code> function reads all available data until it reaches EOF or an
 error occurs. The <code>read_n()</code> and <code>read_str()</code> functions call <code>read()</code>, writing
 the incoming data into a string instead of a user supplied buffer.</p>
+<p>All of the <code>read*()</code> functions indicate end of file by returning an empty
+string or a zero byte count.</p>
 </div>
 <div class="defns">
 <ul>

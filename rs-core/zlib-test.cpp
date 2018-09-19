@@ -89,8 +89,8 @@ void test_core_zlib_io() {
     TRY(io = {});
 
     TRY(io = Gzio(file));
-    TRY(text = io.read_line());  TEST(io.ok());  TEST_EQUAL(text, "Hello world");
-    TRY(text = io.read_line());  TEST(io.ok());  TEST_EQUAL(text, "Goodbye");
+    TRY(text = io.read_line());  TEST(io.ok());  TEST_EQUAL(text, "Hello world\n");
+    TRY(text = io.read_line());  TEST(io.ok());  TEST_EQUAL(text, "Goodbye\n");
     TRY(text = io.read_line());  TEST(io.ok());  TEST_EQUAL(text, "");
     TRY(io = {});
 
@@ -101,8 +101,9 @@ void test_core_zlib_io() {
     TRY(io = Gzio(file));
     auto lines = io.lines();
     TRY(std::copy(lines.begin(), lines.end(), overwrite(vec)));
-    TRY(text = to_str(vec));
-    TEST_EQUAL(text, "[Hello world,Goodbye]");
+    TEST_EQUAL(vec.size(), 2);
+    TEST_EQUAL(vec.at(0), "Hello world\n");
+    TEST_EQUAL(vec.at(1), "Goodbye\n");
     TRY(io = {});
 
     TRY(io = Gzio(file));

@@ -78,6 +78,6 @@ void test_core_thread_pool_timing() {
     double each = total / double(iterations);
     double rate = 1e9 / each;
     (void)rate;
-    // std::cout << "... Calls per second = " << fp_format(rate, 'f', 0) << std::endl;
+    std::cout << "... Calls per second = " << fp_format(rate, 'f', 0) << std::endl;
 
 }

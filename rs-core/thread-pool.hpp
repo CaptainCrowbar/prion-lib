@@ -3,56 +3,41 @@
 #include "rs-core/common.hpp"
 #include "rs-core/time.hpp"
 #include <atomic>
-#include <chrono>
 #include <deque>
 #include <functional>
 #include <mutex>
 #include <thread>
-#include <utility>
 #include <vector>
 
 namespace RS {
 
-    class ThreadPool {
+    class ThreadPool:
+    public PollWait {
     public:
         RS_NO_COPY_MOVE(ThreadPool);
+        using callback = std::function<void()>;
         ThreadPool(): ThreadPool(0) {}
         explicit ThreadPool(size_t threads);
         ~ThreadPool() noexcept;
-        size_t size() const noexcept { return workers.size(); }
-        template <typename F> void insert(F&& f);
-        size_t pending() const noexcept { return queued; }
+        virtual bool poll() { return ! queued_jobs; }
         void clear() noexcept;
-        void wait() { poll.wait(); }
-        template <typename R, typename P> bool wait_for(std::chrono::duration<R, P> timeout) { return poll.wait_for(timeout); }
-        template <typename C, typename D> bool wait_until(std::chrono::time_point<C, D> timeout) { return poll.wait_until(timeout); }
+        void insert(const callback& call);
+        void insert(callback&& call);
+        size_t pending() const noexcept { return queued_jobs; }
+        size_t size() const noexcept { return workers.size(); }
     private:
-        using callback = std::function<void()>;
         struct worker {
             std::mutex mutex;
             std::deque<callback> queue;
             std::thread thread;
         };
-        std::atomic<size_t> hold;
-        std::atomic<size_t> index;
-        std::atomic<size_t> queued;
-        std::atomic<size_t> stop;
+        std::atomic<size_t> clear_count;
+        std::atomic<size_t> next_worker;
+        std::atomic<size_t> queued_jobs;
+        std::atomic<bool> shutting_down;
         std::vector<worker> workers;
-        PollCondition poll;
-        static size_t adjust_threads(size_t n) noexcept;
+        void thread_payload(worker& work) noexcept;
+        static size_t adjust_threads(size_t threads) noexcept;
     };
-
-        template <typename F>
-        void ThreadPool::insert(F&& f) {
-            if (hold)
-                return;
-            size_t i = index;
-            index = (i + 1) % workers.size();
-            auto& w = workers[i];
-            auto lock = make_lock(w.mutex);
-            callback c(std::forward<F>(f));
-            ++queued;
-            w.queue.push_back(std::move(c));
-        }
 
 }

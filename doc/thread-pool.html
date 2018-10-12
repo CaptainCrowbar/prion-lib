@@ -26,17 +26,16 @@
 <h2 id="class-threadpool">Class ThreadPool</h2>
 <div class="defns">
 <ul>
-<li><code>class</code> <strong><code>ThreadPool</code></strong><ul>
+<li><code>class</code> <strong><code>ThreadPool</code></strong><code>: public Wait</code><ul>
+<li><code>using ThreadPool::</code><strong><code>callback</code></strong><code>= std::function&lt;void()&gt;</code></li>
 <li><code>ThreadPool::</code><strong><code>ThreadPool</code></strong><code>()</code></li>
 <li><code>explicit ThreadPool::</code><strong><code>ThreadPool</code></strong><code>(size_t threads)</code></li>
 <li><code>ThreadPool::</code><strong><code>~ThreadPool</code></strong><code>() noexcept</code></li>
-<li><code>size_t ThreadPool::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
-<li><code>template &lt;typename F&gt; void ThreadPool::</code><strong><code>insert</code></strong><code>(F&amp;&amp; f)</code></li>
-<li><code>size_t ThreadPool::</code><strong><code>pending</code></strong><code>() const noexcept</code></li>
 <li><code>void ThreadPool::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
-<li><code>void ThreadPool::</code><strong><code>wait</code></strong><code>()</code></li>
-<li><code>template &lt;typename R, typename P&gt; bool ThreadPool::</code><strong><code>wait_for</code></strong><code>(std::chrono::duration&lt;R, P&gt; timeout)</code></li>
-<li><code>template &lt;typename C, typename D&gt; bool ThreadPool::</code><strong><code>wait_until</code></strong><code>(std::chrono::time_point&lt;C, D&gt; timeout)</code></li>
+<li><code>void ThreadPool::</code><strong><code>insert</code></strong><code>(const callback&amp; f)</code></li>
+<li><code>void ThreadPool::</code><strong><code>insert</code></strong><code>(callback&amp;&amp; f)</code></li>
+<li><code>size_t ThreadPool::</code><strong><code>pending</code></strong><code>() const noexcept</code></li>
+<li><code>size_t ThreadPool::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
 </ul>
 </li>
 </ul>
@@ -45,22 +44,21 @@ specified to the constructor. If no thread count is specified, or the count is
 zero, <code>std::thread::hardware_concurrency()</code> will be used. The <code>size()</code>
 function returns the thread count (always positive, and always constant for
 the lifetime of the <code>ThreadPool</code> object).</p>
-<p>The <code>insert()</code> function queues a job for execution. The argument is expected
-to be a function object that can be called with no arguments. Any return value
-or exception will be silently discarded when the job is called. Jobs are
-handled by a work stealing algorithm, and may not be executed in the order in
-which they were queued. The <code>pending()</code> function returns the number of jobs
-currently queued or executing.</p>
+<p>The <code>insert()</code> function queues a job for execution. Behaviour is undefined if
+a callback throws an exception. Jobs are processed by a work stealing
+algorithm, and may not be executed in the order in which they were queued. The
+<code>pending()</code> function returns the number of jobs currently queued or executing.</p>
 <p>The <code>clear()</code> function discards any queued jobs that have not yet been
 started, and waits for all currently executing jobs to finish before
 returning. After it returns, <code>pending()</code> will be zero; new jobs can be queued
-as usual afterwards. The destructor calls <code>clear()</code>.</p>
-<p>The wait functions will block until there are no queued or executing jobs
-left, or the timeout expires. The timed wait functions return true on success
-(no jobs left), false on timeout.</p>
+as usual afterwards. The destructor calls <code>clear()</code> and waits for it to
+finish.</p>
+<p>The <code>poll()</code> function (from <code>Wait</code>) returns true when there are no queued or
+executing jobs left; the wait functions will block until this is the case or
+the timeout expires.</p>
 <p>All member functions, except the constructors and destructor, are async safe
-and can be called from any thread. Functions other than <code>clear()</code> and
-<code>wait*()</code> can be called from inside an executing job. Although it is legal for
+and can be called from any thread. Functions other than <code>clear()</code> and the wait
+functions can be called from inside an executing job. Although it is legal for
 one thread to call <code>insert()</code> while another is calling <code>clear()</code>, the newly
 inserted job will probably be discarded without being executed.</p></body>
 </html>

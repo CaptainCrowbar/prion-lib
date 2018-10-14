@@ -88,10 +88,12 @@ symbol is not found. The second version returns the symbol by reference,
 returns a flag indicating whether or not the symbol was successfully loaded,
 and does not throw anything.
 
-It is up to the caller to ensure that the symbol type supplied matches that of
-the actual symbol in the library; there is no way to check that through the
-standard dynamic library API on any supported system. Behaviour is undefined
-if the types do not match.
+It is up to the caller to ensure that the symbol type supplied is compatible
+with that of the actual symbol in the library; there is no way to check this
+through the standard dynamic library API on any supported system. If the
+actual type is a function pointer (the usual case), the returned symbol type
+may be a compatible `std::function` instantiation. Behaviour is undefined if
+the types do not match.
 
 * `static Dso Dso::`**`search`**`(const Strings& names, flag_type flags = 0)`
 * `template <typename... Args> static Dso Dso::`**`search`**`(Args... args)`

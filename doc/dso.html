@@ -139,10 +139,12 @@ explicitly, and returns the symbol, or throws <code>std::system_error</code> if 
 symbol is not found. The second version returns the symbol by reference,
 returns a flag indicating whether or not the symbol was successfully loaded,
 and does not throw anything.</p>
-<p>It is up to the caller to ensure that the symbol type supplied matches that of
-the actual symbol in the library; there is no way to check that through the
-standard dynamic library API on any supported system. Behaviour is undefined
-if the types do not match.</p>
+<p>It is up to the caller to ensure that the symbol type supplied is compatible
+with that of the actual symbol in the library; there is no way to check this
+through the standard dynamic library API on any supported system. If the
+actual type is a function pointer (the usual case), the returned symbol type
+may be a compatible <code>std::function</code> instantiation. Behaviour is undefined if
+the types do not match.</p>
 </div>
 <div class="defns">
 <ul>

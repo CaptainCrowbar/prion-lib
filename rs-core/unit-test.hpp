@@ -2,6 +2,7 @@
 
 #include "rs-core/common.hpp"
 #include <algorithm>
+#include <array>
 #include <atomic>
 #include <chrono>
 #include <cstddef>
@@ -404,6 +405,17 @@ namespace RS {
             return i == e1 && j == e2;
         }
 
+        static std::string preformat_hex_bytes(const uint8_t* ptr, size_t len) {
+            static constexpr char digits[] = "0123456789abcdef";
+            std::string s;
+            s.reserve(2 * len);
+            for (size_t i = 0; i < len; ++i) {
+                s += digits[ptr[i] >> 4];
+                s += digits[ptr[i] & 15];
+            }
+            return s;
+        }
+
         template <typename C>
         static std::string preformat_string(const std::basic_string<C>& t) {
             using utype = std::make_unsigned_t<C>;
@@ -449,6 +461,8 @@ namespace RS {
         static std::string preformat(const char16_t* t) { return t ? preformat(std::u16string(t)) : "null"; }
         static std::string preformat(const char32_t* t) { return t ? preformat(std::u32string(t)) : "null"; }
         static std::string preformat(const wchar_t* t) { return t ? preformat(std::wstring(t)) : "null"; }
+        static std::string preformat(const std::vector<uint8_t>& t) { return preformat_hex_bytes(t.data(), t.size()); }
+        template <size_t N> static std::string preformat(const std::array<uint8_t, N>& t) { return preformat_hex_bytes(t.data(), t.size()); }
         static std::string preformat(std::nullptr_t) { return "null"; }
         template <typename T> static T preformat(const std::atomic<T>& t) { return t; }
 

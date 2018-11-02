@@ -20,7 +20,9 @@ $(BUILD)/common.o: rs-core/common.cpp rs-core/common.hpp \
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/compact-array-test.o: rs-core/compact-array-test.cpp rs-core/common.hpp rs-core/compact-array.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
-$(BUILD)/digest-test.o: rs-core/digest-test.cpp rs-core/common.hpp rs-core/digest.hpp rs-core/string.hpp rs-core/unit-test.hpp \
+$(BUILD)/digest-test.o: rs-core/digest-test.cpp rs-core/common.hpp rs-core/digest.hpp rs-core/unit-test.hpp \
+    /usr/local/include/unicorn/utility.hpp
+$(BUILD)/digest.o: rs-core/digest.cpp rs-core/common.hpp rs-core/digest.hpp \
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/dso-test.o: rs-core/dso-test.cpp rs-core/common.hpp rs-core/dso.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/path.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp

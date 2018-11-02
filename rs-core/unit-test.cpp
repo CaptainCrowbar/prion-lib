@@ -53,13 +53,13 @@ extern void test_core_compact_array_capacity();
 extern void test_core_compact_array_insertion();
 extern void test_core_compact_array_accounting();
 extern void test_core_compact_array_keys();
+extern void test_core_digest_bernstein();
+extern void test_core_digest_kernighan();
 extern void test_core_digest_crc32();
 extern void test_core_digest_djb2a();
 extern void test_core_digest_fnv1a_32();
 extern void test_core_digest_fnv1a_64();
 extern void test_core_digest_murmur3_32();
-extern void test_core_digest_siphash_32();
-extern void test_core_digest_siphash_64();
 extern void test_core_digest_md5();
 extern void test_core_digest_sha1();
 extern void test_core_digest_sha256();
@@ -446,13 +446,13 @@ int main() {
         { "core/compact-array/insertion", test_core_compact_array_insertion },
         { "core/compact-array/accounting", test_core_compact_array_accounting },
         { "core/compact-array/keys", test_core_compact_array_keys },
+        { "core/digest/bernstein", test_core_digest_bernstein },
+        { "core/digest/kernighan", test_core_digest_kernighan },
         { "core/digest/crc32", test_core_digest_crc32 },
         { "core/digest/djb2a", test_core_digest_djb2a },
         { "core/digest/fnv1a-32", test_core_digest_fnv1a_32 },
         { "core/digest/fnv1a-64", test_core_digest_fnv1a_64 },
         { "core/digest/murmur3-32", test_core_digest_murmur3_32 },
-        { "core/digest/siphash-32", test_core_digest_siphash_32 },
-        { "core/digest/siphash-64", test_core_digest_siphash_64 },
         { "core/digest/md5", test_core_digest_md5 },
         { "core/digest/sha1", test_core_digest_sha1 },
         { "core/digest/sha256", test_core_digest_sha256 },

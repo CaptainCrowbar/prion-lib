@@ -16,82 +16,159 @@
 <ul>
 <li><a href="#message-digest-algorithms">Message Digest Algorithms</a><ul>
 <li><a href="#contents">Contents</a></li>
-<li><a href="#hash-function-base-class">Hash function base class</a></li>
-<li><a href="#general-purpose-hash-functions">General purpose hash functions</a></li>
+<li><a href="#hash-class-concept">Hash class concept</a></li>
+<li><a href="#helper-functions">Helper functions</a></li>
+<li><a href="#hash-classes">Hash classes</a><ul>
+<li><a href="#multiplicative-hash-classes">Multiplicative hash classes</a></li>
+<li><a href="#murmur-hash">Murmur hash</a></li>
+<li><a href="#other-general-purpose-hash-functions">Other general purpose hash functions</a></li>
 <li><a href="#cryptographic-hash-functions">Cryptographic hash functions</a></li>
 </ul>
 </li>
 </ul>
+</li>
+</ul>
 </div>
-<h2 id="hash-function-base-class">Hash function base class</h2>
+<h2 id="hash-class-concept">Hash class concept</h2>
 <div class="defns">
 <ul>
-<li><code>template &lt;size_t Bits&gt; class</code> <strong><code>HashFunction</code></strong><ul>
-<li><code>static constexpr size_t HashFunction::</code><strong><code>bits</code></strong> <code>= Bits</code></li>
-<li><code>static constexpr size_t HashFunction::</code><strong><code>bytes</code></strong> <code>= Bits / 8</code></li>
-<li><code>using HashFunction::</code><strong><code>result_type</code></strong> <code>= [see below]</code></li>
-<li><code>virtual HashFunction::</code><strong><code>~HashFunction</code></strong><code>() noexcept</code></li>
-<li><code>virtual result_type HashFunction::</code><strong><code>hash</code></strong><code>(const void* ptr, size_t len) const noexcept = 0</code></li>
-<li><code>result_type HashFunction::</code><strong><code>operator()</code></strong><code>(const void* ptr, size_t len) const noexcept</code></li>
-<li><code>result_type HashFunction::</code><strong><code>operator()</code></strong><code>(const std::string&amp; str) const noexcept</code></li>
+<li><strong><code>Hash</code></strong> <code>concept</code><ul>
+<li><code>typename Hash::</code><strong><code>result_type</code></strong></li>
+<li><code>void Hash::</code><strong><code>add</code></strong><code>(const void* ptr, size_t len)</code></li>
+<li><code>void Hash::</code><strong><code>clear</code></strong><code>()</code></li>
+<li><code>result_type Hash::</code><strong><code>get</code></strong><code>()</code></li>
 </ul>
 </li>
 </ul>
-<p>Common base class for hash functions of a given output size. A static assert
-ensures that the bit count is positive and a multiple of 8. If the bit count
-is less than or equal to 64, the result type is the smallest standard fixed
-size unsigned integer (<code>uint8_t</code> through <code>uint64_t</code>) that will hold the
-result; otherwise, the result type is <code>std::array&lt;uint8_t,bytes&gt;</code>. The
-function call operators call the virtual <code>hash()</code> function. Behaviour is
-undefined if a null pointer is passed to any function.</p>
-<p>Members of individual hash function classes are described below only when they
-are not present in the base class or have significant semantic differences.</p>
+<p>The result type must be either an unsigned integer type or a <code>std::array</code> of
+<code>unsigned char</code>. Blocks of data are added to the hash using <code>add()</code>; the hash
+must give the same result regardless of how the data is broken up into blocks.
+Calling <code>clear()</code> resets the hash to its initial state. The hash value is
+returned from <code>get()</code>; repeated calls to <code>get()</code>, with no intervening calls to
+<code>add()</code> or <code>clear()</code>, must yield the same value.</p>
 </div>
-<h2 id="general-purpose-hash-functions">General purpose hash functions</h2>
+<h2 id="helper-functions">Helper functions</h2>
 <div class="defns">
 <ul>
-<li><code>class</code> <strong><code>Crc32</code></strong><code>: public HashFunction&lt;32&gt;</code></li>
-<li><code>class</code> <strong><code>Djb2a</code></strong><code>: public HashFunction&lt;32&gt;</code></li>
-<li><code>class</code> <strong><code>Fnv1a_32</code></strong><code>: public HashFunction&lt;32&gt;</code></li>
-<li><code>class</code> <strong><code>Fnv1a_64</code></strong><code>: public HashFunction&lt;64&gt;</code></li>
-<li><code>using</code> <strong><code>Fnv1a_std</code></strong> <code>= Fnv1a_32 or Fnv1a_64 [see below]</code></li>
-<li><code>class</code> <strong><code>Murmur3_32</code></strong><code>: public HashFunction&lt;32&gt;</code><ul>
+<li><code>template &lt;typename Hash&gt; [result type]</code> <strong><code>digest</code></strong><code>(const void* ptr, size_t len)</code></li>
+<li><code>template &lt;typename Hash&gt; [result type]</code> <strong><code>digest</code></strong><code>(std::string_view view)</code></li>
+</ul>
+<p>Wrapper functions that apply the hash function to a single block of data and
+return the resulting hash value.</p>
+</div>
+<h2 id="hash-classes">Hash classes</h2>
+<h3 id="multiplicative-hash-classes">Multiplicative hash classes</h3>
+<div class="defns">
+<ul>
+<li><code>template &lt;uint32_t Seed, uint32_t Mod&gt; class</code> <strong><code>Multiplicative</code></strong><ul>
+<li><code>using Multiplicative::</code><strong><code>result_type</code></strong> <code>= uint32_t</code></li>
+<li><code>void Multiplicative::</code><strong><code>add</code></strong><code>(const void* ptr, size_t len) noexcept</code></li>
+<li><code>void Multiplicative::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
+<li><code>uint32_t Multiplicative::</code><strong><code>get</code></strong><code>() noexcept</code></li>
+</ul>
+</li>
+<li><code>using</code> <strong><code>Bernstein</code></strong> <code>= Multiplicative&lt;5381, 33&gt;</code></li>
+<li><code>using</code> <strong><code>Kernighan</code></strong> <code>= Multiplicative&lt;0, 31&gt;</code></li>
+</ul>
+<p>Simple multiplicative hash functions.</p>
+</div>
+<h3 id="murmur-hash">Murmur hash</h3>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>Murmur3_32</code></strong><ul>
+<li><code>using Murmur3_32::</code><strong><code>result_type</code></strong> <code>= uint32_t</code></li>
 <li><code>Murmur3_32::</code><strong><code>Murmur3_32</code></strong><code>() noexcept</code></li>
 <li><code>explicit Murmur3_32::</code><strong><code>Murmur3_32</code></strong><code>(uint32_t seed) noexcept</code></li>
+<li><code>void Murmur3_32::</code><strong><code>add</code></strong><code>(const void* ptr, size_t len) noexcept</code></li>
+<li><code>void Murmur3_32::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
+<li><code>void Murmur3_32::</code><strong><code>clear</code></strong><code>(uint32_t seed) noexcept</code></li>
+<li><code>uint32_t Murmur3_32::</code><strong><code>get</code></strong><code>() noexcept</code></li>
 </ul>
 </li>
-<li><code>class</code> <strong><code>SipHash_32</code></strong><code>: public HashFunction&lt;32&gt;</code><ul>
-<li><code>static constexpr size_t SipHash_32::</code><strong><code>key_bits</code></strong> <code>= 128</code></li>
-<li><code>static constexpr size_t SipHash_32::</code><strong><code>key_bytes</code></strong> <code>= 16</code></li>
-<li><code>SipHash_32::</code><strong><code>SipHash_32</code></strong><code>() noexcept</code></li>
-<li><code>SipHash_32::</code><strong><code>SipHash_32</code></strong><code>(const void* key, size_t keylen) noexcept</code></li>
 </ul>
-</li>
-<li><code>class</code> <strong><code>SipHash_64</code></strong><code>: public HashFunction&lt;64&gt;</code><ul>
-<li><code>static constexpr size_t SipHash_64::</code><strong><code>key_bits</code></strong> <code>= 128</code></li>
-<li><code>static constexpr size_t SipHash_64::</code><strong><code>key_bytes</code></strong> <code>= 16</code></li>
-<li><code>SipHash_64::</code><strong><code>SipHash_64</code></strong><code>() noexcept</code></li>
-<li><code>SipHash_64::</code><strong><code>SipHash_64</code></strong><code>(const void* key, size_t keylen) noexcept</code></li>
-</ul>
-</li>
-<li><code>using</code> <strong><code>SipHash_std</code></strong> <code>= SipHash_32 or SipHash_64 [see below]</code></li>
-</ul>
-<p>Commonly used general purpose hash functions. The Murmur3 and SipHash hashes
-can optionally take an initialization key; if the length of the key does not
-match the standard length, the key will be zero padded or truncated on the
-right. <code>SipHash_64</code> is the standard 64-bit SipHash; <code>SipHash_32</code> is generated
-by XORing the two halves of a <code>SipHash_64</code>.</p>
-<p>The classes whose names end in <code>_std</code> are aliases for the corresponding 32-bit
-or 64-bit implementations, selected to match the size of a <code>size_t</code> (the
-result type of <code>std::hash</code>).</p>
+<p>This is a seedable hash, giving a different result depending on the seed. If
+no seed is supplied, the seed defaults to zero and the behaviour is the same
+as the other hash classes. The first version of <code>clear()</code> clears the hash
+state but keeps the previous seed; the second re-initializes the state from a
+new seed.</p>
 </div>
-<h2 id="cryptographic-hash-functions">Cryptographic hash functions</h2>
+<h3 id="other-general-purpose-hash-functions">Other general purpose hash functions</h3>
 <div class="defns">
-<ul>
-<li><code>class</code> <strong><code>Md5</code></strong><code>: public HashFunction&lt;128&gt;</code></li>
-<li><code>class</code> <strong><code>Sha1</code></strong><code>: public HashFunction&lt;160&gt;</code></li>
-<li><code>class</code> <strong><code>Sha256</code></strong><code>: public HashFunction&lt;256&gt;</code></li>
-<li><code>class</code> <strong><code>Sha512</code></strong><code>: public HashFunction&lt;512&gt;</code></li>
-</ul>
-<p>Commonly used cryptographic hash functions.</p></body>
+<!-- DEFN -->
+
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Bits</th>
+<th>Result type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>Crc32</code></strong></td>
+<td>32</td>
+<td><code>uint32_t</code></td>
+</tr>
+<tr>
+<td><strong><code>Djb2a</code></strong></td>
+<td>32</td>
+<td><code>uint32_t</code></td>
+</tr>
+<tr>
+<td><strong><code>Fnv1a_32</code></strong></td>
+<td>32</td>
+<td><code>uint32_t</code></td>
+</tr>
+<tr>
+<td><strong><code>Fnv1a_64</code></strong></td>
+<td>64</td>
+<td><code>uint64_t</code></td>
+</tr>
+<tr>
+<td><strong><code>Fnv1a_std</code></strong></td>
+<td>32 or 64</td>
+<td><code>uint32_t</code> or <code>uint64_t</code></td>
+</tr>
+</tbody>
+</table>
+<p>The <code>Fnv1a_std</code> class is an alias for either <code>Fnv1a_32</code> or <code>Fnv1a_64</code>,
+whichever matches the size of a <code>size_t</code> (the result type of <code>std::hash</code>).</p>
+</div>
+<h3 id="cryptographic-hash-functions">Cryptographic hash functions</h3>
+<div class="defns">
+<!-- DEFN -->
+
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Bits</th>
+<th>Result type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>Md5</code></strong></td>
+<td>128</td>
+<td><code>std::array&lt;uint8_t, 16&gt;</code></td>
+</tr>
+<tr>
+<td><strong><code>Sha1</code></strong></td>
+<td>160</td>
+<td><code>std::array&lt;uint8_t, 20&gt;</code></td>
+</tr>
+<tr>
+<td><strong><code>Sha256</code></strong></td>
+<td>256</td>
+<td><code>std::array&lt;uint8_t, 32&gt;</code></td>
+</tr>
+<tr>
+<td><strong><code>Sha512</code></strong></td>
+<td>512</td>
+<td><code>std::array&lt;uint8_t, 64&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<p>Common cryptographic hash functions.</p></body>
 </html>

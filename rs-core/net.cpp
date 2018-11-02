@@ -194,7 +194,7 @@ namespace RS {
     }
 
     size_t IPv6::hash() const noexcept {
-        return Djb2a()(bytes, size);
+        return digest<Bernstein>(bytes, size);
     }
 
     Ustring IPv6::str() const {
@@ -296,7 +296,7 @@ namespace RS {
     }
 
     size_t SocketAddress::hash() const noexcept {
-        return Djb2a()(&sa_union, current_size);
+        return digest<Bernstein>(&sa_union, current_size);
     }
 
     IPv4 SocketAddress::ipv4() const noexcept {

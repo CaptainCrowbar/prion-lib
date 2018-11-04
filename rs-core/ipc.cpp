@@ -97,7 +97,7 @@ namespace RS {
     #else
 
         NamedMutex::NamedMutex(const Ustring& name) {
-            auto hash = Sha256()(name);
+            auto hash = digest<Sha256>(name);
             Ustring xhash = hex(hash);
             path = L"Local\\" + to_wstring(xhash);
             han = CreateMutexW(nullptr, false, path.data());

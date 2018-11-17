@@ -70,12 +70,12 @@ namespace RS {
     // Physical constants
 
     RS_DEFINE_CONSTANT(atomic_mass_unit,           1.660538921e-27);  // kg
-    RS_DEFINE_CONSTANT(avogadro_constant,          6.02214129e23);    // mol^-1
-    RS_DEFINE_CONSTANT(boltzmann_constant,         1.3806488e-23);    // J K^-1
-    RS_DEFINE_CONSTANT(elementary_charge,          1.602176565e-19);  // C
+    RS_DEFINE_CONSTANT(avogadro_constant,          6.02214076e23);    // mol^-1
+    RS_DEFINE_CONSTANT(boltzmann_constant,         1.380649e-23);     // J K^-1
+    RS_DEFINE_CONSTANT(elementary_charge,          1.602176634e-19);  // C
     RS_DEFINE_CONSTANT(gas_constant,               8.3144621);        // J mol^-1 K^-1
     RS_DEFINE_CONSTANT(gravitational_constant,     6.67384e-11);      // m^3 kg^-1 s^-2
-    RS_DEFINE_CONSTANT(planck_constant,            6.62606957e-34);   // J s
+    RS_DEFINE_CONSTANT(planck_constant,            6.62607015e-34);   // J s
     RS_DEFINE_CONSTANT(speed_of_light,             299792458.0);      // m s^-1
     RS_DEFINE_CONSTANT(stefan_boltzmann_constant,  5.670373e-8);      // W m^-2 K^-4
 

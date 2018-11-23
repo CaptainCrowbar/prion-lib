@@ -269,17 +269,3 @@ Example:
 Output:
 
     <p><code>Hello world</code></p>\n
-
-## Type names ##
-
-* `std::string` **`demangle`**`(const std::string& name)`
-* `std::string` **`type_name`**`(const std::type_info& t)`
-* `std::string` **`type_name`**`(const std::type_index& t)`
-* `template <typename T> std::string` **`type_name`**`()`
-* `template <typename T> std::string` **`type_name`**`(const T& t)`
-
-Demangle a type name. The original mangled name can be supplied as an explicit
-string, as a `std::type_info` or `std:type_index` object, as a type argument
-to a template function (e.g. `type_name<int>()`), or as an object whose type
-is to be named (e.g. `type_name(42)`). The last version will report the
-dynamic type of the referenced object.

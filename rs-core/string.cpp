@@ -1,11 +1,6 @@
 #include "rs-core/string.hpp"
 #include <algorithm>
-#include <memory>
-#include <new>
-
-#ifdef __GNUC__
-    #include <cxxabi.h>
-#endif
+#include <cstring>
 
 namespace RS {
 
@@ -387,30 +382,6 @@ namespace RS {
             t.os = nullptr;
         }
         return *this;
-    }
-
-    // Type names
-
-    std::string demangle(const std::string& name) {
-        #ifdef __GNUC__
-            auto mangled = name;
-            std::shared_ptr<char> demangled;
-            int status = 0;
-            for (;;) {
-                if (mangled.empty())
-                    return name;
-                demangled.reset(abi::__cxa_demangle(mangled.data(), nullptr, nullptr, &status), free);
-                if (status == -1)
-                    throw std::bad_alloc();
-                if (status == 0 && demangled)
-                    return demangled.get();
-                if (mangled[0] != '_')
-                    return name;
-                mangled.erase(0, 1);
-            }
-        #else
-            return name;
-        #endif
     }
 
     // String literals

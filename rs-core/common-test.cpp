@@ -657,6 +657,45 @@ void test_core_common_type_adapters() {
 
 }
 
+void test_core_common_type_names() {
+
+    Ustring s;
+
+    const std::type_info& v_info = typeid(void);
+    const std::type_info& i_info = typeid(int);
+    const std::type_info& s_info = typeid(std::string);
+    auto v_index = std::type_index(typeid(void));
+    auto i_index = std::type_index(typeid(int));
+    auto s_index = std::type_index(typeid(std::string));
+
+    TEST_EQUAL(type_name(v_info), "void");
+    TEST_MATCH(type_name(i_info), "^(signed )?int$");
+    TEST_MATCH(type_name(s_info), "^(class )?std::([^:]+::)*(string|basic_string ?<.+>)$");
+    TEST_EQUAL(type_name(v_index), "void");
+    TEST_MATCH(type_name(i_index), "^(signed )?int$");
+    TEST_MATCH(type_name(s_index), "^(class )?std::([^:]+::)*(string|basic_string ?<.+>)$");
+    TEST_EQUAL(type_name<void>(), "void");
+    TEST_MATCH(type_name<int>(), "^(signed )?int$");
+    TEST_MATCH(type_name<std::string>(), "^(class )?std::([^:]+::)*(string|basic_string ?<.+>)$");
+    TEST_MATCH(type_name(42), "^(signed )?int$");
+    TEST_MATCH(type_name(s), "^(class )?std::([^:]+::)*(string|basic_string ?<.+>)$");
+
+    Derived1 d;
+    Base& b(d);
+    const std::type_info& d_info = typeid(d);
+    const std::type_info& b_info = typeid(b);
+    auto d_index = std::type_index(typeid(d));
+    auto b_index = std::type_index(typeid(b));
+
+    TEST_MATCH(type_name(d), "::Derived1$");
+    TEST_MATCH(type_name(b), "::Derived1$");
+    TEST_MATCH(type_name(d_info), "::Derived1$");
+    TEST_MATCH(type_name(b_info), "::Derived1$");
+    TEST_MATCH(type_name(d_index), "::Derived1$");
+    TEST_MATCH(type_name(b_index), "::Derived1$");
+
+}
+
 void test_core_common_type_related_functions() {
 
     std::shared_ptr<Base> b1 = std::make_shared<Derived1>();

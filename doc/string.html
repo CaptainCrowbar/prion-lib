@@ -24,7 +24,6 @@
 <li><a href="#string-manipulation-functions">String manipulation functions</a></li>
 <li><a href="#string-formatting-functions">String formatting functions</a></li>
 <li><a href="#htmlxml-tags">HTML/XML tags</a></li>
-<li><a href="#type-names">Type names</a></li>
 </ul>
 </li>
 </ul>
@@ -333,20 +332,5 @@ stream enclosed by the tags.</p>
 </code></pre>
 <p>Output:</p>
 <pre><code>&lt;p&gt;&lt;code&gt;Hello world&lt;/code&gt;&lt;/p&gt;\n
-</code></pre>
-</div>
-<h2 id="type-names">Type names</h2>
-<div class="defns">
-<ul>
-<li><code>std::string</code> <strong><code>demangle</code></strong><code>(const std::string&amp; name)</code></li>
-<li><code>std::string</code> <strong><code>type_name</code></strong><code>(const std::type_info&amp; t)</code></li>
-<li><code>std::string</code> <strong><code>type_name</code></strong><code>(const std::type_index&amp; t)</code></li>
-<li><code>template &lt;typename T&gt; std::string</code> <strong><code>type_name</code></strong><code>()</code></li>
-<li><code>template &lt;typename T&gt; std::string</code> <strong><code>type_name</code></strong><code>(const T&amp; t)</code></li>
-</ul>
-<p>Demangle a type name. The original mangled name can be supplied as an explicit
-string, as a <code>std::type_info</code> or <code>std:type_index</code> object, as a type argument
-to a template function (e.g. <code>type_name&lt;int&gt;()</code>), or as an object whose type
-is to be named (e.g. <code>type_name(42)</code>). The last version will report the
-dynamic type of the referenced object.</p></body>
+</code></pre></body>
 </html>

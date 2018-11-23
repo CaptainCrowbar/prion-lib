@@ -24,6 +24,7 @@
 <li><a href="#mixins">Mixins</a></li>
 <li><a href="#smart-pointers">Smart pointers</a></li>
 <li><a href="#type-adapters">Type adapters</a></li>
+<li><a href="#type-names">Type names</a></li>
 <li><a href="#type-related-functions">Type related functions</a></li>
 </ul>
 </li>
@@ -407,6 +408,21 @@ stays with its original <code>NoTransfer</code> object and is not moved or copie
 instead, moving or copying a <code>NoTransfer</code> sets the value of the destination
 object to its default value. This is intended for data members that need to
 remain associated with object identity rather than object value.</p>
+</div>
+<h3 id="type-names">Type names</h3>
+<div class="defns">
+<ul>
+<li><code>std::string</code> <strong><code>demangle</code></strong><code>(const std::string&amp; name)</code></li>
+<li><code>std::string</code> <strong><code>type_name</code></strong><code>(const std::type_info&amp; t)</code></li>
+<li><code>std::string</code> <strong><code>type_name</code></strong><code>(const std::type_index&amp; t)</code></li>
+<li><code>template &lt;typename T&gt; std::string</code> <strong><code>type_name</code></strong><code>()</code></li>
+<li><code>template &lt;typename T&gt; std::string</code> <strong><code>type_name</code></strong><code>(const T&amp; t)</code></li>
+</ul>
+<p>Demangle a type name. The original mangled name can be supplied as an explicit
+string, as a <code>std::type_info</code> or <code>std:type_index</code> object, as a type argument
+to a template function (e.g. <code>type_name&lt;int&gt;()</code>), or as an object whose type
+is to be named (e.g. <code>type_name(42)</code>). The last version will report the
+dynamic type of the referenced object.</p>
 </div>
 <h3 id="type-related-functions">Type related functions</h3>
 <div class="defns">

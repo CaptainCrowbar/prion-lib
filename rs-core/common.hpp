@@ -8,7 +8,6 @@
 #include <array>
 #include <cerrno>
 #include <cmath>
-#include <cstdarg>
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
@@ -23,6 +22,7 @@
 #include <thread>
 #include <tuple>
 #include <type_traits>
+#include <typeindex>
 #include <typeinfo>
 #include <utility>
 #include <vector>
@@ -361,6 +361,14 @@ namespace RS {
         NoTransfer& operator=(const NoTransfer&) { return *this; }
         NoTransfer& operator=(NoTransfer&&) { return *this; }
     };
+
+    // Type names
+
+    std::string demangle(const std::string& name);
+    inline std::string type_name(const std::type_info& t) { return demangle(t.name()); }
+    inline std::string type_name(const std::type_index& t) { return demangle(t.name()); }
+    template <typename T> std::string type_name() { return type_name(typeid(T)); }
+    template <typename T> std::string type_name(const T& t) { return type_name(typeid(t)); }
 
     // Type related functions
 

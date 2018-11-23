@@ -69,8 +69,8 @@ void test_core_vector_integer() {
     TEST(! v1.is_null());
     TEST(v2.is_null());
 
-    TEST_EQUAL(to_str(v1), "[1,1,1]");
-    TEST_EQUAL(to_str(cv1), "[1,1,1]");
+    TEST_EQUAL(v1.format(), "[1,1,1]");
+    TEST_EQUAL(cv1.format(), "[1,1,1]");
 
     TEST_EQUAL(v1[0], 1);  TEST_EQUAL(cv1[0], 1);
     TEST_EQUAL(v1[1], 1);  TEST_EQUAL(cv1[1], 1);
@@ -79,8 +79,8 @@ void test_core_vector_integer() {
     TRY(v2[0] = 99);
     TRY(v2[1] = 98);
     TRY(v2[2] = 97);
-    TEST_EQUAL(to_str(v2), "[99,98,97]");
-    TEST_EQUAL(to_str(cv2), "[99,98,97]");
+    TEST_EQUAL(v2.format(), "[99,98,97]");
+    TEST_EQUAL(cv2.format(), "[99,98,97]");
 
     TEST_EQUAL(v2[0], 99);     TEST_EQUAL(cv2[0], 99);
     TEST_EQUAL(v2[1], 98);     TEST_EQUAL(cv2[1], 98);
@@ -96,16 +96,16 @@ void test_core_vector_integer() {
     TEST_THROW(cv2.at(3), std::out_of_range);
 
     TRY((v3 = Int3{1,2,3}));
-    TEST_EQUAL(to_str(v3), "[1,2,3]");
-    TEST_EQUAL(to_str(cv3), "[1,2,3]");
+    TEST_EQUAL(v3.format(), "[1,2,3]");
+    TEST_EQUAL(cv3.format(), "[1,2,3]");
 
     TRY((v3 = Int3(2,4,6)));
-    TEST_EQUAL(to_str(v3), "[2,4,6]");
-    TEST_EQUAL(to_str(cv3), "[2,4,6]");
+    TEST_EQUAL(v3.format(), "[2,4,6]");
+    TEST_EQUAL(cv3.format(), "[2,4,6]");
 
     TRY((v3 = {10,20,30}));
-    TEST_EQUAL(to_str(v3), "[10,20,30]");
-    TEST_EQUAL(to_str(cv3), "[10,20,30]");
+    TEST_EQUAL(v3.format(), "[10,20,30]");
+    TEST_EQUAL(cv3.format(), "[10,20,30]");
 
     TEST_EQUAL(v3[0], 10);          TEST_EQUAL(cv3[0], 10);
     TEST_EQUAL(v3[1], 20);          TEST_EQUAL(cv3[1], 20);
@@ -120,20 +120,20 @@ void test_core_vector_integer() {
     TRY((v1 = {2,3,5}));
     TRY((v2 = {7,11,13}));
 
-    TRY(v3 = + v1);     TEST_EQUAL(to_str(v3), "[2,3,5]");
-    TRY(v3 = - v1);     TEST_EQUAL(to_str(v3), "[-2,-3,-5]");
-    TRY(v3 = v1 + v2);  TEST_EQUAL(to_str(v3), "[9,14,18]");
-    TRY(v3 = v1 - v2);  TEST_EQUAL(to_str(v3), "[-5,-8,-8]");
-    TRY(v3 = 17 * v1);  TEST_EQUAL(to_str(v3), "[34,51,85]");
-    TRY(v3 = v1 * 19);  TEST_EQUAL(to_str(v3), "[38,57,95]");
+    TRY(v3 = + v1);     TEST_EQUAL(v3.format(), "[2,3,5]");
+    TRY(v3 = - v1);     TEST_EQUAL(v3.format(), "[-2,-3,-5]");
+    TRY(v3 = v1 + v2);  TEST_EQUAL(v3.format(), "[9,14,18]");
+    TRY(v3 = v1 - v2);  TEST_EQUAL(v3.format(), "[-5,-8,-8]");
+    TRY(v3 = 17 * v1);  TEST_EQUAL(v3.format(), "[34,51,85]");
+    TRY(v3 = v1 * 19);  TEST_EQUAL(v3.format(), "[38,57,95]");
     TRY(x = v1 % v2);   TEST_EQUAL(x, 112);
-    TRY(v3 = v1 ^ v2);  TEST_EQUAL(to_str(v3), "[-16,9,1]");
-    TRY(v3 = v1 * v2);  TEST_EQUAL(to_str(v3), "[14,33,65]");
-    TRY(v3 = v2 / v1);  TEST_EQUAL(to_str(v3), "[3,3,2]");
+    TRY(v3 = v1 ^ v2);  TEST_EQUAL(v3.format(), "[-16,9,1]");
+    TRY(v3 = v1 * v2);  TEST_EQUAL(v3.format(), "[14,33,65]");
+    TRY(v3 = v2 / v1);  TEST_EQUAL(v3.format(), "[3,3,2]");
 
-    TRY(v3 = Int3::unit(0));  TEST_EQUAL(to_str(v3), "[1,0,0]");
-    TRY(v3 = Int3::unit(1));  TEST_EQUAL(to_str(v3), "[0,1,0]");
-    TRY(v3 = Int3::unit(2));  TEST_EQUAL(to_str(v3), "[0,0,1]");
+    TRY(v3 = Int3::unit(0));  TEST_EQUAL(v3.format(), "[1,0,0]");
+    TRY(v3 = Int3::unit(1));  TEST_EQUAL(v3.format(), "[0,1,0]");
+    TRY(v3 = Int3::unit(2));  TEST_EQUAL(v3.format(), "[0,0,1]");
 
     Int2 s2;
     Int3 s3;
@@ -141,39 +141,39 @@ void test_core_vector_integer() {
 
     TRY((v1 = {1,2,3}));
 
-    TRY(s2 = v1["xy"]);    TEST_EQUAL(to_str(s2), "[1,2]");
-    TRY(s2 = v1["yz"]);    TEST_EQUAL(to_str(s2), "[2,3]");
-    TRY(s2 = v1["zx"]);    TEST_EQUAL(to_str(s2), "[3,1]");
-    TRY(s2 = v1["xx"]);    TEST_EQUAL(to_str(s2), "[1,1]");
-    TRY(s2 = v1["yy"]);    TEST_EQUAL(to_str(s2), "[2,2]");
-    TRY(s2 = v1["zz"]);    TEST_EQUAL(to_str(s2), "[3,3]");
-    TRY(s3 = v1["xyz"]);   TEST_EQUAL(to_str(s3), "[1,2,3]");
-    TRY(s3 = v1["zyx"]);   TEST_EQUAL(to_str(s3), "[3,2,1]");
-    TRY(s3 = v1["xxx"]);   TEST_EQUAL(to_str(s3), "[1,1,1]");
-    TRY(s3 = v1["yyy"]);   TEST_EQUAL(to_str(s3), "[2,2,2]");
-    TRY(s3 = v1["zzz"]);   TEST_EQUAL(to_str(s3), "[3,3,3]");
-    TRY(s4 = v1["xyzx"]);  TEST_EQUAL(to_str(s4), "[1,2,3,1]");
-    TRY(s4 = v1["yzxy"]);  TEST_EQUAL(to_str(s4), "[2,3,1,2]");
-    TRY(s4 = v1["zxyz"]);  TEST_EQUAL(to_str(s4), "[3,1,2,3]");
-    TRY(s4 = v1["xxxx"]);  TEST_EQUAL(to_str(s4), "[1,1,1,1]");
-    TRY(s4 = v1["yyyy"]);  TEST_EQUAL(to_str(s4), "[2,2,2,2]");
-    TRY(s4 = v1["zzzz"]);  TEST_EQUAL(to_str(s4), "[3,3,3,3]");
+    TRY(s2 = v1["xy"]);    TEST_EQUAL(s2.format(), "[1,2]");
+    TRY(s2 = v1["yz"]);    TEST_EQUAL(s2.format(), "[2,3]");
+    TRY(s2 = v1["zx"]);    TEST_EQUAL(s2.format(), "[3,1]");
+    TRY(s2 = v1["xx"]);    TEST_EQUAL(s2.format(), "[1,1]");
+    TRY(s2 = v1["yy"]);    TEST_EQUAL(s2.format(), "[2,2]");
+    TRY(s2 = v1["zz"]);    TEST_EQUAL(s2.format(), "[3,3]");
+    TRY(s3 = v1["xyz"]);   TEST_EQUAL(s3.format(), "[1,2,3]");
+    TRY(s3 = v1["zyx"]);   TEST_EQUAL(s3.format(), "[3,2,1]");
+    TRY(s3 = v1["xxx"]);   TEST_EQUAL(s3.format(), "[1,1,1]");
+    TRY(s3 = v1["yyy"]);   TEST_EQUAL(s3.format(), "[2,2,2]");
+    TRY(s3 = v1["zzz"]);   TEST_EQUAL(s3.format(), "[3,3,3]");
+    TRY(s4 = v1["xyzx"]);  TEST_EQUAL(s4.format(), "[1,2,3,1]");
+    TRY(s4 = v1["yzxy"]);  TEST_EQUAL(s4.format(), "[2,3,1,2]");
+    TRY(s4 = v1["zxyz"]);  TEST_EQUAL(s4.format(), "[3,1,2,3]");
+    TRY(s4 = v1["xxxx"]);  TEST_EQUAL(s4.format(), "[1,1,1,1]");
+    TRY(s4 = v1["yyyy"]);  TEST_EQUAL(s4.format(), "[2,2,2,2]");
+    TRY(s4 = v1["zzzz"]);  TEST_EQUAL(s4.format(), "[3,3,3,3]");
 
     TRY((v1 = {1,5,9}));
     TRY((v2 = {2,3,4}));
     TRY((v3 = {4,6,8}));
     TRY(v1 = clamp(v1, v2, v3));
-    TEST_EQUAL(to_str(v1), "[2,5,8]");
+    TEST_EQUAL(v1.format(), "[2,5,8]");
 
     TRY((v1 = {1,3,5}));
     TRY((v2 = {2,3,4}));
     TRY(v3 = min(v1, v2));
-    TEST_EQUAL(to_str(v3), "[1,3,4]");
+    TEST_EQUAL(v3.format(), "[1,3,4]");
     TRY(v3 = max(v1, v2));
-    TEST_EQUAL(to_str(v3), "[2,3,5]");
+    TEST_EQUAL(v3.format(), "[2,3,5]");
     TRY(std::tie(v3, v4) = minmax(v1, v2));
-    TEST_EQUAL(to_str(v3), "[1,3,4]");
-    TEST_EQUAL(to_str(v4), "[2,3,5]");
+    TEST_EQUAL(v3.format(), "[1,3,4]");
+    TEST_EQUAL(v4.format(), "[2,3,5]");
 
     std::map<Int3, Ustring> map;
 
@@ -198,8 +198,11 @@ void test_core_vector_floating() {
     TEST(! v1.is_null());
     TEST(v2.is_null());
 
-    TEST_EQUAL(to_str(v1), "[1,1,1]");
-    TEST_EQUAL(to_str(cv1), "[1,1,1]");
+    TEST_EQUAL(v1.format(), "[1,1,1]");
+    TEST_EQUAL(cv1.format(), "[1,1,1]");
+    TEST_EQUAL(v1.format('e', 2), "[1.00e0,1.00e0,1.00e0]");
+    TEST_EQUAL(v1.format('f', 3), "[1.000,1.000,1.000]");
+    TEST_EQUAL(v1.format('z', 4), "[1.000,1.000,1.000]");
 
     TEST_EQUAL(v1[0], 1);  TEST_EQUAL(cv1[0], 1);
     TEST_EQUAL(v1[1], 1);  TEST_EQUAL(cv1[1], 1);
@@ -208,8 +211,8 @@ void test_core_vector_floating() {
     TRY(v2[0] = 99);
     TRY(v2[1] = 98);
     TRY(v2[2] = 97);
-    TEST_EQUAL(to_str(v2), "[99,98,97]");
-    TEST_EQUAL(to_str(cv2), "[99,98,97]");
+    TEST_EQUAL(v2.format(), "[99,98,97]");
+    TEST_EQUAL(cv2.format(), "[99,98,97]");
 
     TEST_EQUAL(v2[0], 99);     TEST_EQUAL(cv2[0], 99);
     TEST_EQUAL(v2[1], 98);     TEST_EQUAL(cv2[1], 98);
@@ -225,16 +228,16 @@ void test_core_vector_floating() {
     TEST_THROW(cv2.at(3), std::out_of_range);
 
     TRY((v3 = Double3{1,2,3}));
-    TEST_EQUAL(to_str(v3), "[1,2,3]");
-    TEST_EQUAL(to_str(cv3), "[1,2,3]");
+    TEST_EQUAL(v3.format(), "[1,2,3]");
+    TEST_EQUAL(cv3.format(), "[1,2,3]");
 
     TRY((v3 = Double3(2,4,6)));
-    TEST_EQUAL(to_str(v3), "[2,4,6]");
-    TEST_EQUAL(to_str(cv3), "[2,4,6]");
+    TEST_EQUAL(v3.format(), "[2,4,6]");
+    TEST_EQUAL(cv3.format(), "[2,4,6]");
 
     TRY((v3 = {10,20,30}));
-    TEST_EQUAL(to_str(v3), "[10,20,30]");
-    TEST_EQUAL(to_str(cv3), "[10,20,30]");
+    TEST_EQUAL(v3.format(), "[10,20,30]");
+    TEST_EQUAL(cv3.format(), "[10,20,30]");
 
     TEST_EQUAL(v3[0], 10);          TEST_EQUAL(cv3[0], 10);
     TEST_EQUAL(v3[1], 20);          TEST_EQUAL(cv3[1], 20);
@@ -249,28 +252,28 @@ void test_core_vector_floating() {
     TRY((v1 = {2,3,5}));
     TRY((v2 = {7,11,13}));
 
-    TRY(v3 = + v1);          TEST_EQUAL(to_str(v3), "[2,3,5]");
-    TRY(v3 = - v1);          TEST_EQUAL(to_str(v3), "[-2,-3,-5]");
-    TRY(v3 = v1 + v2);       TEST_EQUAL(to_str(v3), "[9,14,18]");
-    TRY(v3 = v1 - v2);       TEST_EQUAL(to_str(v3), "[-5,-8,-8]");
-    TRY(v3 = 17 * v1);       TEST_EQUAL(to_str(v3), "[34,51,85]");
-    TRY(v3 = v1 * 19);       TEST_EQUAL(to_str(v3), "[38,57,95]");
-    TRY(v3 = v1 / 23);       TEST_EQUAL(to_str(v3), "[0.0869565,0.130435,0.217391]");
+    TRY(v3 = + v1);          TEST_EQUAL(v3.format(), "[2,3,5]");
+    TRY(v3 = - v1);          TEST_EQUAL(v3.format(), "[-2,-3,-5]");
+    TRY(v3 = v1 + v2);       TEST_EQUAL(v3.format(), "[9,14,18]");
+    TRY(v3 = v1 - v2);       TEST_EQUAL(v3.format(), "[-5,-8,-8]");
+    TRY(v3 = 17 * v1);       TEST_EQUAL(v3.format(), "[34,51,85]");
+    TRY(v3 = v1 * 19);       TEST_EQUAL(v3.format(), "[38,57,95]");
+    TRY(v3 = v1 / 23);       TEST_EQUAL(v3.format(), "[0.0869565,0.130435,0.217391]");
     TRY(x = v1 % v2);        TEST_EQUAL(x, 112);
-    TRY(v3 = v1 ^ v2);       TEST_EQUAL(to_str(v3), "[-16,9,1]");
-    TRY(v3 = v1 * v2);  TEST_EQUAL(to_str(v3), "[14,33,65]");
-    TRY(v3 = v1 / v2);  TEST_EQUAL(to_str(v3), "[0.285714,0.272727,0.384615]");
+    TRY(v3 = v1 ^ v2);       TEST_EQUAL(v3.format(), "[-16,9,1]");
+    TRY(v3 = v1 * v2);  TEST_EQUAL(v3.format(), "[14,33,65]");
+    TRY(v3 = v1 / v2);  TEST_EQUAL(v3.format(), "[0.285714,0.272727,0.384615]");
 
     TEST_EQUAL(v1.r2(), 38);   TEST_NEAR(v1.r(), 6.164414);
     TEST_EQUAL(v2.r2(), 339);  TEST_NEAR(v2.r(), 18.411953);
 
-    TRY(v3 = Double3::unit(0));  TEST_EQUAL(to_str(v3), "[1,0,0]");
-    TRY(v3 = Double3::unit(1));  TEST_EQUAL(to_str(v3), "[0,1,0]");
-    TRY(v3 = Double3::unit(2));  TEST_EQUAL(to_str(v3), "[0,0,1]");
+    TRY(v3 = Double3::unit(0));  TEST_EQUAL(v3.format(), "[1,0,0]");
+    TRY(v3 = Double3::unit(1));  TEST_EQUAL(v3.format(), "[0,1,0]");
+    TRY(v3 = Double3::unit(2));  TEST_EQUAL(v3.format(), "[0,0,1]");
 
-    TRY(v3 = Double3().dir());  TEST_EQUAL(to_str(v3), "[0,0,0]");
-    TRY(v3 = v1.dir());         TEST_EQUAL(to_str(v3), "[0.324443,0.486664,0.811107]");
-    TRY(v3 = v2.dir());         TEST_EQUAL(to_str(v3), "[0.380188,0.597438,0.706063]");
+    TRY(v3 = Double3().dir());  TEST_EQUAL(v3.format(), "[0,0,0]");
+    TRY(v3 = v1.dir());         TEST_EQUAL(v3.format(), "[0.324443,0.486664,0.811107]");
+    TRY(v3 = v2.dir());         TEST_EQUAL(v3.format(), "[0.380188,0.597438,0.706063]");
 
     TRY((v1 = {1,2,3}));
     TRY((v2 = {}));          TRY(x = v1.angle(v2));  TEST_EQUAL(x, 0);
@@ -292,17 +295,17 @@ void test_core_vector_floating() {
     TRY((v2 = {2,3,4}));
     TRY((v3 = {4,6,8}));
     TRY(v1 = clamp(v1, v2, v3));
-    TEST_EQUAL(to_str(v1), "[2,5,8]");
+    TEST_EQUAL(v1.format(), "[2,5,8]");
 
     TRY((v1 = {1,3,5}));
     TRY((v2 = {2,3,4}));
     TRY(v3 = min(v1, v2));
-    TEST_EQUAL(to_str(v3), "[1,3,4]");
+    TEST_EQUAL(v3.format(), "[1,3,4]");
     TRY(v3 = max(v1, v2));
-    TEST_EQUAL(to_str(v3), "[2,3,5]");
+    TEST_EQUAL(v3.format(), "[2,3,5]");
     TRY(std::tie(v3, v4) = minmax(v1, v2));
-    TEST_EQUAL(to_str(v3), "[1,3,4]");
-    TEST_EQUAL(to_str(v4), "[2,3,5]");
+    TEST_EQUAL(v3.format(), "[1,3,4]");
+    TEST_EQUAL(v4.format(), "[2,3,5]");
 
     std::map<Double3, Ustring> map;
 
@@ -324,15 +327,30 @@ void test_core_vector_matrix() {
     TEST_EQUAL(sizeof(Double3x3r), 9 * sizeof(double));
     TEST_EQUAL(sizeof(Double3x3c), 9 * sizeof(double));
 
-    TEST_EQUAL(to_str(rm1),
+    TEST_EQUAL(rm1.format(),
         "[[2,1,1],"
         "[1,2,1],"
         "[1,1,2]]"
     );
-    TEST_EQUAL(to_str(cm1),
+    TEST_EQUAL(cm1.format(),
         "[[2,1,1],"
         "[1,2,1],"
         "[1,1,2]]"
+    );
+    TEST_EQUAL(rm1.format('e', 2),
+        "[[2.00e0,1.00e0,1.00e0],"
+        "[1.00e0,2.00e0,1.00e0],"
+        "[1.00e0,1.00e0,2.00e0]]"
+    );
+    TEST_EQUAL(rm1.format('f', 3),
+        "[[2.000,1.000,1.000],"
+        "[1.000,2.000,1.000],"
+        "[1.000,1.000,2.000]]"
+    );
+    TEST_EQUAL(rm1.format('z', 4),
+        "[[2.000,1.000,1.000],"
+        "[1.000,2.000,1.000],"
+        "[1.000,1.000,2.000]]"
     );
 
     TRY((rm1 = Double3x3r{1,2,3,4,5,6,7,8,9}));
@@ -345,38 +363,38 @@ void test_core_vector_matrix() {
     TEST_EQUAL(to_str(irange(rm1.begin(), rm1.end())), "[2,3,5,7,11,13,17,19,23]");
     TEST_EQUAL(to_str(irange(cm1.begin(), cm1.end())), "[2,3,5,7,11,13,17,19,23]");
 
-    TEST_EQUAL(to_str(rm1),
+    TEST_EQUAL(rm1.format(),
         "[[2,3,5],"
         "[7,11,13],"
         "[17,19,23]]"
     );
-    TEST_EQUAL(to_str(cm1),
+    TEST_EQUAL(cm1.format(),
         "[[2,7,17],"
         "[3,11,19],"
         "[5,13,23]]"
     );
 
     TRY(rm2 = Double3x3r(cm1));
-    TEST_EQUAL(to_str(rm2),
+    TEST_EQUAL(rm2.format(),
         "[[2,7,17],"
         "[3,11,19],"
         "[5,13,23]]"
     );
     TRY(cm2 = Double3x3c(rm1));
-    TEST_EQUAL(to_str(cm2),
+    TEST_EQUAL(cm2.format(),
         "[[2,3,5],"
         "[7,11,13],"
         "[17,19,23]]"
     );
 
     TRY(rm2 = cm1);
-    TEST_EQUAL(to_str(rm2),
+    TEST_EQUAL(rm2.format(),
         "[[2,7,17],"
         "[3,11,19],"
         "[5,13,23]]"
     );
     TRY(cm2 = rm1);
-    TEST_EQUAL(to_str(cm2),
+    TEST_EQUAL(cm2.format(),
         "[[2,3,5],"
         "[7,11,13],"
         "[17,19,23]]"
@@ -431,22 +449,22 @@ void test_core_vector_matrix() {
     TRY(cm1 = rm1);
     TRY(cm2 = rm2);
 
-    TEST_EQUAL(to_str(rm1),
+    TEST_EQUAL(rm1.format(),
         "[[2,3,5],"
         "[7,11,13],"
         "[17,19,23]]"
     );
-    TEST_EQUAL(to_str(cm1),
+    TEST_EQUAL(cm1.format(),
         "[[2,3,5],"
         "[7,11,13],"
         "[17,19,23]]"
     );
-    TEST_EQUAL(to_str(rm2),
+    TEST_EQUAL(rm2.format(),
         "[[29,31,37],"
         "[41,43,47],"
         "[53,59,61]]"
     );
-    TEST_EQUAL(to_str(cm2),
+    TEST_EQUAL(cm2.format(),
         "[[29,31,37],"
         "[41,43,47],"
         "[53,59,61]]"
@@ -462,114 +480,114 @@ void test_core_vector_matrix() {
     TEST(cm1 != cm2);
 
     TRY(rm3 = rm1 * 10);
-    TEST_EQUAL(to_str(rm3),
+    TEST_EQUAL(rm3.format(),
         "[[20,30,50],"
         "[70,110,130],"
         "[170,190,230]]"
     );
     TRY(cm3 = cm1 * 10);
-    TEST_EQUAL(to_str(cm3),
+    TEST_EQUAL(cm3.format(),
         "[[20,30,50],"
         "[70,110,130],"
         "[170,190,230]]"
     );
 
     TRY(rm3 = 10 * rm1);
-    TEST_EQUAL(to_str(rm3),
+    TEST_EQUAL(rm3.format(),
         "[[20,30,50],"
         "[70,110,130],"
         "[170,190,230]]"
     );
     TRY(cm3 = 10 * cm1);
-    TEST_EQUAL(to_str(cm3),
+    TEST_EQUAL(cm3.format(),
         "[[20,30,50],"
         "[70,110,130],"
         "[170,190,230]]"
     );
 
     TRY(rm3 = rm1 / 10);
-    TEST_EQUAL(to_str(rm3),
+    TEST_EQUAL(rm3.format(),
         "[[0.2,0.3,0.5],"
         "[0.7,1.1,1.3],"
         "[1.7,1.9,2.3]]"
     );
     TRY(cm3 = cm1 / 10);
-    TEST_EQUAL(to_str(cm3),
+    TEST_EQUAL(cm3.format(),
         "[[0.2,0.3,0.5],"
         "[0.7,1.1,1.3],"
         "[1.7,1.9,2.3]]"
     );
 
     TRY(rm3 = rm1 + rm2);
-    TEST_EQUAL(to_str(rm3),
+    TEST_EQUAL(rm3.format(),
         "[[31,34,42],"
         "[48,54,60],"
         "[70,78,84]]"
     );
     TRY(cm3 = cm1 + cm2);
-    TEST_EQUAL(to_str(cm3),
+    TEST_EQUAL(cm3.format(),
         "[[31,34,42],"
         "[48,54,60],"
         "[70,78,84]]"
     );
     TRY(rm3 = rm1 + cm2);
-    TEST_EQUAL(to_str(rm3),
+    TEST_EQUAL(rm3.format(),
         "[[31,34,42],"
         "[48,54,60],"
         "[70,78,84]]"
     );
     TRY(cm3 = cm1 + rm2);
-    TEST_EQUAL(to_str(cm3),
+    TEST_EQUAL(cm3.format(),
         "[[31,34,42],"
         "[48,54,60],"
         "[70,78,84]]"
     );
 
     TRY(rm3 = rm1 - rm2);
-    TEST_EQUAL(to_str(rm3),
+    TEST_EQUAL(rm3.format(),
         "[[-27,-28,-32],"
         "[-34,-32,-34],"
         "[-36,-40,-38]]"
     );
     TRY(cm3 = cm1 - cm2);
-    TEST_EQUAL(to_str(cm3),
+    TEST_EQUAL(cm3.format(),
         "[[-27,-28,-32],"
         "[-34,-32,-34],"
         "[-36,-40,-38]]"
     );
     TRY(rm3 = rm1 - cm2);
-    TEST_EQUAL(to_str(rm3),
+    TEST_EQUAL(rm3.format(),
         "[[-27,-28,-32],"
         "[-34,-32,-34],"
         "[-36,-40,-38]]"
     );
     TRY(cm3 = cm1 - rm2);
-    TEST_EQUAL(to_str(cm3),
+    TEST_EQUAL(cm3.format(),
         "[[-27,-28,-32],"
         "[-34,-32,-34],"
         "[-36,-40,-38]]"
     );
 
     TRY(rm3 = rm1 * rm2);
-    TEST_EQUAL(to_str(rm3),
+    TEST_EQUAL(rm3.format(),
         "[[446,486,520],"
         "[1343,1457,1569],"
         "[2491,2701,2925]]"
     );
     TRY(cm3 = cm1 * cm2);
-    TEST_EQUAL(to_str(cm3),
+    TEST_EQUAL(cm3.format(),
         "[[446,486,520],"
         "[1343,1457,1569],"
         "[2491,2701,2925]]"
     );
     TRY(rm3 = rm1 * cm2);
-    TEST_EQUAL(to_str(rm3),
+    TEST_EQUAL(rm3.format(),
         "[[446,486,520],"
         "[1343,1457,1569],"
         "[2491,2701,2925]]"
     );
     TRY(cm3 = cm1 * rm2);
-    TEST_EQUAL(to_str(cm3),
+    TEST_EQUAL(cm3.format(),
         "[[446,486,520],"
         "[1343,1457,1569],"
         "[2491,2701,2925]]"
@@ -577,75 +595,75 @@ void test_core_vector_matrix() {
 
     TRY((v1 = {67,71,73}));
 
-    TRY(v2 = rm1 * v1);  TEST_EQUAL(to_str(v2), "[712,2199,4167]");
-    TRY(v2 = v1 * rm1);  TEST_EQUAL(to_str(v2), "[1872,2369,2937]");
-    TRY(v2 = cm1 * v1);  TEST_EQUAL(to_str(v2), "[712,2199,4167]");
-    TRY(v2 = v1 * cm1);  TEST_EQUAL(to_str(v2), "[1872,2369,2937]");
+    TRY(v2 = rm1 * v1);  TEST_EQUAL(v2.format(), "[712,2199,4167]");
+    TRY(v2 = v1 * rm1);  TEST_EQUAL(v2.format(), "[1872,2369,2937]");
+    TRY(v2 = cm1 * v1);  TEST_EQUAL(v2.format(), "[712,2199,4167]");
+    TRY(v2 = v1 * cm1);  TEST_EQUAL(v2.format(), "[1872,2369,2937]");
 
     TRY(rm3 = Double3x3r::identity());
-    TEST_EQUAL(to_str(rm3),
+    TEST_EQUAL(rm3.format(),
         "[[1,0,0],"
         "[0,1,0],"
         "[0,0,1]]"
     );
     TRY(cm3 = Double3x3r::identity());
-    TEST_EQUAL(to_str(cm3),
+    TEST_EQUAL(cm3.format(),
         "[[1,0,0],"
         "[0,1,0],"
         "[0,0,1]]"
     );
 
     TRY(rm3 = rm1);
-    TRY(v1 = rm3.column(0));  TEST_EQUAL(to_str(v1), "[2,7,17]");
-    TRY(v1 = rm3.column(1));  TEST_EQUAL(to_str(v1), "[3,11,19]");
-    TRY(v1 = rm3.column(2));  TEST_EQUAL(to_str(v1), "[5,13,23]");
-    TRY(v1 = rm3.row(0));     TEST_EQUAL(to_str(v1), "[2,3,5]");
-    TRY(v1 = rm3.row(1));     TEST_EQUAL(to_str(v1), "[7,11,13]");
-    TRY(v1 = rm3.row(2));     TEST_EQUAL(to_str(v1), "[17,19,23]");
+    TRY(v1 = rm3.column(0));  TEST_EQUAL(v1.format(), "[2,7,17]");
+    TRY(v1 = rm3.column(1));  TEST_EQUAL(v1.format(), "[3,11,19]");
+    TRY(v1 = rm3.column(2));  TEST_EQUAL(v1.format(), "[5,13,23]");
+    TRY(v1 = rm3.row(0));     TEST_EQUAL(v1.format(), "[2,3,5]");
+    TRY(v1 = rm3.row(1));     TEST_EQUAL(v1.format(), "[7,11,13]");
+    TRY(v1 = rm3.row(2));     TEST_EQUAL(v1.format(), "[17,19,23]");
 
     TRY(cm3 = cm1);
-    TRY(v1 = cm3.column(0));  TEST_EQUAL(to_str(v1), "[2,7,17]");
-    TRY(v1 = cm3.column(1));  TEST_EQUAL(to_str(v1), "[3,11,19]");
-    TRY(v1 = cm3.column(2));  TEST_EQUAL(to_str(v1), "[5,13,23]");
-    TRY(v1 = cm3.row(0));     TEST_EQUAL(to_str(v1), "[2,3,5]");
-    TRY(v1 = cm3.row(1));     TEST_EQUAL(to_str(v1), "[7,11,13]");
-    TRY(v1 = cm3.row(2));     TEST_EQUAL(to_str(v1), "[17,19,23]");
+    TRY(v1 = cm3.column(0));  TEST_EQUAL(v1.format(), "[2,7,17]");
+    TRY(v1 = cm3.column(1));  TEST_EQUAL(v1.format(), "[3,11,19]");
+    TRY(v1 = cm3.column(2));  TEST_EQUAL(v1.format(), "[5,13,23]");
+    TRY(v1 = cm3.row(0));     TEST_EQUAL(v1.format(), "[2,3,5]");
+    TRY(v1 = cm3.row(1));     TEST_EQUAL(v1.format(), "[7,11,13]");
+    TRY(v1 = cm3.row(2));     TEST_EQUAL(v1.format(), "[17,19,23]");
 
     TRY((v1 = {1,2,3}));
     TRY(rm3 = rm1);
     TRY(rm3.set_column(0, v1));
-    TEST_EQUAL(to_str(rm3),
+    TEST_EQUAL(rm3.format(),
         "[[1,3,5],"
         "[2,11,13],"
         "[3,19,23]]"
     );
     TRY(rm3.set_column(1, v1));
-    TEST_EQUAL(to_str(rm3),
+    TEST_EQUAL(rm3.format(),
         "[[1,1,5],"
         "[2,2,13],"
         "[3,3,23]]"
     );
     TRY(rm3.set_column(2, v1));
-    TEST_EQUAL(to_str(rm3),
+    TEST_EQUAL(rm3.format(),
         "[[1,1,1],"
         "[2,2,2],"
         "[3,3,3]]"
     );
     TRY(rm3 = rm1);
     TRY(rm3.set_row(0, v1));
-    TEST_EQUAL(to_str(rm3),
+    TEST_EQUAL(rm3.format(),
         "[[1,2,3],"
         "[7,11,13],"
         "[17,19,23]]"
     );
     TRY(rm3.set_row(1, v1));
-    TEST_EQUAL(to_str(rm3),
+    TEST_EQUAL(rm3.format(),
         "[[1,2,3],"
         "[1,2,3],"
         "[17,19,23]]"
     );
     TRY(rm3.set_row(2, v1));
-    TEST_EQUAL(to_str(rm3),
+    TEST_EQUAL(rm3.format(),
         "[[1,2,3],"
         "[1,2,3],"
         "[1,2,3]]"
@@ -653,113 +671,113 @@ void test_core_vector_matrix() {
 
     TRY(cm3 = cm1);
     TRY(cm3.set_column(0, v1));
-    TEST_EQUAL(to_str(cm3),
+    TEST_EQUAL(cm3.format(),
         "[[1,3,5],"
         "[2,11,13],"
         "[3,19,23]]"
     );
     TRY(cm3.set_column(1, v1));
-    TEST_EQUAL(to_str(cm3),
+    TEST_EQUAL(cm3.format(),
         "[[1,1,5],"
         "[2,2,13],"
         "[3,3,23]]"
     );
     TRY(cm3.set_column(2, v1));
-    TEST_EQUAL(to_str(cm3),
+    TEST_EQUAL(cm3.format(),
         "[[1,1,1],"
         "[2,2,2],"
         "[3,3,3]]"
     );
     TRY(cm3 = cm1);
     TRY(cm3.set_row(0, v1));
-    TEST_EQUAL(to_str(cm3),
+    TEST_EQUAL(cm3.format(),
         "[[1,2,3],"
         "[7,11,13],"
         "[17,19,23]]"
     );
     TRY(cm3.set_row(1, v1));
-    TEST_EQUAL(to_str(cm3),
+    TEST_EQUAL(cm3.format(),
         "[[1,2,3],"
         "[1,2,3],"
         "[17,19,23]]"
     );
     TRY(cm3.set_row(2, v1));
-    TEST_EQUAL(to_str(cm3),
+    TEST_EQUAL(cm3.format(),
         "[[1,2,3],"
         "[1,2,3],"
         "[1,2,3]]"
     );
 
     TRY(rm3 = rm1.swap_rows(0, 1));
-    TEST_EQUAL(to_str(rm3),
+    TEST_EQUAL(rm3.format(),
         "[[7,11,13],"
         "[2,3,5],"
         "[17,19,23]]"
     );
     TRY(rm3 = rm3.swap_rows(1, 2));
-    TEST_EQUAL(to_str(rm3),
+    TEST_EQUAL(rm3.format(),
         "[[7,11,13],"
         "[17,19,23],"
         "[2,3,5]]"
     );
     TRY(rm3 = rm3.swap_columns(0, 1));
-    TEST_EQUAL(to_str(rm3),
+    TEST_EQUAL(rm3.format(),
         "[[11,7,13],"
         "[19,17,23],"
         "[3,2,5]]"
     );
     TRY(rm3 = rm3.swap_columns(1, 2));
-    TEST_EQUAL(to_str(rm3),
+    TEST_EQUAL(rm3.format(),
         "[[11,13,7],"
         "[19,23,17],"
         "[3,5,2]]"
     );
 
     TRY(cm3 = rm1.swap_rows(0, 1));
-    TEST_EQUAL(to_str(cm3),
+    TEST_EQUAL(cm3.format(),
         "[[7,11,13],"
         "[2,3,5],"
         "[17,19,23]]"
     );
     TRY(cm3 = cm3.swap_rows(1, 2));
-    TEST_EQUAL(to_str(cm3),
+    TEST_EQUAL(cm3.format(),
         "[[7,11,13],"
         "[17,19,23],"
         "[2,3,5]]"
     );
     TRY(cm3 = cm3.swap_columns(0, 1));
-    TEST_EQUAL(to_str(cm3),
+    TEST_EQUAL(cm3.format(),
         "[[11,7,13],"
         "[19,17,23],"
         "[3,2,5]]"
     );
     TRY(cm3 = cm3.swap_columns(1, 2));
-    TEST_EQUAL(to_str(cm3),
+    TEST_EQUAL(cm3.format(),
         "[[11,13,7],"
         "[19,23,17],"
         "[3,5,2]]"
     );
 
     TRY(rm3 = rm1.transpose());
-    TEST_EQUAL(to_str(rm3),
+    TEST_EQUAL(rm3.format(),
         "[[2,7,17],"
         "[3,11,19],"
         "[5,13,23]]"
     );
     TRY(rm3 = rm3.transpose());
-    TEST_EQUAL(to_str(rm3),
+    TEST_EQUAL(rm3.format(),
         "[[2,3,5],"
         "[7,11,13],"
         "[17,19,23]]"
     );
     TRY(cm3 = cm1.transpose());
-    TEST_EQUAL(to_str(cm3),
+    TEST_EQUAL(cm3.format(),
         "[[2,7,17],"
         "[3,11,19],"
         "[5,13,23]]"
     );
     TRY(cm3 = cm3.transpose());
-    TEST_EQUAL(to_str(cm3),
+    TEST_EQUAL(cm3.format(),
         "[[2,3,5],"
         "[7,11,13],"
         "[17,19,23]]"
@@ -767,38 +785,38 @@ void test_core_vector_matrix() {
 
     v = {1,2,3,4,5,6,7,8,9};
     TRY(rm1 = Double3x3r::from_array(v.data()));
-    TEST_EQUAL(to_str(rm1),
+    TEST_EQUAL(rm1.format(),
         "[[1,2,3],"
         "[4,5,6],"
         "[7,8,9]]"
     );
     TRY(cm1 = Double3x3c::from_array(v.data()));
-    TEST_EQUAL(to_str(cm1),
+    TEST_EQUAL(cm1.format(),
         "[[1,4,7],"
         "[2,5,8],"
         "[3,6,9]]"
     );
 
     TRY(rm1 = Double3x3r::from_columns(1,2,3,4,5,6,7,8,9));
-    TEST_EQUAL(to_str(rm1),
+    TEST_EQUAL(rm1.format(),
         "[[1,4,7],"
         "[2,5,8],"
         "[3,6,9]]"
     );
     TRY(rm1 = Double3x3r::from_rows(1,2,3,4,5,6,7,8,9));
-    TEST_EQUAL(to_str(rm1),
+    TEST_EQUAL(rm1.format(),
         "[[1,2,3],"
         "[4,5,6],"
         "[7,8,9]]"
     );
     TRY(cm1 = Double3x3r::from_columns(1,2,3,4,5,6,7,8,9));
-    TEST_EQUAL(to_str(cm1),
+    TEST_EQUAL(cm1.format(),
         "[[1,4,7],"
         "[2,5,8],"
         "[3,6,9]]"
     );
     TRY(cm1 = Double3x3r::from_rows(1,2,3,4,5,6,7,8,9));
-    TEST_EQUAL(to_str(cm1),
+    TEST_EQUAL(cm1.format(),
         "[[1,2,3],"
         "[4,5,6],"
         "[7,8,9]]"
@@ -818,36 +836,36 @@ void test_core_vector_matrix_inversion() {
     Double4x4c c4, d4, e4;
 
     TRY((r2 = {2,3,5,7}));
-    TEST_EQUAL(to_str(r2),
+    TEST_EQUAL(r2.format(),
         "[[2,3],"
         "[5,7]]"
     );
     TRY(c2 = r2);
-    TEST_EQUAL(to_str(c2),
+    TEST_EQUAL(c2.format(),
         "[[2,3],"
         "[5,7]]"
     );
     TRY((r3 = {2,3,5,7,11,13,17,19,23}));
-    TEST_EQUAL(to_str(r3),
+    TEST_EQUAL(r3.format(),
         "[[2,3,5],"
         "[7,11,13],"
         "[17,19,23]]"
     );
     TRY(c3 = r3);
-    TEST_EQUAL(to_str(c3),
+    TEST_EQUAL(c3.format(),
         "[[2,3,5],"
         "[7,11,13],"
         "[17,19,23]]"
     );
     TRY((r4 = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53}));
-    TEST_EQUAL(to_str(r4),
+    TEST_EQUAL(r4.format(),
         "[[2,3,5,7],"
         "[11,13,17,19],"
         "[23,29,31,37],"
         "[41,43,47,53]]"
     );
     TRY(c4 = r4);
-    TEST_EQUAL(to_str(c4),
+    TEST_EQUAL(c4.format(),
         "[[2,3,5,7],"
         "[11,13,17,19],"
         "[23,29,31,37],"
@@ -861,9 +879,9 @@ void test_core_vector_matrix_inversion() {
     TRY(x = r4.det());  TEST_EQUAL(x, 880);
     TRY(x = c4.det());  TEST_EQUAL(x, 880);
 
-    Ustring id_str_2 = to_str(Double2x2r::identity());
-    Ustring id_str_3 = to_str(Double3x3r::identity());
-    Ustring id_str_4 = to_str(Double4x4r::identity());
+    Ustring id_str_2 = Double2x2r::identity().format();
+    Ustring id_str_3 = Double3x3r::identity().format();
+    Ustring id_str_4 = Double4x4r::identity().format();
     Ustring inv_str_2 =
         "[[-7,3],"
         "[5,-2]]";
@@ -877,12 +895,12 @@ void test_core_vector_matrix_inversion() {
         "[-0.590909,0.697727,-0.1,-0.102273],"
         "[0.681818,-0.420455,0,0.0795455]]";
 
-    TRY(s2 = r2.inverse());  TEST_EQUAL(to_str(s2), inv_str_2);  TRY(t2 = r2 * s2);  TRY(fuzz(t2));  TEST_EQUAL(to_str(t2), id_str_2);
-    TRY(d2 = c2.inverse());  TEST_EQUAL(to_str(d2), inv_str_2);  TRY(e2 = c2 * d2);  TRY(fuzz(e2));  TEST_EQUAL(to_str(e2), id_str_2);
-    TRY(s3 = r3.inverse());  TEST_EQUAL(to_str(s3), inv_str_3);  TRY(t3 = r3 * s3);  TRY(fuzz(t3));  TEST_EQUAL(to_str(t3), id_str_3);
-    TRY(d3 = c3.inverse());  TEST_EQUAL(to_str(d3), inv_str_3);  TRY(e3 = c3 * d3);  TRY(fuzz(e3));  TEST_EQUAL(to_str(e3), id_str_3);
-    TRY(s4 = r4.inverse());  TEST_EQUAL(to_str(s4), inv_str_4);  TRY(t4 = r4 * s4);  TRY(fuzz(t4));  TEST_EQUAL(to_str(t4), id_str_4);
-    TRY(d4 = c4.inverse());  TEST_EQUAL(to_str(d4), inv_str_4);  TRY(e4 = c4 * d4);  TRY(fuzz(e4));  TEST_EQUAL(to_str(e4), id_str_4);
+    TRY(s2 = r2.inverse());  TEST_EQUAL(s2.format(), inv_str_2);  TRY(t2 = r2 * s2);  TRY(fuzz(t2));  TEST_EQUAL(t2.format(), id_str_2);
+    TRY(d2 = c2.inverse());  TEST_EQUAL(d2.format(), inv_str_2);  TRY(e2 = c2 * d2);  TRY(fuzz(e2));  TEST_EQUAL(e2.format(), id_str_2);
+    TRY(s3 = r3.inverse());  TEST_EQUAL(s3.format(), inv_str_3);  TRY(t3 = r3 * s3);  TRY(fuzz(t3));  TEST_EQUAL(t3.format(), id_str_3);
+    TRY(d3 = c3.inverse());  TEST_EQUAL(d3.format(), inv_str_3);  TRY(e3 = c3 * d3);  TRY(fuzz(e3));  TEST_EQUAL(e3.format(), id_str_3);
+    TRY(s4 = r4.inverse());  TEST_EQUAL(s4.format(), inv_str_4);  TRY(t4 = r4 * s4);  TRY(fuzz(t4));  TEST_EQUAL(t4.format(), id_str_4);
+    TRY(d4 = c4.inverse());  TEST_EQUAL(d4.format(), inv_str_4);  TRY(e4 = c4 * d4);  TRY(fuzz(e4));  TEST_EQUAL(e4.format(), id_str_4);
 
 }
 
@@ -890,11 +908,14 @@ void test_core_vector_quaternion() {
 
     Qdouble q, r, s;
 
-    TEST_EQUAL(to_str(q), "[0,0,0,0]");
+    TEST_EQUAL(q.format(), "[0,0,0,0]");
     TRY(q = 42);
-    TEST_EQUAL(to_str(q), "[42,0,0,0]");
+    TEST_EQUAL(q.format(), "[42,0,0,0]");
     TRY((q = {10,20,30,40}));
-    TEST_EQUAL(to_str(q), "[10,20,30,40]");
+    TEST_EQUAL(q.format(), "[10,20,30,40]");
+    TEST_EQUAL(q.format('e', 2), "[1.00e1,2.00e1,3.00e1,4.00e1]");
+    TEST_EQUAL(q.format('f', 3), "[10.000,20.000,30.000,40.000]");
+    TEST_EQUAL(q.format('z', 4), "[10.00,20.00,30.00,40.00]");
     TEST_EQUAL(q.a(), 10);
     TEST_EQUAL(q.b(), 20);
     TEST_EQUAL(q.c(), 30);
@@ -905,36 +926,36 @@ void test_core_vector_quaternion() {
     TEST_EQUAL(q[3], 40);
 
     TEST_EQUAL(q.s_part(), 10);
-    TEST_EQUAL(to_str(q.v_part()), "[20,30,40]");
+    TEST_EQUAL(q.v_part().format(), "[20,30,40]");
     TEST_EQUAL(q.norm2(), 3000);
     TEST_NEAR(q.norm(), 54.772256);
-    TEST_EQUAL(to_str(q.versor()), "[0.182574,0.365148,0.547723,0.730297]");
-    TEST_EQUAL(to_str(q.recip()), "[0.00333333,-0.00666667,-0.01,-0.0133333]");
+    TEST_EQUAL(q.versor().format(), "[0.182574,0.365148,0.547723,0.730297]");
+    TEST_EQUAL(q.recip().format(), "[0.00333333,-0.00666667,-0.01,-0.0133333]");
 
     TRY(q *= 2);
-    TEST_EQUAL(to_str(q), "[20,40,60,80]");
+    TEST_EQUAL(q.format(), "[20,40,60,80]");
     TRY(q /= 4);
-    TEST_EQUAL(to_str(q), "[5,10,15,20]");
+    TEST_EQUAL(q.format(), "[5,10,15,20]");
 
     TRY((q = {10,20,30,40}));
     TRY((r = {100,200,300,400}));
     TRY(s = q + r);
-    TEST_EQUAL(to_str(s), "[110,220,330,440]");
+    TEST_EQUAL(s.format(), "[110,220,330,440]");
     TRY(s = q - r);
-    TEST_EQUAL(to_str(s), "[-90,-180,-270,-360]");
+    TEST_EQUAL(s.format(), "[-90,-180,-270,-360]");
 
     TRY((q = {2,3,5,7}));
     TRY((r = {11,13,17,19}));
     TRY(s = q * r);
-    TEST_EQUAL(to_str(s), "[-235,35,123,101]");
+    TEST_EQUAL(s.format(), "[-235,35,123,101]");
 
     TRY((q = {10,20,30,40}));
     TRY(r = q * q.recip());
     TRY(fuzz(r));
-    TEST_EQUAL(to_str(r), "[1,0,0,0]");
+    TEST_EQUAL(r.format(), "[1,0,0,0]");
     TRY(r = q.recip() * q);
     TRY(fuzz(r));
-    TEST_EQUAL(to_str(r), "[1,0,0,0]");
+    TEST_EQUAL(r.format(), "[1,0,0,0]");
 
 }
 
@@ -1000,15 +1021,15 @@ void test_core_vector_3d_coordinate_transformations() {
 
 }
 
-void test_core_vector_projective() {
+void test_core_vector_projective_geometry() {
 
     Double3 v3;
     Double4 v4;
 
-    TRY((v3 = {10,20,30}));     TRY(v4 = point4(v3));  TEST_EQUAL(to_str(v4), "[10,20,30,1]");
-    TRY((v3 = {10,20,30}));     TRY(v4 = norm4(v3));   TEST_EQUAL(to_str(v4), "[10,20,30,0]");
-    TRY((v4 = {10,20,30,40}));  TRY(v3 = point3(v4));  TEST_EQUAL(to_str(v3), "[0.25,0.5,0.75]");
-    TRY((v4 = {10,20,30,40}));  TRY(v3 = norm3(v4));   TEST_EQUAL(to_str(v3), "[10,20,30]");
+    TRY((v3 = {10,20,30}));     TRY(v4 = point4(v3));  TEST_EQUAL(v4.format(), "[10,20,30,1]");
+    TRY((v3 = {10,20,30}));     TRY(v4 = norm4(v3));   TEST_EQUAL(v4.format(), "[10,20,30,0]");
+    TRY((v4 = {10,20,30,40}));  TRY(v3 = point3(v4));  TEST_EQUAL(v3.format(), "[0.25,0.5,0.75]");
+    TRY((v4 = {10,20,30,40}));  TRY(v3 = norm3(v4));   TEST_EQUAL(v3.format(), "[10,20,30]");
 
     Double3x3c cm3;
     Double4x4c cm4;
@@ -1027,7 +1048,7 @@ void test_core_vector_projective() {
     TRY((v3 = {100,200,300}));
 
     TRY(cm4 = make_transform(cm3, v3));
-    TEST_EQUAL(to_str(cm4),
+    TEST_EQUAL(cm4.format(),
         "[[2,3,5,100],"
         "[7,11,13,200],"
         "[17,19,23,300],"
@@ -1035,7 +1056,7 @@ void test_core_vector_projective() {
     );
     TRY(cm4 = normal_transform(cm4));
     TRY(rm4 = make_transform(rm3, v3));
-    TEST_EQUAL(to_str(rm4),
+    TEST_EQUAL(rm4.format(),
         "[[2,3,5,100],"
         "[7,11,13,200],"
         "[17,19,23,300],"
@@ -1045,7 +1066,7 @@ void test_core_vector_projective() {
 
 }
 
-void test_core_vector_primitives() {
+void test_core_vector_transform_primitives() {
 
     const Double3 zero, u = {1,0,0}, v = {0,1,0}, w = {0,0,1}, p = {2,3,5};
 
@@ -1055,103 +1076,103 @@ void test_core_vector_primitives() {
 
     TRY(m3 = rotate3(30_deg, 0));
     TRY(fuzz(m3));
-    TEST_EQUAL(to_str(m3),
+    TEST_EQUAL(m3.format(),
         "[[1,0,0],"
         "[0,0.866025,-0.5],"
         "[0,0.5,0.866025]]"
     );
-    TRY(r = m3 * u);  TEST_EQUAL(to_str(r), "[1,0,0]");
-    TRY(r = m3 * v);  TEST_EQUAL(to_str(r), "[0,0.866025,0.5]");
-    TRY(r = m3 * w);  TEST_EQUAL(to_str(r), "[0,-0.5,0.866025]");
+    TRY(r = m3 * u);  TEST_EQUAL(r.format(), "[1,0,0]");
+    TRY(r = m3 * v);  TEST_EQUAL(r.format(), "[0,0.866025,0.5]");
+    TRY(r = m3 * w);  TEST_EQUAL(r.format(), "[0,-0.5,0.866025]");
 
     TRY(m3 = rotate3(30_deg, 1));
     TRY(fuzz(m3));
-    TEST_EQUAL(to_str(m3),
+    TEST_EQUAL(m3.format(),
         "[[0.866025,0,0.5],"
         "[0,1,0],"
         "[-0.5,0,0.866025]]"
     );
-    TRY(r = m3 * u);  TEST_EQUAL(to_str(r), "[0.866025,0,-0.5]");
-    TRY(r = m3 * v);  TEST_EQUAL(to_str(r), "[0,1,0]");
-    TRY(r = m3 * w);  TEST_EQUAL(to_str(r), "[0.5,0,0.866025]");
+    TRY(r = m3 * u);  TEST_EQUAL(r.format(), "[0.866025,0,-0.5]");
+    TRY(r = m3 * v);  TEST_EQUAL(r.format(), "[0,1,0]");
+    TRY(r = m3 * w);  TEST_EQUAL(r.format(), "[0.5,0,0.866025]");
 
     TRY(m3 = rotate3(30_deg, 2));
     TRY(fuzz(m3));
-    TEST_EQUAL(to_str(m3),
+    TEST_EQUAL(m3.format(),
         "[[0.866025,-0.5,0],"
         "[0.5,0.866025,0],"
         "[0,0,1]]"
     );
-    TRY(r = m3 * u);  TEST_EQUAL(to_str(r), "[0.866025,0.5,0]");
-    TRY(r = m3 * v);  TEST_EQUAL(to_str(r), "[-0.5,0.866025,0]");
-    TRY(r = m3 * w);  TEST_EQUAL(to_str(r), "[0,0,1]");
+    TRY(r = m3 * u);  TEST_EQUAL(r.format(), "[0.866025,0.5,0]");
+    TRY(r = m3 * v);  TEST_EQUAL(r.format(), "[-0.5,0.866025,0]");
+    TRY(r = m3 * w);  TEST_EQUAL(r.format(), "[0,0,1]");
 
     TRY(m4 = rotate4(30_deg, 0));
     TRY(fuzz(m4));
-    TEST_EQUAL(to_str(m4),
+    TEST_EQUAL(m4.format(),
         "[[1,0,0,0],"
         "[0,0.866025,-0.5,0],"
         "[0,0.5,0.866025,0],"
         "[0,0,0,1]]"
     );
-    TRY(r = point3(m4 * point4(u)));  TEST_EQUAL(to_str(r), "[1,0,0]");
-    TRY(r = point3(m4 * point4(v)));  TEST_EQUAL(to_str(r), "[0,0.866025,0.5]");
-    TRY(r = point3(m4 * point4(w)));  TEST_EQUAL(to_str(r), "[0,-0.5,0.866025]");
+    TRY(r = point3(m4 * point4(u)));  TEST_EQUAL(r.format(), "[1,0,0]");
+    TRY(r = point3(m4 * point4(v)));  TEST_EQUAL(r.format(), "[0,0.866025,0.5]");
+    TRY(r = point3(m4 * point4(w)));  TEST_EQUAL(r.format(), "[0,-0.5,0.866025]");
 
     TRY(m4 = rotate4(30_deg, 1));
     TRY(fuzz(m4));
-    TEST_EQUAL(to_str(m4),
+    TEST_EQUAL(m4.format(),
         "[[0.866025,0,0.5,0],"
         "[0,1,0,0],"
         "[-0.5,0,0.866025,0],"
         "[0,0,0,1]]"
     );
-    TRY(r = point3(m4 * point4(u)));  TEST_EQUAL(to_str(r), "[0.866025,0,-0.5]");
-    TRY(r = point3(m4 * point4(v)));  TEST_EQUAL(to_str(r), "[0,1,0]");
-    TRY(r = point3(m4 * point4(w)));  TEST_EQUAL(to_str(r), "[0.5,0,0.866025]");
+    TRY(r = point3(m4 * point4(u)));  TEST_EQUAL(r.format(), "[0.866025,0,-0.5]");
+    TRY(r = point3(m4 * point4(v)));  TEST_EQUAL(r.format(), "[0,1,0]");
+    TRY(r = point3(m4 * point4(w)));  TEST_EQUAL(r.format(), "[0.5,0,0.866025]");
 
     TRY(m4 = rotate4(30_deg, 2));
     TRY(fuzz(m4));
-    TEST_EQUAL(to_str(m4),
+    TEST_EQUAL(m4.format(),
         "[[0.866025,-0.5,0,0],"
         "[0.5,0.866025,0,0],"
         "[0,0,1,0],"
         "[0,0,0,1]]"
     );
-    TRY(r = point3(m4 * point4(u)));  TEST_EQUAL(to_str(r), "[0.866025,0.5,0]");
-    TRY(r = point3(m4 * point4(v)));  TEST_EQUAL(to_str(r), "[-0.5,0.866025,0]");
-    TRY(r = point3(m4 * point4(w)));  TEST_EQUAL(to_str(r), "[0,0,1]");
+    TRY(r = point3(m4 * point4(u)));  TEST_EQUAL(r.format(), "[0.866025,0.5,0]");
+    TRY(r = point3(m4 * point4(v)));  TEST_EQUAL(r.format(), "[-0.5,0.866025,0]");
+    TRY(r = point3(m4 * point4(w)));  TEST_EQUAL(r.format(), "[0,0,1]");
 
     TRY(m3 = rotate3(30_deg, zero));
-    TEST_EQUAL(to_str(m3),
+    TEST_EQUAL(m3.format(),
         "[[1,0,0],"
         "[0,1,0],"
         "[0,0,1]]"
     );
     TRY(m3 = rotate3(30_deg, u));
     TRY(fuzz(m3));
-    TEST_EQUAL(to_str(m3),
+    TEST_EQUAL(m3.format(),
         "[[1,0,0],"
         "[0,0.866025,-0.5],"
         "[0,0.5,0.866025]]"
     );
     TRY(m3 = rotate3(30_deg, v));
     TRY(fuzz(m3));
-    TEST_EQUAL(to_str(m3),
+    TEST_EQUAL(m3.format(),
         "[[0.866025,0,0.5],"
         "[0,1,0],"
         "[-0.5,0,0.866025]]"
     );
     TRY(m3 = rotate3(30_deg, w));
     TRY(fuzz(m3));
-    TEST_EQUAL(to_str(m3),
+    TEST_EQUAL(m3.format(),
         "[[0.866025,-0.5,0],"
         "[0.5,0.866025,0],"
         "[0,0,1]]"
     );
 
     TRY(m4 = rotate4(30_deg, zero));
-    TEST_EQUAL(to_str(m4),
+    TEST_EQUAL(m4.format(),
         "[[1,0,0,0],"
         "[0,1,0,0],"
         "[0,0,1,0],"
@@ -1159,7 +1180,7 @@ void test_core_vector_primitives() {
     );
     TRY(m4 = rotate4(30_deg, u));
     TRY(fuzz(m4));
-    TEST_EQUAL(to_str(m4),
+    TEST_EQUAL(m4.format(),
         "[[1,0,0,0],"
         "[0,0.866025,-0.5,0],"
         "[0,0.5,0.866025,0],"
@@ -1167,7 +1188,7 @@ void test_core_vector_primitives() {
     );
     TRY(m4 = rotate4(30_deg, v));
     TRY(fuzz(m4));
-    TEST_EQUAL(to_str(m4),
+    TEST_EQUAL(m4.format(),
         "[[0.866025,0,0.5,0],"
         "[0,1,0,0],"
         "[-0.5,0,0.866025,0],"
@@ -1175,7 +1196,7 @@ void test_core_vector_primitives() {
     );
     TRY(m4 = rotate4(30_deg, w));
     TRY(fuzz(m4));
-    TEST_EQUAL(to_str(m4),
+    TEST_EQUAL(m4.format(),
         "[[0.866025,-0.5,0,0],"
         "[0.5,0.866025,0,0],"
         "[0,0,1,0],"
@@ -1183,56 +1204,56 @@ void test_core_vector_primitives() {
     );
 
     TRY(m3 = scale3(42.0));
-    TEST_EQUAL(to_str(m3),
+    TEST_EQUAL(m3.format(),
         "[[42,0,0],"
         "[0,42,0],"
         "[0,0,42]]"
     );
     TRY(r = m3 * p);
-    TEST_EQUAL(to_str(r), "[84,126,210]");
+    TEST_EQUAL(r.format(), "[84,126,210]");
 
     TRY(m3 = scale3(Double3{10,20,30}));
-    TEST_EQUAL(to_str(m3),
+    TEST_EQUAL(m3.format(),
         "[[10,0,0],"
         "[0,20,0],"
         "[0,0,30]]"
     );
     TRY(r = m3 * p);
-    TEST_EQUAL(to_str(r), "[20,60,150]");
+    TEST_EQUAL(r.format(), "[20,60,150]");
 
     TRY(m4 = scale4(42.0));
-    TEST_EQUAL(to_str(m4),
+    TEST_EQUAL(m4.format(),
         "[[42,0,0,0],"
         "[0,42,0,0],"
         "[0,0,42,0],"
         "[0,0,0,1]]"
     );
     TRY(r = point3(m4 * point4(p)));
-    TEST_EQUAL(to_str(r), "[84,126,210]");
+    TEST_EQUAL(r.format(), "[84,126,210]");
 
     TRY(m4 = scale4(Double3{10,20,30}));
-    TEST_EQUAL(to_str(m4),
+    TEST_EQUAL(m4.format(),
         "[[10,0,0,0],"
         "[0,20,0,0],"
         "[0,0,30,0],"
         "[0,0,0,1]]"
     );
     TRY(r = point3(m4 * point4(p)));
-    TEST_EQUAL(to_str(r), "[20,60,150]");
+    TEST_EQUAL(r.format(), "[20,60,150]");
 
     TRY(m4 = translate4(Double3{10,20,30}));
-    TEST_EQUAL(to_str(m4),
+    TEST_EQUAL(m4.format(),
         "[[1,0,0,10],"
         "[0,1,0,20],"
         "[0,0,1,30],"
         "[0,0,0,1]]"
     );
     TRY(r = point3(m4 * point4(p)));
-    TEST_EQUAL(to_str(r), "[12,23,35]");
+    TEST_EQUAL(r.format(), "[12,23,35]");
 
 }
 
-void test_core_vector_quaternions() {
+void test_core_vector_transform_quaternions() {
 
     const Double3 zero, u = {1,0,0}, v = {0,1,0}, w = {0,0,1}, unit = {1,1,1};
 
@@ -1242,18 +1263,18 @@ void test_core_vector_quaternions() {
     Qdouble q;
 
     TRY(q = rotateq(120_deg, unit));
-    TEST_EQUAL(to_str(q), "[0.5,0.5,0.5,0.5]");
+    TEST_EQUAL(q.format(), "[0.5,0.5,0.5,0.5]");
 
     TRY(q = rotateq(120_deg, zero));
-    TEST_EQUAL(to_str(q), "[1,0,0,0]");
+    TEST_EQUAL(q.format(), "[1,0,0,0]");
     TRY(m3 = rotate3(q));
-    TEST_EQUAL(to_str(m3),
+    TEST_EQUAL(m3.format(),
         "[[1,0,0],"
         "[0,1,0],"
         "[0,0,1]]"
     );
     TRY(m4 = rotate4(q));
-    TEST_EQUAL(to_str(m4),
+    TEST_EQUAL(m4.format(),
         "[[1,0,0,0],"
         "[0,1,0,0],"
         "[0,0,1,0],"
@@ -1263,61 +1284,61 @@ void test_core_vector_quaternions() {
     TRY(q = rotateq(30_deg, u));
     TRY(m3 = rotate3(q));
     TRY(fuzz(m3));
-    TEST_EQUAL(to_str(m3),
+    TEST_EQUAL(m3.format(),
         "[[1,0,0],"
         "[0,0.866025,-0.5],"
         "[0,0.5,0.866025]]"
     );
     TRY(m4 = rotate4(q));
     TRY(fuzz(m4));
-    TEST_EQUAL(to_str(m4),
+    TEST_EQUAL(m4.format(),
         "[[1,0,0,0],"
         "[0,0.866025,-0.5,0],"
         "[0,0.5,0.866025,0],"
         "[0,0,0,1]]"
     );
-    TRY(r = rotate(q, u));  TEST_EQUAL(to_str(r), "[1,0,0]");
-    TRY(r = rotate(q, v));  TEST_EQUAL(to_str(r), "[0,0.866025,0.5]");
-    TRY(r = rotate(q, w));  TEST_EQUAL(to_str(r), "[0,-0.5,0.866025]");
+    TRY(r = rotate(q, u));  TEST_EQUAL(r.format(), "[1,0,0]");
+    TRY(r = rotate(q, v));  TEST_EQUAL(r.format(), "[0,0.866025,0.5]");
+    TRY(r = rotate(q, w));  TEST_EQUAL(r.format(), "[0,-0.5,0.866025]");
 
     TRY(q = rotateq(30_deg, v));
     TRY(m3 = rotate3(q));
     TRY(fuzz(m3));
-    TEST_EQUAL(to_str(m3),
+    TEST_EQUAL(m3.format(),
         "[[0.866025,0,0.5],"
         "[0,1,0],"
         "[-0.5,0,0.866025]]"
     );
     TRY(m4 = rotate4(q));
     TRY(fuzz(m4));
-    TEST_EQUAL(to_str(m4),
+    TEST_EQUAL(m4.format(),
         "[[0.866025,0,0.5,0],"
         "[0,1,0,0],"
         "[-0.5,0,0.866025,0],"
         "[0,0,0,1]]"
     );
-    TRY(r = rotate(q, u));  TEST_EQUAL(to_str(r), "[0.866025,0,-0.5]");
-    TRY(r = rotate(q, v));  TEST_EQUAL(to_str(r), "[0,1,0]");
-    TRY(r = rotate(q, w));  TEST_EQUAL(to_str(r), "[0.5,0,0.866025]");
+    TRY(r = rotate(q, u));  TEST_EQUAL(r.format(), "[0.866025,0,-0.5]");
+    TRY(r = rotate(q, v));  TEST_EQUAL(r.format(), "[0,1,0]");
+    TRY(r = rotate(q, w));  TEST_EQUAL(r.format(), "[0.5,0,0.866025]");
 
     TRY(q = rotateq(30_deg, w));
     TRY(m3 = rotate3(q));
     TRY(fuzz(m3));
-    TEST_EQUAL(to_str(m3),
+    TEST_EQUAL(m3.format(),
         "[[0.866025,-0.5,0],"
         "[0.5,0.866025,0],"
         "[0,0,1]]"
     );
     TRY(m4 = rotate4(q));
     TRY(fuzz(m4));
-    TEST_EQUAL(to_str(m4),
+    TEST_EQUAL(m4.format(),
         "[[0.866025,-0.5,0,0],"
         "[0.5,0.866025,0,0],"
         "[0,0,1,0],"
         "[0,0,0,1]]"
     );
-    TRY(r = rotate(q, u));  TEST_EQUAL(to_str(r), "[0.866025,0.5,0]");
-    TRY(r = rotate(q, v));  TEST_EQUAL(to_str(r), "[-0.5,0.866025,0]");
-    TRY(r = rotate(q, w));  TEST_EQUAL(to_str(r), "[0,0,1]");
+    TRY(r = rotate(q, u));  TEST_EQUAL(r.format(), "[0.866025,0.5,0]");
+    TRY(r = rotate(q, v));  TEST_EQUAL(r.format(), "[-0.5,0.866025,0]");
+    TRY(r = rotate(q, w));  TEST_EQUAL(r.format(), "[0,0,1]");
 
 }

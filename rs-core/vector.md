@@ -157,6 +157,16 @@ Returns a unit vector parallel to this vector (or an approximation to it,
 given the limits of floating point arithmetic). This requires `T` to be a
 floating point type.
 
+* `Ustring Vector::`**`format`**`(char mode = 'g', int prec = 6) const`
+* `Ustring` **`to_str`**`(const Vector& v)`
+* `std::ostream&` **`operator<<`**`(std::ostream& out, const Vector& v)`
+
+Format a vector as a string. The `format()` function will call `fp_format()`
+(from `unicorn/utility`) for each element if `T` is a floating point type,
+otherwise `to_str(T)` (ignoring the arguments), and present the result as a
+comma delimited list enclosed in square brackets. The `to_str()` function and
+output operator call `format()` with its default arguments.
+
 * `bool Vector::`**`is_null`**`() const noexcept`
 
 True if the vector is null.
@@ -194,12 +204,6 @@ Returns the zero vector (the same value as the default constructor).
 
 Vector algorithms. These apply the corresponding scalar operations to each
 member.
-
-* `Ustring` **`to_str`**`(const Vector& v)`
-* `std::ostream&` **`operator<<`**`(std::ostream& out, const Vector& v)`
-
-Simple string formatting; this simply writes the vector's elements in their
-default format, enclosed in square brackets.
 
 * `template <typename T, size_t N> struct std::`**`hash`**`<Vector<T, N>>`
 
@@ -327,6 +331,15 @@ index is out of bounds.
 Returns the determinant of the matrix. This is currently only implemented for
 `N<=4`.
 
+* `Ustring Matrix::`**`format`**`(char mode = 'g', int prec = 6) const`
+* `std::ostream&` **`operator<<`**`(std::ostream& out, const Matrix& m)`
+* `Ustring` **`to_str`**`(const Matrix& m)`
+
+Format a matrix as a string. The `format()` function will writes the matrix by
+row in nested array form, with each row formatted as for `Vector::format()`.
+The `to_str()` function and output operator call `format()` with its default
+arguments.
+
 * `Matrix Matrix::`**`inverse`**`() const noexcept`
 
 Calculate the inverse of a matrix. This requires `T` to be a floating point
@@ -378,11 +391,6 @@ Return the identity or zero matrix.
 * `bool` **`operator!=`**`(const Matrix& lhs, const Matrix& rhs) noexcept`
 
 Comparison operators.
-
-* `std::ostream&` **`operator<<`**`(std::ostream& out, const Matrix& m)`
-* `Ustring` **`to_str`**`(const Matrix& m)`
-
-Simple string formatting; this writes the matrix by row in nested array form.
 
 * `template <typename T, size_t N, RS::MatrixLayout L> struct std::`**`hash`**`<Matrix<T, N, L>>`
 
@@ -472,6 +480,13 @@ The first version returns the conjugate quaternion. The second version
 performs the conjugation of `p` by `*this`, returning
 <code>qpq<sup>-1</sup></code> (where `q=*this`).
 
+* `Ustring Quaternion::`**`format`**`(char mode = 'g', int prec = 6) const`
+* `Ustring` **`to_str`**`(const Quaternion& q)`
+* `std::ostream&` **`operator<<`**`(std::ostream& out, const Quaternion& q)`
+
+Format a quaternion as a string. This simply writes the quaternion in the same
+format as a 4-vector.
+
 * `T Quaternion::`**`norm`**`() const noexcept`
 * `T Quaternion::`**`norm2`**`() const noexcept`
 
@@ -496,12 +511,6 @@ the quaternion is zero.
 * `static Quaternion` **`from_vector`**`(const Vector<T, 4>& v) noexcept`
 
 Component-wise conversions between a quaternion and a 4-vector,
-
-* `std::ostream&` **`operator<<`**`(std::ostream& out, const Quaternion& q)`
-* `Ustring` **`to_str`**`(const Quaternion& q)`
-
-Simple string formatting; this simply writes the quaternion in the same format
-as a 4-vector.
 
 * `template <typename T> struct std::`**`hash`**`<Quaternion<T>>`
 

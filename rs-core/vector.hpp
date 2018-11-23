@@ -6,7 +6,6 @@
 #include <array>
 #include <cmath>
 #include <cstdlib>
-#include <functional>
 #include <initializer_list>
 #include <iterator>
 #include <numeric>
@@ -58,6 +57,7 @@ namespace RS {
         const T* end() const noexcept { return begin() + N; }
         T angle(const Vector& v) const noexcept;
         Vector dir() const noexcept { return *this == Vector() ? Vector() : *this / r(); }
+        Ustring format(char mode = 'g', int prec = 6) const;
         bool is_null() const noexcept { return *this == Vector(); }
         Vector project(const Vector& v) const noexcept { return v == Vector() ? Vector() : v * ((*this % v) / (v % v)); }
         Vector reject(const Vector& v) const noexcept { return *this - project(v); }
@@ -184,6 +184,20 @@ namespace RS {
             return T(0);
         else
             return std::acos(*this % v / std::sqrt(r2() * v.r2()));
+    }
+
+    template <typename T, size_t N>
+    Ustring Vector<T, N>::format(char mode, int prec) const {
+        Ustring s = "[";
+        for (auto& t: arr) {
+            if constexpr (std::is_floating_point_v<T>)
+                s += fp_format(t, mode, prec);
+            else
+                s += to_str(t);
+            s += ',';
+        }
+        s.back() = ']';
+        return s;
     }
 
     template <typename T, size_t N>
@@ -315,7 +329,7 @@ namespace RS {
 
     template <typename T, size_t N>
     std::ostream& operator<<(std::ostream& out, const Vector<T, N>& v) {
-        return out << to_str(v);
+        return out << v.format();
     }
 
     template <typename T1, typename T2, typename T3, size_t N>
@@ -345,6 +359,11 @@ namespace RS {
         for (size_t i = 0; i < N; ++i)
             std::tie(pair.first[i], pair.second[i]) = std::minmax(x[i], y[i]);
         return pair;
+    }
+
+    template <typename T, size_t N>
+    Ustring to_str(const Vector<T, N>& v) {
+        return v.format();
     }
 
     // Matrix
@@ -606,6 +625,7 @@ namespace RS {
         vector_type column(size_t c) const noexcept { return layout_specific::get_column(arr.data(), c); }
         vector_type row(size_t r) const noexcept { return layout_specific::get_row(arr.data(), r); }
         T det() const noexcept { return RS_Detail::Determinant<Matrix>()(*this); }
+        Ustring format(char mode = 'g', int prec = 6) const;
         Matrix inverse() const noexcept { return RS_Detail::Inverse<Matrix>()(*this); }
         void set_column(size_t c, vector_type v) noexcept { layout_specific::set_column(arr.data(), c, v.begin()); }
         void set_row(size_t r, vector_type v) noexcept { layout_specific::set_row(arr.data(), r, v.begin()); }
@@ -743,6 +763,23 @@ namespace RS {
     Matrix<T, N, L>& Matrix<T, N, L>::operator/=(T2 rhs) noexcept {
         std::for_each(begin(), end(), [rhs] (T& t) { t /= rhs; });
         return *this;
+    }
+
+    template <typename T, size_t N, MatrixLayout L>
+    Ustring Matrix<T, N, L>::format(char mode, int prec) const {
+        Ustring s;
+        for (size_t r = 0; r < N; ++r) {
+            s += r ? ',' : '[';
+            for (size_t c = 0; c < N; ++c) {
+                s += c ? ',' : '[';
+                if constexpr (std::is_floating_point_v<T>)
+                    s += fp_format((*this)(r, c), mode, prec);
+                else
+                    s += to_str((*this)(r, c));
+            }
+            s += ']';
+        }
+        return s += ']';
     }
 
     template <typename T, size_t N, MatrixLayout L>
@@ -885,21 +922,12 @@ namespace RS {
 
     template <typename T, size_t N, MatrixLayout L>
     Ustring to_str(const Matrix<T, N, L>& m) {
-        Ustring s;
-        for (size_t r = 0; r < N; ++r) {
-            s += r ? ',' : '[';
-            for (size_t c = 0; c < N; ++c) {
-                s += c ? ',' : '[';
-                s += to_str(m(r, c));
-            }
-            s += ']';
-        }
-        return s += ']';
+        return m.format();
     }
 
     template <typename T, size_t N, MatrixLayout L>
     std::ostream& operator<<(std::ostream& out, const Matrix<T, N, L>& m) {
-        return out << to_str(m);
+        return out << m.format();
     }
 
     // Quaternion
@@ -935,6 +963,7 @@ namespace RS {
         const T* end() const noexcept { return begin() + 4; }
         Quaternion conj() const noexcept { return {a(), - b(), - c(), - d()}; }
         Quaternion conj(const Quaternion& p) const noexcept { return *this * p * conj(); }
+        Ustring format(char mode = 'g', int prec = 6) const;
         T norm() const noexcept { return std::sqrt(norm2()); }
         T norm2() const noexcept { return std::inner_product(begin(), end(), begin(), T(0)); }
         Quaternion recip() const noexcept { return conj() / norm2(); }
@@ -1031,6 +1060,20 @@ namespace RS {
     }
 
     template <typename T>
+    Ustring Quaternion<T>::format(char mode, int prec) const {
+        Ustring s = "[";
+        for (auto& t: arr) {
+            if constexpr (std::is_floating_point_v<T>)
+                s += fp_format(t, mode, prec);
+            else
+                s += to_str(t);
+            s += ',';
+        }
+        s.back() = ']';
+        return s;
+    }
+
+    template <typename T>
     bool operator==(const Quaternion<T>& lhs, const Quaternion<T>& rhs) noexcept {
         return std::equal(lhs.begin(), lhs.end(), rhs.begin());
     }
@@ -1042,58 +1085,63 @@ namespace RS {
 
     template <typename T>
     std::ostream& operator<<(std::ostream& out, const Quaternion<T>& q) {
-        return out << to_str(q);
+        return out << q.format();
+    }
+
+    template <typename T>
+    Ustring to_str(const Quaternion<T>& q) {
+        return q.format();
     }
 
     // Coordinate transformations
 
     template <typename T>
     Vector<T, 2> cartesian_to_polar(const Vector<T, 2>& xy) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         return {xy.r(), std::atan2(xy[1], xy[0])};
     }
 
     template <typename T>
     Vector<T, 2> polar_to_cartesian(const Vector<T, 2>& rt) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         return {rt[0] * std::cos(rt[1]), rt[0] * std::sin(rt[1])};
     }
 
     template <typename T>
     Vector<T, 3> cartesian_to_cylindrical(const Vector<T, 3>& xyz) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         return {std::sqrt(xyz[0] * xyz[0] + xyz[1] * xyz[1]), std::atan2(xyz[1], xyz[0]), xyz[2]};
     }
 
     template <typename T>
     Vector<T, 3> cartesian_to_spherical(const Vector<T, 3>& xyz) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         T rho = std::sqrt(xyz[0] * xyz[0] + xyz[1] * xyz[1]);
         return {xyz.r(), std::atan2(xyz[1], xyz[0]), std::atan2(rho, xyz[2])};
     }
 
     template <typename T>
     Vector<T, 3> cylindrical_to_cartesian(const Vector<T, 3>& rpz) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         return {rpz[0] * std::cos(rpz[1]), rpz[0] * std::sin(rpz[1]), rpz[2]};
     }
 
     template <typename T>
     Vector<T, 3> cylindrical_to_spherical(const Vector<T, 3>& rpz) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         return {std::sqrt(rpz[0] * rpz[0] + rpz[2] * rpz[2]), rpz[1], std::atan2(rpz[0], rpz[2])};
     }
 
     template <typename T>
     Vector<T, 3> spherical_to_cartesian(const Vector<T, 3>& rpt) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         T rho = rpt[0] * std::sin(rpt[2]);
         return {rho * std::cos(rpt[1]), rho * std::sin(rpt[1]), rpt[0] * std::cos(rpt[2])};
     }
 
     template <typename T>
     Vector<T, 3> spherical_to_cylindrical(const Vector<T, 3>& rpt) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         return {rpt[0] * std::sin(rpt[2]), rpt[1], rpt[0] * std::cos(rpt[2])};
     }
 
@@ -1101,7 +1149,7 @@ namespace RS {
 
     template <typename T>
     inline Vector<T, 4> make4(const Vector<T, 3>& v, T w) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         return {v.x(), v.y(), v.z(), w};
     }
 
@@ -1117,7 +1165,7 @@ namespace RS {
 
     template <typename T>
     inline Vector<T, 3> point3(const Vector<T, 4>& v) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         Vector<T, 3> u{v.x(), v.y(), v.z()};
         if (v.w() != T(0))
             u /= v.w();
@@ -1126,13 +1174,13 @@ namespace RS {
 
     template <typename T>
     inline Vector<T, 3> norm3(const Vector<T, 4>& v) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         return {v.x(), v.y(), v.z()};
     }
 
     template <typename T, MatrixLayout L>
     Matrix<T, 4, L> make_transform(const Matrix<T, 3, L>& m, const Vector<T, 3>& v) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         Matrix<T, 4, L> t;
         for (size_t r = 0; r < 3; ++r) {
             for (size_t c = 0; c < 3; ++c)
@@ -1148,7 +1196,7 @@ namespace RS {
 
     template <typename T, MatrixLayout L>
     inline Matrix<T, 4, L> normal_transform(const Matrix<T, 4, L>& m) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         return m.inverse().transpose();
     }
 
@@ -1156,7 +1204,7 @@ namespace RS {
 
     template <typename T>
     Matrix<T, 3> rotate3(T angle, size_t index) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         auto c = std::cos(angle), s = std::sin(angle);
         auto m = Matrix<T, 3>::identity();
         switch (index) {
@@ -1170,7 +1218,7 @@ namespace RS {
 
     template <typename T>
     Matrix<T, 4> rotate4(T angle, size_t index) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         auto c = std::cos(angle), s = std::sin(angle);
         auto m = Matrix<T, 4>::identity();
         switch (index) {
@@ -1184,13 +1232,13 @@ namespace RS {
 
     template <typename T>
     Matrix<T, 3> scale3(T t) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         return Matrix<T, 3>(t, T(0));
     }
 
     template <typename T>
     Matrix<T, 3> scale3(const Vector<T, 3>& v) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         Matrix<T, 3> m;
         for (size_t i = 0; i < 3; ++i)
             m(i, i) = v[i];
@@ -1199,7 +1247,7 @@ namespace RS {
 
     template <typename T>
     Matrix<T, 4> scale4(T t) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         Matrix<T, 4> m(t, T(0));
         m(3, 3) = T(1);
         return m;
@@ -1207,7 +1255,7 @@ namespace RS {
 
     template <typename T>
     Matrix<T, 4> scale4(const Vector<T, 3>& v) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         Matrix<T, 4> m;
         for (size_t i = 0; i < 3; ++i)
             m(i, i) = v[i];
@@ -1217,7 +1265,7 @@ namespace RS {
 
     template <typename T>
     Matrix<T, 4> translate4(const Vector<T, 3>& v) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         auto m = Matrix<T, 4>::identity();
         for (size_t i = 0; i < 3; ++i)
             m(i, 3) = v[i];
@@ -1245,13 +1293,13 @@ namespace RS {
 
     template <typename T>
     Vector<T, 3> rotate(const Quaternion<T>& q, const Vector<T, 3>& v) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         return q.conj({T(0), v}).v_part();
     }
 
     template <typename T>
     Quaternion<T> rotateq(T angle, const Vector<T, 3>& axis) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         if (axis == Vector<T, 3>())
             return T(1);
         angle /= T(2);
@@ -1260,7 +1308,7 @@ namespace RS {
 
     template <typename T>
     Matrix<T, 3> rotate3(const Quaternion<T>& q) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         Matrix<T, 3> m;
         RS_Detail::build_matrix(q, m);
         return m;
@@ -1268,13 +1316,13 @@ namespace RS {
 
     template <typename T>
     Matrix<T, 3> rotate3(T angle, const Vector<T, 3>& axis) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         return rotate3(rotateq(angle, axis));
     }
 
     template <typename T>
     Matrix<T, 4> rotate4(const Quaternion<T>& q) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         Matrix<T, 4> m;
         RS_Detail::build_matrix(q, m);
         m(3, 3) = T(1);
@@ -1283,7 +1331,7 @@ namespace RS {
 
     template <typename T>
     Matrix<T, 4> rotate4(T angle, const Vector<T, 3>& axis) noexcept {
-        static_assert(std::is_floating_point<T>::value, "Only floating point coordinates are supported");
+        static_assert(std::is_floating_point_v<T>, "Only floating point coordinates are supported");
         return rotate4(rotateq(angle, axis));
     }
 

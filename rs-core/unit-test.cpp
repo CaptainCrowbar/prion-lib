@@ -385,9 +385,9 @@ extern void test_core_vector_matrix_inversion();
 extern void test_core_vector_quaternion();
 extern void test_core_vector_2d_coordinate_transformations();
 extern void test_core_vector_3d_coordinate_transformations();
-extern void test_core_vector_projective();
-extern void test_core_vector_primitives();
-extern void test_core_vector_quaternions();
+extern void test_core_vector_projective_geometry();
+extern void test_core_vector_transform_primitives();
+extern void test_core_vector_transform_quaternions();
 extern void test_core_zlib_compression();
 extern void test_core_zlib_io();
 
@@ -778,9 +778,9 @@ int main() {
         { "core/vector/quaternion", test_core_vector_quaternion },
         { "core/vector/2d-coordinate-transformations", test_core_vector_2d_coordinate_transformations },
         { "core/vector/3d-coordinate-transformations", test_core_vector_3d_coordinate_transformations },
-        { "core/vector/projective", test_core_vector_projective },
-        { "core/vector/primitives", test_core_vector_primitives },
-        { "core/vector/quaternions", test_core_vector_quaternions },
+        { "core/vector/projective-geometry", test_core_vector_projective_geometry },
+        { "core/vector/transform-primitives", test_core_vector_transform_primitives },
+        { "core/vector/transform-quaternions", test_core_vector_transform_quaternions },
         { "core/zlib/compression", test_core_zlib_compression },
         { "core/zlib/io", test_core_zlib_io },
 

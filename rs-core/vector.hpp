@@ -188,6 +188,8 @@ namespace RS {
 
     template <typename T, size_t N>
     Ustring Vector<T, N>::format(char mode, int prec) const {
+        (void)mode; // GCC brain damage
+        (void)prec;
         Ustring s = "[";
         for (auto& t: arr) {
             if constexpr (std::is_floating_point_v<T>)

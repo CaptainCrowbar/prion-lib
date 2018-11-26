@@ -941,22 +941,24 @@ namespace RS {
 
     template <typename T>
     T int_sqrt(T t) noexcept {
-        if (std::numeric_limits<T>::digits < std::numeric_limits<double>::digits)
+        if constexpr (std::numeric_limits<T>::digits < std::numeric_limits<double>::digits) {
             return T(std::floor(std::sqrt(double(t))));
-        auto u = as_unsigned(t);
-        using U = decltype(u);
-        U result = 0, test = U(1) << (8 * sizeof(U) - 2);
-        while (test > u)
-            test >>= 2;
-        while (test) {
-            if (u >= result + test) {
-                u -= result + test;
-                result += test * 2;
+        } else {
+            auto u = as_unsigned(t);
+            using U = decltype(u);
+            U result = 0, test = U(1) << (8 * sizeof(U) - 2);
+            while (test > u)
+                test >>= 2;
+            while (test) {
+                if (u >= result + test) {
+                    u -= result + test;
+                    result += test * 2;
+                }
+                result >>= 1;
+                test >>= 2;
             }
-            result >>= 1;
-            test >>= 2;
+            return T(result);
         }
-        return T(result);
     }
 
     // [Functional utilities]

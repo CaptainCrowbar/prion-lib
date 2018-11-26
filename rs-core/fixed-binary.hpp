@@ -204,7 +204,7 @@ namespace RS {
         template <size_t N>
         LargeBinary<N>::LargeBinary(uint64_t x) noexcept {
             store[0] = unit_type(x);
-            if (units > 1)
+            if constexpr (units > 1)
                 store[1] = unit_type(x >> unit_bits);
             for (size_t i = 2; i < units; ++i)
                 store[i] = 0;
@@ -310,15 +310,17 @@ namespace RS {
         template <size_t N>
         template <typename T>
         LargeBinary<N>::operator T() const noexcept {
-            size_t t_bits = std::numeric_limits<T>::digits;
-            size_t t_units = (t_bits + unit_bits - 1) / unit_bits;
-            size_t n_units = std::min(t_units, units);
-            if (n_units < 2)
+            static constexpr size_t t_bits = std::numeric_limits<T>::digits;
+            static constexpr size_t t_units = (t_bits + unit_bits - 1) / unit_bits;
+            static constexpr size_t n_units = std::min(t_units, units);
+            if constexpr (n_units < 2) {
                 return static_cast<T>(store[0]);
-            uintmax_t u = 0;
-            for (int i = int(n_units) - 1; i >= 0; --i)
-                u = (u << unit_bits) + store[i];
-            return static_cast<T>(u);
+            } else {
+                uintmax_t u = 0;
+                for (int i = int(n_units) - 1; i >= 0; --i)
+                    u = (u << unit_bits) + store[i];
+                return static_cast<T>(u);
+            }
         }
 
         template <size_t N>

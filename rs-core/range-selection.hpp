@@ -33,15 +33,21 @@ namespace RS::Range {
         using value_type = Meta::RangeValue<Range>;
         using predicate_type = std::function<bool(const value_type&)>;
         BeforeIterator() = default;
-        BeforeIterator(underlying_iterator i, underlying_iterator e, Predicate p): iter(i), end(e), pred(p)
-            { if (! Inclusive && i != e && p(*i)) iter = e; }
+        BeforeIterator(underlying_iterator i, underlying_iterator e, Predicate p): iter(i), end(e), pred(p) {
+            if constexpr (! Inclusive)
+                if (i != e && p(*i))
+                    iter = e;
+        }
         const auto& operator*() const noexcept { return *iter; }
         BeforeIterator& operator++() {
-            if (Inclusive && pred(*iter)) {
-                iter = end;
+            if constexpr (Inclusive) {
+                if (pred(*iter))
+                    iter = end;
+                else
+                    ++iter;
             } else {
                 ++iter;
-                if (! Inclusive && iter != end && pred(*iter))
+                if (iter != end && pred(*iter))
                     iter = end;
             }
             return *this;
@@ -67,8 +73,9 @@ namespace RS::Range {
         using std::end;
         auto b = begin(lhs), e = end(lhs);
         auto i = std::find_if(b, e, rhs.pred);
-        if (! Inclusive && i != e)
-            ++i;
+        if constexpr (! Inclusive)
+            if (i != e)
+                ++i;
         return {i, e};
     }
 
@@ -78,8 +85,9 @@ namespace RS::Range {
         using std::end;
         auto b = begin(lhs), e = end(lhs);
         auto i = std::find_if(b, e, rhs.pred);
-        if (Inclusive && i != e)
-            ++i;
+        if constexpr (Inclusive)
+            if (i != e)
+                ++i;
         Container temp;
         std::copy(b, i, append(temp));
         lhs = move(temp);
@@ -92,8 +100,9 @@ namespace RS::Range {
         using std::end;
         auto b = begin(lhs), e = end(lhs);
         auto i = std::find_if(b, e, rhs.pred);
-        if (! Inclusive && i != e)
-            ++i;
+        if constexpr (! Inclusive)
+            if (i != e)
+                ++i;
         Container temp;
         std::copy(i, e, append(temp));
         lhs = move(temp);

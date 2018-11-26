@@ -792,7 +792,7 @@ void test_core_common_arithmetic_literals() {
     TEST_EQUAL(hex(sz, 1), "12345");
     TEST_EQUAL(dec(sz), "74565");
 
-    if (sizeof(size_t) == 8) {
+    if constexpr (sizeof(size_t) == 8) {
 
         TRY(pt = 0_pt);
         TEST_EQUAL(hex(pt), "0000000000000000");

@@ -110,13 +110,13 @@ namespace RS {
     }
 
     template <typename T>
-    T Statistics<T>::get_stdevs(size_t n, T sum, T sum2) noexcept {
-        return n >= 2 ? std::sqrt((sum2 - sum * sum / T(n)) / (T(n) - T(1))) : T(0);
+    T Statistics<T>::get_stdevs(size_t n, T sum1, T sum2) noexcept {
+        return n >= 2 ? std::sqrt((sum2 - sum1 * sum1 / T(n)) / (T(n) - T(1))) : T(0);
     }
 
     template <typename T>
-    T Statistics<T>::get_stdevp(size_t n, T sum, T sum2) noexcept {
-        return n ? std::sqrt((sum2 - sum * sum / T(n)) / T(n)) : T(0);
+    T Statistics<T>::get_stdevp(size_t n, T sum1, T sum2) noexcept {
+        return n ? std::sqrt((sum2 - sum1 * sum1 / T(n)) / T(n)) : T(0);
     }
 
 }

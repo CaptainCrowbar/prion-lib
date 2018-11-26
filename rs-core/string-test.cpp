@@ -143,6 +143,11 @@ void test_core_string_case_conversion() {
 
 void test_core_string_character() {
 
+    #ifdef _MSC_VER
+        #pragma warning(push)
+        #pragma warning(disable: 4310) // cast truncates constant value
+    #endif
+
     TEST_EQUAL(char_to<int>(0), 0);
     TEST_EQUAL(char_to<int>('A'), 65);
     TEST_EQUAL(char_to<int>(char(127)), 127);
@@ -158,6 +163,10 @@ void test_core_string_character() {
     TEST_EQUAL(char_to<uint32_t>(char(-128)), 128);
     TEST_EQUAL(char_to<uint32_t>(char(255)), 255);
     TEST_EQUAL(char_to<uint32_t>(char(-1)), 255);
+
+    #ifdef _MSC_VER
+        #pragma warning(pop)
+    #endif
 
 }
 

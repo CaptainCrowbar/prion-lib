@@ -188,16 +188,9 @@ namespace RS {
 
     template <typename T, size_t N>
     Ustring Vector<T, N>::format(char mode, int prec) const {
-        (void)mode; // GCC brain damage
-        (void)prec;
         Ustring s = "[";
-        for (auto& t: arr) {
-            if constexpr (std::is_floating_point_v<T>)
-                s += fp_format(t, mode, prec);
-            else
-                s += to_str(t);
-            s += ',';
-        }
+        for (auto& t: arr)
+            s += opt_fp_format(t, mode, prec) + ',';
         s.back() = ']';
         return s;
     }
@@ -772,13 +765,8 @@ namespace RS {
         Ustring s;
         for (size_t r = 0; r < N; ++r) {
             s += r ? ',' : '[';
-            for (size_t c = 0; c < N; ++c) {
-                s += c ? ',' : '[';
-                if constexpr (std::is_floating_point_v<T>)
-                    s += fp_format((*this)(r, c), mode, prec);
-                else
-                    s += to_str((*this)(r, c));
-            }
+            for (size_t c = 0; c < N; ++c)
+                s += (c ? ',' : '[') + opt_fp_format((*this)(r, c), mode, prec);
             s += ']';
         }
         return s += ']';
@@ -1064,13 +1052,8 @@ namespace RS {
     template <typename T>
     Ustring Quaternion<T>::format(char mode, int prec) const {
         Ustring s = "[";
-        for (auto& t: arr) {
-            if constexpr (std::is_floating_point_v<T>)
-                s += fp_format(t, mode, prec);
-            else
-                s += to_str(t);
-            s += ',';
-        }
+        for (auto& t: arr)
+            s += opt_fp_format(t, mode, prec) + ',';
         s.back() = ']';
         return s;
     }

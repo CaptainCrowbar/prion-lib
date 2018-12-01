@@ -421,13 +421,20 @@ overwrite iterator.
 * `template <typename Container, typename BinaryPredicate> void` **`con_unique`**`(Container& con, BinaryPredicate p)`
 * `template <typename Container> void` **`con_sort_unique`**`(Container& con)`
 * `template <typename Container, typename Compare> void` **`con_sort_unique`**`(Container& con, Compare cmp)`
+* `template <typename Container, typename T> void` **`con_trim`**`(Container& con, const T& t)`
+* `template <typename Container, typename Predicate> void` **`con_trim_if`**`(Container& con, Predicate p)`
+* `template <typename Container, typename T> void` **`con_trim_left`**`(Container& con, const T& t)`
+* `template <typename Container, typename Predicate> void` **`con_trim_left_if`**`(Container& con, Predicate p)`
+* `template <typename Container, typename T> void` **`con_trim_right`**`(Container& con, const T& t)`
+* `template <typename Container, typename Predicate> void` **`con_trim_right_if`**`(Container& con, Predicate p)`
 
 These carry out the same algorithms as the similarly named STL functions,
 except that unwanted elements are removed from the container rather than
 shuffled to the end. The `con_sort_unique()` functions perform a sort followed
 by removing equivalent elements from the container; like `std::sort()`, its
 predicate has less-than semantics (whereas that of `con_unique()`, like that
-of `std::unique()`, has equality semantics).
+of `std::unique()`, has equality semantics). The `con_trim_*()` functions
+remove matching elements from either or both ends of the container.
 
 * `template <typename InputRange, typename... Ranges> std::vector<[value type]>` **`concatenate`**`(const InputRange& range, const Ranges&... ranges)`
 

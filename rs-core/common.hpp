@@ -516,6 +516,58 @@ namespace RS {
         con_unique(con, [cmp] (const auto& a, const auto& b) { return ! cmp(a, b); });
     }
 
+    template <typename Container, typename T>
+    void con_trim_left(Container& con, const T& t) {
+        auto begin = con.begin(), end = con.end(), it = begin;
+        while (it != end && *it == t)
+            ++it;
+        con.erase(begin, it);
+    }
+
+    template <typename Container, typename Predicate>
+    void con_trim_left_if(Container& con, Predicate p) {
+        auto begin = con.begin(), end = con.end(), it = begin;
+        while (it != end && p(*it))
+            ++it;
+        con.erase(begin, it);
+    }
+
+    template <typename Container, typename T>
+    void con_trim_right(Container& con, const T& t) {
+        auto begin = con.begin(), end = con.end(), it = end;
+        while (it != begin) {
+            auto pr = std::prev(it);
+            if (*pr != t)
+                break;
+            it = pr;
+        }
+        con.erase(it, end);
+    }
+
+    template <typename Container, typename Predicate>
+    void con_trim_right_if(Container& con, Predicate p) {
+        auto begin = con.begin(), end = con.end(), it = end;
+        while (it != begin) {
+            auto pr = std::prev(it);
+            if (! p(*pr))
+                break;
+            it = pr;
+        }
+        con.erase(it, end);
+    }
+
+    template <typename Container, typename T>
+    void con_trim(Container& con, const T& t) {
+        con_trim_left(con, t);
+        con_trim_right(con, t);
+    }
+
+    template <typename Container, typename Predicate>
+    void con_trim_if(Container& con, Predicate p) {
+        con_trim_left_if(con, p);
+        con_trim_right_if(con, p);
+    }
+
     namespace RS_Detail {
 
         template <typename T>

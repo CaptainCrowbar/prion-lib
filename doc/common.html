@@ -538,13 +538,20 @@ overwrite iterator.</p>
 <li><code>template &lt;typename Container, typename BinaryPredicate&gt; void</code> <strong><code>con_unique</code></strong><code>(Container&amp; con, BinaryPredicate p)</code></li>
 <li><code>template &lt;typename Container&gt; void</code> <strong><code>con_sort_unique</code></strong><code>(Container&amp; con)</code></li>
 <li><code>template &lt;typename Container, typename Compare&gt; void</code> <strong><code>con_sort_unique</code></strong><code>(Container&amp; con, Compare cmp)</code></li>
+<li><code>template &lt;typename Container, typename T&gt; void</code> <strong><code>con_trim</code></strong><code>(Container&amp; con, const T&amp; t)</code></li>
+<li><code>template &lt;typename Container, typename Predicate&gt; void</code> <strong><code>con_trim_if</code></strong><code>(Container&amp; con, Predicate p)</code></li>
+<li><code>template &lt;typename Container, typename T&gt; void</code> <strong><code>con_trim_left</code></strong><code>(Container&amp; con, const T&amp; t)</code></li>
+<li><code>template &lt;typename Container, typename Predicate&gt; void</code> <strong><code>con_trim_left_if</code></strong><code>(Container&amp; con, Predicate p)</code></li>
+<li><code>template &lt;typename Container, typename T&gt; void</code> <strong><code>con_trim_right</code></strong><code>(Container&amp; con, const T&amp; t)</code></li>
+<li><code>template &lt;typename Container, typename Predicate&gt; void</code> <strong><code>con_trim_right_if</code></strong><code>(Container&amp; con, Predicate p)</code></li>
 </ul>
 <p>These carry out the same algorithms as the similarly named STL functions,
 except that unwanted elements are removed from the container rather than
 shuffled to the end. The <code>con_sort_unique()</code> functions perform a sort followed
 by removing equivalent elements from the container; like <code>std::sort()</code>, its
 predicate has less-than semantics (whereas that of <code>con_unique()</code>, like that
-of <code>std::unique()</code>, has equality semantics).</p>
+of <code>std::unique()</code>, has equality semantics). The <code>con_trim_*()</code> functions
+remove matching elements from either or both ends of the container.</p>
 </div>
 <div class="defns">
 <ul>

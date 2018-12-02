@@ -8,12 +8,55 @@ By Ross Smith
 
 [TOC]
 
+## Introduction ##
+
+The `"unicorn/utility.hpp"` header from the Unicorn library is included in
+this header. For convenient reference, all of the relevant contents of that
+header are documented again here, marked with `[unicorn]`.
+
 ## Preprocessor macros ##
 
-* `#define` **`RS_BITMASK_OPERATORS`**`(EC)`
+### Compilation control macros ###
+
+* `#define` **`RS_LDLIB`**`([tag:] lib ...)`
+
+This instructs the makefile to link with one or more static libraries. Specify
+library names without the `-l` prefix (e.g. `RS_LDLIB(foo)` will link with
+`-lfoo`). If link order is important for a particular set of libraries, supply
+them in a space delimited list in a single `RS_LDLIB()` line.
+
+Libraries that are needed only on specific targets can be prefixed with one of
+the target identifiers listed below (e.g. `RS_LDLIB(apple:foo)` will link
+with `-lfoo` for Apple targets only). Only one target can be specified per
+invocation; if the same libraries are needed on multiple targets, but not on
+all targets, you will need a separate `RS_LDLIB()` line for each target.
+
+<!-- TEXT -->
+* `apple:`
+* `cygwin:`
+* `linux:`
+* `msvc:`
+
+`RS_LDLIB()` lines are picked up at the `"make dep"` stage; if you change a
+link library, the change will not be detected until dependencies are rebuilt.
+
+### Compilation environment properties ###
+
+* `#define` **`RS_NATIVE_WCHAR`** `1` _- defined if the system API uses wide characters_
+* `#define` **`RS_WCHAR_UTF16`** `1` _- defined if wchar_t and wstring are UTF-16_
+* `#define` **`RS_WCHAR_UTF32`** `1` _- defined if wchar_t and wstring are UTF-32_
+
+`[unicorn]` These are defined to reflect the encoding represented by `wchar_t`
+and `std::wstring`. Systems where wide strings are neither UTF-16 nor UTF-32
+are not supported.
+
+### Type generation macros ###
+
+* `#define` **`RS_BITMASK_OPERATORS`**`(EnumType)`
 
 Defines bit manipulation and related operators for an `enum class` (unary `!`,
-`~`; binary `&`, `&=`, `|`, `|=`, `^`, `^=`).
+`~`; binary `&`, `&=`, `|`, `|=`, `^`, `^=`). The type can be defined the
+conventional way or through the `RS_ENUM_CLASS()` macro.
 
 * `#define` **`RS_ENUM`**`(EnumType, IntType, first_value, first_name, ...)`
 * `#define` **`RS_ENUM_CLASS`**`(EnumType, IntType, first_value, first_name, ...)`
@@ -59,28 +102,6 @@ The macros can be used in any namespace, and the functions that take an enum
 value as an argument will be in that namespace, but `enum_values()` is a
 single function template in `namespace RS`.
 
-* `#define` **`RS_LDLIB`**`([tag:] lib ...)`
-
-This instructs the makefile to link with one or more static libraries. Specify
-library names without the `-l` prefix (e.g. `RS_LDLIB(foo)` will link with
-`-lfoo`). If link order is important for a particular set of libraries, supply
-them in a space delimited list in a single `RS_LDLIB()` line.
-
-Libraries that are needed only on specific targets can be prefixed with one of
-the target identifiers listed below (e.g. `RS_LDLIB(apple:foo)` will link
-with `-lfoo` for Apple targets only). Only one target can be specified per
-invocation; if the same libraries are needed on multiple targets, but not on
-all targets, you will need a separate `RS_LDLIB()` line for each target.
-
-<!-- TEXT -->
-* `apple:`
-* `cygwin:`
-* `linux:`
-* `msvc:`
-
-`RS_LDLIB()` lines are picked up at the `"make dep"` stage; if you change a
-link library, the change will not be detected until dependencies are rebuilt.
-
 * `#define` **`RS_MOVE_ONLY`**`(T)`
     * `T(const T&) = delete;`
     * `T(T&&) = default;`
@@ -109,6 +130,34 @@ having to explicitly resolve the overload at the call site. (From an idea by
 Arthur O'Dwyer on the C++ standard proposals mailing list, 14 Sep 2015.)
 
 ## Types ##
+
+### Basic types ###
+
+* `using` **`Ustring`** `= std::string`
+* `using` **`Uview`** `= std::string_view`
+
+`[unicorn]` Use `Ustring` or `Uview` for strings that are expected to be in
+UTF-8 (or ASCII, since any ASCII string is also valid UTF-8), while plain
+`std::string` or `std::string_view` is used where the string is expected to be
+in some other Unicode encoding, or where the string is being used simply as an
+array of bytes rather than encoded text.
+
+* `using` **`Strings`** `= std::vector<std::string>`
+
+`[unicorn]` Commonly used type defined for convenience.
+
+* `using` **`NativeCharacter`** `= [char on Unix, wchar_t on Windows]`
+* `using` **`NativeString`** `= [std::string on Unix, std::wstring on Windows]`
+
+`[unicorn]` These are defined to reflect the character types used in the
+operating system's native API.
+
+* `using` **`WcharEquivalent`** `= [char16_t or char32_t]`
+* `using` **`WstringEquivalent`** `= [std::u16string or std::u32string]`
+
+`[unicorn]` These are defined to reflect the encoding represented by `wchar_t`
+and `std::wstring`. Systems where wide strings are neither UTF-16 nor UTF-32
+are not supported.
 
 ### Integer types ###
 
@@ -156,28 +205,46 @@ Rethrows the exception, if one is present. This is the same as
 `std::rethrow_exception()`, except that it does nothing if the exception
 pointer is null.
 
-### Metaprogramming and type traits ###
-
-* `template <typename T> using` **`BinaryType`** `= [unsigned integer type]`
-
-Yields an unsigned integer type the same size as `T`. This will fail to
-compile if no such type exists.
-
-* `template <typename T1, typename T2> using` **`CopyConst`** `= ...`
-
-Yields a type created by transferring the `const` qualification (or lack of
-it) from `T1` to the unqualified type of `T2`. For example, `CopyConst<int,
-const string>` yields `string`, while `CopyConst<const int, string>` yields
-`const string`.
-
-* `template <size_t Bits> using` **`SignedInteger`** `= [signed integer type]`
-* `template <size_t Bits> using` **`UnsignedInteger`** `= [unsigned integer type]`
-
-Signed and unsigned integer types with the specified number of bits (the same
-types as `int8_t`, `int16_t`, etc). These will fail to compile if `Bits` is
-not a power of 2 in the supported range (8-64).
-
 ### Mixins ###
+
+<!-- DEFN --> `[unicorn]` These are convenience base classes that define
+members and operators that would normally just be repetitive boilerplate
+(similar to the ones in Boost). They all use the CRTP idiom; a class `T`
+should derive from `Mixin<T>` to automatically generate the desired
+boilerplate code. The table below shows which operations the user is required
+to define, and which ones the mixin will automatically define. (Here, `t` and
+`u` are objects of type `T`, `v` is an object of `T`'s value type, and `n` is
+an integer.)
+
+Mixin                                       | Requires                         | Defines
+-----                                       | --------                         | -------
+**`EqualityComparable`**`<T>`               | `t==u`                           | `t!=u`
+**`LessThanComparable`**`<T>`               | `t==u, t<u`                      | `t!=u, t>u, t<=u, t>=u`
+**`InputIterator`**`<T,CV>`                 | `*t, ++t, t==u`                  | `t->, t++, t!=u`
+**`OutputIterator`**`<T>`                   | `t=v`                            | `*t, ++t, t++`
+**`ForwardIterator`**`<T,CV>`               | `*t, ++t, t==u`                  | `t->, t++, t!=u`
+**`BidirectionalIterator`**`<T,CV>`         | `*t, ++t, --t, t==u`             | `t->, t++, t--, t!=u`
+**`RandomAccessIterator`**`<T,CV>`          | `*t, t+=n, t-u`                  | `t->, t[n], ++t, t++, --t, t--, t-=n, t+n, n+t, t-n,`<br>`t==u, t!=u, t<u, t>u, t<=u, t>=u`
+**`FlexibleRandomAccessIterator`**`<T,CV>`  | `*t, ++t, --t, t+=n, t-u, t==u`  | `t->, t[n], t++, t--, t-=n, t+n, n+t, t-n,`<br>`t!=u, t<u, t>u, t<=u, t>=u`
+
+In the iterator mixins, `CV` is either `V` or `const V`, where `V` is the
+iterator's value type, depending on whether a mutable or const iterator is
+required.
+
+The first version of `RandomAccessIterator` uses the minimal set of user
+supplied operations to generate all of those required;
+`FlexibleRandomAccessIterator` requires more user supplied operations, but
+will decay safely to one of the simpler iterator types if an underlying type
+does not supply all of the corresponding operations.
+
+In addition to the operators listed in the table above, all iterator mixins
+supply the standard member types:
+
+* `using` **`difference_type`** `= ptrdiff_t`
+* `using` **`iterator_category`** `= [standard iterator tag type]`
+* `using` **`pointer`** `= CV*`
+* `using` **`reference`** `= CV&`
+* `using` **`value_type`** `= std::remove_const_t<CV>`
 
 * `template <typename T> class` **`NumericLimitsBase`**
     * _Universal properties_
@@ -220,6 +287,30 @@ not a power of 2 in the supported range (8-64).
 
 A convenience class to help define specializations of `std::numeric_limits`
 for new arithmetic types.
+
+## Range types ##
+
+* `template <typename Iterator> struct` **`Irange`**
+    * `using Irange::`**`iterator`** `= Iterator`
+    * `using Irange::`**`value_type`** `= [Iterator's value type]`
+    * `Iterator Irange::`**`first`**
+    * `Iterator Irange::`**`second`**
+    * `constexpr Iterator Irange::`**`begin`**`() const { return first; }`
+    * `constexpr Iterator Irange::`**`end`**`() const { return second; }`
+    * `constexpr bool Irange::`**`empty`**`() const { return first == second; }`
+    * `constexpr size_t Irange::`**`size`**`() const { return std::distance(first, second); }`
+* `template <typename Iterator> constexpr Irange<Iterator>` **`irange`**`(const Iterator& i, const Iterator& j)`
+* `template <typename Iterator> constexpr Irange<Iterator>` **`irange`**`(const pair<Iterator, Iterator>& p)`
+
+`[unicorn]` A wrapper for a pair of iterators, usable as a range in standard
+algorithms.
+
+* `template <typename InputRange> size_t` **`range_count`**`(const InputRange& r)`
+* `template <typename InputRange> bool` **`range_empty`**`(const InputRange& r)`
+
+`[unicorn]` Return the length of a range. The `range_count()` function is just
+shorthand for `std::distance(begin(r),end(r))`, and `range_empty()` has the
+obvious meaning.
 
 ### Smart pointers ###
 
@@ -352,7 +443,56 @@ different sizes, but does no other safety checks. The `implicit_cast()`
 operation performs the conversion only if it would be allowed as an implicit
 conversion.
 
+### Type traits ###
+
+* `template <typename T> using` **`BinaryType`** `= [unsigned integer type]`
+
+Yields an unsigned integer type the same size as `T`. This will fail to
+compile if no such type exists.
+
+* `template <typename T1, typename T2> using` **`CopyConst`** `= ...`
+
+Yields a type created by transferring the `const` qualification (or lack of
+it) from `T1` to the unqualified type of `T2`. For example, `CopyConst<int,
+const string>` yields `string`, while `CopyConst<const int, string>` yields
+`const string`.
+
+* `template <size_t Bits> using` **`SignedInteger`** `= [signed integer type]`
+* `template <size_t Bits> using` **`UnsignedInteger`** `= [unsigned integer type]`
+
+Signed and unsigned integer types with the specified number of bits (the same
+types as `int8_t`, `int16_t`, etc). These will fail to compile if `Bits` is
+not a power of 2 in the supported range (8-64).
+
 ## Constants and literals ##
+
+### General constants ###
+
+* `constexpr const char*` **`ascii_whitespace`** `= "\t\n\v\f\r "`
+
+`[unicorn]` ASCII whitespace characters.
+
+* `constexpr bool` **`big_endian_target`**
+* `constexpr bool` **`little_endian_target`**
+
+`[unicorn]` One of these will be true and the other false, reflecting the
+target system's byte order.
+
+* `constexpr size_t` **`npos`** `= std::string::npos`
+
+`[unicorn]` Defined for convenience. Following the conventions established by
+the standard library, this value is often used as a function argument to mean
+"as large as possible" or "no limit", or as a return value to mean "not
+found".
+
+### Arithmetic constants ###
+
+* `constexpr unsigned` **`KB`** `= 1024`
+* `constexpr unsigned long` **`MB`** `= 1 048 576`
+* `constexpr unsigned long` **`GB`** `= 1 073 741 824`
+* `constexpr unsigned long long` **`TB`** `= 1 099 511 627 776`
+
+Powers of 2<sup>10</sup>.
 
 ### Arithmetic literals ###
 
@@ -370,15 +510,6 @@ conversion.
 
 Integer literals.
 
-### Arithmetic constants ###
-
-* `constexpr unsigned` **`KB`** `= 1024`
-* `constexpr unsigned long` **`MB`** `= 1 048 576`
-* `constexpr unsigned long` **`GB`** `= 1 073 741 824`
-* `constexpr unsigned long long` **`TB`** `= 1 099 511 627 776`
-
-Powers of 2<sup>10</sup>.
-
 ## Algorithms and ranges ##
 
 ### Generic algorithms ###
@@ -388,6 +519,24 @@ Powers of 2<sup>10</sup>.
 Advances an iterator by the given number of steps, or until it reaches `end`,
 whichever comes first. This will take `O(1)` time if the iterator is random
 access, otherwise `O(n)`.
+
+* `template <typename Container> [output iterator]` **`append`**`(Container& con)`
+* `template <typename Container> [output iterator]` **`overwrite`**`(Container& con)`
+* `template <typename Range, typename Container> const Range&` **`operator>>`**`(const Range& lhs, [append iterator] rhs)`
+
+`[unicorn]` The `append()` and `overwrite()` functions create output iterators
+that will append elements to a standard container (see `append_to()` below).
+The `append()` function is similar to `std::back_inserter()` (but supports
+containers without `push_back()`), while `overwrite()` will first clear the
+container and then return the append iterator. There is also an operator that
+can be used to copy any range into a container (e.g. `range >> append(con)`).
+
+* `template <typename Container, typename T> void` **`append_to`**`(Container& con, const T& t)`
+
+`[unicorn]` Appends an item to a container; used by `append()` and
+`overwrite()`. The generic version calls `con.insert(con.end(), t)`; overloads
+(found by argument dependent lookup) can be used for container-like types that
+do not have a suitable `insert()` method.
 
 * `template <typename T> constexpr Irange<T*>` **`array_range`**`(T* ptr, size_t len)`
 
@@ -407,6 +556,12 @@ value (implicitly converted to the range's value type) if the index is out of
 bounds. If no default value is supplied, a default constructed object of the
 value type is returned. The array type can be any range with random access
 iterators.
+
+* `template <typename Range1, typename Range2> int` **`compare_3way`**`(const Range1& r1, const Range2& r2)`
+* `template <typename Range1, typename Range2, typename Compare> int` **`compare_3way`**`(const Range1& r1, const Range2& r2, Compare cmp)`
+
+`[unicorn]` Compare two ranges, returning -1 if the first range is less than
+the second, zero if they are equal, and +1 if the first range is greater.
 
 * `template <typename R, typename Container> void` **`con_append`**`(const R& src, Container& dst)`
 * `template <typename R, typename Container> void` **`con_overwrite`**`(const R& src, Container& dst)`
@@ -568,12 +723,30 @@ Returns 1 if the argument is positive, 0 if zero, and -1 if negative.
 
 ### Integer arithmetic functions ###
 
+For the bit manipulation functions (`ibits()`, `ifloor2()`, `iceil2()`,
+`ilog2p1()`, `ispow2()`, `rotl()`, and `rotr()`), behaviour is undefined if
+`T` is not an integer, or if `T` is signed and the argument is negative.
+
+* `template <typename T> constexpr std::make_signed_t<T>` **`as_signed`**`(T t) noexcept`
+* `template <typename T> constexpr std::make_unsigned_t<T>` **`as_unsigned`**`(T t) noexcept`
+
+`[unicorn]` These return their argument converted to a signed or unsigned
+value of the same size (the argument is returned unchanged if `T` already had
+the desired signedness). Behaviour is undefined if `T` is not an integer or
+enumeration type.
+
 * `template <typename T> T` **`binomial`**`(T a, T b) noexcept`
 * `double` **`xbinomial`**`(int a, int b) noexcept`
 
 These return the binomial coefficient (`a!/b!(a-b)!` if `0<=b<=a`, otherwise
 zero). `T` must be an integer type. Behaviour is undefined if the correct
 result would be out of range for the return type.
+
+* `template <typename T, typename T2, typename T3> constexpr T` **`clamp`**`(const T& x, const T2& min, const T3& max) noexcept`
+
+`[unicorn]` Clamps a value to a fixed range. This returns `min` if `t<min`,
+`max` if `t>max`, otherwise `t`. `T2` and `T3` must be implicitly convertible
+t `T`.
 
 * `template <typename T> constexpr T` **`gcd`**`(T a, T b) noexcept`
 * `template <typename T> constexpr T` **`lcm`**`(T a, T b) noexcept`
@@ -582,6 +755,22 @@ Return the greatest common divisor or lowest common multiple of two numbers.
 These give the same results as `std::gcd/lcm()`, but without checking that `T`
 is a primitive integral type, so these will work with user defined integer
 types.
+
+* `template <typename T> constexpr int` **`ibits`**`(T t) noexcept`
+
+`[unicorn]` Returns the number of 1 bits in the argument.
+
+* `template <typename T> constexpr T` **`ifloor2`**`(T t) noexcept`
+* `template <typename T> constexpr T` **`iceil2`**`(T t) noexcept`
+
+`[unicorn]` Return the argument rounded down or up to a power of 2. For
+`iceil2()`, behaviour is undefined if the argument is large enough that the
+correct answer is not representable.
+
+* `template <typename T> constexpr int` **`ilog2p1`**`(T t) noexcept`
+
+`[unicorn]` Returns `floor(log2(t))+1`, equal to the number of significant
+bits in `t`, or zero if `t` is zero.
 
 * `template <typename T> T` **`int_power`**`(T x, T y) noexcept`
 
@@ -593,6 +782,96 @@ negative, or if `T` is signed and the true result would be out of range.
 
 Returns the integer square root of the argument (the true square root
 truncated to an integer). Behaviour is undefined if the argument is negative.
+
+* `template <typename T> constexpr bool` **`ispow2`**`(T t) noexcept`
+
+`[unicorn]` True if the argument is an exact power of 2.
+
+* `constexpr uint64_t` **`letter_to_mask`**`(char c) noexcept`
+
+`[unicorn]` Converts a letter to a mask with bit 0-51 set (corresponding to
+`[A-Za-z]`). Returns zero if the argument is not an ASCII letter.
+
+* `template <typename T> constexpr T` **`rotl`**`(T t, int n) noexcept`
+* `template <typename T> constexpr T` **`rotr`**`(T t, int n) noexcept`
+
+`[unicorn]` Bitwise rotate left or right. The bit count is reduced modulo the
+number of bits in `T`; a negative shift in one direction is treated as a
+positive shift in the other.
+
+## Date and time functions ##
+
+### Constants ###
+
+* `constexpr uint32_t` **`utc_zone`**
+* `constexpr uint32_t` **`local_zone`**
+
+`[unicorn]` Used to indicate whether a date is expressed in UTC or the local
+time zone.
+
+### Conversion functions ###
+
+* `template <typename R, typename P> void` **`from_seconds`**`(double s, duration<R, P>& d) noexcept`
+* `template <typename R, typename P> double` **`to_seconds`**`(const duration<R, P>& d) noexcept`
+
+`[unicorn]` Convenience functions to convert between a `duration` and a
+floating point number of seconds.
+
+* `system_clock::time_point` **`make_date`**`(int year, int month, int day, int hour = 0, int min = 0, double sec = 0, uint32_t flags = utc_zone)`
+
+`[unicorn]` Converts a broken down date into a time point. Behaviour if any of
+the date arguments are invalid follows the same rules as `mktime()`. This will
+throw `std::invalid_argument` if an invalid flag is passed.
+
+### Formatting functions ###
+
+* `Ustring` **`format_date`**`(system_clock::time_point tp, int prec = 0, uint32_t flags = utc_zone)`
+* `Ustring` **`format_date`**`(system_clock::time_point tp, Uview format, uint32_t flags = utc_zone)`
+
+`[unicorn]` These convert a time point into a broken down date and format it.
+The first version writes the date in ISO 8601 format (`"yyyy-mm-dd
+hh:mm:ss"`). If `prec` is greater than zero, the specified number of decimal
+places will be added to the seconds field.
+
+The second version writes the date using the conventions of `strftime()`. This
+will return an empty string if anything goes wrong (there is no way to
+distinguish between a conversion error and a legitimately empty result; this
+is a limitation of `strftime()`).
+
+Both of these will throw `std::invalid_argument` if an invalid flag is passed.
+
+For reference, the portable subset of the `strftime()` formatting codes are:
+
+| Code  | Description                          | Code    | Description                          |
+| ----  | -----------                          | ----    | -----------                          |
+|       **Date elements**                      | |       **Weekday elements**                   | |
+| `%Y`  | Year number                          | `%a`    | Local weekday abbreviation           |
+| `%y`  | Last 2 digits of the year (`00-99`)  | `%w`    | Sunday-based weekday number (`0-6`)  |
+| `%m`  | Month number (`00-12`)               | `%A`    | Local weekday name                   |
+| `%B`  | Local month name                     | `%U`    | Sunday-based week number (`00-53`)   |
+| `%b`  | Local month abbreviation             | `%W`    | Monday-based week number (`00-53`)   |
+| `%d`  | Day of the month (`01-31`)           |         **Other elements**                     | |
+|       **Time of day elements**               | | `%c`  | Local standard date/time format      |
+| `%H`  | Hour on 24-hour clock (`00-23`)      | `%x`    | Local standard date format           |
+| `%I`  | Hour on 12-hour clock (`01-12`)      | `%X`    | Local standard time format           |
+| `%p`  | Local equivalent of a.m./p.m.        | `%j`    | Day of the year (`001-366`)          |
+| `%M`  | Minute (`00-59`)                     | `%Z`    | Time zone name                       |
+| `%S`  | Second (`00-60`)                     | `%z`    | Time zone offset                     |
+
+* `template <typename R, typename P> Ustring` **`format_time`**`(const duration<R, P>& time, int prec = 0)`
+
+`[unicorn]` Formats a time duration in days, hours, minutes, seconds, and (if
+`prec>0`) fractions of a second.
+
+## Error handling ##
+
+### Assertion functions ###
+
+* `void` **`runtime_assert`**`(bool condition, std::string_view message) noexcept`
+
+`[unicorn]` A portable, non-blockable version of `assert()`. If the condition
+is false, this will print the message to standard error (followed by a line
+break), and then call `abort()`.
 
 ## Functional utilities ##
 
@@ -694,6 +973,38 @@ Hash function for a tuple.
 
 ### Scope guards ###
 
+* `class` **`[scope guard]`**
+    * `[scope guard]::`**`[scope guard]`**`(F&& f)`
+    * `[scope guard]::`**`[scope guard]`**`([scope guard]&&) noexcept`
+    * `[scope guard]::`**`~[scope guard]`**`() noexcept`
+    * `void [scope guard]::`**`release`**`() noexcept`
+* `template <typename F> inline [scope guard]` **`scope_exit`**`(F&& f)`
+* `template <typename F> inline [scope guard]` **`scope_fail`**`(F&& f)`
+* `template <typename F> inline [scope guard]` **`scope_success`**`(F&& f)`
+
+`[unicorn]` The anonymous scope guard class stores a function object, to be
+called when the guard is destroyed. The three functions create scope guards
+with different execution conditions.
+
+The `scope_exit()` guard calls the function unconditionally; `scope_success()`
+calls it only on normal exit (not when unwinding due to an exception);
+`scope_fail()` calls it only when an exception causes stack unwinding (not on
+normal exit). If the creation function throws an exception (this is only
+possible if the function object's copy or move constructor or assignment
+operator throws), `scope_exit()` and `scope_fail()` will call the function
+before propagating the exception, while `scope_success()` will not. Any
+exceptions thrown by the function call in the scope guard's destructor are
+silently ignored (normally the function should be written so as not to throw
+anything).
+
+The `release()` function discards the saved function; after it is called, the
+scope guard object will do nothing on destruction.
+
+* `template <typename T> std::unique_lock<T>` **`make_lock`**`(T& t)`
+* `template <typename T> std::shared_lock<T>` **`make_shared_lock`**`(T& t)`
+
+`[unicorn]` Simple wrapper functions to create a mutex lock.
+
 * `template <typename T, int Def = 0> class` **`Resource`**
     * `using Resource::`**`delete_function`** `= std::function<void(T&)>`
     * `using Resource::`**`resource_type`** `= T`
@@ -778,6 +1089,57 @@ colours, chosen at random based on a hash of the thread ID. Because these are
 intended only for debugging the code around them, any exceptions thrown by
 their internal workings are silently ignored.
 
+## Keyword arguments ##
+
+### Keyword arguments ###
+
+* `template <typename T, int ID = 0> struct` **`Kwarg`**
+    * `constexpr ... Kwarg::`**`operator=`**`(const T& t) const noexcept`
+* `template <typename T, int ID, typename... Args> constexpr bool` **`kwtest`**`(Kwarg<T, ID> key, Args... args)`
+* `template <typename T, int ID, typename... Args> T` **`kwget`**`(Kwarg<T, ID> key, const T& def, Args... args)`
+
+`[unicorn]` This provides a simple implementation of variadic keyword
+arguments for C++ functions.
+
+Define a `Kwarg<T[,ID]>` object for each keyword argument, where `T` is the
+argument type. The `ID` parameter is only needed to distinguish between
+keywords with the same argument type. Functions that will take keyword
+arguments should be declared with a variadic argument pack, possibly preceded
+by ordinary positional arguments.
+
+When calling the function, the keyword arguments should be supplied in the
+form `key=value`, where `key` is a `Kwarg` object, and `value` is the argument
+value. The value type must be convertible to `T`. If `T` is `bool`, the
+keyword alone can be passed as an argument, with the value defaulting to
+`true`.
+
+In the function body, call `kwget()` or `kwtest()` for each possible keyword
+argument, with the corresponding `Kwarg` object as the key, a default value
+(for `kwget()`), and the variadic arguments from the enclosing function. The
+`kwget()` function returns the value attached to the keyword, or the default
+value if the keyword was not found in the argument list; `kwtest()` returns
+whether or not the keyword was present. If the same keyword appears more than
+once in the actual argument list, the first one found will be returned.
+
+Example:
+
+    class Window {
+    public:
+        static constexpr Kwarg<int, 1> width = {};
+        static constexpr Kwarg<int, 2> height = {};
+        static constexpr Kwarg<std::string> title = {};
+        static constexpr Kwarg<bool> visible = {};
+        template <typename... Args> explicit Window(Args... args) {
+            int win_width = kwget(width, 640, args...);
+            int win_height = kwget(height, 480, args...);
+            string title_text = kwget(title, "New Window"s, args...);
+            bool is_visible = kwget(visible, false, args...);
+            // ...
+        }
+    };
+
+    Window app_window(Window::title="Hello World", Window::width=1000, Window::height=750, Window::visible);
+
 ## Multithreading ##
 
 ### Thread class ###
@@ -798,3 +1160,172 @@ their internal workings are silently ignored.
 A simple wrapper for `std::thread`. This differs from `std::thread` only in
 that it will automatically join on destruction, or when used on the LHS of an
 assignment.
+
+## String functions ##
+
+### General string functions ###
+
+* `template <typename C> basic_string<C>` **`cstr`**`(const C* ptr)`
+* `template <typename C> basic_string<C>` **`cstr`**`(const C* ptr, size_t n)`
+
+`[unicorn]` These construct a string from a pointer to a null-terminated
+character sequence, or a pointer and a length. They differ from the
+corresponding string constructors in that passing a null pointer will yield an
+empty string, or a string of `n` null characters, instead of undefined
+behaviour.
+
+* `template <typename C> size_t` **`cstr_size`**`(const C* ptr)`
+
+`[unicorn]` Returns the length of a null-terminated string (a generalized
+version of `strlen()`). This will return zero if the pointer is null.
+
+* `template <typename S> [string view]` **`make_view`**`(const S& s, size_t pos = 0, size_t len = npos) noexcept`
+
+`[unicorn]` Returns a string view over the given string. The string argument
+may be an instantiation of `std:basic_string` or `std::basic_string_view`, or
+a pointer to a null terminated character array. The substring bounds are range
+checked and clamped to the actual size of the string.
+
+* `std::string` **`quote`**`(std::string_view str)`
+* `Ustring` **`bquote`**`(std::string_view str)`
+
+`[unicorn]` Return a quoted string; internal quotes, backslashes, and control
+characters are escaped. The `quote()` function passes non-ASCII bytes through
+unchanged, while `bquote()` escapes them.
+
+### Case conversion functions ###
+
+* `constexpr char` **`ascii_tolower`**`(char c) noexcept`
+* `constexpr char` **`ascii_toupper`**`(char c) noexcept`
+* `std::string` **`ascii_lowercase`**`(std::string_view s)`
+* `std::string` **`ascii_uppercase`**`(std::string_view s)`
+* `std::string` **`ascii_titlecase`**`(std::string_view s)`
+* `std::string` **`ascii_sentencecase`**`(std::string_view s)`
+
+`[unicorn]` Simple ASCII-only case conversion functions. All non-ASCII
+characters are left unchanged. The sentence case function capitalizes the
+first letter of every sentence (delimited by a full stop or two consecutive
+line breaks), leaving everything else alone.
+
+### Character functions ###
+
+* `constexpr bool` **`ascii_isalnum`**`(char c) noexcept`
+* `constexpr bool` **`ascii_isalpha`**`(char c) noexcept`
+* `constexpr bool` **`ascii_iscntrl`**`(char c) noexcept`
+* `constexpr bool` **`ascii_isdigit`**`(char c) noexcept`
+* `constexpr bool` **`ascii_isgraph`**`(char c) noexcept`
+* `constexpr bool` **`ascii_islower`**`(char c) noexcept`
+* `constexpr bool` **`ascii_isprint`**`(char c) noexcept`
+* `constexpr bool` **`ascii_ispunct`**`(char c) noexcept`
+* `constexpr bool` **`ascii_isspace`**`(char c) noexcept`
+* `constexpr bool` **`ascii_isupper`**`(char c) noexcept`
+* `constexpr bool` **`ascii_isxdigit`**`(char c) noexcept`
+* `constexpr bool` **`is_ascii`**`(char c) noexcept`
+
+`[unicorn]` These are simple ASCII-only versions of the standard character
+type functions. All of them will always return false for bytes outside the
+ASCII range (0-127).
+
+* `constexpr bool` **`ascii_isalnum_w`**`(char c) noexcept`
+* `constexpr bool` **`ascii_isalpha_w`**`(char c) noexcept`
+* `constexpr bool` **`ascii_ispunct_w`**`(char c) noexcept`
+
+`[unicorn]` These behave the same as the corresponding functions without the
+`"_w"` suffix, except that the underscore character is counted as a letter
+instead of a punctuation mark. (The suffix is intended to suggest the `"\w"`
+regex element, which does much the same thing.)
+
+### Formatting functions ###
+
+* `template <typename T> Ustring` **`bin`**`(T x, size_t digits = 8 * sizeof(T))`
+* `template <typename T> Ustring` **`dec`**`(T x, size_t digits = 1)`
+* `template <typename T> Ustring` **`hex`**`(T x, size_t digits = 2 * sizeof(T))`
+
+`[unicorn]` Simple number formatting functions. These convert an integer to a
+binary, decimal, or hexadecimal string, generating at least the specified
+number of digits.
+
+* `template <typename Range> Ustring` **`format_list`**`(const Range& r)`
+* `template <typename Range> Ustring` **`format_list`**`(const Range& r, std::string_view prefix, std::string_view delimiter, std::string_view suffix)`
+* `template <typename Range> Ustring` **`format_map`**`(const Range& r)`
+* `template <typename Range> Ustring` **`format_map`**`(const Range& r, std::string_view prefix, std::string_view infix, std::string_view delimiter, std::string_view suffix)`
+
+`[unicorn]` Format a range as a delimited list. The `format_list()` function
+writes the elements in sequence, with `prefix` and `suffix` at the beginning
+and end, and with a `delimiter` between each pair of elements; individual
+elements are formatted using `to_str()` (see below). The `format_map()`
+function expects the range's value type to be a pair (or something with
+`first` and `second` members); the elements of each pair are separated with
+the `infix` string, and the range is otherwise formatted in the same way as
+`format_list()`. The default formats are based on JSON syntax:
+
+<!-- TEXT -->
+* `format_list(r) = format_list(r, "[", ",", "]")`
+* `format_map(r) = format_map(r, "{", ":", ",", "}")`
+
+* `template <typename T> Ustring` **`fp_format`**`(T t, char mode = 'g', int prec = 6)`
+* `template <typename T> Ustring` **`opt_fp_format`**`(T t, char mode = 'g', int prec = 6)`
+
+`[unicorn]` The `fp_format()` function performs simple floating point
+formatting, by calling `snprintf()`. `T` must be an arithmetic type; it will
+be converted to `long double` internally. The additional format `'Z/z'` is the
+same as `'G/g'` except that trailing zeros are not stripped. The
+`opt_fp_format()` function calls `fp_format()` for floating point types;
+otherwise it calls `to_str(t)` and ignores the other two arguments. These will
+throw `std::invalid_argument` if the mode is not one of `[EFGZefgz]` (and is
+not ignored); they may throw `std::system_error` under implementation defined
+circumstances.
+
+* `Ustring` **`roman`**`(int n)`
+
+`[unicorn]` Formats a number as a Roman numeral. Numbers greater than 1000
+will be written with an arbitrarily long sequence of `"M"`. This will return
+an empty string if the argument is less than 1.
+
+* `template <typename T> std::string` **`to_str`**`(const T& t)`
+
+`[unicorn]` Formats an object as a string. This uses the following rules for
+formatting various types:
+
+* `bool` - Written as `"true"` or `"false"`.
+* Integer types (other than `char`) - Formatted using `dec()`.
+* Floating point types - Formatted using `fp_format()`.
+* Strings and string-like types - The string content is simply copied verbatim; a null character pointer is treated as an empty string.
+* Exceptions derived from `std::exception` - Calls the exception's `what()` method.
+* Arrays and vectors of bytes (`unsigned char`) - Formatted in hexadecimal.
+* Ranges (other than strings and byte arrays) - Serialized in the same format as `format_list()` above, or `format_map()` if the value type is a pair.
+* Pairs and tuples - Formatted as a comma delimited list, enclosed in parentheses.
+* Otherwise - Call the type's output operator, or fail to compile if it does not have one.
+
+"String-like types" are defined as `std::string`, `std::string_view`, plain
+`char`, character pointers, and anything with an implicit conversion to
+`std::string` or `std::string_view`.
+
+### Parsing functions ###
+
+* `unsigned long long` **`binnum`**`(std::string_view str) noexcept`
+* `long long` **`decnum`**`(std::string_view str) noexcept`
+* `unsigned long long` **`hexnum`**`(std::string_view str) noexcept`
+* `double` **`fpnum`**`(std::string_view str) noexcept`
+
+`[unicorn]` The `binnum()`, `decnum()`, and `hexnum()` functions convert a
+binary, decimal, or hexadecimal string to a number; `fpnum()` converts a
+string to a floating point number. These will ignore any trailing characters
+that are not part of a number, and will return zero if the string is empty or
+does not contain a valid number. Results that are out of range will be clamped
+to the nearest end of the return type's range, or for `fpnum()`, to positive
+or negative infinity.
+
+* `int64_t` **`si_to_int`**`(Uview str)`
+* `double` **`si_to_float`**`(Uview str)`
+
+`[unicorn]` These parse a number from a string representation tagged with an
+SI multiplier abbreviation (e.g. `"123k"`). For the integer version, only tags
+representing positive powers of 1000 (starting with`"k"`) are recognised, and
+are case insensitive. For the floating point version, all tags representing
+powers of 100 are recognised (`"u"` is used for "micro"), and are case
+sensitive, except that `"K"` is equivalent to `"k"`. For both versions, a
+space is allowed between the number and the tag, and any additional text after
+the number or tag is ignored. These will throw `std::invalid_argument` if the
+string does not start with a valid number, or `std::range_error` if the result
+is too big for the return type.

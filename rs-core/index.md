@@ -65,16 +65,15 @@
 This library contains the utilities that I've found a common need for in
 multiple projects.
 
-Everything in this library (except 3rd party code) is in `namespace RS`, and
-can be used either by explicit namespace qualification or via `using namespace
-RS`.
+Everything in this library is in `namespace RS`, and can be used either by
+explicit namespace qualification or via `using namespace RS`.
 
 There's a makefile but it's probably not as portable as it should be.
 
 The library is written in C++14 (more or less); you will need an up-to-date
 C++ compiler. It has been tested with:
 
-* Apple Clang/Xcode 9 on MacOS
+* Apple Clang/Xcode 10 on MacOS
 * GCC 7 on Linux and Cygwin
 * Microsoft Visual Studio 2017 on Windows
 

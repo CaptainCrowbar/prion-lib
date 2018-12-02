@@ -45,6 +45,9 @@
 <p>Everything in this header is in <code>namespace RS::Meta</code>. The <code>Meta::Nil</code> type is
 exported to <code>namespace RS</code> because it is used as a placeholder type elsewhere
 in the library.</p>
+<p>The <code>"unicorn/utility.hpp"</code> header from the Unicorn library is included in
+this header. For convenient reference, all of the relevant contents of that
+header are documented again here, marked with <code><span class="unicorn">[unicorn]</span></code>.</p>
 <p>Metafunctions are templates that operate on types; usually they take one or
 more types as arguments and "return" another type, but non-type template
 arguments and return types are also possible.</p>
@@ -465,8 +468,6 @@ the same type are always equal). An output operator is defined for <code>Nil</co
 </table>
 <h2 id="introspection">Introspection</h2>
 <h3 id="reflection-tools">Reflection tools</h3>
-<p>These are originally defined in <code>"unicorn/utility.hpp"</code>; the documentation is
-repeated here for easier reference.</p>
 <p><em>(Based on Walter E. Brown,
 <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/n4502.pdf">N4502 Proposing Standard Library Support for the C++ Detection Idiom V2</a>,
 2015.)</em></p>
@@ -475,27 +476,30 @@ repeated here for easier reference.</p>
 <li><code>template &lt;template &lt;typename...&gt; typename Archetype, typename... Args&gt; using</code> <strong><code>IsDetected</code></strong></li>
 <li><code>template &lt;template &lt;typename...&gt; typename Archetype, typename... Args&gt; constexpr bool</code> <strong><code>is_detected</code></strong></li>
 </ul>
-<p>True if the archetype is a valid expression for the supplied argument types.</p>
+<p><code><span class="unicorn">[unicorn]</span></code> True if the archetype is a valid expression for the supplied
+argument types.</p>
 </div>
 <div class="defns">
 <ul>
 <li><code>template &lt;typename Default, template &lt;typename...&gt; typename Archetype, typename... Args&gt; using</code> <strong><code>DetectedOr</code></strong></li>
 </ul>
-<p>Returns the type defined by the archetype if it is valid, otherwise the default type.</p>
+<p><code><span class="unicorn">[unicorn]</span></code> Returns the type defined by the archetype if it is valid,
+otherwise the default type.</p>
 </div>
 <div class="defns">
 <ul>
 <li><code>template &lt;typename Result, template &lt;typename...&gt; typename Archetype, typename... Args&gt; using</code> <strong><code>IsDetectedExact</code></strong></li>
 <li><code>template &lt;typename Result, template &lt;typename...&gt; typename Archetype, typename... Args&gt; constexpr bool</code> <strong><code>is_detected_exact</code></strong></li>
 </ul>
-<p>True if the archetype is valid and returns a specific type.</p>
+<p><code><span class="unicorn">[unicorn]</span></code> True if the archetype is valid and returns a specific type.</p>
 </div>
 <div class="defns">
 <ul>
 <li><code>template &lt;typename Result, template &lt;typename...&gt; typename Archetype, typename... Args&gt; using</code> <strong><code>IsDetectedConvertible</code></strong></li>
 <li><code>template &lt;typename Result, template &lt;typename...&gt; typename Archetype, typename... Args&gt; constexpr bool</code> <strong><code>is_detected_convertible</code></strong></li>
 </ul>
-<p>True if the archetype is valid and returns a type convertible to the specified type.</p>
+<p><code><span class="unicorn">[unicorn]</span></code> True if the archetype is valid and returns a type convertible to
+the specified type.</p>
 </div>
 <h3 id="operator-detection">Operator detection</h3>
 <div class="defns">
@@ -893,8 +897,8 @@ have no way to check their semantics.</p>
 <li><code>template &lt;typename Range&gt; using</code> <strong><code>RangeIterator</code></strong></li>
 <li><code>template &lt;typename Range&gt; using</code> <strong><code>RangeValue</code></strong></li>
 </ul>
-<p>These return the types associated with an iterator or range. They are
-extracted by checking the return type of <code>begin()</code>, and do not require a
+<p><code><span class="unicorn">[unicorn]</span></code> These return the types associated with an iterator or range. They
+are extracted by checking the return type of <code>begin()</code>, and do not require a
 specialization of <code>iterator_traits</code> to exist.</p>
 </div>
 <h3 id="iterator-utilities">Iterator utilities</h3>

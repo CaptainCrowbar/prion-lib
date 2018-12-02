@@ -14,6 +14,10 @@ Everything in this header is in `namespace RS::Meta`. The `Meta::Nil` type is
 exported to `namespace RS` because it is used as a placeholder type elsewhere
 in the library.
 
+The `"unicorn/utility.hpp"` header from the Unicorn library is included in
+this header. For convenient reference, all of the relevant contents of that
+header are documented again here, marked with `[unicorn]`.
+
 Metafunctions are templates that operate on types; usually they take one or
 more types as arguments and "return" another type, but non-type template
 arguments and return types are also possible.
@@ -172,9 +176,6 @@ the same type are always equal). An output operator is defined for `Nil`
 
 ### Reflection tools ###
 
-These are originally defined in `"unicorn/utility.hpp"`; the documentation is
-repeated here for easier reference.
-
 _(Based on Walter E. Brown,
 [N4502 Proposing Standard Library Support for the C++ Detection Idiom V2](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/n4502.pdf),
 2015.)_
@@ -182,21 +183,24 @@ _(Based on Walter E. Brown,
 * `template <template <typename...> typename Archetype, typename... Args> using` **`IsDetected`**
 * `template <template <typename...> typename Archetype, typename... Args> constexpr bool` **`is_detected`**
 
-True if the archetype is a valid expression for the supplied argument types.
+`[unicorn]` True if the archetype is a valid expression for the supplied
+argument types.
 
 * `template <typename Default, template <typename...> typename Archetype, typename... Args> using` **`DetectedOr`**
 
-Returns the type defined by the archetype if it is valid, otherwise the default type.
+`[unicorn]` Returns the type defined by the archetype if it is valid,
+otherwise the default type.
 
 * `template <typename Result, template <typename...> typename Archetype, typename... Args> using` **`IsDetectedExact`**
 * `template <typename Result, template <typename...> typename Archetype, typename... Args> constexpr bool` **`is_detected_exact`**
 
-True if the archetype is valid and returns a specific type.
+`[unicorn]` True if the archetype is valid and returns a specific type.
 
 * `template <typename Result, template <typename...> typename Archetype, typename... Args> using` **`IsDetectedConvertible`**
 * `template <typename Result, template <typename...> typename Archetype, typename... Args> constexpr bool` **`is_detected_convertible`**
 
-True if the archetype is valid and returns a type convertible to the specified type.
+`[unicorn]` True if the archetype is valid and returns a type convertible to
+the specified type.
 
 ### Operator detection ###
 
@@ -330,8 +334,8 @@ Notes on specific predicates:
 * `template <typename Range> using` **`RangeIterator`**
 * `template <typename Range> using` **`RangeValue`**
 
-These return the types associated with an iterator or range. They are
-extracted by checking the return type of `begin()`, and do not require a
+`[unicorn]` These return the types associated with an iterator or range. They
+are extracted by checking the return type of `begin()`, and do not require a
 specialization of `iterator_traits` to exist.
 
 ### Iterator utilities ###

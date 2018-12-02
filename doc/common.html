@@ -16,21 +16,32 @@
 <ul>
 <li><a href="#common-utilities">Common Utilities</a><ul>
 <li><a href="#contents">Contents</a></li>
-<li><a href="#preprocessor-macros">Preprocessor macros</a></li>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#preprocessor-macros">Preprocessor macros</a><ul>
+<li><a href="#compilation-control-macros">Compilation control macros</a></li>
+<li><a href="#compilation-environment-properties">Compilation environment properties</a></li>
+<li><a href="#type-generation-macros">Type generation macros</a></li>
+</ul>
+</li>
 <li><a href="#types">Types</a><ul>
+<li><a href="#basic-types">Basic types</a></li>
 <li><a href="#integer-types">Integer types</a></li>
 <li><a href="#exceptions">Exceptions</a></li>
-<li><a href="#metaprogramming-and-type-traits">Metaprogramming and type traits</a></li>
 <li><a href="#mixins">Mixins</a></li>
+</ul>
+</li>
+<li><a href="#range-types">Range types</a><ul>
 <li><a href="#smart-pointers">Smart pointers</a></li>
 <li><a href="#type-adapters">Type adapters</a></li>
 <li><a href="#type-names">Type names</a></li>
 <li><a href="#type-related-functions">Type related functions</a></li>
+<li><a href="#type-traits">Type traits</a></li>
 </ul>
 </li>
 <li><a href="#constants-and-literals">Constants and literals</a><ul>
-<li><a href="#arithmetic-literals">Arithmetic literals</a></li>
+<li><a href="#general-constants">General constants</a></li>
 <li><a href="#arithmetic-constants">Arithmetic constants</a></li>
+<li><a href="#arithmetic-literals">Arithmetic literals</a></li>
 </ul>
 </li>
 <li><a href="#algorithms-and-ranges">Algorithms and ranges</a><ul>
@@ -42,6 +53,16 @@
 <li><a href="#arithmetic-functions">Arithmetic functions</a><ul>
 <li><a href="#generic-arithmetic-functions">Generic arithmetic functions</a></li>
 <li><a href="#integer-arithmetic-functions">Integer arithmetic functions</a></li>
+</ul>
+</li>
+<li><a href="#date-and-time-functions">Date and time functions</a><ul>
+<li><a href="#constants">Constants</a></li>
+<li><a href="#conversion-functions">Conversion functions</a></li>
+<li><a href="#formatting-functions">Formatting functions</a></li>
+</ul>
+</li>
+<li><a href="#error-handling">Error handling</a><ul>
+<li><a href="#assertion-functions">Assertion functions</a></li>
 </ul>
 </li>
 <li><a href="#functional-utilities">Functional utilities</a><ul>
@@ -56,21 +77,75 @@
 <li><a href="#logging">Logging</a></li>
 </ul>
 </li>
+<li><a href="#keyword-arguments">Keyword arguments</a><ul>
+<li><a href="#keyword-arguments_1">Keyword arguments</a></li>
+</ul>
+</li>
 <li><a href="#multithreading">Multithreading</a><ul>
 <li><a href="#thread-class">Thread class</a></li>
+</ul>
+</li>
+<li><a href="#string-functions">String functions</a><ul>
+<li><a href="#general-string-functions">General string functions</a></li>
+<li><a href="#case-conversion-functions">Case conversion functions</a></li>
+<li><a href="#character-functions">Character functions</a></li>
+<li><a href="#formatting-functions_1">Formatting functions</a></li>
+<li><a href="#parsing-functions">Parsing functions</a></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
 </div>
+<h2 id="introduction">Introduction</h2>
+<p>The <code>"unicorn/utility.hpp"</code> header from the Unicorn library is included in
+this header. For convenient reference, all of the relevant contents of that
+header are documented again here, marked with <code><span class="unicorn">[unicorn]</span></code>.</p>
 <h2 id="preprocessor-macros">Preprocessor macros</h2>
+<h3 id="compilation-control-macros">Compilation control macros</h3>
 <div class="defns">
 <ul>
-<li><code>#define</code> <strong><code>RS_BITMASK_OPERATORS</code></strong><code>(EC)</code></li>
+<li><code>#define</code> <strong><code>RS_LDLIB</code></strong><code>([tag:] lib ...)</code></li>
+</ul>
+<p>This instructs the makefile to link with one or more static libraries. Specify
+library names without the <code>-l</code> prefix (e.g. <code>RS_LDLIB(foo)</code> will link with
+<code>-lfoo</code>). If link order is important for a particular set of libraries, supply
+them in a space delimited list in a single <code>RS_LDLIB()</code> line.</p>
+<p>Libraries that are needed only on specific targets can be prefixed with one of
+the target identifiers listed below (e.g. <code>RS_LDLIB(apple:foo)</code> will link
+with <code>-lfoo</code> for Apple targets only). Only one target can be specified per
+invocation; if the same libraries are needed on multiple targets, but not on
+all targets, you will need a separate <code>RS_LDLIB()</code> line for each target.</p>
+<!-- TEXT -->
+
+<ul>
+<li><code>apple:</code></li>
+<li><code>cygwin:</code></li>
+<li><code>linux:</code></li>
+<li><code>msvc:</code></li>
+</ul>
+<p><code>RS_LDLIB()</code> lines are picked up at the <code>"make dep"</code> stage; if you change a
+link library, the change will not be detected until dependencies are rebuilt.</p>
+</div>
+<h3 id="compilation-environment-properties">Compilation environment properties</h3>
+<div class="defns">
+<ul>
+<li><code>#define</code> <strong><code>RS_NATIVE_WCHAR</code></strong> <code>1</code> <em>- defined if the system API uses wide characters</em></li>
+<li><code>#define</code> <strong><code>RS_WCHAR_UTF16</code></strong> <code>1</code> <em>- defined if wchar_t and wstring are UTF-16</em></li>
+<li><code>#define</code> <strong><code>RS_WCHAR_UTF32</code></strong> <code>1</code> <em>- defined if wchar_t and wstring are UTF-32</em></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> These are defined to reflect the encoding represented by <code>wchar_t</code>
+and <code>std::wstring</code>. Systems where wide strings are neither UTF-16 nor UTF-32
+are not supported.</p>
+</div>
+<h3 id="type-generation-macros">Type generation macros</h3>
+<div class="defns">
+<ul>
+<li><code>#define</code> <strong><code>RS_BITMASK_OPERATORS</code></strong><code>(EnumType)</code></li>
 </ul>
 <p>Defines bit manipulation and related operators for an <code>enum class</code> (unary <code>!</code>,
-<code>~</code>; binary <code>&amp;</code>, <code>&amp;=</code>, <code>|</code>, <code>|=</code>, <code>^</code>, <code>^=</code>).</p>
+<code>~</code>; binary <code>&amp;</code>, <code>&amp;=</code>, <code>|</code>, <code>|=</code>, <code>^</code>, <code>^=</code>). The type can be defined the
+conventional way or through the <code>RS_ENUM_CLASS()</code> macro.</p>
 </div>
 <div class="defns">
 <ul>
@@ -117,30 +192,6 @@ single function template in <code>namespace RS</code>.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>#define</code> <strong><code>RS_LDLIB</code></strong><code>([tag:] lib ...)</code></li>
-</ul>
-<p>This instructs the makefile to link with one or more static libraries. Specify
-library names without the <code>-l</code> prefix (e.g. <code>RS_LDLIB(foo)</code> will link with
-<code>-lfoo</code>). If link order is important for a particular set of libraries, supply
-them in a space delimited list in a single <code>RS_LDLIB()</code> line.</p>
-<p>Libraries that are needed only on specific targets can be prefixed with one of
-the target identifiers listed below (e.g. <code>RS_LDLIB(apple:foo)</code> will link
-with <code>-lfoo</code> for Apple targets only). Only one target can be specified per
-invocation; if the same libraries are needed on multiple targets, but not on
-all targets, you will need a separate <code>RS_LDLIB()</code> line for each target.</p>
-<!-- TEXT -->
-
-<ul>
-<li><code>apple:</code></li>
-<li><code>cygwin:</code></li>
-<li><code>linux:</code></li>
-<li><code>msvc:</code></li>
-</ul>
-<p><code>RS_LDLIB()</code> lines are picked up at the <code>"make dep"</code> stage; if you change a
-link library, the change will not be detected until dependencies are rebuilt.</p>
-</div>
-<div class="defns">
-<ul>
 <li><code>#define</code> <strong><code>RS_MOVE_ONLY</code></strong><code>(T)</code><ul>
 <li><code>T(const T&amp;) = delete;</code></li>
 <li><code>T(T&amp;&amp;) = default;</code></li>
@@ -177,6 +228,41 @@ having to explicitly resolve the overload at the call site. (From an idea by
 Arthur O'Dwyer on the C++ standard proposals mailing list, 14 Sep 2015.)</p>
 </div>
 <h2 id="types">Types</h2>
+<h3 id="basic-types">Basic types</h3>
+<div class="defns">
+<ul>
+<li><code>using</code> <strong><code>Ustring</code></strong> <code>= std::string</code></li>
+<li><code>using</code> <strong><code>Uview</code></strong> <code>= std::string_view</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Use <code>Ustring</code> or <code>Uview</code> for strings that are expected to be in
+UTF-8 (or ASCII, since any ASCII string is also valid UTF-8), while plain
+<code>std::string</code> or <code>std::string_view</code> is used where the string is expected to be
+in some other Unicode encoding, or where the string is being used simply as an
+array of bytes rather than encoded text.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>using</code> <strong><code>Strings</code></strong> <code>= std::vector&lt;std::string&gt;</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Commonly used type defined for convenience.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>using</code> <strong><code>NativeCharacter</code></strong> <code>= [char on Unix, wchar_t on Windows]</code></li>
+<li><code>using</code> <strong><code>NativeString</code></strong> <code>= [std::string on Unix, std::wstring on Windows]</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> These are defined to reflect the character types used in the
+operating system's native API.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>using</code> <strong><code>WcharEquivalent</code></strong> <code>= [char16_t or char32_t]</code></li>
+<li><code>using</code> <strong><code>WstringEquivalent</code></strong> <code>= [std::u16string or std::u32string]</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> These are defined to reflect the encoding represented by <code>wchar_t</code>
+and <code>std::wstring</code>. Systems where wide strings are neither UTF-16 nor UTF-32
+are not supported.</p>
+</div>
 <h3 id="integer-types">Integer types</h3>
 <div class="defns">
 <ul>
@@ -228,33 +314,87 @@ function gives the same result as the underlying integer type's hash.</p>
 <code>std::rethrow_exception()</code>, except that it does nothing if the exception
 pointer is null.</p>
 </div>
-<h3 id="metaprogramming-and-type-traits">Metaprogramming and type traits</h3>
-<div class="defns">
-<ul>
-<li><code>template &lt;typename T&gt; using</code> <strong><code>BinaryType</code></strong> <code>= [unsigned integer type]</code></li>
-</ul>
-<p>Yields an unsigned integer type the same size as <code>T</code>. This will fail to
-compile if no such type exists.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>template &lt;typename T1, typename T2&gt; using</code> <strong><code>CopyConst</code></strong> <code>= ...</code></li>
-</ul>
-<p>Yields a type created by transferring the <code>const</code> qualification (or lack of
-it) from <code>T1</code> to the unqualified type of <code>T2</code>. For example, <code>CopyConst&lt;int,
-const string&gt;</code> yields <code>string</code>, while <code>CopyConst&lt;const int, string&gt;</code> yields
-<code>const string</code>.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>template &lt;size_t Bits&gt; using</code> <strong><code>SignedInteger</code></strong> <code>= [signed integer type]</code></li>
-<li><code>template &lt;size_t Bits&gt; using</code> <strong><code>UnsignedInteger</code></strong> <code>= [unsigned integer type]</code></li>
-</ul>
-<p>Signed and unsigned integer types with the specified number of bits (the same
-types as <code>int8_t</code>, <code>int16_t</code>, etc). These will fail to compile if <code>Bits</code> is
-not a power of 2 in the supported range (8-64).</p>
-</div>
 <h3 id="mixins">Mixins</h3>
+<div class="defns">
+<!-- DEFN -->
+
+<p><code><span class="unicorn">[unicorn]</span></code> These are convenience base classes that define
+members and operators that would normally just be repetitive boilerplate
+(similar to the ones in Boost). They all use the CRTP idiom; a class <code>T</code>
+should derive from <code>Mixin&lt;T&gt;</code> to automatically generate the desired
+boilerplate code. The table below shows which operations the user is required
+to define, and which ones the mixin will automatically define. (Here, <code>t</code> and
+<code>u</code> are objects of type <code>T</code>, <code>v</code> is an object of <code>T</code>'s value type, and <code>n</code> is
+an integer.)</p>
+<table>
+<thead>
+<tr>
+<th>Mixin</th>
+<th>Requires</th>
+<th>Defines</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>EqualityComparable</code></strong><code>&lt;T&gt;</code></td>
+<td><code>t==u</code></td>
+<td><code>t!=u</code></td>
+</tr>
+<tr>
+<td><strong><code>LessThanComparable</code></strong><code>&lt;T&gt;</code></td>
+<td><code>t==u, t&lt;u</code></td>
+<td><code>t!=u, t&gt;u, t&lt;=u, t&gt;=u</code></td>
+</tr>
+<tr>
+<td><strong><code>InputIterator</code></strong><code>&lt;T,CV&gt;</code></td>
+<td><code>*t, ++t, t==u</code></td>
+<td><code>t-&gt;, t++, t!=u</code></td>
+</tr>
+<tr>
+<td><strong><code>OutputIterator</code></strong><code>&lt;T&gt;</code></td>
+<td><code>t=v</code></td>
+<td><code>*t, ++t, t++</code></td>
+</tr>
+<tr>
+<td><strong><code>ForwardIterator</code></strong><code>&lt;T,CV&gt;</code></td>
+<td><code>*t, ++t, t==u</code></td>
+<td><code>t-&gt;, t++, t!=u</code></td>
+</tr>
+<tr>
+<td><strong><code>BidirectionalIterator</code></strong><code>&lt;T,CV&gt;</code></td>
+<td><code>*t, ++t, --t, t==u</code></td>
+<td><code>t-&gt;, t++, t--, t!=u</code></td>
+</tr>
+<tr>
+<td><strong><code>RandomAccessIterator</code></strong><code>&lt;T,CV&gt;</code></td>
+<td><code>*t, t+=n, t-u</code></td>
+<td><code>t-&gt;, t[n], ++t, t++, --t, t--, t-=n, t+n, n+t, t-n,</code><br><code>t==u, t!=u, t&lt;u, t&gt;u, t&lt;=u, t&gt;=u</code></td>
+</tr>
+<tr>
+<td><strong><code>FlexibleRandomAccessIterator</code></strong><code>&lt;T,CV&gt;</code></td>
+<td><code>*t, ++t, --t, t+=n, t-u, t==u</code></td>
+<td><code>t-&gt;, t[n], t++, t--, t-=n, t+n, n+t, t-n,</code><br><code>t!=u, t&lt;u, t&gt;u, t&lt;=u, t&gt;=u</code></td>
+</tr>
+</tbody>
+</table>
+<p>In the iterator mixins, <code>CV</code> is either <code>V</code> or <code>const V</code>, where <code>V</code> is the
+iterator's value type, depending on whether a mutable or const iterator is
+required.</p>
+<p>The first version of <code>RandomAccessIterator</code> uses the minimal set of user
+supplied operations to generate all of those required;
+<code>FlexibleRandomAccessIterator</code> requires more user supplied operations, but
+will decay safely to one of the simpler iterator types if an underlying type
+does not supply all of the corresponding operations.</p>
+<p>In addition to the operators listed in the table above, all iterator mixins
+supply the standard member types:</p>
+<ul>
+<li><code>using</code> <strong><code>difference_type</code></strong> <code>= ptrdiff_t</code></li>
+<li><code>using</code> <strong><code>iterator_category</code></strong> <code>= [standard iterator tag type]</code></li>
+<li><code>using</code> <strong><code>pointer</code></strong> <code>= CV*</code></li>
+<li><code>using</code> <strong><code>reference</code></strong> <code>= CV&amp;</code></li>
+<li><code>using</code> <strong><code>value_type</code></strong> <code>= std::remove_const_t&lt;CV&gt;</code></li>
+</ul>
+</div>
 <div class="defns">
 <ul>
 <li><code>template &lt;typename T&gt; class</code> <strong><code>NumericLimitsBase</code></strong><ul>
@@ -308,6 +448,35 @@ not a power of 2 in the supported range (8-64).</p>
 </ul>
 <p>A convenience class to help define specializations of <code>std::numeric_limits</code>
 for new arithmetic types.</p>
+</div>
+<h2 id="range-types">Range types</h2>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename Iterator&gt; struct</code> <strong><code>Irange</code></strong><ul>
+<li><code>using Irange::</code><strong><code>iterator</code></strong> <code>= Iterator</code></li>
+<li><code>using Irange::</code><strong><code>value_type</code></strong> <code>= [Iterator's value type]</code></li>
+<li><code>Iterator Irange::</code><strong><code>first</code></strong></li>
+<li><code>Iterator Irange::</code><strong><code>second</code></strong></li>
+<li><code>constexpr Iterator Irange::</code><strong><code>begin</code></strong><code>() const { return first; }</code></li>
+<li><code>constexpr Iterator Irange::</code><strong><code>end</code></strong><code>() const { return second; }</code></li>
+<li><code>constexpr bool Irange::</code><strong><code>empty</code></strong><code>() const { return first == second; }</code></li>
+<li><code>constexpr size_t Irange::</code><strong><code>size</code></strong><code>() const { return std::distance(first, second); }</code></li>
+</ul>
+</li>
+<li><code>template &lt;typename Iterator&gt; constexpr Irange&lt;Iterator&gt;</code> <strong><code>irange</code></strong><code>(const Iterator&amp; i, const Iterator&amp; j)</code></li>
+<li><code>template &lt;typename Iterator&gt; constexpr Irange&lt;Iterator&gt;</code> <strong><code>irange</code></strong><code>(const pair&lt;Iterator, Iterator&gt;&amp; p)</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> A wrapper for a pair of iterators, usable as a range in standard
+algorithms.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename InputRange&gt; size_t</code> <strong><code>range_count</code></strong><code>(const InputRange&amp; r)</code></li>
+<li><code>template &lt;typename InputRange&gt; bool</code> <strong><code>range_empty</code></strong><code>(const InputRange&amp; r)</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Return the length of a range. The <code>range_count()</code> function is just
+shorthand for <code>std::distance(begin(r),end(r))</code>, and <code>range_empty()</code> has the
+obvious meaning.</p>
 </div>
 <h3 id="smart-pointers">Smart pointers</h3>
 <div class="defns">
@@ -456,7 +625,67 @@ different sizes, but does no other safety checks. The <code>implicit_cast()</cod
 operation performs the conversion only if it would be allowed as an implicit
 conversion.</p>
 </div>
+<h3 id="type-traits">Type traits</h3>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; using</code> <strong><code>BinaryType</code></strong> <code>= [unsigned integer type]</code></li>
+</ul>
+<p>Yields an unsigned integer type the same size as <code>T</code>. This will fail to
+compile if no such type exists.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T1, typename T2&gt; using</code> <strong><code>CopyConst</code></strong> <code>= ...</code></li>
+</ul>
+<p>Yields a type created by transferring the <code>const</code> qualification (or lack of
+it) from <code>T1</code> to the unqualified type of <code>T2</code>. For example, <code>CopyConst&lt;int,
+const string&gt;</code> yields <code>string</code>, while <code>CopyConst&lt;const int, string&gt;</code> yields
+<code>const string</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;size_t Bits&gt; using</code> <strong><code>SignedInteger</code></strong> <code>= [signed integer type]</code></li>
+<li><code>template &lt;size_t Bits&gt; using</code> <strong><code>UnsignedInteger</code></strong> <code>= [unsigned integer type]</code></li>
+</ul>
+<p>Signed and unsigned integer types with the specified number of bits (the same
+types as <code>int8_t</code>, <code>int16_t</code>, etc). These will fail to compile if <code>Bits</code> is
+not a power of 2 in the supported range (8-64).</p>
+</div>
 <h2 id="constants-and-literals">Constants and literals</h2>
+<h3 id="general-constants">General constants</h3>
+<div class="defns">
+<ul>
+<li><code>constexpr const char*</code> <strong><code>ascii_whitespace</code></strong> <code>= "\t\n\v\f\r "</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> ASCII whitespace characters.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>constexpr bool</code> <strong><code>big_endian_target</code></strong></li>
+<li><code>constexpr bool</code> <strong><code>little_endian_target</code></strong></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> One of these will be true and the other false, reflecting the
+target system's byte order.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>constexpr size_t</code> <strong><code>npos</code></strong> <code>= std::string::npos</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Defined for convenience. Following the conventions established by
+the standard library, this value is often used as a function argument to mean
+"as large as possible" or "no limit", or as a return value to mean "not
+found".</p>
+</div>
+<h3 id="arithmetic-constants">Arithmetic constants</h3>
+<div class="defns">
+<ul>
+<li><code>constexpr unsigned</code> <strong><code>KB</code></strong> <code>= 1024</code></li>
+<li><code>constexpr unsigned long</code> <strong><code>MB</code></strong> <code>= 1 048 576</code></li>
+<li><code>constexpr unsigned long</code> <strong><code>GB</code></strong> <code>= 1 073 741 824</code></li>
+<li><code>constexpr unsigned long long</code> <strong><code>TB</code></strong> <code>= 1 099 511 627 776</code></li>
+</ul>
+<p>Powers of 2<sup>10</sup>.</p>
+</div>
 <h3 id="arithmetic-literals">Arithmetic literals</h3>
 <div class="defns">
 <ul>
@@ -476,16 +705,6 @@ conversion.</p>
 </ul>
 <p>Integer literals.</p>
 </div>
-<h3 id="arithmetic-constants">Arithmetic constants</h3>
-<div class="defns">
-<ul>
-<li><code>constexpr unsigned</code> <strong><code>KB</code></strong> <code>= 1024</code></li>
-<li><code>constexpr unsigned long</code> <strong><code>MB</code></strong> <code>= 1 048 576</code></li>
-<li><code>constexpr unsigned long</code> <strong><code>GB</code></strong> <code>= 1 073 741 824</code></li>
-<li><code>constexpr unsigned long long</code> <strong><code>TB</code></strong> <code>= 1 099 511 627 776</code></li>
-</ul>
-<p>Powers of 2<sup>10</sup>.</p>
-</div>
 <h2 id="algorithms-and-ranges">Algorithms and ranges</h2>
 <h3 id="generic-algorithms">Generic algorithms</h3>
 <div class="defns">
@@ -495,6 +714,28 @@ conversion.</p>
 <p>Advances an iterator by the given number of steps, or until it reaches <code>end</code>,
 whichever comes first. This will take <code>O(1)</code> time if the iterator is random
 access, otherwise <code>O(n)</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename Container&gt; [output iterator]</code> <strong><code>append</code></strong><code>(Container&amp; con)</code></li>
+<li><code>template &lt;typename Container&gt; [output iterator]</code> <strong><code>overwrite</code></strong><code>(Container&amp; con)</code></li>
+<li><code>template &lt;typename Range, typename Container&gt; const Range&amp;</code> <strong><code>operator&gt;&gt;</code></strong><code>(const Range&amp; lhs, [append iterator] rhs)</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> The <code>append()</code> and <code>overwrite()</code> functions create output iterators
+that will append elements to a standard container (see <code>append_to()</code> below).
+The <code>append()</code> function is similar to <code>std::back_inserter()</code> (but supports
+containers without <code>push_back()</code>), while <code>overwrite()</code> will first clear the
+container and then return the append iterator. There is also an operator that
+can be used to copy any range into a container (e.g. <code>range &gt;&gt; append(con)</code>).</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename Container, typename T&gt; void</code> <strong><code>append_to</code></strong><code>(Container&amp; con, const T&amp; t)</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Appends an item to a container; used by <code>append()</code> and
+<code>overwrite()</code>. The generic version calls <code>con.insert(con.end(), t)</code>; overloads
+(found by argument dependent lookup) can be used for container-like types that
+do not have a suitable <code>insert()</code> method.</p>
 </div>
 <div class="defns">
 <ul>
@@ -520,6 +761,14 @@ value (implicitly converted to the range's value type) if the index is out of
 bounds. If no default value is supplied, a default constructed object of the
 value type is returned. The array type can be any range with random access
 iterators.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename Range1, typename Range2&gt; int</code> <strong><code>compare_3way</code></strong><code>(const Range1&amp; r1, const Range2&amp; r2)</code></li>
+<li><code>template &lt;typename Range1, typename Range2, typename Compare&gt; int</code> <strong><code>compare_3way</code></strong><code>(const Range1&amp; r1, const Range2&amp; r2, Compare cmp)</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Compare two ranges, returning -1 if the first range is less than
+the second, zero if they are equal, and +1 if the first range is greater.</p>
 </div>
 <div class="defns">
 <ul>
@@ -708,6 +957,19 @@ out of <code>T</code>'s representable range.</p>
 <p>Returns 1 if the argument is positive, 0 if zero, and -1 if negative.</p>
 </div>
 <h3 id="integer-arithmetic-functions">Integer arithmetic functions</h3>
+<p>For the bit manipulation functions (<code>ibits()</code>, <code>ifloor2()</code>, <code>iceil2()</code>,
+<code>ilog2p1()</code>, <code>ispow2()</code>, <code>rotl()</code>, and <code>rotr()</code>), behaviour is undefined if
+<code>T</code> is not an integer, or if <code>T</code> is signed and the argument is negative.</p>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; constexpr std::make_signed_t&lt;T&gt;</code> <strong><code>as_signed</code></strong><code>(T t) noexcept</code></li>
+<li><code>template &lt;typename T&gt; constexpr std::make_unsigned_t&lt;T&gt;</code> <strong><code>as_unsigned</code></strong><code>(T t) noexcept</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> These return their argument converted to a signed or unsigned
+value of the same size (the argument is returned unchanged if <code>T</code> already had
+the desired signedness). Behaviour is undefined if <code>T</code> is not an integer or
+enumeration type.</p>
+</div>
 <div class="defns">
 <ul>
 <li><code>template &lt;typename T&gt; T</code> <strong><code>binomial</code></strong><code>(T a, T b) noexcept</code></li>
@@ -719,6 +981,14 @@ result would be out of range for the return type.</p>
 </div>
 <div class="defns">
 <ul>
+<li><code>template &lt;typename T, typename T2, typename T3&gt; constexpr T</code> <strong><code>clamp</code></strong><code>(const T&amp; x, const T2&amp; min, const T3&amp; max) noexcept</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Clamps a value to a fixed range. This returns <code>min</code> if <code>t&lt;min</code>,
+<code>max</code> if <code>t&gt;max</code>, otherwise <code>t</code>. <code>T2</code> and <code>T3</code> must be implicitly convertible
+t <code>T</code>.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>template &lt;typename T&gt; constexpr T</code> <strong><code>gcd</code></strong><code>(T a, T b) noexcept</code></li>
 <li><code>template &lt;typename T&gt; constexpr T</code> <strong><code>lcm</code></strong><code>(T a, T b) noexcept</code></li>
 </ul>
@@ -726,6 +996,28 @@ result would be out of range for the return type.</p>
 These give the same results as <code>std::gcd/lcm()</code>, but without checking that <code>T</code>
 is a primitive integral type, so these will work with user defined integer
 types.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; constexpr int</code> <strong><code>ibits</code></strong><code>(T t) noexcept</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Returns the number of 1 bits in the argument.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; constexpr T</code> <strong><code>ifloor2</code></strong><code>(T t) noexcept</code></li>
+<li><code>template &lt;typename T&gt; constexpr T</code> <strong><code>iceil2</code></strong><code>(T t) noexcept</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Return the argument rounded down or up to a power of 2. For
+<code>iceil2()</code>, behaviour is undefined if the argument is large enough that the
+correct answer is not representable.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; constexpr int</code> <strong><code>ilog2p1</code></strong><code>(T t) noexcept</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Returns <code>floor(log2(t))+1</code>, equal to the number of significant
+bits in <code>t</code>, or zero if <code>t</code> is zero.</p>
 </div>
 <div class="defns">
 <ul>
@@ -741,6 +1033,179 @@ negative, or if <code>T</code> is signed and the true result would be out of ran
 </ul>
 <p>Returns the integer square root of the argument (the true square root
 truncated to an integer). Behaviour is undefined if the argument is negative.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; constexpr bool</code> <strong><code>ispow2</code></strong><code>(T t) noexcept</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> True if the argument is an exact power of 2.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>constexpr uint64_t</code> <strong><code>letter_to_mask</code></strong><code>(char c) noexcept</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Converts a letter to a mask with bit 0-51 set (corresponding to
+<code>[A-Za-z]</code>). Returns zero if the argument is not an ASCII letter.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; constexpr T</code> <strong><code>rotl</code></strong><code>(T t, int n) noexcept</code></li>
+<li><code>template &lt;typename T&gt; constexpr T</code> <strong><code>rotr</code></strong><code>(T t, int n) noexcept</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Bitwise rotate left or right. The bit count is reduced modulo the
+number of bits in <code>T</code>; a negative shift in one direction is treated as a
+positive shift in the other.</p>
+</div>
+<h2 id="date-and-time-functions">Date and time functions</h2>
+<h3 id="constants">Constants</h3>
+<div class="defns">
+<ul>
+<li><code>constexpr uint32_t</code> <strong><code>utc_zone</code></strong></li>
+<li><code>constexpr uint32_t</code> <strong><code>local_zone</code></strong></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Used to indicate whether a date is expressed in UTC or the local
+time zone.</p>
+</div>
+<h3 id="conversion-functions">Conversion functions</h3>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename R, typename P&gt; void</code> <strong><code>from_seconds</code></strong><code>(double s, duration&lt;R, P&gt;&amp; d) noexcept</code></li>
+<li><code>template &lt;typename R, typename P&gt; double</code> <strong><code>to_seconds</code></strong><code>(const duration&lt;R, P&gt;&amp; d) noexcept</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Convenience functions to convert between a <code>duration</code> and a
+floating point number of seconds.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>system_clock::time_point</code> <strong><code>make_date</code></strong><code>(int year, int month, int day, int hour = 0, int min = 0, double sec = 0, uint32_t flags = utc_zone)</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Converts a broken down date into a time point. Behaviour if any of
+the date arguments are invalid follows the same rules as <code>mktime()</code>. This will
+throw <code>std::invalid_argument</code> if an invalid flag is passed.</p>
+</div>
+<h3 id="formatting-functions">Formatting functions</h3>
+<div class="defns">
+<ul>
+<li><code>Ustring</code> <strong><code>format_date</code></strong><code>(system_clock::time_point tp, int prec = 0, uint32_t flags = utc_zone)</code></li>
+<li><code>Ustring</code> <strong><code>format_date</code></strong><code>(system_clock::time_point tp, Uview format, uint32_t flags = utc_zone)</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> These convert a time point into a broken down date and format it.
+The first version writes the date in ISO 8601 format (<code>"yyyy-mm-dd
+hh:mm:ss"</code>). If <code>prec</code> is greater than zero, the specified number of decimal
+places will be added to the seconds field.</p>
+<p>The second version writes the date using the conventions of <code>strftime()</code>. This
+will return an empty string if anything goes wrong (there is no way to
+distinguish between a conversion error and a legitimately empty result; this
+is a limitation of <code>strftime()</code>).</p>
+<p>Both of these will throw <code>std::invalid_argument</code> if an invalid flag is passed.</p>
+<p>For reference, the portable subset of the <code>strftime()</code> formatting codes are:</p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Date elements</strong></td>
+<td></td>
+<td><strong>Weekday elements</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><code>%Y</code></td>
+<td>Year number</td>
+<td><code>%a</code></td>
+<td>Local weekday abbreviation</td>
+</tr>
+<tr>
+<td><code>%y</code></td>
+<td>Last 2 digits of the year (<code>00-99</code>)</td>
+<td><code>%w</code></td>
+<td>Sunday-based weekday number (<code>0-6</code>)</td>
+</tr>
+<tr>
+<td><code>%m</code></td>
+<td>Month number (<code>00-12</code>)</td>
+<td><code>%A</code></td>
+<td>Local weekday name</td>
+</tr>
+<tr>
+<td><code>%B</code></td>
+<td>Local month name</td>
+<td><code>%U</code></td>
+<td>Sunday-based week number (<code>00-53</code>)</td>
+</tr>
+<tr>
+<td><code>%b</code></td>
+<td>Local month abbreviation</td>
+<td><code>%W</code></td>
+<td>Monday-based week number (<code>00-53</code>)</td>
+</tr>
+<tr>
+<td><code>%d</code></td>
+<td>Day of the month (<code>01-31</code>)</td>
+<td><strong>Other elements</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Time of day elements</strong></td>
+<td></td>
+<td><code>%c</code></td>
+<td>Local standard date/time format</td>
+</tr>
+<tr>
+<td><code>%H</code></td>
+<td>Hour on 24-hour clock (<code>00-23</code>)</td>
+<td><code>%x</code></td>
+<td>Local standard date format</td>
+</tr>
+<tr>
+<td><code>%I</code></td>
+<td>Hour on 12-hour clock (<code>01-12</code>)</td>
+<td><code>%X</code></td>
+<td>Local standard time format</td>
+</tr>
+<tr>
+<td><code>%p</code></td>
+<td>Local equivalent of a.m./p.m.</td>
+<td><code>%j</code></td>
+<td>Day of the year (<code>001-366</code>)</td>
+</tr>
+<tr>
+<td><code>%M</code></td>
+<td>Minute (<code>00-59</code>)</td>
+<td><code>%Z</code></td>
+<td>Time zone name</td>
+</tr>
+<tr>
+<td><code>%S</code></td>
+<td>Second (<code>00-60</code>)</td>
+<td><code>%z</code></td>
+<td>Time zone offset</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename R, typename P&gt; Ustring</code> <strong><code>format_time</code></strong><code>(const duration&lt;R, P&gt;&amp; time, int prec = 0)</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Formats a time duration in days, hours, minutes, seconds, and (if
+<code>prec&gt;0</code>) fractions of a second.</p>
+</div>
+<h2 id="error-handling">Error handling</h2>
+<h3 id="assertion-functions">Assertion functions</h3>
+<div class="defns">
+<ul>
+<li><code>void</code> <strong><code>runtime_assert</code></strong><code>(bool condition, std::string_view message) noexcept</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> A portable, non-blockable version of <code>assert()</code>. If the condition
+is false, this will print the message to standard error (followed by a line
+break), and then call <code>abort()</code>.</p>
 </div>
 <h2 id="functional-utilities">Functional utilities</h2>
 <h3 id="function-traits">Function traits</h3>
@@ -872,6 +1337,42 @@ the element type's <code>std::hash</code>.</p>
 <h3 id="scope-guards">Scope guards</h3>
 <div class="defns">
 <ul>
+<li><code>class</code> <strong><code>[scope guard]</code></strong><ul>
+<li><code>[scope guard]::</code><strong><code>[scope guard]</code></strong><code>(F&amp;&amp; f)</code></li>
+<li><code>[scope guard]::</code><strong><code>[scope guard]</code></strong><code>([scope guard]&amp;&amp;) noexcept</code></li>
+<li><code>[scope guard]::</code><strong><code>~[scope guard]</code></strong><code>() noexcept</code></li>
+<li><code>void [scope guard]::</code><strong><code>release</code></strong><code>() noexcept</code></li>
+</ul>
+</li>
+<li><code>template &lt;typename F&gt; inline [scope guard]</code> <strong><code>scope_exit</code></strong><code>(F&amp;&amp; f)</code></li>
+<li><code>template &lt;typename F&gt; inline [scope guard]</code> <strong><code>scope_fail</code></strong><code>(F&amp;&amp; f)</code></li>
+<li><code>template &lt;typename F&gt; inline [scope guard]</code> <strong><code>scope_success</code></strong><code>(F&amp;&amp; f)</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> The anonymous scope guard class stores a function object, to be
+called when the guard is destroyed. The three functions create scope guards
+with different execution conditions.</p>
+<p>The <code>scope_exit()</code> guard calls the function unconditionally; <code>scope_success()</code>
+calls it only on normal exit (not when unwinding due to an exception);
+<code>scope_fail()</code> calls it only when an exception causes stack unwinding (not on
+normal exit). If the creation function throws an exception (this is only
+possible if the function object's copy or move constructor or assignment
+operator throws), <code>scope_exit()</code> and <code>scope_fail()</code> will call the function
+before propagating the exception, while <code>scope_success()</code> will not. Any
+exceptions thrown by the function call in the scope guard's destructor are
+silently ignored (normally the function should be written so as not to throw
+anything).</p>
+<p>The <code>release()</code> function discards the saved function; after it is called, the
+scope guard object will do nothing on destruction.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; std::unique_lock&lt;T&gt;</code> <strong><code>make_lock</code></strong><code>(T&amp; t)</code></li>
+<li><code>template &lt;typename T&gt; std::shared_lock&lt;T&gt;</code> <strong><code>make_shared_lock</code></strong><code>(T&amp; t)</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Simple wrapper functions to create a mutex lock.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>template &lt;typename T, int Def = 0&gt; class</code> <strong><code>Resource</code></strong><ul>
 <li><code>using Resource::</code><strong><code>delete_function</code></strong> <code>= std::function&lt;void(T&amp;)&gt;</code></li>
 <li><code>using Resource::</code><strong><code>resource_type</code></strong> <code>= T</code></li>
@@ -957,6 +1458,55 @@ colours, chosen at random based on a hash of the thread ID. Because these are
 intended only for debugging the code around them, any exceptions thrown by
 their internal workings are silently ignored.</p>
 </div>
+<h2 id="keyword-arguments">Keyword arguments</h2>
+<h3 id="keyword-arguments_1">Keyword arguments</h3>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T, int ID = 0&gt; struct</code> <strong><code>Kwarg</code></strong><ul>
+<li><code>constexpr ... Kwarg::</code><strong><code>operator=</code></strong><code>(const T&amp; t) const noexcept</code></li>
+</ul>
+</li>
+<li><code>template &lt;typename T, int ID, typename... Args&gt; constexpr bool</code> <strong><code>kwtest</code></strong><code>(Kwarg&lt;T, ID&gt; key, Args... args)</code></li>
+<li><code>template &lt;typename T, int ID, typename... Args&gt; T</code> <strong><code>kwget</code></strong><code>(Kwarg&lt;T, ID&gt; key, const T&amp; def, Args... args)</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> This provides a simple implementation of variadic keyword
+arguments for C++ functions.</p>
+<p>Define a <code>Kwarg&lt;T[,ID]&gt;</code> object for each keyword argument, where <code>T</code> is the
+argument type. The <code>ID</code> parameter is only needed to distinguish between
+keywords with the same argument type. Functions that will take keyword
+arguments should be declared with a variadic argument pack, possibly preceded
+by ordinary positional arguments.</p>
+<p>When calling the function, the keyword arguments should be supplied in the
+form <code>key=value</code>, where <code>key</code> is a <code>Kwarg</code> object, and <code>value</code> is the argument
+value. The value type must be convertible to <code>T</code>. If <code>T</code> is <code>bool</code>, the
+keyword alone can be passed as an argument, with the value defaulting to
+<code>true</code>.</p>
+<p>In the function body, call <code>kwget()</code> or <code>kwtest()</code> for each possible keyword
+argument, with the corresponding <code>Kwarg</code> object as the key, a default value
+(for <code>kwget()</code>), and the variadic arguments from the enclosing function. The
+<code>kwget()</code> function returns the value attached to the keyword, or the default
+value if the keyword was not found in the argument list; <code>kwtest()</code> returns
+whether or not the keyword was present. If the same keyword appears more than
+once in the actual argument list, the first one found will be returned.</p>
+<p>Example:</p>
+<pre><code>class Window {
+public:
+    static constexpr Kwarg&lt;int, 1&gt; width = {};
+    static constexpr Kwarg&lt;int, 2&gt; height = {};
+    static constexpr Kwarg&lt;std::string&gt; title = {};
+    static constexpr Kwarg&lt;bool&gt; visible = {};
+    template &lt;typename... Args&gt; explicit Window(Args... args) {
+        int win_width = kwget(width, 640, args...);
+        int win_height = kwget(height, 480, args...);
+        string title_text = kwget(title, "New Window"s, args...);
+        bool is_visible = kwget(visible, false, args...);
+        // ...
+    }
+};
+
+Window app_window(Window::title="Hello World", Window::width=1000, Window::height=750, Window::visible);
+</code></pre>
+</div>
 <h2 id="multithreading">Multithreading</h2>
 <h3 id="thread-class">Thread class</h3>
 <div class="defns">
@@ -978,5 +1528,198 @@ their internal workings are silently ignored.</p>
 </ul>
 <p>A simple wrapper for <code>std::thread</code>. This differs from <code>std::thread</code> only in
 that it will automatically join on destruction, or when used on the LHS of an
-assignment.</p></body>
+assignment.</p>
+</div>
+<h2 id="string-functions">String functions</h2>
+<h3 id="general-string-functions">General string functions</h3>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename C&gt; basic_string&lt;C&gt;</code> <strong><code>cstr</code></strong><code>(const C* ptr)</code></li>
+<li><code>template &lt;typename C&gt; basic_string&lt;C&gt;</code> <strong><code>cstr</code></strong><code>(const C* ptr, size_t n)</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> These construct a string from a pointer to a null-terminated
+character sequence, or a pointer and a length. They differ from the
+corresponding string constructors in that passing a null pointer will yield an
+empty string, or a string of <code>n</code> null characters, instead of undefined
+behaviour.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename C&gt; size_t</code> <strong><code>cstr_size</code></strong><code>(const C* ptr)</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Returns the length of a null-terminated string (a generalized
+version of <code>strlen()</code>). This will return zero if the pointer is null.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename S&gt; [string view]</code> <strong><code>make_view</code></strong><code>(const S&amp; s, size_t pos = 0, size_t len = npos) noexcept</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Returns a string view over the given string. The string argument
+may be an instantiation of <code>std:basic_string</code> or <code>std::basic_string_view</code>, or
+a pointer to a null terminated character array. The substring bounds are range
+checked and clamped to the actual size of the string.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>std::string</code> <strong><code>quote</code></strong><code>(std::string_view str)</code></li>
+<li><code>Ustring</code> <strong><code>bquote</code></strong><code>(std::string_view str)</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Return a quoted string; internal quotes, backslashes, and control
+characters are escaped. The <code>quote()</code> function passes non-ASCII bytes through
+unchanged, while <code>bquote()</code> escapes them.</p>
+</div>
+<h3 id="case-conversion-functions">Case conversion functions</h3>
+<div class="defns">
+<ul>
+<li><code>constexpr char</code> <strong><code>ascii_tolower</code></strong><code>(char c) noexcept</code></li>
+<li><code>constexpr char</code> <strong><code>ascii_toupper</code></strong><code>(char c) noexcept</code></li>
+<li><code>std::string</code> <strong><code>ascii_lowercase</code></strong><code>(std::string_view s)</code></li>
+<li><code>std::string</code> <strong><code>ascii_uppercase</code></strong><code>(std::string_view s)</code></li>
+<li><code>std::string</code> <strong><code>ascii_titlecase</code></strong><code>(std::string_view s)</code></li>
+<li><code>std::string</code> <strong><code>ascii_sentencecase</code></strong><code>(std::string_view s)</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Simple ASCII-only case conversion functions. All non-ASCII
+characters are left unchanged. The sentence case function capitalizes the
+first letter of every sentence (delimited by a full stop or two consecutive
+line breaks), leaving everything else alone.</p>
+</div>
+<h3 id="character-functions">Character functions</h3>
+<div class="defns">
+<ul>
+<li><code>constexpr bool</code> <strong><code>ascii_isalnum</code></strong><code>(char c) noexcept</code></li>
+<li><code>constexpr bool</code> <strong><code>ascii_isalpha</code></strong><code>(char c) noexcept</code></li>
+<li><code>constexpr bool</code> <strong><code>ascii_iscntrl</code></strong><code>(char c) noexcept</code></li>
+<li><code>constexpr bool</code> <strong><code>ascii_isdigit</code></strong><code>(char c) noexcept</code></li>
+<li><code>constexpr bool</code> <strong><code>ascii_isgraph</code></strong><code>(char c) noexcept</code></li>
+<li><code>constexpr bool</code> <strong><code>ascii_islower</code></strong><code>(char c) noexcept</code></li>
+<li><code>constexpr bool</code> <strong><code>ascii_isprint</code></strong><code>(char c) noexcept</code></li>
+<li><code>constexpr bool</code> <strong><code>ascii_ispunct</code></strong><code>(char c) noexcept</code></li>
+<li><code>constexpr bool</code> <strong><code>ascii_isspace</code></strong><code>(char c) noexcept</code></li>
+<li><code>constexpr bool</code> <strong><code>ascii_isupper</code></strong><code>(char c) noexcept</code></li>
+<li><code>constexpr bool</code> <strong><code>ascii_isxdigit</code></strong><code>(char c) noexcept</code></li>
+<li><code>constexpr bool</code> <strong><code>is_ascii</code></strong><code>(char c) noexcept</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> These are simple ASCII-only versions of the standard character
+type functions. All of them will always return false for bytes outside the
+ASCII range (0-127).</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>constexpr bool</code> <strong><code>ascii_isalnum_w</code></strong><code>(char c) noexcept</code></li>
+<li><code>constexpr bool</code> <strong><code>ascii_isalpha_w</code></strong><code>(char c) noexcept</code></li>
+<li><code>constexpr bool</code> <strong><code>ascii_ispunct_w</code></strong><code>(char c) noexcept</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> These behave the same as the corresponding functions without the
+<code>"_w"</code> suffix, except that the underscore character is counted as a letter
+instead of a punctuation mark. (The suffix is intended to suggest the <code>"\w"</code>
+regex element, which does much the same thing.)</p>
+</div>
+<h3 id="formatting-functions_1">Formatting functions</h3>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; Ustring</code> <strong><code>bin</code></strong><code>(T x, size_t digits = 8 * sizeof(T))</code></li>
+<li><code>template &lt;typename T&gt; Ustring</code> <strong><code>dec</code></strong><code>(T x, size_t digits = 1)</code></li>
+<li><code>template &lt;typename T&gt; Ustring</code> <strong><code>hex</code></strong><code>(T x, size_t digits = 2 * sizeof(T))</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Simple number formatting functions. These convert an integer to a
+binary, decimal, or hexadecimal string, generating at least the specified
+number of digits.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename Range&gt; Ustring</code> <strong><code>format_list</code></strong><code>(const Range&amp; r)</code></li>
+<li><code>template &lt;typename Range&gt; Ustring</code> <strong><code>format_list</code></strong><code>(const Range&amp; r, std::string_view prefix, std::string_view delimiter, std::string_view suffix)</code></li>
+<li><code>template &lt;typename Range&gt; Ustring</code> <strong><code>format_map</code></strong><code>(const Range&amp; r)</code></li>
+<li><code>template &lt;typename Range&gt; Ustring</code> <strong><code>format_map</code></strong><code>(const Range&amp; r, std::string_view prefix, std::string_view infix, std::string_view delimiter, std::string_view suffix)</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Format a range as a delimited list. The <code>format_list()</code> function
+writes the elements in sequence, with <code>prefix</code> and <code>suffix</code> at the beginning
+and end, and with a <code>delimiter</code> between each pair of elements; individual
+elements are formatted using <code>to_str()</code> (see below). The <code>format_map()</code>
+function expects the range's value type to be a pair (or something with
+<code>first</code> and <code>second</code> members); the elements of each pair are separated with
+the <code>infix</code> string, and the range is otherwise formatted in the same way as
+<code>format_list()</code>. The default formats are based on JSON syntax:</p>
+<!-- TEXT -->
+
+<ul>
+<li><code>format_list(r) = format_list(r, "[", ",", "]")</code></li>
+<li><code>format_map(r) = format_map(r, "{", ":", ",", "}")</code></li>
+</ul>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; Ustring</code> <strong><code>fp_format</code></strong><code>(T t, char mode = 'g', int prec = 6)</code></li>
+<li><code>template &lt;typename T&gt; Ustring</code> <strong><code>opt_fp_format</code></strong><code>(T t, char mode = 'g', int prec = 6)</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> The <code>fp_format()</code> function performs simple floating point
+formatting, by calling <code>snprintf()</code>. <code>T</code> must be an arithmetic type; it will
+be converted to <code>long double</code> internally. The additional format <code>'Z/z'</code> is the
+same as <code>'G/g'</code> except that trailing zeros are not stripped. The
+<code>opt_fp_format()</code> function calls <code>fp_format()</code> for floating point types;
+otherwise it calls <code>to_str(t)</code> and ignores the other two arguments. These will
+throw <code>std::invalid_argument</code> if the mode is not one of <code>[EFGZefgz]</code> (and is
+not ignored); they may throw <code>std::system_error</code> under implementation defined
+circumstances.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Ustring</code> <strong><code>roman</code></strong><code>(int n)</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Formats a number as a Roman numeral. Numbers greater than 1000
+will be written with an arbitrarily long sequence of <code>"M"</code>. This will return
+an empty string if the argument is less than 1.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; std::string</code> <strong><code>to_str</code></strong><code>(const T&amp; t)</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Formats an object as a string. This uses the following rules for
+formatting various types:</p>
+<ul>
+<li><code>bool</code> - Written as <code>"true"</code> or <code>"false"</code>.</li>
+<li>Integer types (other than <code>char</code>) - Formatted using <code>dec()</code>.</li>
+<li>Floating point types - Formatted using <code>fp_format()</code>.</li>
+<li>Strings and string-like types - The string content is simply copied verbatim; a null character pointer is treated as an empty string.</li>
+<li>Exceptions derived from <code>std::exception</code> - Calls the exception's <code>what()</code> method.</li>
+<li>Arrays and vectors of bytes (<code>unsigned char</code>) - Formatted in hexadecimal.</li>
+<li>Ranges (other than strings and byte arrays) - Serialized in the same format as <code>format_list()</code> above, or <code>format_map()</code> if the value type is a pair.</li>
+<li>Pairs and tuples - Formatted as a comma delimited list, enclosed in parentheses.</li>
+<li>Otherwise - Call the type's output operator, or fail to compile if it does not have one.</li>
+</ul>
+<p>"String-like types" are defined as <code>std::string</code>, <code>std::string_view</code>, plain
+<code>char</code>, character pointers, and anything with an implicit conversion to
+<code>std::string</code> or <code>std::string_view</code>.</p>
+</div>
+<h3 id="parsing-functions">Parsing functions</h3>
+<div class="defns">
+<ul>
+<li><code>unsigned long long</code> <strong><code>binnum</code></strong><code>(std::string_view str) noexcept</code></li>
+<li><code>long long</code> <strong><code>decnum</code></strong><code>(std::string_view str) noexcept</code></li>
+<li><code>unsigned long long</code> <strong><code>hexnum</code></strong><code>(std::string_view str) noexcept</code></li>
+<li><code>double</code> <strong><code>fpnum</code></strong><code>(std::string_view str) noexcept</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> The <code>binnum()</code>, <code>decnum()</code>, and <code>hexnum()</code> functions convert a
+binary, decimal, or hexadecimal string to a number; <code>fpnum()</code> converts a
+string to a floating point number. These will ignore any trailing characters
+that are not part of a number, and will return zero if the string is empty or
+does not contain a valid number. Results that are out of range will be clamped
+to the nearest end of the return type's range, or for <code>fpnum()</code>, to positive
+or negative infinity.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>int64_t</code> <strong><code>si_to_int</code></strong><code>(Uview str)</code></li>
+<li><code>double</code> <strong><code>si_to_float</code></strong><code>(Uview str)</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> These parse a number from a string representation tagged with an
+SI multiplier abbreviation (e.g. <code>"123k"</code>). For the integer version, only tags
+representing positive powers of 1000 (starting with<code>"k"</code>) are recognised, and
+are case insensitive. For the floating point version, all tags representing
+powers of 100 are recognised (<code>"u"</code> is used for "micro"), and are case
+sensitive, except that <code>"K"</code> is equivalent to <code>"k"</code>. For both versions, a
+space is allowed between the number and the tag, and any additional text after
+the number or tag is ignored. These will throw <code>std::invalid_argument</code> if the
+string does not start with a valid number, or <code>std::range_error</code> if the result
+is too big for the return type.</p></body>
 </html>

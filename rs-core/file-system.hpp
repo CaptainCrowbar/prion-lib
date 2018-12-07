@@ -44,19 +44,20 @@ namespace RS {
         #else
             static constexpr char delimiter = ';';
         #endif
-        static constexpr auto env      = flag_type(1) << 0;  // The string is the name of an environment variable
-        static constexpr auto no_dups  = flag_type(1) << 1;  // Remove duplicate entries
+        static constexpr flag_type env        = 1;  // The string is the name of an environment variable
+        static constexpr flag_type no_dups    = 2;  // Remove duplicate entries
+        static constexpr flag_type only_dirs  = 4;  // Remove entries that do not exist or are not directories
         PathList() = default;
         explicit PathList(Uview text, flag_type flags = 0);
         bool contains(const Unicorn::Path& dir) const noexcept;
         void erase_all(const Unicorn::Path& dir);
-        void erase_dups();
         Unicorn::Path find(Uview name) { return find(name, Unicorn::Path::native_case); }
         Unicorn::Path find(Uview name, bool case_sensitive);
         Unicorn::Path find(const Unicorn::Regex& pattern);
         std::vector<Unicorn::Path> find_all(Uview name) { return find_all(name, Unicorn::Path::native_case); }
         std::vector<Unicorn::Path> find_all(Uview name, bool case_sensitive);
         std::vector<Unicorn::Path> find_all(const Unicorn::Regex& pattern);
+        void prune(flag_type flags = no_dups | only_dirs);
         Ustring str() const;
         friend Ustring to_str(const PathList& pl) { return pl.str(); }
         friend std::ostream& operator<<(std::ostream& out, const PathList& pl) { return out << pl.str(); }

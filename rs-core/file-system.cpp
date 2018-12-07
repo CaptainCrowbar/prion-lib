@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <system_error>
 #include <unordered_set>
+#include <utility>
 
 #ifdef _XOPEN_SOURCE
     #include <pwd.h>
@@ -140,6 +141,8 @@ namespace RS {
 
     namespace {
 
+        using PathSet = std::unordered_set<Path>;
+
         void search_by_name(const std::vector<Path>& dirs, std::vector<Path>& results, Uview name, size_t limit) {
             for (auto& dir: dirs) {
                 Path file = dir / name;
@@ -178,24 +181,27 @@ namespace RS {
             }
         }
 
+        void checked_append(PathList& list, PathSet& seen, const Path& file, PathList::flag_type flags) {
+            if (file.empty()) return;
+            if ((flags & PathList::no_dups) && ! seen.insert(file).second) return;
+            if ((flags & PathList::only_dirs) && ! file.is_directory()) return;
+            list.push_back(file);
+        }
+
     }
 
     PathList::PathList(Uview text, flag_type flags) {
         Ustring utext(text);
         if (flags & env)
             utext = cstr(std::getenv(utext.data()));
-        bool nd = flags & no_dups;
-        std::unordered_set<Ustring> seen;
+        PathSet seen;
         size_t i = 0, size = utext.size();
         while (i < size) {
             size_t j = utext.find(delimiter, i);
             if (j == npos)
                 j = size;
-            if (j > i) {
-                auto view = make_view(utext, i, j - i);
-                if (! nd || seen.insert(Ustring(view)).second)
-                    push_back(view);
-            }
+            auto view = make_view(utext, i, j - i);
+            checked_append(*this, seen, view, flags);
             i = j + 1;
         }
     }
@@ -206,18 +212,6 @@ namespace RS {
 
     void PathList::erase_all(const Path& dir) {
         erase(std::remove(begin(), end(), dir), end());
-    }
-
-    void PathList::erase_dups() {
-        std::unordered_set<Ustring> seen;
-        size_t i = 0;
-        while (i < size()) {
-            auto it = begin() + i;
-            if (seen.insert(it->name()).second)
-                ++i;
-            else
-                erase(it);
-        }
     }
 
     Path PathList::find(Uview name, bool case_sensitive) {
@@ -250,14 +244,20 @@ namespace RS {
         return results;
     }
 
+    void PathList::prune(flag_type flags) {
+        PathList list;
+        PathSet seen;
+        for (auto& file: *this)
+            checked_append(list, seen, file, flags);
+        *this = std::move(list);
+    }
+
     Ustring PathList::str() const {
         if (empty())
             return {};
         Ustring text;
-        for (auto& file: *this) {
-            text += file.name();
-            text += delimiter;
-        }
+        for (auto& file: *this)
+            text += file.name() + delimiter;
         text.pop_back();
         return text;
     }

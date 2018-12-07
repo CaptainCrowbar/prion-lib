@@ -125,43 +125,58 @@ void test_core_file_system_search_path() {
 
     #endif
 
-    TRY(search = PathList(fixup("foo:bar:foo:bar")));
+    TRY(search = PathList(fixup("foo:build:rs-core:foo:build:rs-core")));
+    TEST_EQUAL(search.size(), 6);
+    TEST_EQUAL(search.at(0), Path("foo"));
+    TEST_EQUAL(search.at(1), Path("build"));
+    TEST_EQUAL(search.at(2), Path("rs-core"));
+    TEST_EQUAL(search.at(3), Path("foo"));
+    TEST_EQUAL(search.at(4), Path("build"));
+    TEST_EQUAL(search.at(5), Path("rs-core"));
+    TRY(search = PathList(fixup("foo:build:rs-core:foo:build:rs-core"), PathList::no_dups));
+    TEST_EQUAL(search.size(), 3);
+    TEST_EQUAL(search.at(0), Path("foo"));
+    TEST_EQUAL(search.at(1), Path("build"));
+    TEST_EQUAL(search.at(2), Path("rs-core"));
+    TRY(search = PathList(fixup("foo:build:rs-core:foo:build:rs-core"), PathList::only_dirs));
     TEST_EQUAL(search.size(), 4);
-    TEST_EQUAL(search.at(0), Path("foo"));
-    TEST_EQUAL(search.at(1), Path("bar"));
-    TEST_EQUAL(search.at(2), Path("foo"));
-    TEST_EQUAL(search.at(3), Path("bar"));
-    TRY(search = PathList(fixup("foo:bar:foo:bar"), PathList::no_dups));
+    TEST_EQUAL(search.at(0), Path("build"));
+    TEST_EQUAL(search.at(1), Path("rs-core"));
+    TEST_EQUAL(search.at(2), Path("build"));
+    TEST_EQUAL(search.at(3), Path("rs-core"));
+    TRY(search = PathList(fixup("foo:build:rs-core:foo:build:rs-core"), PathList::no_dups | PathList:: only_dirs));
     TEST_EQUAL(search.size(), 2);
-    TEST_EQUAL(search.at(0), Path("foo"));
-    TEST_EQUAL(search.at(1), Path("bar"));
-    TRY(search = PathList(fixup("foo:foo:foo:bar:bar:bar"), PathList::no_dups));
-    TEST_EQUAL(search.size(), 2);
-    TEST_EQUAL(search.at(0), Path("foo"));
-    TEST_EQUAL(search.at(1), Path("bar"));
+    TEST_EQUAL(search.at(0), Path("build"));
+    TEST_EQUAL(search.at(1), Path("rs-core"));
 
-    TRY(search = PathList(fixup("foo:bar:foo:bar")));
-    TEST_EQUAL(search.size(), 4);
-    TEST_EQUAL(search.at(0), Path("foo"));
-    TEST_EQUAL(search.at(1), Path("bar"));
-    TEST_EQUAL(search.at(2), Path("foo"));
-    TEST_EQUAL(search.at(3), Path("bar"));
+    TRY(search = PathList(fixup("foo:build:rs-core:foo:build:rs-core")));
     TRY(search.erase_all("foo"));
-    TEST_EQUAL(search.size(), 2);
-    TEST_EQUAL(search.at(0), Path("bar"));
-    TEST_EQUAL(search.at(1), Path("bar"));
-    TRY(search = PathList(fixup("foo:bar:foo:bar")));
     TEST_EQUAL(search.size(), 4);
-    TEST_EQUAL(search.at(0), Path("foo"));
-    TEST_EQUAL(search.at(1), Path("bar"));
-    TEST_EQUAL(search.at(2), Path("foo"));
-    TEST_EQUAL(search.at(3), Path("bar"));
-    TRY(search.erase_dups());
-    TEST_EQUAL(search.size(), 2);
-    TEST_EQUAL(search.at(0), Path("foo"));
-    TEST_EQUAL(search.at(1), Path("bar"));
+    TEST_EQUAL(search.at(0), Path("build"));
+    TEST_EQUAL(search.at(1), Path("rs-core"));
+    TEST_EQUAL(search.at(2), Path("build"));
+    TEST_EQUAL(search.at(3), Path("rs-core"));
 
-    TRY(search = PathList::path(PathList::no_dups));
+    TRY(search = PathList(fixup("foo:build:rs-core:foo:build:rs-core")));
+    TRY(search.prune(PathList::no_dups));
+    TEST_EQUAL(search.size(), 3);
+    TEST_EQUAL(search.at(0), Path("foo"));
+    TEST_EQUAL(search.at(1), Path("build"));
+    TEST_EQUAL(search.at(2), Path("rs-core"));
+    TRY(search = PathList(fixup("foo:build:rs-core:foo:build:rs-core")));
+    TRY(search.prune(PathList::only_dirs));
+    TEST_EQUAL(search.size(), 4);
+    TEST_EQUAL(search.at(0), Path("build"));
+    TEST_EQUAL(search.at(1), Path("rs-core"));
+    TEST_EQUAL(search.at(2), Path("build"));
+    TEST_EQUAL(search.at(3), Path("rs-core"));
+    TRY(search = PathList(fixup("foo:build:rs-core:foo:build:rs-core")));
+    TRY(search.prune(PathList::no_dups | PathList:: only_dirs));
+    TEST_EQUAL(search.size(), 2);
+    TEST_EQUAL(search.at(0), Path("build"));
+    TEST_EQUAL(search.at(1), Path("rs-core"));
+
+    TRY(search = PathList::path(PathList::no_dups | PathList::only_dirs));
     TEST(! search.empty());
 
     #ifdef _XOPEN_SOURCE

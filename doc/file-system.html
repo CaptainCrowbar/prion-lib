@@ -177,8 +177,9 @@ incorrectly set up).</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>static constexpr flag_type PathList::</code><strong><code>env</code></strong>      <em>- The string is the name of an environment variable</em></li>
-<li><code>static constexpr flag_type PathList::</code><strong><code>no_dups</code></strong>  <em>- Remove duplicate entries</em></li>
+<li><code>static constexpr flag_type PathList::</code><strong><code>env</code></strong>        <em>- The string is the name of an environment variable</em></li>
+<li><code>static constexpr flag_type PathList::</code><strong><code>no_dups</code></strong>    <em>- Remove duplicate entries</em></li>
+<li><code>static constexpr flag_type PathList::</code><strong><code>only_dirs</code></strong>  <em>- Remove entries that do not exist or are not directories</em></li>
 </ul>
 <p>Flags used in search path functions.</p>
 </div>
@@ -198,7 +199,8 @@ directories, or (if the <code>env</code> flag is set) the name of an environment
 from which a search path will be read. If the <code>no_dups</code> flag is set, duplicate
 entries will be removed from the list (this only checks for identical
 directory names; it does not resolve the names to check if different names may
-refer to the same file).</p>
+refer to the same file). If the <code>only_dirs</code> flag is set, only paths that refer
+to existing directories are included.</p>
 </div>
 <div class="defns">
 <ul>
@@ -212,12 +214,6 @@ string match on the name).</p>
 <li><code>void PathList::</code><strong><code>erase_all</code></strong><code>(const Unicorn::Path&amp; dir)</code></li>
 </ul>
 <p>Remove all matching directories.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>void PathList::</code><strong><code>erase_dups</code></strong><code>()</code></li>
-</ul>
-<p>Remove all duplicate entries.</p>
 </div>
 <div class="defns">
 <ul>
@@ -244,6 +240,12 @@ contained duplicate directories.</p>
 </div>
 <div class="defns">
 <ul>
+<li><code>void PathList::</code><strong><code>prune</code></strong><code>(flag_type flags = no_dups | only_dirs)</code></li>
+</ul>
+<p>Apply the <code>no_dups</code> or <code>only_dirs</code> flags (both by default) to the list.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>std::string PathList::</code><strong><code>str</code></strong><code>() const</code></li>
 <li><code>std::string</code> <strong><code>to_str</code></strong><code>(const PathList&amp; pl)</code></li>
 <li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const PathList&amp; pl)</code></li>
@@ -254,5 +256,6 @@ contained duplicate directories.</p>
 <ul>
 <li><code>static PathList PathList::</code><strong><code>path</code></strong><code>(flag_type flags = 0)</code></li>
 </ul>
-<p>Equivalent to <code>PathList("PATH")</code>. The <code>no_dups</code> flag has its normal effect.</p></body>
+<p>Equivalent to <code>PathList("PATH",PathList::env)</code>. The <code>no_dups</code> and <code>only_dirs</code>
+flags have their normal effect.</p></body>
 </html>

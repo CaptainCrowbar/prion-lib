@@ -69,8 +69,9 @@ Member type.
 
 The delimiter used to separate directory names in a search path.
 
-* `static constexpr flag_type PathList::`**`env`**      _- The string is the name of an environment variable_
-* `static constexpr flag_type PathList::`**`no_dups`**  _- Remove duplicate entries_
+* `static constexpr flag_type PathList::`**`env`**        _- The string is the name of an environment variable_
+* `static constexpr flag_type PathList::`**`no_dups`**    _- Remove duplicate entries_
+* `static constexpr flag_type PathList::`**`only_dirs`**  _- Remove entries that do not exist or are not directories_
 
 Flags used in search path functions.
 
@@ -88,7 +89,8 @@ directories, or (if the `env` flag is set) the name of an environment variable
 from which a search path will be read. If the `no_dups` flag is set, duplicate
 entries will be removed from the list (this only checks for identical
 directory names; it does not resolve the names to check if different names may
-refer to the same file).
+refer to the same file). If the `only_dirs` flag is set, only paths that refer
+to existing directories are included.
 
 * `bool PathList::`**`contains`**`(const Unicorn::Path& dir) const noexcept`
 
@@ -98,10 +100,6 @@ string match on the name).
 * `void PathList::`**`erase_all`**`(const Unicorn::Path& dir)`
 
 Remove all matching directories.
-
-* `void PathList::`**`erase_dups`**`()`
-
-Remove all duplicate entries.
 
 * `Unicorn::Path PathList::`**`find`**`(Uview name)`
 * `Unicorn::Path PathList::`**`find`**`(Uview name, bool case_sensitive)`
@@ -122,6 +120,10 @@ Find all matching files in the search path. Matching rules are the same as
 `find()`. The returned vector may contain duplicate entries if the search path
 contained duplicate directories.
 
+* `void PathList::`**`prune`**`(flag_type flags = no_dups | only_dirs)`
+
+Apply the `no_dups` or `only_dirs` flags (both by default) to the list.
+
 * `std::string PathList::`**`str`**`() const`
 * `std::string` **`to_str`**`(const PathList& pl)`
 * `std::ostream&` **`operator<<`**`(std::ostream& out, const PathList& pl)`
@@ -130,4 +132,5 @@ Return the search path as a string, following the conventions of the host OS.
 
 * `static PathList PathList::`**`path`**`(flag_type flags = 0)`
 
-Equivalent to `PathList("PATH")`. The `no_dups` flag has its normal effect.
+Equivalent to `PathList("PATH",PathList::env)`. The `no_dups` and `only_dirs`
+flags have their normal effect.

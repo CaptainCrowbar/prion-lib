@@ -2,11 +2,18 @@
 #include "rs-core/unit-test.hpp"
 #include "unicorn/path.hpp"
 #include <algorithm>
+#include <memory>
 #include <system_error>
 #include <utility>
 
 using namespace RS;
 using namespace RS::Unicorn;
+
+#ifdef _XOPEN_SOURCE
+    #define SLASH "/"
+#else
+    #define SLASH "\\"
+#endif
 
 namespace {
 
@@ -526,5 +533,38 @@ void test_core_io_print_formatting() {
     TRY(buf.format("$1,$2,$3"));
     TRY(s = buf.str());
     TEST_EQUAL(s, ",,");
+
+}
+
+void test_core_io_anonymous_temporary_file() {
+
+    std::unique_ptr<TempFile> tf;
+    Path path;
+
+    TRY(tf = std::make_unique<TempFile>());
+    REQUIRE(tf);
+    TEST(tf->get());
+    TRY(path = tf->get_path());
+    TEST(! path.empty());
+    TRY(tf.reset());
+    TEST(! path.exists());
+
+}
+
+void test_core_io_named_temporary_file() {
+
+    std::unique_ptr<TempFile> tf;
+    Path path;
+
+    TRY(tf = std::make_unique<TempFile>("", "__test_tempfile_"));
+    REQUIRE(tf);
+    TEST(tf->get());
+    TRY(path = tf->get_path());
+    TEST(! path.empty());
+    TEST_MATCH(path.name(), ".+" SLASH "__test_tempfile_[[:xdigit:]]{16}$");
+    TEST(path.exists());
+    TEST(path.is_file());
+    TRY(tf.reset());
+    TEST(! path.exists());
 
 }

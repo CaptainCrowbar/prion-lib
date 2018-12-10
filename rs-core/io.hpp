@@ -231,4 +231,18 @@ namespace RS {
         void trim_buffer() noexcept;
     };
 
+    // Temporary file
+
+    class TempFile:
+    public Cstdio {
+    public:
+        RS_MOVE_ONLY(TempFile);
+        TempFile();
+        TempFile(const Unicorn::Path& dir, Uview prefix);
+        virtual ~TempFile() noexcept;
+        virtual Unicorn::Path get_path() const;
+    private:
+        Unicorn::Path where;
+    };
+
 }

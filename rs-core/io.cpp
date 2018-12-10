@@ -4,6 +4,7 @@
 #include <cerrno>
 #include <cstring>
 #include <fcntl.h>
+#include <random>
 
 #ifdef _XOPEN_SOURCE
 
@@ -757,5 +758,55 @@ namespace RS {
         }
     }
 
+    // Class TempFile
+
+    TempFile::TempFile() {
+        errno = 0;
+        auto file = std::tmpfile();
+        auto err = errno;
+        if (! file)
+            throw std::system_error(err, std::generic_category());
+        Cstdio io(file);
+        Cstdio::operator=(std::move(io));
+    }
+
+    TempFile::TempFile(const Unicorn::Path& dir, Uview prefix) {
+        static constexpr int max_tries = 10;
+        if (! dir.empty() && ! dir.is_directory())
+            throw std::system_error(std::make_error_code(std::errc::no_such_file_or_directory));
+        std::random_device dev;
+        Fdio fdio;
+        for (int i = 0; i < max_tries && ! fdio.ok(); ++i) {
+            uint64_t x = dev();
+            uint64_t y = dev();
+            uint64_t z = (x << 32) + y;
+            where = dir / (Ustring(prefix) + hex(z));
+            where = where.resolve();
+            fdio = Fdio(where, O_RDWR | O_CREAT | O_EXCL);
+        }
+        fdio.check();
+        FILE* file = nullptr;
+        #if defined(_WIN32) && ! defined(__CYGWIN__)
+            file = _wfdopen(fdio.release(), L"rb+");
+        #else
+            file = fdopen(fdio.release(), "rb+");
+        #endif
+        Cstdio io(file);
+        Cstdio::operator=(std::move(io));
+    }
+
+    TempFile::~TempFile() noexcept {
+        if (! where.empty()) {
+            try { close(); } catch (...) {}
+            try { where.remove(); } catch (...) {}
+        }
+    }
+
+    Path TempFile::get_path() const {
+        if (where.empty())
+            return Cstdio::get_path();
+        else
+            return where;
+    }
 
 }

@@ -21,6 +21,7 @@
 <li><a href="#unix-file-descriptor-io">Unix file descriptor I/O</a></li>
 <li><a href="#windows-file-handle-io">Windows file handle I/O</a></li>
 <li><a href="#string-buffer">String buffer</a></li>
+<li><a href="#temporary-file">Temporary file</a></li>
 </ul>
 </li>
 </ul>
@@ -831,5 +832,36 @@ not actually maintain an open/closed state).</p>
 <ul>
 <li><code>std::string StringBuffer::</code><strong><code>str</code></strong><code>() const</code></li>
 </ul>
-<p>Returns the buffer contents as a string.</p></body>
+<p>Returns the buffer contents as a string.</p>
+</div>
+<h2 id="temporary-file">Temporary file</h2>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>TempFile</code></strong><code>: public Cstdio</code></li>
+</ul>
+<p>A <code>TempFile</code> object holds a handle to a file opened for read and write. The
+file is created when the <code>TempFile</code> is constructed, and closed when it is
+destroyed (or moved into). It is implementation defined whether or not an
+actual file exists in the file system corresponding to the <code>TempFile</code> object.
+If such a file exists, it may be left behind if the process terminates without
+properly destroying the <code>TempFile</code> object.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>TempFile::</code><strong><code>TempFile</code></strong><code>() noexcept</code></li>
+<li><code>TempFile::</code><strong><code>TempFile</code></strong><code>(const Unicorn::Path&amp; dir, Uview prefix) noexcept</code></li>
+</ul>
+<p>Constructors. The default constructor creates a file in the system's standard
+location by calling <code>std::tmpfile()</code>. The second constructor creates a file in
+the specified directory, with a leaf name starting with the specified prefix.
+Both of these will throw <code>std::system_error</code> if anything goes wrong.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>virtual TempFile::</code><strong><code>~TempFile</code></strong><code>() noexcept</code></li>
+<li><code>TempFile::</code><strong><code>TempFile</code></strong><code>(TempFile&amp;&amp; io) noexcept</code></li>
+<li><code>TempFile&amp; TempFile::</code><strong><code>operator=</code></strong><code>(TempFile&amp;&amp; io) noexcept</code></li>
+</ul>
+<p>Life cycle operations. A moved-from <code>TempFile</code> is equivalent to a default
+constructed <code>Cstdio</code>.</p></body>
 </html>

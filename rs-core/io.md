@@ -376,3 +376,29 @@ The number of bytes currently in the valid part of the buffer.
 * `std::string StringBuffer::`**`str`**`() const`
 
 Returns the buffer contents as a string.
+
+## Temporary file ##
+
+* `class` **`TempFile`**`: public Cstdio`
+
+A `TempFile` object holds a handle to a file opened for read and write. The
+file is created when the `TempFile` is constructed, and closed when it is
+destroyed (or moved into). It is implementation defined whether or not an
+actual file exists in the file system corresponding to the `TempFile` object.
+If such a file exists, it may be left behind if the process terminates without
+properly destroying the `TempFile` object.
+
+* `TempFile::`**`TempFile`**`() noexcept`
+* `TempFile::`**`TempFile`**`(const Unicorn::Path& dir, Uview prefix) noexcept`
+
+Constructors. The default constructor creates a file in the system's standard
+location by calling `std::tmpfile()`. The second constructor creates a file in
+the specified directory, with a leaf name starting with the specified prefix.
+Both of these will throw `std::system_error` if anything goes wrong.
+
+* `virtual TempFile::`**`~TempFile`**`() noexcept`
+* `TempFile::`**`TempFile`**`(TempFile&& io) noexcept`
+* `TempFile& TempFile::`**`operator=`**`(TempFile&& io) noexcept`
+
+Life cycle operations. A moved-from `TempFile` is equivalent to a default
+constructed `Cstdio`.

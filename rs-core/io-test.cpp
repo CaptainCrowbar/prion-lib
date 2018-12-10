@@ -8,10 +8,24 @@
 using namespace RS;
 using namespace RS::Unicorn;
 
+namespace {
+
+    void strip_unc(Path& path) {
+        #ifdef _XOPEN_SOURCE
+            (void)path;
+        #else
+            auto name = path.name();
+            if (name.substr(0, 4) == "\\\\?\\")
+                path = name.substr(4, npos);
+        #endif
+    }
+
+}
+
 void test_core_io_cstdio() {
 
     Cstdio io;
-    Path file = "__cstdio_test__", no_file = "__no_such_file__";
+    Path file = "__cstdio_test__", no_file = "__no_such_file__", path;
     Ustring text;
     Strings vec;
     ptrdiff_t offset = 0;
@@ -86,6 +100,14 @@ void test_core_io_cstdio() {
     TRY(offset = io.tell());     TEST(io.ok());  TEST_EQUAL(offset, 11);
     TRY(io = {});
 
+    TRY(io = Cstdio(file));
+    TRY(path = io.get_path());
+    TEST(path.is_absolute());
+    TEST_EQUAL(path.id(), file.id());
+    TRY(strip_unc(path));
+    TEST_EQUAL(path, file.resolve());
+    TRY(io = {});
+
     TRY(io = Cstdio(no_file, IO::mode::read_only));
     TEST_THROW(io.check(), std::system_error);
 
@@ -94,7 +116,7 @@ void test_core_io_cstdio() {
 void test_core_io_fdio() {
 
     Fdio io;
-    Path file = "__fdio_test__", no_file = "__no_such_file__";
+    Path file = "__fdio_test__", no_file = "__no_such_file__", path;
     Ustring text;
     Strings vec;
     ptrdiff_t offset = 0;
@@ -164,6 +186,14 @@ void test_core_io_fdio() {
     TRY(offset = io.tell());     TEST(io.ok());  TEST_EQUAL(offset, 11);
     TRY(io = {});
 
+    TRY(io = Fdio(file));
+    TRY(path = io.get_path());
+    TEST(path.is_absolute());
+    TEST_EQUAL(path.id(), file.id());
+    TRY(strip_unc(path));
+    TEST_EQUAL(path, file.resolve());
+    TRY(io = {});
+
     TRY(io = Fdio(no_file, IO::mode::read_only));
     TEST_THROW(io.check(), std::system_error);
 
@@ -187,7 +217,7 @@ void test_core_io_winio() {
     #ifdef _WIN32
 
         Winio io;
-        Path file = "__winio_test__", no_file = "__no_such_file__";
+        Path file = "__winio_test__", no_file = "__no_such_file__", path;
         Ustring text;
         Strings vec;
         ptrdiff_t offset = 0;
@@ -260,6 +290,14 @@ void test_core_io_winio() {
         TRY(offset = io.tell());     TEST_EQUAL(offset, 6);
         TRY(text = io.read_str(5));  TEST_EQUAL(text, "world");
         TRY(offset = io.tell());     TEST_EQUAL(offset, 11);
+        TRY(io = {});
+
+        TRY(io = Winio(file));
+        TRY(path = io.get_path());
+        TEST(path.is_absolute());
+        TEST_EQUAL(path.id(), file.id());
+        TRY(strip_unc(path));
+        TEST_EQUAL(path, file.resolve());
         TRY(io = {});
 
         TRY(io = Winio(no_file, IO::mode::read_only));

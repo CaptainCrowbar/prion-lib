@@ -44,6 +44,17 @@ Destructor.
 Close the file. This is only needed if you want to check for an error
 afterwards; any open file is closed by the destructor.
 
+* `virtual Unicorn::Path IO::`**`get_path()`**`() const`
+
+Attempts to retrieve the absolute path of the file with which the I/O stream
+is associated. This is not always possible on some systems even if the stream
+is an open file; if the attempt fails, or if the stream is not associated with
+a file, this will return an empty path. File system links mean that a file may
+not have a unique name; no promises are made about which name will be returned
+in these cases. The default implementation in the `IO` base class always
+returns an empty path; this will remain true in derived classes such as
+`StringBuffer` that are not associated with a file.
+
 * `virtual void IO::`**`flush`**`() noexcept`
 
 Flush the stream. The semantics of this depends on the particular derived

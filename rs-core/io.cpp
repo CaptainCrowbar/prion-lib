@@ -5,15 +5,89 @@
 #include <cstring>
 #include <fcntl.h>
 
-using namespace RS::Unicorn;
-
 #ifdef _XOPEN_SOURCE
+
+    #include <sys/stat.h>
+    #include <unistd.h>
+
+    #ifdef __APPLE__
+        #include <sys/syslimits.h>
+    #endif
+
     #define IO_FUNCTION(f) ::f
+
 #else
+
+    #include <io.h>
+    #include <windows.h>
+
     #define IO_FUNCTION(f) _##f
+
 #endif
 
+using namespace RS::Unicorn;
+
 namespace RS {
+
+    namespace {
+
+        #if defined(__APPLE__)
+
+            std::string path_from_fd(int fd) {
+                if (fd == -1)
+                    return {};
+                std::string path(PATH_MAX, '\0');
+                auto rc = ::fcntl(fd, F_GETPATH, path.data());
+                if (rc < 0)
+                    return {};
+                null_term(path);
+                return path;
+            }
+
+        #elif defined(__CYGWIN__) || defined(__linux__)
+
+            std::string path_from_fd(int fd) {
+                if (fd == -1)
+                    return {};
+                std::string link = "/proc/self/fd/" + std::to_string(fd);
+                std::string path(256, '\0');
+                bool ok = false;
+                while (! ok) {
+                    auto rc = ::readlink(link.data(), path.data(), path.size());
+                    if (rc < 0)
+                        return {};
+                    ok = size_t(rc) < path.size();
+                    path.resize(rc);
+                }
+                return path;
+            }
+
+        #elif defined(_WIN32)
+
+            std::wstring path_from_handle(HANDLE handle) {
+                if (! handle || handle == INVALID_HANDLE_VALUE)
+                    return {};
+                std::wstring path(256, L'\0');
+                bool ok = false;
+                while (! ok) {
+                    auto rc = GetFinalPathNameByHandleW(handle, path.data(), DWORD(path.size()), 0);
+                    if (rc == 0)
+                        return {};
+                    ok = rc < path.size();
+                    path.resize(rc);
+                }
+                return path;
+            }
+
+        #else
+
+            std::string path_from_fd(int /*fd*/) {
+                return {};
+            }
+
+        #endif
+
+    }
 
     // Class IO
 
@@ -187,8 +261,17 @@ namespace RS {
         return c;
     }
 
+    Path Cstdio::get_path() const {
+        #ifdef _XOPEN_SOURCE
+            return path_from_fd(fd());
+        #else
+            return path_from_handle(HANDLE(_get_osfhandle(fd())));
+        #endif
+    }
+
     bool Cstdio::is_terminal() const noexcept {
-        return IO_FUNCTION(isatty)(fd());
+        auto desc = fd();
+        return desc != -1 && IO_FUNCTION(isatty)(desc);
     }
 
     void Cstdio::putc(char c) {
@@ -254,7 +337,8 @@ namespace RS {
     }
 
     int Cstdio::fd() const noexcept {
-        return IO_FUNCTION(fileno)(get());
+        auto ptr = get();
+        return ptr ? IO_FUNCTION(fileno)(ptr) : -1;
     }
 
     void Cstdio::ungetc(char c) {
@@ -340,6 +424,14 @@ namespace RS {
                 set_error(EBADF);
             else if (! FlushFileBuffers(h))
                 set_error(GetLastError(), std::system_category());
+        #endif
+    }
+
+    Path Fdio::get_path() const {
+        #ifdef _XOPEN_SOURCE
+            return path_from_fd(get());
+        #else
+            return path_from_handle(HANDLE(_get_osfhandle(get())));
         #endif
     }
 
@@ -476,6 +568,10 @@ namespace RS {
         void Winio::flush() noexcept {
             if (! FlushFileBuffers(get()))
                 set_error(GetLastError(), std::system_category());
+        }
+
+        Path Winio::get_path() const {
+            return path_from_handle(get());
         }
 
         bool Winio::is_terminal() const noexcept {

@@ -76,6 +76,19 @@ afterwards; any open file is closed by the destructor.</p>
 </div>
 <div class="defns">
 <ul>
+<li><code>virtual Unicorn::Path IO::</code><strong><code>get_path()</code></strong><code>() const</code></li>
+</ul>
+<p>Attempts to retrieve the absolute path of the file with which the I/O stream
+is associated. This is not always possible on some systems even if the stream
+is an open file; if the attempt fails, or if the stream is not associated with
+a file, this will return an empty path. File system links mean that a file may
+not have a unique name; no promises are made about which name will be returned
+in these cases. The default implementation in the <code>IO</code> base class always
+returns an empty path; this will remain true in derived classes such as
+<code>StringBuffer</code> that are not associated with a file.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>virtual void IO::</code><strong><code>flush</code></strong><code>() noexcept</code></li>
 </ul>
 <p>Flush the stream. The semantics of this depends on the particular derived

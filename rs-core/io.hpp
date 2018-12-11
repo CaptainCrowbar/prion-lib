@@ -95,7 +95,7 @@ namespace RS {
         virtual void close() noexcept override;
         virtual void flush() noexcept override;
         virtual int getc() noexcept override;
-        virtual Unicorn::Path get_path() const;
+        virtual Unicorn::Path get_path() const override;
         virtual bool is_open() const noexcept override { return bool(fp); }
         virtual bool is_terminal() const noexcept override;
         virtual void putc(char c) override;
@@ -129,7 +129,7 @@ namespace RS {
         Fdio(const Unicorn::Path& f, int iomode, int perm = 0666);
         virtual void close() noexcept override;
         virtual void flush() noexcept override;
-        virtual Unicorn::Path get_path() const;
+        virtual Unicorn::Path get_path() const override;
         virtual bool is_open() const noexcept override { return fd.get() != -1; }
         virtual bool is_terminal() const noexcept override;
         virtual size_t read(void* ptr, size_t maxlen) noexcept override;
@@ -172,7 +172,7 @@ namespace RS {
                 uint32_t creation_disposition, uint32_t flags_and_attributes = 0, HANDLE template_file = nullptr);
             virtual void close() noexcept override;
             virtual void flush() noexcept override;
-            virtual Unicorn::Path get_path() const;
+            virtual Unicorn::Path get_path() const override;
             virtual bool is_open() const noexcept override { return bool(fh); }
             virtual bool is_terminal() const noexcept override;
             virtual size_t read(void* ptr, size_t maxlen) noexcept override;
@@ -239,8 +239,8 @@ namespace RS {
         RS_MOVE_ONLY(TempFile);
         TempFile();
         TempFile(const Unicorn::Path& dir, Uview prefix);
-        virtual ~TempFile() noexcept;
-        virtual Unicorn::Path get_path() const;
+        virtual ~TempFile() noexcept override;
+        virtual Unicorn::Path get_path() const override;
     private:
         Unicorn::Path where;
     };

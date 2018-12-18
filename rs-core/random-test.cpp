@@ -29,38 +29,44 @@ namespace {
     const double sd32 = std::sqrt((std::ldexp(1.0, 64) - 1) / 12);
     const double sd64 = std::sqrt((std::ldexp(1.0, 128) - 1) / 12);
 
-    #define CHECK_RANDOM_GENERATOR(gen, xmin, xmax, xmean, xsd) \
-        do { \
-            using T = std::decay_t<decltype(gen())>; \
-            double epsilon, lo = inf, hi = - inf, sum = 0, sum2 = 0; \
-            if (xmin > - inf && xmax < inf) \
-                epsilon = (xmax - xmin) / std::sqrt(double(iterations)); \
-            else \
-                epsilon = 2 * xsd / std::sqrt(double(iterations)); \
-            T t = {}; \
-            for (size_t i = 0; i < iterations; ++i) { \
-                TRY(t = gen()); \
-                auto x = double(t); \
-                lo = std::min(lo, x); \
-                hi = std::max(hi, x); \
-                sum += x; \
-                sum2 += x * x; \
-            } \
-            if (std::is_floating_point<T>::value) { \
+    #define CHECK_RANDOM_GENERATOR(gen, xmin, xmax, xmean, xsd) { \
+        using T = std::decay_t<decltype(gen())>; \
+        double epsilon, lo = inf, hi = - inf, sum = 0, sum2 = 0; \
+        if (xmin > - inf && xmax < inf) \
+            epsilon = (xmax - xmin) / std::sqrt(double(iterations)); \
+        else \
+            epsilon = 2 * xsd / std::sqrt(double(iterations)); \
+        T t = {}; \
+        for (size_t i = 0; i < iterations; ++i) { \
+            TRY(t = gen()); \
+            auto x = double(t); \
+            lo = std::min(lo, x); \
+            hi = std::max(hi, x); \
+            sum += x; \
+            sum2 += x * x; \
+        } \
+        if (std::is_floating_point<T>::value) { \
+            if (xmin == xmax) { \
+                TEST_EQUAL(lo, xmin); \
+                TEST_EQUAL(hi, xmax); \
+            } else { \
                 TEST_COMPARE(lo, >, xmin); \
                 TEST_COMPARE(hi, <, xmax); \
-            } else if (xmax - xmin < 0.1 * iterations) { \
+            } \
+        } else { \
+            if (xmax - xmin < 0.1 * iterations) { \
                 TEST_EQUAL(lo, xmin); \
                 TEST_EQUAL(hi, xmax); \
             } else { \
                 TEST_COMPARE(lo, >=, xmin); \
                 TEST_COMPARE(hi, <=, xmax); \
             } \
-            double m = sum / iterations; \
-            double s = std::sqrt(sum2 / iterations - m * m); \
-            TEST_NEAR_EPSILON(m, xmean, epsilon); \
-            TEST_NEAR_EPSILON(s, xsd, epsilon); \
-        } while (false)
+        } \
+        double m = sum / iterations; \
+        double s = std::sqrt(sum2 / iterations - m * m); \
+        TEST_NEAR_EPSILON(m, xmean, epsilon); \
+        TEST_NEAR_EPSILON(s, xsd, epsilon); \
+    }
 
 }
 
@@ -590,6 +596,8 @@ void test_core_random_basic_distributions() {
     CHECK_RANDOM_GENERATOR(ri3, 0, 1e18, 5e17, 2.88661e17);
     auto ri4 = [&] { return random_integer(rng, uint64_t(0), uint64_t(-1)); };
     CHECK_RANDOM_GENERATOR(ri4, 0, 18'446'744'073'709'551'615.0, 9'223'372'036'854'775'807.5, 5'325'116'328'314'171'700.52);
+    auto ri5 = [&] { return random_integer(rng, 42, 42); };
+    CHECK_RANDOM_GENERATOR(ri5, 42, 42, 42, 0);
 
     auto rd1 = [&] { return random_dice<int>(rng); };
     CHECK_RANDOM_GENERATOR(rd1, 1, 6, 3.5, 1.70783);
@@ -602,6 +610,8 @@ void test_core_random_basic_distributions() {
     CHECK_RANDOM_GENERATOR(rf1, 0, 1, 0.5, 0.288661);
     auto rf2 = [&] { return random_real(rng, -100.0, 100.0); };
     CHECK_RANDOM_GENERATOR(rf2, -100, 100, 0, 57.7350);
+    auto rf3 = [&] { return random_real(rng, 42.0, 42.0); };
+    CHECK_RANDOM_GENERATOR(rf3, 42, 42, 42, 0);
 
     auto rn1 = [&] { return random_normal<double>(rng); };
     CHECK_RANDOM_GENERATOR(rn1, - inf, inf, 0, 1);

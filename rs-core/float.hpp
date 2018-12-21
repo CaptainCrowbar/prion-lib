@@ -19,84 +19,66 @@ namespace RS {
     // Arithmetic constants
 
     #define RS_DEFINE_CONSTANT(name, value) \
-        constexpr float name##_f = value##f; \
-        constexpr double name##_d = value; \
-        constexpr long double name##_ld = value##l; \
+        constexpr long double name##_ld = value; \
+        constexpr double name##_d = double(name##_ld); \
+        constexpr double name = name##_d; \
+        constexpr float name##_f = float(name##_ld); \
         template <typename T> constexpr T name##_c = T(name##_ld);
+
+    #define RS_DEFINE_CONSTANT_2(name, symbol, value) \
+        constexpr long double name##_ld = value; \
+        constexpr long double symbol##_ld = name##_ld; \
+        constexpr double name##_d = double(name##_ld); \
+        constexpr double symbol##_d = double(symbol##_ld); \
+        constexpr double name = name##_d; \
+        constexpr double symbol = symbol##_d; \
+        constexpr float name##_f = float(name##_ld); \
+        constexpr float symbol##_f = float(symbol##_ld); \
+        template <typename T> constexpr T name##_c = T(name##_ld); \
+        template <typename T> constexpr T symbol##_c = T(symbol##_ld);
 
     // Mathematical constants
 
-    RS_DEFINE_CONSTANT(e,                2.71828'18284'59045'23536'02874'71352'66249'77572'47093'69996);
-    RS_DEFINE_CONSTANT(ln2,              0.69314'71805'59945'30941'72321'21458'17656'80755'00134'36026);
-    RS_DEFINE_CONSTANT(ln10,             2.30258'50929'94045'68401'79914'54684'36420'76011'01488'62877);
-    RS_DEFINE_CONSTANT(log2e,            1.44269'50408'88963'40735'99246'81001'89213'74266'45954'15299);
-    RS_DEFINE_CONSTANT(log10e,           0.43429'44819'03251'82765'11289'18916'60508'22943'97005'80367);
-    RS_DEFINE_CONSTANT(pi,               3.14159'26535'89793'23846'26433'83279'50288'41971'69399'37511);
-    RS_DEFINE_CONSTANT(pi_over_2,        1.57079'63267'94896'61923'13216'91639'75144'20985'84699'68755);
-    RS_DEFINE_CONSTANT(pi_over_4,        0.78539'81633'97448'30961'56608'45819'87572'10492'92349'84378);
-    RS_DEFINE_CONSTANT(inv_pi,           0.31830'98861'83790'67153'77675'26745'02872'40689'19291'48091);
-    RS_DEFINE_CONSTANT(inv_sqrtpi,       0.56418'95835'47756'28694'80794'51560'77258'58440'50629'32900);
-    RS_DEFINE_CONSTANT(two_over_pi,      0.63661'97723'67581'34307'55350'53490'05744'81378'38582'96183);
-    RS_DEFINE_CONSTANT(two_over_sqrtpi,  1.12837'91670'95512'57389'61589'03121'54517'16881'01258'65800);
-    RS_DEFINE_CONSTANT(sqrt2,            1.41421'35623'73095'04880'16887'24209'69807'85696'71875'37695);
-    RS_DEFINE_CONSTANT(sqrt3,            1.73205'08075'68877'29352'74463'41505'87236'69428'05253'81038);
-    RS_DEFINE_CONSTANT(inv_sqrt2,        0.70710'67811'86547'52440'08443'62104'84903'92848'35937'68847);
-    RS_DEFINE_CONSTANT(inv_sqrt3,        0.57735'02691'89625'76450'91487'80501'95745'56476'01751'27013);
-    RS_DEFINE_CONSTANT(egamma,           0.57721'56649'01532'86060'65120'90082'40243'10421'59335'93992);
-    RS_DEFINE_CONSTANT(phi,              1.61803'39887'49894'84820'45868'34365'63811'77203'09179'80576);
+    RS_DEFINE_CONSTANT(e,                2.71828'18284'59045'23536'02874'71352'66249'77572'47093'69996l);
+    RS_DEFINE_CONSTANT(ln2,              0.69314'71805'59945'30941'72321'21458'17656'80755'00134'36026l);
+    RS_DEFINE_CONSTANT(ln10,             2.30258'50929'94045'68401'79914'54684'36420'76011'01488'62877l);
+    RS_DEFINE_CONSTANT(log2e,            1.44269'50408'88963'40735'99246'81001'89213'74266'45954'15299l);
+    RS_DEFINE_CONSTANT(log10e,           0.43429'44819'03251'82765'11289'18916'60508'22943'97005'80367l);
+    RS_DEFINE_CONSTANT(pi,               3.14159'26535'89793'23846'26433'83279'50288'41971'69399'37511l);
+    RS_DEFINE_CONSTANT(pi_over_2,        1.57079'63267'94896'61923'13216'91639'75144'20985'84699'68755l);
+    RS_DEFINE_CONSTANT(pi_over_4,        0.78539'81633'97448'30961'56608'45819'87572'10492'92349'84378l);
+    RS_DEFINE_CONSTANT(inv_pi,           0.31830'98861'83790'67153'77675'26745'02872'40689'19291'48091l);
+    RS_DEFINE_CONSTANT(inv_sqrtpi,       0.56418'95835'47756'28694'80794'51560'77258'58440'50629'32900l);
+    RS_DEFINE_CONSTANT(two_over_pi,      0.63661'97723'67581'34307'55350'53490'05744'81378'38582'96183l);
+    RS_DEFINE_CONSTANT(two_over_sqrtpi,  1.12837'91670'95512'57389'61589'03121'54517'16881'01258'65800l);
+    RS_DEFINE_CONSTANT(sqrt2,            1.41421'35623'73095'04880'16887'24209'69807'85696'71875'37695l);
+    RS_DEFINE_CONSTANT(sqrt3,            1.73205'08075'68877'29352'74463'41505'87236'69428'05253'81038l);
+    RS_DEFINE_CONSTANT(inv_sqrt2,        0.70710'67811'86547'52440'08443'62104'84903'92848'35937'68847l);
+    RS_DEFINE_CONSTANT(inv_sqrt3,        0.57735'02691'89625'76450'91487'80501'95745'56476'01751'27013l);
+    RS_DEFINE_CONSTANT(egamma,           0.57721'56649'01532'86060'65120'90082'40243'10421'59335'93992l);
+    RS_DEFINE_CONSTANT(phi,              1.61803'39887'49894'84820'45868'34365'63811'77203'09179'80576l);
 
     // Conversion factors
 
-    RS_DEFINE_CONSTANT(inch,           0.0254);              // m
-    RS_DEFINE_CONSTANT(foot,           0.3048);              // m
-    RS_DEFINE_CONSTANT(yard,           0.9144);              // m
-    RS_DEFINE_CONSTANT(mile,           1609.344);            // m
-    RS_DEFINE_CONSTANT(nautical_mile,  1852.0);              // m
-    RS_DEFINE_CONSTANT(ounce,          0.028349523125);      // kg
-    RS_DEFINE_CONSTANT(pound,          0.45359237);          // kg
-    RS_DEFINE_CONSTANT(short_ton,      907.18474);           // kg
-    RS_DEFINE_CONSTANT(long_ton,       1016.0469088);        // kg
-    RS_DEFINE_CONSTANT(pound_force,    4.4482216152605);     // N
-    RS_DEFINE_CONSTANT(erg,            1.0e-7);              // J
-    RS_DEFINE_CONSTANT(foot_pound,     1.3558179483314004);  // J
-    RS_DEFINE_CONSTANT(calorie,        4.184);               // J
-    RS_DEFINE_CONSTANT(kilocalorie,    4184.0);              // J
-    RS_DEFINE_CONSTANT(ton_tnt,        4.184e9);             // J
-    RS_DEFINE_CONSTANT(horsepower,     745.69987158227022);  // W
-    RS_DEFINE_CONSTANT(mmHg,           133.322387415);       // Pa
-    RS_DEFINE_CONSTANT(atmosphere,     101325.0);            // Pa
-    RS_DEFINE_CONSTANT(zero_celsius,   273.15);              // K
-
-    // Physical constants
-
-    RS_DEFINE_CONSTANT(atomic_mass_unit,           1.660538921e-27);  // kg
-    RS_DEFINE_CONSTANT(avogadro_constant,          6.02214076e23);    // mol^-1
-    RS_DEFINE_CONSTANT(boltzmann_constant,         1.380649e-23);     // J K^-1
-    RS_DEFINE_CONSTANT(elementary_charge,          1.602176634e-19);  // C
-    RS_DEFINE_CONSTANT(gas_constant,               8.3144621);        // J mol^-1 K^-1
-    RS_DEFINE_CONSTANT(gravitational_constant,     6.67384e-11);      // m^3 kg^-1 s^-2
-    RS_DEFINE_CONSTANT(planck_constant,            6.62607015e-34);   // J s
-    RS_DEFINE_CONSTANT(speed_of_light,             299792458.0);      // m s^-1
-    RS_DEFINE_CONSTANT(stefan_boltzmann_constant,  5.670373e-8);      // W m^-2 K^-4
-
-    // Astronomical constants
-
-    RS_DEFINE_CONSTANT(earth_mass,         5.97219e24);          // kg
-    RS_DEFINE_CONSTANT(earth_radius,       6.3710e6);            // m
-    RS_DEFINE_CONSTANT(earth_gravity,      9.80665);             // m s^-2
-    RS_DEFINE_CONSTANT(jupiter_mass,       1.8986e27);           // kg
-    RS_DEFINE_CONSTANT(jupiter_radius,     6.9911e7);            // m
-    RS_DEFINE_CONSTANT(solar_mass,         1.98855e30);          // kg
-    RS_DEFINE_CONSTANT(solar_radius,       6.96342e8);           // m
-    RS_DEFINE_CONSTANT(solar_luminosity,   3.846e26);            // W
-    RS_DEFINE_CONSTANT(solar_temperature,  5778.0);              // K
-    RS_DEFINE_CONSTANT(astronomical_unit,  1.49597870700e11);    // m
-    RS_DEFINE_CONSTANT(light_year,         9.4607304725808e15);  // m
-    RS_DEFINE_CONSTANT(parsec,             3.08567758149e16);    // m
-    RS_DEFINE_CONSTANT(julian_day,         86'400.0);            // s
-    RS_DEFINE_CONSTANT(julian_year,        31'557'600.0);        // s
-    RS_DEFINE_CONSTANT(sidereal_year,      31'558'149.7635);     // s
-    RS_DEFINE_CONSTANT(tropical_year,      31'556'925.19);       // s
+    RS_DEFINE_CONSTANT(inch,           0.0254l);              // m
+    RS_DEFINE_CONSTANT(foot,           0.3048l);              // m
+    RS_DEFINE_CONSTANT(yard,           0.9144l);              // m
+    RS_DEFINE_CONSTANT(mile,           1609.344l);            // m
+    RS_DEFINE_CONSTANT(nautical_mile,  1852.0l);              // m
+    RS_DEFINE_CONSTANT(ounce,          0.028349523125l);      // kg
+    RS_DEFINE_CONSTANT(pound,          0.45359237l);          // kg
+    RS_DEFINE_CONSTANT(short_ton,      907.18474l);           // kg
+    RS_DEFINE_CONSTANT(long_ton,       1016.0469088l);        // kg
+    RS_DEFINE_CONSTANT(pound_force,    4.4482216152605l);     // N
+    RS_DEFINE_CONSTANT(erg,            1.0e-7l);              // J
+    RS_DEFINE_CONSTANT(foot_pound,     1.3558179483314004l);  // J
+    RS_DEFINE_CONSTANT(calorie,        4.184l);               // J
+    RS_DEFINE_CONSTANT(kilocalorie,    4184.0l);              // J
+    RS_DEFINE_CONSTANT(ton_tnt,        4.184e9l);             // J
+    RS_DEFINE_CONSTANT(horsepower,     745.69987158227022l);  // W
+    RS_DEFINE_CONSTANT(mmHg,           133.322387415l);       // Pa
+    RS_DEFINE_CONSTANT(atmosphere,     101325.0l);            // Pa
+    RS_DEFINE_CONSTANT(zero_celsius,   273.15l);              // K
 
     // Arithmetic functions
 

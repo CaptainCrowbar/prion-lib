@@ -58,11 +58,13 @@ void test_core_float_arithmetic_constants() {
 
     TEST_TYPE_OF(pi_f, float);
     TEST_TYPE_OF(pi_d, double);
+    TEST_TYPE_OF(pi, double);
     TEST_TYPE_OF(pi_ld, long double);
     TEST_TYPE_OF(pi_c<float>, float);
 
     TEST_NEAR(pi_f, 3.141593);
     TEST_NEAR(pi_d, 3.141593);
+    TEST_NEAR(pi, 3.141593);
     TEST_NEAR(pi_ld, 3.141593);
     TEST_NEAR(pi_c<float>, 3.141593);
 

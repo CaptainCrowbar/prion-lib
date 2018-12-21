@@ -70,6 +70,64 @@ void test_core_float_arithmetic_constants() {
 
 void test_core_float_arithmetic_functions() {
 
+    TEST_EQUAL(c_pow(0.0, 0), 1.0);
+    TEST_EQUAL(c_pow(0.0, 1), 0.0);
+    TEST_EQUAL(c_pow(0.0, 2), 0.0);
+    TEST_EQUAL(c_pow(0.0, 3), 0.0);
+
+    TEST_EQUAL(c_pow(1.0, 0), 1.0);
+    TEST_EQUAL(c_pow(1.0, 1), 1.0);
+    TEST_EQUAL(c_pow(1.0, 2), 1.0);
+    TEST_EQUAL(c_pow(1.0, 3), 1.0);
+
+    TEST_EQUAL(c_pow(-1.0, 0), 1.0);
+    TEST_EQUAL(c_pow(-1.0, 1), -1.0);
+    TEST_EQUAL(c_pow(-1.0, 2), 1.0);
+    TEST_EQUAL(c_pow(-1.0, 3), -1.0);
+
+    TEST_EQUAL(c_pow(1.0, -1), 1.0);
+    TEST_EQUAL(c_pow(1.0, -2), 1.0);
+    TEST_EQUAL(c_pow(1.0, -3), 1.0);
+
+    TEST_EQUAL(c_pow(-1.0, -1), -1.0);
+    TEST_EQUAL(c_pow(-1.0, -2), 1.0);
+    TEST_EQUAL(c_pow(-1.0, -3), -1.0);
+
+    TEST_EQUAL(c_pow(10.0, 0), 1.0);
+    TEST_EQUAL(c_pow(10.0, 1), 10.0);
+    TEST_EQUAL(c_pow(10.0, 2), 100.0);
+    TEST_EQUAL(c_pow(10.0, 3), 1'000.0);
+    TEST_EQUAL(c_pow(10.0, 4), 10'000.0);
+    TEST_EQUAL(c_pow(10.0, 5), 100'000.0);
+    TEST_EQUAL(c_pow(10.0, 6), 1'000'000.0);
+    TEST_EQUAL(c_pow(10.0, 7), 10'000'000.0);
+    TEST_EQUAL(c_pow(10.0, 8), 100'000'000.0);
+    TEST_EQUAL(c_pow(10.0, 9), 1'000'000'000.0);
+    TEST_EQUAL(c_pow(10.0, 10), 1'000'000'0000.0);
+
+    TEST_EQUAL(c_pow(-10.0, 0), 1.0);
+    TEST_EQUAL(c_pow(-10.0, 1), -10.0);
+    TEST_EQUAL(c_pow(-10.0, 2), 100.0);
+    TEST_EQUAL(c_pow(-10.0, 3), -1'000.0);
+    TEST_EQUAL(c_pow(-10.0, 4), 10'000.0);
+    TEST_EQUAL(c_pow(-10.0, 5), -100'000.0);
+    TEST_EQUAL(c_pow(-10.0, 6), 1'000'000.0);
+    TEST_EQUAL(c_pow(-10.0, 7), -10'000'000.0);
+    TEST_EQUAL(c_pow(-10.0, 8), 100'000'000.0);
+    TEST_EQUAL(c_pow(-10.0, 9), -1'000'000'000.0);
+    TEST_EQUAL(c_pow(-10.0, 10), 10'000'000'000.0);
+
+    TEST_NEAR_EPSILON(c_pow(10.0, -1), 1.0e-1, 1.0e-11);
+    TEST_NEAR_EPSILON(c_pow(10.0, -2), 1.0e-2, 1.0e-12);
+    TEST_NEAR_EPSILON(c_pow(10.0, -3), 1.0e-3, 1.0e-13);
+    TEST_NEAR_EPSILON(c_pow(10.0, -4), 1.0e-4, 1.0e-14);
+    TEST_NEAR_EPSILON(c_pow(10.0, -5), 1.0e-5, 1.0e-15);
+    TEST_NEAR_EPSILON(c_pow(10.0, -6), 1.0e-6, 1.0e-16);
+    TEST_NEAR_EPSILON(c_pow(10.0, -7), 1.0e-7, 1.0e-17);
+    TEST_NEAR_EPSILON(c_pow(10.0, -8), 1.0e-8, 1.0e-18);
+    TEST_NEAR_EPSILON(c_pow(10.0, -9), 1.0e-9, 1.0e-19);
+    TEST_NEAR_EPSILON(c_pow(10.0, -10), 1.0e-10, 1.0e-20);
+
     TEST_EQUAL(degrees(0.0), 0);
     TEST_NEAR(degrees(1.0), 57.295780);
     TEST_NEAR(degrees(2.0), 114.591559);

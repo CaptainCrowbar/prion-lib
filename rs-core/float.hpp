@@ -124,6 +124,23 @@ namespace RS {
 
     }
 
+    template <typename T>
+    constexpr T c_pow(T x, int y) noexcept {
+        bool neg = y < 0;
+        if (neg)
+            y = - y;
+        T z = T(1);
+        while (y > 0) {
+            if (y % 2)
+                z *= x;
+            x *= x;
+            y /= 2;
+        }
+        if (neg)
+            z = T(1) / z;
+        return z;
+    }
+
     template <typename T> constexpr T degrees(T rad) noexcept { return rad * (T(180) / pi_c<T>); }
     template <typename T> constexpr T radians(T deg) noexcept { return deg * (pi_c<T> / T(180)); }
     template <typename T1, typename T2> constexpr T2 interpolate(T1 x1, T2 y1, T1 x2, T2 y2, T1 x) noexcept

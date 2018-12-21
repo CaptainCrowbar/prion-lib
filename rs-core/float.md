@@ -101,6 +101,12 @@ constants.
 
 ## Arithmetic functions ##
 
+* `template <typename T> constexpr T` **`c_pow`**`(T x, int y) noexcept`
+
+Returns an integer power of a floating point value as a `constexpr`
+expression. Behaviour is undefined if `x=0` and `y<0`, or if the true result
+is outside the range of `T`.
+
 * `template <typename T> constexpr T` **`degrees`**`(T rad) noexcept`
 * `template <typename T> constexpr T` **`radians`**`(T deg) noexcept`
 

@@ -68,6 +68,10 @@ void test_core_float_arithmetic_constants() {
     TEST_NEAR(pi_ld, 3.141593);
     TEST_NEAR(pi_c<float>, 3.141593);
 
+    TEST_NEAR(degree * 180, pi);
+    TEST_NEAR(arcmin * 60, degree);
+    TEST_NEAR(arcsec * 60, arcmin);
+
 }
 
 void test_core_float_arithmetic_functions() {

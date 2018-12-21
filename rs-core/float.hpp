@@ -19,14 +19,14 @@ namespace RS {
     // Arithmetic constants
 
     #define RS_DEFINE_CONSTANT(name, value) \
-        constexpr long double name##_ld = value; \
+        constexpr long double name##_ld = static_cast<long double>(value); \
         constexpr double name##_d = double(name##_ld); \
         constexpr double name = name##_d; \
         constexpr float name##_f = float(name##_ld); \
         template <typename T> constexpr T name##_c = T(name##_ld);
 
     #define RS_DEFINE_CONSTANT_2(name, symbol, value) \
-        constexpr long double name##_ld = value; \
+        constexpr long double name##_ld = static_cast<long double>(value); \
         constexpr long double symbol##_ld = name##_ld; \
         constexpr double name##_d = double(name##_ld); \
         constexpr double symbol##_d = double(symbol##_ld); \
@@ -60,25 +60,28 @@ namespace RS {
 
     // Conversion factors
 
-    RS_DEFINE_CONSTANT(inch,           0.0254l);              // m
-    RS_DEFINE_CONSTANT(foot,           0.3048l);              // m
-    RS_DEFINE_CONSTANT(yard,           0.9144l);              // m
-    RS_DEFINE_CONSTANT(mile,           1609.344l);            // m
-    RS_DEFINE_CONSTANT(nautical_mile,  1852.0l);              // m
-    RS_DEFINE_CONSTANT(ounce,          0.028349523125l);      // kg
-    RS_DEFINE_CONSTANT(pound,          0.45359237l);          // kg
-    RS_DEFINE_CONSTANT(short_ton,      907.18474l);           // kg
-    RS_DEFINE_CONSTANT(long_ton,       1016.0469088l);        // kg
-    RS_DEFINE_CONSTANT(pound_force,    4.4482216152605l);     // N
-    RS_DEFINE_CONSTANT(erg,            1.0e-7l);              // J
-    RS_DEFINE_CONSTANT(foot_pound,     1.3558179483314004l);  // J
-    RS_DEFINE_CONSTANT(calorie,        4.184l);               // J
-    RS_DEFINE_CONSTANT(kilocalorie,    4184.0l);              // J
-    RS_DEFINE_CONSTANT(ton_tnt,        4.184e9l);             // J
-    RS_DEFINE_CONSTANT(horsepower,     745.69987158227022l);  // W
-    RS_DEFINE_CONSTANT(mmHg,           133.322387415l);       // Pa
-    RS_DEFINE_CONSTANT(atmosphere,     101325.0l);            // Pa
-    RS_DEFINE_CONSTANT(zero_celsius,   273.15l);              // K
+    RS_DEFINE_CONSTANT(arcsec,         pi_ld / (180 * 3600));      // rad
+    RS_DEFINE_CONSTANT(arcmin,         pi_ld / (180 * 60));        // rad
+    RS_DEFINE_CONSTANT(degree,         pi_ld / 180);               // rad
+    RS_DEFINE_CONSTANT(inch,           0.0254l);                   // m
+    RS_DEFINE_CONSTANT(foot,           0.3048l);                   // m
+    RS_DEFINE_CONSTANT(yard,           0.9144l);                   // m
+    RS_DEFINE_CONSTANT(mile,           1609.344l);                 // m
+    RS_DEFINE_CONSTANT(nautical_mile,  1852);                      // m
+    RS_DEFINE_CONSTANT(ounce,          0.028'349'523'125l);        // kg
+    RS_DEFINE_CONSTANT(pound,          0.453'592'37l);             // kg
+    RS_DEFINE_CONSTANT(short_ton,      907.184'74l);               // kg
+    RS_DEFINE_CONSTANT(long_ton,       1016.046'908'8l);           // kg
+    RS_DEFINE_CONSTANT(pound_force,    4.448'221'615'260'5l);      // N
+    RS_DEFINE_CONSTANT(erg,            1e-7l);                     // J
+    RS_DEFINE_CONSTANT(foot_pound,     1.355'817'948'331'400'4l);  // J
+    RS_DEFINE_CONSTANT(calorie,        4.184l);                    // J
+    RS_DEFINE_CONSTANT(kilocalorie,    4184);                      // J
+    RS_DEFINE_CONSTANT(ton_tnt,        4.184e9l);                  // J
+    RS_DEFINE_CONSTANT(horsepower,     745.699'871'582'270'22l);   // W
+    RS_DEFINE_CONSTANT(mmHg,           133.322'387'415l);          // Pa
+    RS_DEFINE_CONSTANT(atmosphere,     10'1325);                   // Pa
+    RS_DEFINE_CONSTANT(zero_celsius,   273.15l);                   // K
 
     // Arithmetic functions
 

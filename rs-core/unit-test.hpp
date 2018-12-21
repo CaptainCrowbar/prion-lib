@@ -5,6 +5,7 @@
 #include <array>
 #include <atomic>
 #include <chrono>
+#include <cmath>
 #include <cstddef>
 #include <exception>
 #include <iostream>
@@ -134,7 +135,7 @@
 #define TEST_NEAR_EPSILON(lhs, rhs, tolerance) \
     do { \
         bool local_test_status = false; \
-        TEST_IMPL(local_test_status, fabs(double(lhs) - double(rhs)) <= double(tolerance), \
+        TEST_IMPL(local_test_status, std::abs(double(lhs) - double(rhs)) <= double(tolerance), \
             #lhs " approx == " #rhs); \
         if (! local_test_status) { \
             RS::UnitTest::record_failure(); \
@@ -146,7 +147,33 @@
 #define TEST_NEAR_EPSILON_RANGE(lhs, rhs, tolerance) \
     do { \
         bool local_test_status = false; \
-        TEST_IMPL(local_test_status, RS::UnitTest::range_near((lhs), (rhs), double(tolerance)), \
+        TEST_IMPL(local_test_status, RS::UnitTest::range_near_abs((lhs), (rhs), double(tolerance)), \
+            #lhs " approx == " #rhs); \
+        if (! local_test_status) { \
+            RS::UnitTest::record_failure(); \
+            RS::UnitTest::print_fail(FAIL_POINT, #lhs " and " #rhs " not approximately equal: lhs = ", \
+                RS::UnitTest::format_range(lhs), ", rhs = ", RS::UnitTest::format_range(rhs)); \
+        } \
+    } while (false)
+
+#define TEST_NEAR_RELATIVE(lhs, rhs, tolerance) \
+    do { \
+        bool local_test_status = false; \
+        auto local_test_lhs = double(lhs); \
+        auto local_test_rhs = double(rhs); \
+        TEST_IMPL(local_test_status, std::abs(local_test_lhs - local_test_rhs) / std::abs(local_test_rhs) <= double(tolerance), \
+            #lhs " approx == " #rhs); \
+        if (! local_test_status) { \
+            RS::UnitTest::record_failure(); \
+            RS::UnitTest::print_fail(FAIL_POINT, #lhs " and " #rhs " not approximately equal: lhs = ", \
+                (lhs), ", rhs = ", (rhs), ", tolerance = ", (tolerance)); \
+        } \
+    } while (false)
+
+#define TEST_NEAR_RELATIVE_RANGE(lhs, rhs, tolerance) \
+    do { \
+        bool local_test_status = false; \
+        TEST_IMPL(local_test_status, RS::UnitTest::range_near_rel((lhs), (rhs), double(tolerance)), \
             #lhs " approx == " #rhs); \
         if (! local_test_status) { \
             RS::UnitTest::record_failure(); \
@@ -398,10 +425,18 @@ namespace RS {
         }
 
         template <typename R1, typename R2>
-        static bool range_near(const R1& r1, const R2& r2, double tolerance) {
+        static bool range_near_abs(const R1& r1, const R2& r2, double tolerance) {
             auto i = std::begin(r1), e1 = std::end(r1);
             auto j = std::begin(r2), e2 = std::end(r2);
-            for (; i != e1 && j != e2 && fabs(double(*i) - double(*j)) <= tolerance; ++i, ++j) {}
+            for (; i != e1 && j != e2 && std::abs(double(*i) - double(*j)) <= tolerance; ++i, ++j) {}
+            return i == e1 && j == e2;
+        }
+
+        template <typename R1, typename R2>
+        static bool range_near_rel(const R1& r1, const R2& r2, double tolerance) {
+            auto i = std::begin(r1), e1 = std::end(r1);
+            auto j = std::begin(r2), e2 = std::end(r2);
+            for (; i != e1 && j != e2 && std::abs(double(*i) - double(*j)) / std::abs(double(*j)) <= tolerance; ++i, ++j) {}
             return i == e1 && j == e2;
         }
 

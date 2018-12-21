@@ -72,14 +72,18 @@ insensitive The test fails if the string fails to match, or an exception is
 thrown.
 
 * `#define` **`TEST_NEAR`**`(lhs, rhs)`
-* `#define` **`TEST_NEAR_EPSILON`**`(lhs, rhs, tolerance)`
 * `#define` **`TEST_NEAR_RANGE`**`(lhs, rhs)`
+* `#define` **`TEST_NEAR_EPSILON`**`(lhs, rhs, tolerance)`
 * `#define` **`TEST_NEAR_EPSILON_RANGE`**`(lhs, rhs, tolerance)`
+* `#define` **`TEST_NEAR_RELATIVE`**`(lhs, rhs, tolerance)`
+* `#define` **`TEST_NEAR_RELATIVE_RANGE`**`(lhs, rhs, tolerance)`
 
 Evaluate two floating point expressions, or two ranges of floating point
 values, and compare them for approximate equality. The test fails if the
 values differ by more than the tolerance (defaulting to 10<sup>-6</sup>), or
-if any expression throws an exception.
+if any expression throws an exception. In the `RELATIVE` versions, the
+tolerance is relative to the value of `rhs` (behaviour is undefined if
+`rhs=0`).
 
 * `#define` **`TEST_THROW`**`(expression, exception)`
 * `#define` **`TEST_THROW_EQUAL`**`(expression, exception, message)`

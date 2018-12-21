@@ -94,14 +94,18 @@ thrown.</p>
 <div class="defns">
 <ul>
 <li><code>#define</code> <strong><code>TEST_NEAR</code></strong><code>(lhs, rhs)</code></li>
-<li><code>#define</code> <strong><code>TEST_NEAR_EPSILON</code></strong><code>(lhs, rhs, tolerance)</code></li>
 <li><code>#define</code> <strong><code>TEST_NEAR_RANGE</code></strong><code>(lhs, rhs)</code></li>
+<li><code>#define</code> <strong><code>TEST_NEAR_EPSILON</code></strong><code>(lhs, rhs, tolerance)</code></li>
 <li><code>#define</code> <strong><code>TEST_NEAR_EPSILON_RANGE</code></strong><code>(lhs, rhs, tolerance)</code></li>
+<li><code>#define</code> <strong><code>TEST_NEAR_RELATIVE</code></strong><code>(lhs, rhs, tolerance)</code></li>
+<li><code>#define</code> <strong><code>TEST_NEAR_RELATIVE_RANGE</code></strong><code>(lhs, rhs, tolerance)</code></li>
 </ul>
 <p>Evaluate two floating point expressions, or two ranges of floating point
 values, and compare them for approximate equality. The test fails if the
 values differ by more than the tolerance (defaulting to 10<sup>-6</sup>), or
-if any expression throws an exception.</p>
+if any expression throws an exception. In the <code>RELATIVE</code> versions, the
+tolerance is relative to the value of <code>rhs</code> (behaviour is undefined if
+<code>rhs=0</code>).</p>
 </div>
 <div class="defns">
 <ul>

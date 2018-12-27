@@ -488,6 +488,12 @@ the standard library, this value is often used as a function argument to mean
 "as large as possible" or "no limit", or as a return value to mean "not
 found".
 
+* `template <typename T> constexpr bool` **`dependent_false`** ` = false`
+
+`[unicorn]`
+Conventional workaround for an always-false `static_assert()` in the final
+`else` clause of an `if constexpr` statement.
+
 ### Arithmetic constants ###
 
 * `constexpr unsigned` **`KB`** `= 1024`

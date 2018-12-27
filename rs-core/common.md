@@ -490,9 +490,8 @@ found".
 
 * `template <typename T> constexpr bool` **`dependent_false`** ` = false`
 
-`[unicorn]`
-Conventional workaround for an always-false `static_assert()` in the final
-`else` clause of an `if constexpr` statement.
+`[unicorn]` Conventional workaround for an always-false `static_assert()` in
+the final `else` clause of an `if constexpr` statement.
 
 ### Arithmetic constants ###
 

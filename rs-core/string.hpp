@@ -36,10 +36,6 @@ namespace RS {
 
     template <typename T> constexpr T char_to(char c) noexcept { return T(uint8_t(c)); }
 
-    // Construction functions
-
-    inline Ustring dent(size_t depth) { return Ustring(4 * depth, ' '); }
-
     // String property functions
 
     bool ascii_icase_equal(std::string_view lhs, std::string_view rhs) noexcept;

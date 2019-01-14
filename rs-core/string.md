@@ -79,12 +79,6 @@ first passing it through `unsigned char`, to ensure that characters with the
 high bit set end up as integers in the 128-255 range, and not as negative or
 extremely high values.
 
-## Construction functions ##
-
-* `Ustring` **`dent`**`(size_t depth)`
-
-Returns a string containing `4*depth` spaces, for indentation.
-
 ## String property functions ##
 
 * `bool` **`ascii_icase_equal`**`(std::string_view lhs, std::string_view rhs) noexcept`

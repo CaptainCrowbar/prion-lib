@@ -1198,6 +1198,10 @@ behaviour.
 `[unicorn]` Returns the length of a null-terminated string (a generalized
 version of `strlen()`). This will return zero if the pointer is null.
 
+* `Ustring` **`dent`**`(size_t depth)`
+
+Returns a string containing `4*depth` spaces, for indentation.
+
 * `template <typename S> [string view]` **`make_view`**`(const S& s, size_t pos = 0, size_t len = npos) noexcept`
 
 `[unicorn]` Returns a string view over the given string. The string argument

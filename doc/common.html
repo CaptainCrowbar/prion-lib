@@ -1575,6 +1575,12 @@ version of <code>strlen()</code>). This will return zero if the pointer is null.
 </div>
 <div class="defns">
 <ul>
+<li><code>Ustring</code> <strong><code>dent</code></strong><code>(size_t depth)</code></li>
+</ul>
+<p>Returns a string containing <code>4*depth</code> spaces, for indentation.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>template &lt;typename S&gt; [string view]</code> <strong><code>make_view</code></strong><code>(const S&amp; s, size_t pos = 0, size_t len = npos) noexcept</code></li>
 </ul>
 <p><code><span class="unicorn">[unicorn]</span></code> Returns a string view over the given string. The string argument

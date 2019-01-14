@@ -839,6 +839,32 @@ otherwise, it does nothing.</p>
 </div>
 <div class="defns">
 <ul>
+<li><code>template &lt;typename BidirectionalIterator, typename T&gt; BidirectionalIterator</code> <strong><code>find_last</code></strong><code>(BidirectionalIterator i, BidirectionalIterator j, const T&amp; t)</code><ul>
+<li><em>Find the last element equal to the given value</em></li>
+</ul>
+</li>
+<li><code>template &lt;typename BidirectionalIterator, typename T&gt; BidirectionalIterator</code> <strong><code>find_last_not</code></strong><code>(BidirectionalIterator i, BidirectionalIterator j, const T&amp; t)</code><ul>
+<li><em>Find the last element not equal to the given value</em></li>
+</ul>
+</li>
+<li><code>template &lt;typename BidirectionalIterator, typename UnaryPredicate&gt; BidirectionalIterator</code> <strong><code>find_last_if</code></strong><code>(BidirectionalIterator i, BidirectionalIterator j, UnaryPredicate p)</code><ul>
+<li><em>Find the last element that matches the predicate</em></li>
+</ul>
+</li>
+<li><code>template &lt;typename BidirectionalIterator, typename UnaryPredicate&gt; BidirectionalIterator</code> <strong><code>find_last_if_not</code></strong><code>(BidirectionalIterator i, BidirectionalIterator j, UnaryPredicate p)</code><ul>
+<li><em>Find the last element that does not match the predicate</em></li>
+</ul>
+</li>
+<li><code>template &lt;typename InputIterator, typename T&gt; InputIterator</code> <strong><code>find_not</code></strong><code>(InputIterator i, InputIterator j, const T&amp; t)</code><ul>
+<li><em>Find the first element not equal to the given value</em></li>
+</ul>
+</li>
+</ul>
+<p>Additional find algorithms. All of these return the end iterator if the search
+fails.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>template &lt;typename M, typename K&gt; M::mapped_type</code> <strong><code>find_in_map</code></strong><code>(const M&amp; map, const K&amp; key)</code></li>
 <li><code>template &lt;typename M, typename K, typename T&gt; M::mapped_type</code> <strong><code>find_in_map</code></strong><code>(const M&amp; map, const K&amp; key, const T&amp; def)</code></li>
 </ul>

@@ -620,6 +620,20 @@ If `con.size()<n`, `ensure_min()` calls `con.resize(n[,t])`; otherwise, it
 does nothing. If `con.size()>n`, `ensure_max()` calls `con.resize(n)`;
 otherwise, it does nothing.
 
+* `template <typename BidirectionalIterator, typename T> BidirectionalIterator` **`find_last`**`(BidirectionalIterator i, BidirectionalIterator j, const T& t)`
+    * _Find the last element equal to the given value_
+* `template <typename BidirectionalIterator, typename T> BidirectionalIterator` **`find_last_not`**`(BidirectionalIterator i, BidirectionalIterator j, const T& t)`
+    * _Find the last element not equal to the given value_
+* `template <typename BidirectionalIterator, typename UnaryPredicate> BidirectionalIterator` **`find_last_if`**`(BidirectionalIterator i, BidirectionalIterator j, UnaryPredicate p)`
+    * _Find the last element that matches the predicate_
+* `template <typename BidirectionalIterator, typename UnaryPredicate> BidirectionalIterator` **`find_last_if_not`**`(BidirectionalIterator i, BidirectionalIterator j, UnaryPredicate p)`
+    * _Find the last element that does not match the predicate_
+* `template <typename InputIterator, typename T> InputIterator` **`find_not`**`(InputIterator i, InputIterator j, const T& t)`
+    * _Find the first element not equal to the given value_
+
+Additional find algorithms. All of these return the end iterator if the search
+fails.
+
 * `template <typename M, typename K> M::mapped_type` **`find_in_map`**`(const M& map, const K& key)`
 * `template <typename M, typename K, typename T> M::mapped_type` **`find_in_map`**`(const M& map, const K& key, const T& def)`
 

@@ -643,6 +643,69 @@ namespace RS {
         return find_in_map(map, key, t);
     }
 
+    template <typename BidirectionalIterator, typename T>
+    BidirectionalIterator find_last(BidirectionalIterator i, BidirectionalIterator j, const T& t) {
+        if (i == j)
+            return i;
+        auto k = j;
+        for (;;) {
+            --k;
+            if (*k == t)
+                return k;
+            if (k == i)
+                return j;
+        }
+    }
+
+    template <typename BidirectionalIterator, typename T>
+    BidirectionalIterator find_last_not(BidirectionalIterator i, BidirectionalIterator j, const T& t) {
+        if (i == j)
+            return i;
+        auto k = j;
+        for (;;) {
+            --k;
+            if (*k != t)
+                return k;
+            if (k == i)
+                return j;
+        }
+    }
+
+    template <typename BidirectionalIterator, typename UnaryPredicate>
+    BidirectionalIterator find_last_if(BidirectionalIterator i, BidirectionalIterator j, UnaryPredicate p) {
+        if (i == j)
+            return i;
+        auto k = j;
+        for (;;) {
+            --k;
+            if (p(*k))
+                return k;
+            if (k == i)
+                return j;
+        }
+    }
+
+    template <typename BidirectionalIterator, typename UnaryPredicate>
+    BidirectionalIterator find_last_if_not(BidirectionalIterator i, BidirectionalIterator j, UnaryPredicate p) {
+        if (i == j)
+            return i;
+        auto k = j;
+        for (;;) {
+            --k;
+            if (! p(*k))
+                return k;
+            if (k == i)
+                return j;
+        }
+    }
+
+    template <typename InputIterator, typename T>
+    InputIterator find_not(InputIterator i, InputIterator j, const T& t) {
+        while (i != j && *i == t)
+            ++i;
+        return i;
+    }
+
     template <typename Range1, typename Range2, typename Compare>
     bool sets_intersect(const Range1& r1, const Range2& r2, Compare c) {
         using std::begin;

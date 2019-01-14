@@ -854,7 +854,8 @@ void test_core_common_arithmetic_literals() {
 
 void test_core_common_generic_algorithms() {
 
-    Ustring s1, s2;
+    Ustring s;
+    Ustring::const_iterator it;
     std::vector<int> v1, v2, v3, v4;
     int n = 0;
     char c = 0;
@@ -863,13 +864,13 @@ void test_core_common_generic_algorithms() {
 
     auto ar = array_range(array, sizeof(array));
     TEST_EQUAL(ar.size(), 5);
-    TRY(std::copy(ar.begin(), ar.end(), overwrite(s1)));
-    TEST_EQUAL(s1, "Hello");
+    TRY(std::copy(ar.begin(), ar.end(), overwrite(s)));
+    TEST_EQUAL(s, "Hello");
 
     auto car = array_range(cp, sizeof(array));
     TEST_EQUAL(car.size(), 5);
-    TRY(std::copy(car.begin(), car.end(), overwrite(s1)));
-    TEST_EQUAL(s1, "Hello");
+    TRY(std::copy(car.begin(), car.end(), overwrite(s)));
+    TEST_EQUAL(s, "Hello");
 
     int a[5] = {1,2,3,4,5};
     std::array<int, 5> b = {{6,7,8,9,10}};
@@ -888,59 +889,59 @@ void test_core_common_generic_algorithms() {
     TEST_EQUAL(std::get<3>(u), 9);
     TEST_EQUAL(std::get<4>(u), 10);
 
-    s1 = "Hello";
+    s = "Hello";
 
-    TRY(c = at_index(s1, 0));          TEST_EQUAL(c, 'H');
-    TRY(c = at_index(s1, 4));          TEST_EQUAL(c, 'o');
-    TRY(c = at_index(s1, 5));          TEST_EQUAL(c, '\0');
-    TRY(c = at_index(s1, npos));       TEST_EQUAL(c, '\0');
-    TRY(c = at_index(s1, 0, '*'));     TEST_EQUAL(c, 'H');
-    TRY(c = at_index(s1, 4, '*'));     TEST_EQUAL(c, 'o');
-    TRY(c = at_index(s1, 5, '*'));     TEST_EQUAL(c, '*');
-    TRY(c = at_index(s1, npos, '*'));  TEST_EQUAL(c, '*');
+    TRY(c = at_index(s, 0));          TEST_EQUAL(c, 'H');
+    TRY(c = at_index(s, 4));          TEST_EQUAL(c, 'o');
+    TRY(c = at_index(s, 5));          TEST_EQUAL(c, '\0');
+    TRY(c = at_index(s, npos));       TEST_EQUAL(c, '\0');
+    TRY(c = at_index(s, 0, '*'));     TEST_EQUAL(c, 'H');
+    TRY(c = at_index(s, 4, '*'));     TEST_EQUAL(c, 'o');
+    TRY(c = at_index(s, 5, '*'));     TEST_EQUAL(c, '*');
+    TRY(c = at_index(s, npos, '*'));  TEST_EQUAL(c, '*');
 
     const auto is_alpha = [] (char c) { return isalpha(c); };
     const auto same_case = [] (char a, char b) { return islower(a) == islower(b) && isupper(a) == isupper(b); };
 
-    s1 = "";                 TRY(con_remove(s1, 'c'));                        TEST_EQUAL(s1, "");
-    s1 = "xyzxyzxyz";        TRY(con_remove(s1, 'c'));                        TEST_EQUAL(s1, "xyzxyzxyz");
-    s1 = "abcabcabc";        TRY(con_remove(s1, 'c'));                        TEST_EQUAL(s1, "ababab");
-    s1 = "";                 TRY(con_remove_if(s1, is_alpha));                TEST_EQUAL(s1, "");
-    s1 = "1234567890";       TRY(con_remove_if(s1, is_alpha));                TEST_EQUAL(s1, "1234567890");
-    s1 = "abc123abc123";     TRY(con_remove_if(s1, is_alpha));                TEST_EQUAL(s1, "123123");
-    s1 = "";                 TRY(con_remove_if_not(s1, is_alpha));            TEST_EQUAL(s1, "");
-    s1 = "abcdefghijklm";    TRY(con_remove_if_not(s1, is_alpha));            TEST_EQUAL(s1, "abcdefghijklm");
-    s1 = "abc123abc123";     TRY(con_remove_if_not(s1, is_alpha));            TEST_EQUAL(s1, "abcabc");
-    s1 = "";                 TRY(con_unique(s1));                             TEST_EQUAL(s1, "");
-    s1 = "abcdeabcde";       TRY(con_unique(s1));                             TEST_EQUAL(s1, "abcdeabcde");
-    s1 = "abbcccddddeeeee";  TRY(con_unique(s1));                             TEST_EQUAL(s1, "abcde");
-    s1 = "";                 TRY(con_unique(s1, same_case));                  TEST_EQUAL(s1, "");
-    s1 = "AbCaBcAbCaBc";     TRY(con_unique(s1, same_case));                  TEST_EQUAL(s1, "AbCaBcAbCaBc");
-    s1 = "ABCabcABCabc";     TRY(con_unique(s1, same_case));                  TEST_EQUAL(s1, "AaAa");
-    s1 = "";                 TRY(con_sort_unique(s1));                        TEST_EQUAL(s1, "");
-    s1 = "zyxwvutsrqpon";    TRY(con_sort_unique(s1));                        TEST_EQUAL(s1, "nopqrstuvwxyz");
-    s1 = "abcdeabcdabcaba";  TRY(con_sort_unique(s1));                        TEST_EQUAL(s1, "abcde");
-    s1 = "";                 TRY(con_sort_unique(s1, std::greater<char>()));  TEST_EQUAL(s1, "");
-    s1 = "nopqrstuvwxyz";    TRY(con_sort_unique(s1, std::greater<char>()));  TEST_EQUAL(s1, "zyxwvutsrqpon");
-    s1 = "abcdeabcdabcaba";  TRY(con_sort_unique(s1, std::greater<char>()));  TEST_EQUAL(s1, "edcba");
-    s1 = "";                 TRY(con_trim(s1, 'a'));                          TEST_EQUAL(s1, "");
-    s1 = "bbbaaaccc";        TRY(con_trim(s1, 'a'));                          TEST_EQUAL(s1, "bbbaaaccc");
-    s1 = "aaabbbaaacccaaa";  TRY(con_trim(s1, 'a'));                          TEST_EQUAL(s1, "bbbaaaccc");
-    s1 = "";                 TRY(con_trim_left(s1, 'a'));                     TEST_EQUAL(s1, "");
-    s1 = "cccbbbaaa";        TRY(con_trim_left(s1, 'a'));                     TEST_EQUAL(s1, "cccbbbaaa");
-    s1 = "aaabbbaaacccaaa";  TRY(con_trim_left(s1, 'a'));                     TEST_EQUAL(s1, "bbbaaacccaaa");
-    s1 = "";                 TRY(con_trim_right(s1, 'a'));                    TEST_EQUAL(s1, "");
-    s1 = "aaabbbccc";        TRY(con_trim_right(s1, 'a'));                    TEST_EQUAL(s1, "aaabbbccc");
-    s1 = "aaabbbaaacccaaa";  TRY(con_trim_right(s1, 'a'));                    TEST_EQUAL(s1, "aaabbbaaaccc");
-    s1 = "";                 TRY(con_trim_if(s1, is_alpha));                  TEST_EQUAL(s1, "");
-    s1 = "123abc123";        TRY(con_trim_if(s1, is_alpha));                  TEST_EQUAL(s1, "123abc123");
-    s1 = "abc123abc123abc";  TRY(con_trim_if(s1, is_alpha));                  TEST_EQUAL(s1, "123abc123");
-    s1 = "";                 TRY(con_trim_left_if(s1, is_alpha));             TEST_EQUAL(s1, "");
-    s1 = "123abc123abc";     TRY(con_trim_left_if(s1, is_alpha));             TEST_EQUAL(s1, "123abc123abc");
-    s1 = "abc123abc123abc";  TRY(con_trim_left_if(s1, is_alpha));             TEST_EQUAL(s1, "123abc123abc");
-    s1 = "";                 TRY(con_trim_right_if(s1, is_alpha));            TEST_EQUAL(s1, "");
-    s1 = "abc123abc123";     TRY(con_trim_right_if(s1, is_alpha));            TEST_EQUAL(s1, "abc123abc123");
-    s1 = "abc123abc123abc";  TRY(con_trim_right_if(s1, is_alpha));            TEST_EQUAL(s1, "abc123abc123");
+    s = "";                 TRY(con_remove(s, 'c'));                        TEST_EQUAL(s, "");
+    s = "xyzxyzxyz";        TRY(con_remove(s, 'c'));                        TEST_EQUAL(s, "xyzxyzxyz");
+    s = "abcabcabc";        TRY(con_remove(s, 'c'));                        TEST_EQUAL(s, "ababab");
+    s = "";                 TRY(con_remove_if(s, is_alpha));                TEST_EQUAL(s, "");
+    s = "1234567890";       TRY(con_remove_if(s, is_alpha));                TEST_EQUAL(s, "1234567890");
+    s = "abc123abc123";     TRY(con_remove_if(s, is_alpha));                TEST_EQUAL(s, "123123");
+    s = "";                 TRY(con_remove_if_not(s, is_alpha));            TEST_EQUAL(s, "");
+    s = "abcdefghijklm";    TRY(con_remove_if_not(s, is_alpha));            TEST_EQUAL(s, "abcdefghijklm");
+    s = "abc123abc123";     TRY(con_remove_if_not(s, is_alpha));            TEST_EQUAL(s, "abcabc");
+    s = "";                 TRY(con_unique(s));                             TEST_EQUAL(s, "");
+    s = "abcdeabcde";       TRY(con_unique(s));                             TEST_EQUAL(s, "abcdeabcde");
+    s = "abbcccddddeeeee";  TRY(con_unique(s));                             TEST_EQUAL(s, "abcde");
+    s = "";                 TRY(con_unique(s, same_case));                  TEST_EQUAL(s, "");
+    s = "AbCaBcAbCaBc";     TRY(con_unique(s, same_case));                  TEST_EQUAL(s, "AbCaBcAbCaBc");
+    s = "ABCabcABCabc";     TRY(con_unique(s, same_case));                  TEST_EQUAL(s, "AaAa");
+    s = "";                 TRY(con_sort_unique(s));                        TEST_EQUAL(s, "");
+    s = "zyxwvutsrqpon";    TRY(con_sort_unique(s));                        TEST_EQUAL(s, "nopqrstuvwxyz");
+    s = "abcdeabcdabcaba";  TRY(con_sort_unique(s));                        TEST_EQUAL(s, "abcde");
+    s = "";                 TRY(con_sort_unique(s, std::greater<char>()));  TEST_EQUAL(s, "");
+    s = "nopqrstuvwxyz";    TRY(con_sort_unique(s, std::greater<char>()));  TEST_EQUAL(s, "zyxwvutsrqpon");
+    s = "abcdeabcdabcaba";  TRY(con_sort_unique(s, std::greater<char>()));  TEST_EQUAL(s, "edcba");
+    s = "";                 TRY(con_trim(s, 'a'));                          TEST_EQUAL(s, "");
+    s = "bbbaaaccc";        TRY(con_trim(s, 'a'));                          TEST_EQUAL(s, "bbbaaaccc");
+    s = "aaabbbaaacccaaa";  TRY(con_trim(s, 'a'));                          TEST_EQUAL(s, "bbbaaaccc");
+    s = "";                 TRY(con_trim_left(s, 'a'));                     TEST_EQUAL(s, "");
+    s = "cccbbbaaa";        TRY(con_trim_left(s, 'a'));                     TEST_EQUAL(s, "cccbbbaaa");
+    s = "aaabbbaaacccaaa";  TRY(con_trim_left(s, 'a'));                     TEST_EQUAL(s, "bbbaaacccaaa");
+    s = "";                 TRY(con_trim_right(s, 'a'));                    TEST_EQUAL(s, "");
+    s = "aaabbbccc";        TRY(con_trim_right(s, 'a'));                    TEST_EQUAL(s, "aaabbbccc");
+    s = "aaabbbaaacccaaa";  TRY(con_trim_right(s, 'a'));                    TEST_EQUAL(s, "aaabbbaaaccc");
+    s = "";                 TRY(con_trim_if(s, is_alpha));                  TEST_EQUAL(s, "");
+    s = "123abc123";        TRY(con_trim_if(s, is_alpha));                  TEST_EQUAL(s, "123abc123");
+    s = "abc123abc123abc";  TRY(con_trim_if(s, is_alpha));                  TEST_EQUAL(s, "123abc123");
+    s = "";                 TRY(con_trim_left_if(s, is_alpha));             TEST_EQUAL(s, "");
+    s = "123abc123abc";     TRY(con_trim_left_if(s, is_alpha));             TEST_EQUAL(s, "123abc123abc");
+    s = "abc123abc123abc";  TRY(con_trim_left_if(s, is_alpha));             TEST_EQUAL(s, "123abc123abc");
+    s = "";                 TRY(con_trim_right_if(s, is_alpha));            TEST_EQUAL(s, "");
+    s = "abc123abc123";     TRY(con_trim_right_if(s, is_alpha));            TEST_EQUAL(s, "abc123abc123");
+    s = "abc123abc123abc";  TRY(con_trim_right_if(s, is_alpha));            TEST_EQUAL(s, "abc123abc123");
 
     v2 = {1, 2, 3};
     v3 = {4, 5, 6};
@@ -950,24 +951,23 @@ void test_core_common_generic_algorithms() {
     TRY(v1 = concatenate(v2, v3));      TEST_EQUAL(make_str(v1), "[1,2,3,4,5,6]");
     TRY(v1 = concatenate(v2, v3, v4));  TEST_EQUAL(make_str(v1), "[1,2,3,4,5,6,7,8,9]");
 
-    auto f1 = [&] { s1 += "Hello"; };
-    auto f2 = [&] (size_t i) { s1 += dec(i) + ";"; };
+    auto f1 = [&] { s += "Hello"; };
+    auto f2 = [&] (size_t i) { s += dec(i) + ";"; };
 
-    s1.clear();  TRY(do_n(0, f1));   TEST_EQUAL(s1, "");
-    s1.clear();  TRY(do_n(1, f1));   TEST_EQUAL(s1, "Hello");
-    s1.clear();  TRY(do_n(2, f1));   TEST_EQUAL(s1, "HelloHello");
-    s1.clear();  TRY(do_n(3, f1));   TEST_EQUAL(s1, "HelloHelloHello");
-    s1.clear();  TRY(for_n(0, f2));  TEST_EQUAL(s1, "");
-    s1.clear();  TRY(for_n(1, f2));  TEST_EQUAL(s1, "0;");
-    s1.clear();  TRY(for_n(2, f2));  TEST_EQUAL(s1, "0;1;");
-    s1.clear();  TRY(for_n(3, f2));  TEST_EQUAL(s1, "0;1;2;");
+    s.clear();  TRY(do_n(0, f1));   TEST_EQUAL(s, "");
+    s.clear();  TRY(do_n(1, f1));   TEST_EQUAL(s, "Hello");
+    s.clear();  TRY(do_n(2, f1));   TEST_EQUAL(s, "HelloHello");
+    s.clear();  TRY(do_n(3, f1));   TEST_EQUAL(s, "HelloHelloHello");
+    s.clear();  TRY(for_n(0, f2));  TEST_EQUAL(s, "");
+    s.clear();  TRY(for_n(1, f2));  TEST_EQUAL(s, "0;");
+    s.clear();  TRY(for_n(2, f2));  TEST_EQUAL(s, "0;1;");
+    s.clear();  TRY(for_n(3, f2));  TEST_EQUAL(s, "0;1;2;");
 
     std::map<int, Ustring> m = {
         {1, "alpha"},
         {2, "bravo"},
         {3, "charlie"},
     };
-    Ustring s;
 
     TRY(s = find_in_map(m, 1));          TEST_EQUAL(s, "alpha");
     TRY(s = find_in_map(m, 2));          TEST_EQUAL(s, "bravo");
@@ -977,6 +977,21 @@ void test_core_common_generic_algorithms() {
     TRY(s = find_in_map(m, 2, "none"));  TEST_EQUAL(s, "bravo");
     TRY(s = find_in_map(m, 3, "none"));  TEST_EQUAL(s, "charlie");
     TRY(s = find_in_map(m, 4, "none"));  TEST_EQUAL(s, "none");
+
+    s = "Hello world";
+
+    TRY(it = find_last(s.begin(), s.end(), 'o'));                   TEST_EQUAL(it - s.begin(), 7);
+    TRY(it = find_last(s.begin(), s.end(), 'z'));                   TEST_EQUAL(it - s.begin(), 11);
+    TRY(it = find_last_not(s.begin(), s.end(), 'd'));               TEST_EQUAL(it - s.begin(), 9);
+    TRY(it = find_last_not(s.begin(), s.end(), 'z'));               TEST_EQUAL(it - s.begin(), 10);
+    TRY(it = find_last_if(s.begin(), s.end(), ascii_isupper));      TEST_EQUAL(it - s.begin(), 0);
+    TRY(it = find_last_if(s.begin(), s.end(), ascii_islower));      TEST_EQUAL(it - s.begin(), 10);
+    TRY(it = find_last_if(s.begin(), s.end(), ascii_isdigit));      TEST_EQUAL(it - s.begin(), 11);
+    TRY(it = find_last_if_not(s.begin(), s.end(), ascii_islower));  TEST_EQUAL(it - s.begin(), 5);
+    TRY(it = find_last_if_not(s.begin(), s.end(), ascii_isupper));  TEST_EQUAL(it - s.begin(), 10);
+    TRY(it = find_last_if_not(s.begin(), s.end(), ascii_isprint));  TEST_EQUAL(it - s.begin(), 11);
+    TRY(it = find_not(s.begin(), s.end(), 'H'));                    TEST_EQUAL(it - s.begin(), 1);
+    TRY(it = find_not(s.begin(), s.end(), 'z'));                    TEST_EQUAL(it - s.begin(), 0);
 
     std::set<int> is1, is2;
     TEST(! sets_intersect(is1, is2));

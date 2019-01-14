@@ -291,7 +291,7 @@ supply the standard member types:
 A convenience class to help define specializations of `std::numeric_limits`
 for new arithmetic types.
 
-## Range types ##
+### Range types ###
 
 * `template <typename Iterator> struct` **`Irange`**
     * `using Irange::`**`iterator`** `= Iterator`

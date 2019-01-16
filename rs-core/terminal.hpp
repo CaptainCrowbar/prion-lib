@@ -3,6 +3,7 @@
 #include "rs-core/common.hpp"
 #include "rs-core/string.hpp"
 #include "rs-core/vector.hpp"
+#include <algorithm>
 #include <chrono>
 #include <functional>
 #include <iostream>
@@ -78,7 +79,7 @@ namespace RS {
     public LessThanComparable<Xcolour> {
     public:
         constexpr Xcolour() = default;
-        constexpr explicit Xcolour(int grey) noexcept: code(uint8_t(231 + clamp(grey, 1, 24))) {}
+        constexpr explicit Xcolour(int grey) noexcept: code(uint8_t(231 + std::clamp(grey, 1, 24))) {}
         explicit Xcolour(Int3 rgb) noexcept: Xcolour(rgb[0], rgb[1], rgb[2]) {}
         constexpr Xcolour(int r, int g, int b) noexcept: code(uint8_t(36 * cc(r) + 6 * cc(g) + cc(b) + 16)) {}
         constexpr bool is_null() const noexcept { return code == 0; }
@@ -93,7 +94,7 @@ namespace RS {
         Ustring fg() const { return code == 0 ? Ustring() : "\x1b[38;5;" + std::to_string(code) + "m"; }
         Ustring bg() const { return code == 0 ? Ustring() : "\x1b[48;5;" + std::to_string(code) + "m"; }
         Ustring str() const;
-        static constexpr Xcolour from_index(int i) noexcept { Xcolour xc; xc.code = uint8_t(clamp(i, 0, 255)); return xc; }
+        static constexpr Xcolour from_index(int i) noexcept { Xcolour xc; xc.code = uint8_t(std::clamp(i, 0, 255)); return xc; }
         static Xcolour from_str(Uview str);
         friend bool operator==(Xcolour lhs, Xcolour rhs) noexcept { return lhs.index() == rhs.index(); }
         friend bool operator<(Xcolour lhs, Xcolour rhs) noexcept { return lhs.index() < rhs.index(); }
@@ -101,7 +102,7 @@ namespace RS {
         friend Ustring to_str(Xcolour xc) { return xc.str(); }
     private:
         uint8_t code = 0;
-        static constexpr int cc(int i) noexcept { return clamp(i, 0, 5); }
+        static constexpr int cc(int i) noexcept { return std::clamp(i, 0, 5); }
         static constexpr int c8(int i) noexcept { return i ? 40 * i + 55 : 0; }
         static constexpr int y8(int i) noexcept { return i ? 10 * i - 2 : 0; }
     };

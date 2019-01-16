@@ -764,12 +764,6 @@ These return the binomial coefficient (`a!/b!(a-b)!` if `0<=b<=a`, otherwise
 zero). `T` must be an integer type. Behaviour is undefined if the correct
 result would be out of range for the return type.
 
-* `template <typename T, typename T2, typename T3> constexpr T` **`clamp`**`(const T& x, const T2& min, const T3& max) noexcept`
-
-`[unicorn]` Clamps a value to a fixed range. This returns `min` if `t<min`,
-`max` if `t>max`, otherwise `t`. `T2` and `T3` must be implicitly convertible
-t `T`.
-
 * `template <typename T> constexpr T` **`gcd`**`(T a, T b) noexcept`
 * `template <typename T> constexpr T` **`lcm`**`(T a, T b) noexcept`
 

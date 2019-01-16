@@ -327,10 +327,10 @@ namespace RS {
         return out << v.format();
     }
 
-    template <typename T1, typename T2, typename T3, size_t N>
-    Vector<T1, N> clamp(Vector<T1, N> x, Vector<T2, N> min, Vector<T3, N> max) noexcept {
+    template <typename T, size_t N>
+    Vector<T, N> clamp(Vector<T, N> x, Vector<T, N> min, Vector<T, N> max) noexcept {
         for (size_t i = 0; i < N; ++i)
-            x[i] = clamp(x[i], min[i], max[i]);
+            x[i] = std::clamp(x[i], min[i], max[i]);
         return x;
     }
 

@@ -842,8 +842,8 @@ void test_core_mp_integer_core_functions() {
     Int w = 42, x = -99, y, z;
     int s;
 
-    TRY(c = clamp(a, 0, 10));  TEST_EQUAL(c, 10);
-    TRY(y = clamp(w, 0, 10));  TEST_EQUAL(y, 10);
+    TRY(c = std::clamp(a, Nat(0), Nat(10)));  TEST_EQUAL(c, 10);
+    TRY(y = std::clamp(w, Int(0), Int(10)));  TEST_EQUAL(y, 10);
 
     TRY(c = quo(b, a));  TEST_EQUAL(c, 2);
     TRY(y = quo(x, w));  TEST_EQUAL(y, -3);

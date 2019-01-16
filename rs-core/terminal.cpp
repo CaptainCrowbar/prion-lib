@@ -1,7 +1,6 @@
 #include "rs-core/terminal.hpp"
 #include "rs-core/float.hpp"
 #include "rs-core/time.hpp"
-#include <algorithm>
 #include <cstdlib>
 #include <stdexcept>
 
@@ -40,7 +39,7 @@ namespace RS {
     }
 
     void ProgressBar::operator()(double x) {
-        x = clamp(x, 0, 1);
+        x = std::clamp(x, 0.0, 1.0);
         Ustring message;
         auto now = system_clock::now();
         if (x > 0 && x < 1 && now > start_time) {

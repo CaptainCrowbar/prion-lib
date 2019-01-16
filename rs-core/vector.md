@@ -197,7 +197,7 @@ index is out of range.
 
 Returns the zero vector (the same value as the default constructor).
 
-* `template <typename T1, typename T2, typename T3> Vector<T1, N>` **`clamp`**`(Vector<T1, N> x, Vector<T2, N> min, Vector<T3, N> max) noexcept`
+* `Vector` **`clamp`**`(Vector x, Vector min, Vector max) noexcept`
 * `Vector` **`min`**`(Vector x, Vector y) noexcept`
 * `Vector` **`max`**`(Vector x, Vector y) noexcept`
 * `std::pair<Vector, Vector>` **`minmax`**`(Vector x, Vector y) noexcept`

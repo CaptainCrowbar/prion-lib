@@ -543,32 +543,32 @@ namespace RS::Meta {
 
     #define RS_DETECT_PREFIX_OPERATOR(op, tname, cname) \
         template <typename T> using Has##tname##OperatorArchetype = decltype(op std::declval<T>()); \
-        template <typename T> using Has##tname##Operator = IsDetected<Has##tname##OperatorArchetype, T>; \
+        template <typename T> using Has##tname##Operator = ::RS::Meta::IsDetected<Has##tname##OperatorArchetype, T>; \
         template <typename T> constexpr bool has_##cname##_operator = Has##tname##Operator<T>::value;
 
     #define RS_DETECT_PREFIX_OPERATOR_REF(op, tname, cname) \
         template <typename T> using Has##tname##OperatorArchetype = decltype(op std::declval<T&>()); \
-        template <typename T> using Has##tname##Operator = IsDetected<Has##tname##OperatorArchetype, T>; \
+        template <typename T> using Has##tname##Operator = ::RS::Meta::IsDetected<Has##tname##OperatorArchetype, T>; \
         template <typename T> constexpr bool has_##cname##_operator = Has##tname##Operator<T>::value;
 
     #define RS_DETECT_POSTFIX_OPERATOR(op, tname, cname) \
         template <typename T> using Has##tname##OperatorArchetype = decltype(std::declval<T>() op); \
-        template <typename T> using Has##tname##Operator = IsDetected<Has##tname##OperatorArchetype, T>; \
+        template <typename T> using Has##tname##Operator = ::RS::Meta::IsDetected<Has##tname##OperatorArchetype, T>; \
         template <typename T> constexpr bool has_##cname##_operator = Has##tname##Operator<T>::value;
 
     #define RS_DETECT_POSTFIX_OPERATOR_REF(op, tname, cname) \
         template <typename T> using Has##tname##OperatorArchetype = decltype(std::declval<T&>() op); \
-        template <typename T> using Has##tname##Operator = IsDetected<Has##tname##OperatorArchetype, T>; \
+        template <typename T> using Has##tname##Operator = ::RS::Meta::IsDetected<Has##tname##OperatorArchetype, T>; \
         template <typename T> constexpr bool has_##cname##_operator = Has##tname##Operator<T>::value;
 
     #define RS_DETECT_BINARY_OPERATOR(op, tname, cname) \
         template <typename T, typename T2 = T> using Has##tname##OperatorArchetype = decltype(std::declval<T>() op std::declval<T2>()); \
-        template <typename T, typename T2 = T> using Has##tname##Operator = IsDetected<Has##tname##OperatorArchetype, T, T2>; \
+        template <typename T, typename T2 = T> using Has##tname##Operator = ::RS::Meta::IsDetected<Has##tname##OperatorArchetype, T, T2>; \
         template <typename T, typename T2 = T> constexpr bool has_##cname##_operator = Has##tname##Operator<T, T2>::value;
 
     #define RS_DETECT_BINARY_OPERATOR_REF(op, tname, cname) \
         template <typename T, typename T2 = T> using Has##tname##OperatorArchetype = decltype(std::declval<T&>() op std::declval<T2>()); \
-        template <typename T, typename T2 = T> using Has##tname##Operator = IsDetected<Has##tname##OperatorArchetype, T, T2>; \
+        template <typename T, typename T2 = T> using Has##tname##Operator = ::RS::Meta::IsDetected<Has##tname##OperatorArchetype, T, T2>; \
         template <typename T, typename T2 = T> constexpr bool has_##cname##_operator = Has##tname##Operator<T, T2>::value;
 
     RS_DETECT_PREFIX_OPERATOR_REF   (++,   PreIncrement,      pre_increment);
@@ -711,22 +711,22 @@ namespace RS::Meta {
 
     #define RS_DETECT_FUNCTION(func) \
         template <typename... Args> using HasFunctionArchetype_##func = decltype(func(std::declval<Args>()...)); \
-        template <typename... Args> using HasFunction_##func = IsDetected<HasFunctionArchetype_##func, Args...>; \
+        template <typename... Args> using HasFunction_##func = ::RS::Meta::IsDetected<HasFunctionArchetype_##func, Args...>; \
         template <typename... Args> constexpr bool has_function_##func = HasFunction_##func<Args...>::value;
 
     #define RS_DETECT_STD_FUNCTION(func) \
         template <typename... Args> using HasStdFunctionArchetype_##func = decltype(std::func(std::declval<Args>()...)); \
-        template <typename... Args> using HasStdFunction_##func = IsDetected<HasStdFunctionArchetype_##func, Args...>; \
+        template <typename... Args> using HasStdFunction_##func = ::RS::Meta::IsDetected<HasStdFunctionArchetype_##func, Args...>; \
         template <typename... Args> constexpr bool has_function_std_##func = HasStdFunction_##func<Args...>::value;
 
     #define RS_DETECT_METHOD(func) \
         template <typename T, typename... Args> using HasMethodArchetype_##func = decltype(std::declval<T>().func(std::declval<Args>()...)); \
-        template <typename T, typename... Args> using HasMethod_##func = IsDetected<HasMethodArchetype_##func, T, Args...>; \
+        template <typename T, typename... Args> using HasMethod_##func = ::RS::Meta::IsDetected<HasMethodArchetype_##func, T, Args...>; \
         template <typename T, typename... Args> constexpr bool has_method_##func = HasMethod_##func<T, Args...>::value;
 
     #define RS_DETECT_MEMBER_TYPE(type) \
         template <typename T> using HasMemberTypeArchetype_##type = typename T::type; \
-        template <typename T> using HasMemberType_##type = IsDetected<HasMemberTypeArchetype_##type, T>; \
+        template <typename T> using HasMemberType_##type = ::RS::Meta::IsDetected<HasMemberTypeArchetype_##type, T>; \
         template <typename T> constexpr bool has_member_type_##type = HasMemberType_##type<T>::value;
 
     // Type categories

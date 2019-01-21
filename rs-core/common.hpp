@@ -62,12 +62,6 @@ RS_LDLIB(rs-core);
     #endif
 #endif
 
-// Warnings we need to squelch
-
-#ifdef _MSC_VER
-    #pragma warning(disable: 4459) // Declaration hides global declaration
-#endif
-
 // Preprocessor macros
 
 #define RS_BITMASK_OPERATORS(EC) \

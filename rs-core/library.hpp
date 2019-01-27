@@ -2,6 +2,7 @@
 
 #include "rs-core/algorithm.hpp"
 #include "rs-core/array-map.hpp"
+#include "rs-core/astronomy.hpp"
 #include "rs-core/blob.hpp"
 #include "rs-core/bounded-array.hpp"
 #include "rs-core/cache.hpp"

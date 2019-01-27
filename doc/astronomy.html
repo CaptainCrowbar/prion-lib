@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Astronomical Functions and Reference Data</title>
+<link type="text/css" rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<h1 id="astronomical-functions-and-reference-data">Astronomical Functions and Reference Data</h1>
+<p>By Ross Smith</p>
+<ul>
+<li><code>#include "rs-core/astronomy.hpp"</code></li>
+<li><code>namespace RS::Astro</code></li>
+</ul>
+<h2 id="contents">Contents</h2>
+<div class="toc">
+<ul>
+<li><a href="#astronomical-functions-and-reference-data">Astronomical Functions and Reference Data</a><ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#constants">Constants</a><ul>
+<li><a href="#physical-constants">Physical constants</a></li>
+<li><a href="#astronomical-constants">Astronomical constants</a></li>
+</ul>
+</li>
+<li><a href="#blackbody-radiation">Blackbody radiation</a></li>
+<li><a href="#coordinate-systems">Coordinate systems</a></li>
+<li><a href="#solar-system-data">Solar system data</a></li>
+<li><a href="#stars">Stars</a><ul>
+<li><a href="#stellar-property-relations">Stellar property relations</a></li>
+<li><a href="#spectral-classification">Spectral classification</a></li>
+<li><a href="#hertzsprung-russell-diagram">Hertzsprung-Russell diagram</a></li>
+</ul>
+</li>
+<li><a href="#utilities">Utilities</a><ul>
+<li><a href="#interpolation-table">Interpolation table</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="constants">Constants</h2>
+<p>Values in the tables here are quoted to four significant figures for quick
+reference (apart from the day and year lengths, which are quoted to the
+nearest second); the actual values in the library are expressed to the maximum
+available or representable precision.a</p>
+<h3 id="physical-constants">Physical constants</h3>
+<table>
+<thead>
+<tr>
+<th>Long name</th>
+<th>Short name</th>
+<th>Value</th>
+<th>Units</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>atomic_mass_unit</code></strong></td>
+<td><strong><code>m_u</code></strong></td>
+<td>1.661e-27</td>
+<td>kg</td>
+<td>Best available value</td>
+</tr>
+<tr>
+<td><strong><code>avogadro_constant</code></strong></td>
+<td><strong><code>N_A</code></strong></td>
+<td>6.022e23</td>
+<td>mol<sup>-1</sup></td>
+<td>Exact value fixed by SI 2019</td>
+</tr>
+<tr>
+<td><strong><code>boltzmann_constant</code></strong></td>
+<td><strong><code>k_B</code></strong></td>
+<td>1.381e-23</td>
+<td>J K<sup>-1</sup></td>
+<td>Exact value fixed by SI 2019</td>
+</tr>
+<tr>
+<td><strong><code>electron_mass</code></strong></td>
+<td><strong><code>m_e</code></strong></td>
+<td>9.109e-31</td>
+<td>kg</td>
+<td>Best available value</td>
+</tr>
+<tr>
+<td><strong><code>elementary_charge</code></strong></td>
+<td><strong><code>ec</code></strong></td>
+<td>1.602e-19</td>
+<td>C</td>
+<td>Exact value fixed by SI 2019</td>
+</tr>
+<tr>
+<td><strong><code>gravitational_constant</code></strong></td>
+<td><strong><code>G</code></strong></td>
+<td>6.674e-11</td>
+<td>m<sup>3</sup> kg<sup>-1</sup> s<sup>-2</sup></td>
+<td>Best available value</td>
+</tr>
+<tr>
+<td><strong><code>magnetic_constant</code></strong></td>
+<td><strong><code>mu_0</code></strong></td>
+<td>1.257e-6</td>
+<td>N A<sup>-2</sup></td>
+<td>Best available value</td>
+</tr>
+<tr>
+<td><strong><code>planck_constant</code></strong></td>
+<td><strong><code>h</code></strong></td>
+<td>6.626e-34</td>
+<td>J s</td>
+<td>Exact value fixed by SI 2019</td>
+</tr>
+<tr>
+<td><strong><code>rydberg_constant</code></strong></td>
+<td><strong><code>R_inf</code></strong></td>
+<td>1.097e7</td>
+<td>m<sup>-1</sup></td>
+<td>Best available value</td>
+</tr>
+<tr>
+<td><strong><code>speed_of_light</code></strong></td>
+<td><strong><code>c</code></strong></td>
+<td>2.998e8</td>
+<td>m s<sup>-1</sup></td>
+<td>Exact value fixed by SI 2019</td>
+</tr>
+<tr>
+<td><strong><code>vacuum_impedance</code></strong></td>
+<td><strong><code>Z_0</code></strong></td>
+<td>376.7</td>
+<td>ohm</td>
+<td>Best available value</td>
+</tr>
+<tr>
+<td><strong><code>vacuum_permittivity</code></strong></td>
+<td><strong><code>epsilon_0</code></strong></td>
+<td>8.854e-12</td>
+<td>F m<sup>-1</sup></td>
+<td>Best available value</td>
+</tr>
+<tr>
+<td><strong><code>faraday_constant</code></strong></td>
+<td><strong><code>F</code></strong></td>
+<td>96490</td>
+<td>C mol<sup>-1</sup></td>
+<td>Exact value derived from SI 2019</td>
+</tr>
+<tr>
+<td><strong><code>josephson_constant</code></strong></td>
+<td><strong><code>K_J</code></strong></td>
+<td>4.836e14</td>
+<td>Hz/V</td>
+<td>Exact value derived from SI 2019</td>
+</tr>
+<tr>
+<td><strong><code>molar_gas_constant</code></strong></td>
+<td><strong><code>R</code></strong></td>
+<td>8.314</td>
+<td>J mol<sup>-1</sup> K<sup>-1</sup></td>
+<td>Exact value derived from SI 2019</td>
+</tr>
+<tr>
+<td><strong><code>molar_mass_constant</code></strong></td>
+<td><strong><code>M_u</code></strong></td>
+<td>0.001</td>
+<td>kg mol<sup>-1</sup></td>
+<td>Best available value</td>
+</tr>
+<tr>
+<td><strong><code>stefan_boltzmann_constant</code></strong></td>
+<td><strong><code>sigma</code></strong></td>
+<td>5.670e-8</td>
+<td>W m<sup>-2</sup> K<sup>-4</sup></td>
+<td>Exact value derived from SI 2019</td>
+</tr>
+<tr>
+<td><strong><code>von_klitzing_constant</code></strong></td>
+<td><strong><code>R_K</code></strong></td>
+<td>25810</td>
+<td>ohm</td>
+<td>Exact value derived from SI 2019</td>
+</tr>
+<tr>
+<td><strong><code>first_radiation_constant</code></strong></td>
+<td><strong><code>c1_L</code></strong></td>
+<td>1.191e-16</td>
+<td>m<sup>4</sup> kg s</td>
+<td>Exact value derived from SI 2019</td>
+</tr>
+<tr>
+<td><strong><code>second_radiation_constant</code></strong></td>
+<td><strong><code>c2</code></strong></td>
+<td>0.01439</td>
+<td>m K</td>
+<td>Exact value derived from SI 2019</td>
+</tr>
+<tr>
+<td><strong><code>wien_constant</code></strong></td>
+<td><strong><code>b_W</code></strong></td>
+<td>2.898e-3</td>
+<td>m K</td>
+<td>Best available value</td>
+</tr>
+</tbody>
+</table>
+<h3 id="astronomical-constants">Astronomical constants</h3>
+<table>
+<thead>
+<tr>
+<th>Long name</th>
+<th>Short name</th>
+<th>Value</th>
+<th>Units</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>sidereal_day</code></strong></td>
+<td><strong><code>d_sid</code></strong></td>
+<td>86164</td>
+<td>s</td>
+<td>Best available value</td>
+</tr>
+<tr>
+<td><strong><code>julian_day</code></strong></td>
+<td><strong><code>jd</code></strong></td>
+<td>86400</td>
+<td>s</td>
+<td>Exact by definition</td>
+</tr>
+<tr>
+<td><strong><code>tropical_year</code></strong></td>
+<td><strong><code>y_trop</code></strong></td>
+<td>31556925</td>
+<td>s</td>
+<td>Best available value</td>
+</tr>
+<tr>
+<td><strong><code>julian_year</code></strong></td>
+<td><strong><code>jy</code></strong></td>
+<td>31557600</td>
+<td>s</td>
+<td>Exact by definition</td>
+</tr>
+<tr>
+<td><strong><code>sidereal_year</code></strong></td>
+<td><strong><code>y_sid</code></strong></td>
+<td>31558150</td>
+<td>s</td>
+<td>Best available value</td>
+</tr>
+<tr>
+<td><strong><code>earth_radius</code></strong></td>
+<td><strong><code>R_earth</code></strong></td>
+<td>6.371e6</td>
+<td>m</td>
+<td>Best available value</td>
+</tr>
+<tr>
+<td><strong><code>jupiter_radius</code></strong></td>
+<td><strong><code>R_jup</code></strong></td>
+<td>6.991e7</td>
+<td>m</td>
+<td>Best available value</td>
+</tr>
+<tr>
+<td><strong><code>solar_radius</code></strong></td>
+<td><strong><code>R_sun</code></strong></td>
+<td>6.957e8</td>
+<td>m</td>
+<td>IAU adopted value</td>
+</tr>
+<tr>
+<td><strong><code>astronomical_unit</code></strong></td>
+<td><strong><code>au</code></strong></td>
+<td>1.496e8</td>
+<td>m</td>
+<td>IAU adopted value</td>
+</tr>
+<tr>
+<td><strong><code>light_year</code></strong></td>
+<td><strong><code>ly</code></strong></td>
+<td>9.461e15</td>
+<td>m</td>
+<td>Exact value derived from SI</td>
+</tr>
+<tr>
+<td><strong><code>parsec</code></strong></td>
+<td><strong><code>pc</code></strong></td>
+<td>3.086e16</td>
+<td>m</td>
+<td>Best available value</td>
+</tr>
+<tr>
+<td><strong><code>earth_mass</code></strong></td>
+<td><strong><code>M_earth</code></strong></td>
+<td>5.972e24</td>
+<td>kg</td>
+<td>Best available value</td>
+</tr>
+<tr>
+<td><strong><code>jupiter_mass</code></strong></td>
+<td><strong><code>M_jup</code></strong></td>
+<td>1.898e27</td>
+<td>kg</td>
+<td>Best available value</td>
+</tr>
+<tr>
+<td><strong><code>solar_mass</code></strong></td>
+<td><strong><code>M_sun</code></strong></td>
+<td>1.988e30</td>
+<td>kg</td>
+<td>Best available value</td>
+</tr>
+<tr>
+<td><strong><code>earth_gravity</code></strong></td>
+<td><strong><code>g_earth</code></strong></td>
+<td>9.807</td>
+<td>m s<sup>-2</sup></td>
+<td>Standard adopted value</td>
+</tr>
+<tr>
+<td><strong><code>bolometric_luminosity_constant</code></strong></td>
+<td><strong><code>L_0</code></strong></td>
+<td>3.013e28</td>
+<td>W</td>
+<td>IAU adopted value</td>
+</tr>
+<tr>
+<td><strong><code>solar_luminosity</code></strong></td>
+<td><strong><code>L_sun</code></strong></td>
+<td>3.828e26</td>
+<td>W</td>
+<td>IAU adopted value</td>
+</tr>
+<tr>
+<td><strong><code>solar_temperature</code></strong></td>
+<td><strong><code>T_sun</code></strong></td>
+<td>5772</td>
+<td>K</td>
+<td>IAU adopted value</td>
+</tr>
+</tbody>
+</table>
+<h2 id="blackbody-radiation">Blackbody radiation</h2>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>BlackbodySpectrum</code></strong><ul>
+<li><code>BlackbodySpectrum::</code><strong><code>BlackbodySpectrum</code></strong><code>() noexcept</code></li>
+<li><code>explicit BlackbodySpectrum::</code><strong><code>BlackbodySpectrum</code></strong><code>(double temp) noexcept</code></li>
+<li><code>double BlackbodySpectrum::</code><strong><code>peak</code></strong><code>() const noexcept</code></li>
+<li><code>double BlackbodySpectrum::</code><strong><code>power</code></strong><code>() const noexcept</code></li>
+<li><code>double BlackbodySpectrum::</code><strong><code>operator()</code></strong><code>(double lambda) const noexcept</code></li>
+</ul>
+</li>
+</ul>
+<p>Properties of the blackbody spectrum for a given temperature:</p>
+<ul>
+<li><code>peak()</code> = wavelength of peak emission</li>
+<li><code>power()</code> = total emission (W m<sup>-2</sup>)</li>
+<li><code>operator()()</code> = spectral radiance for a given wavelength,
+    per unit surface area, per unit solid angle, per unit wavelength
+    (W m<sup>-2</sup> sr<sup>-1</sup> m<sup>-1</sup> = kg m<sup>-1</sup> s<sup>-3</sup> sr<sup>-1</sup>)</li>
+</ul>
+<p>Temperature is in kelvins; wavelength is in metres.</p>
+</div>
+<h2 id="coordinate-systems">Coordinate systems</h2>
+<div class="defns">
+<ul>
+<li><code>constexpr double</code> <strong><code>degrees_to_radians</code></strong><code>(double deg, double min = 0, double sec = 0) noexcept</code></li>
+<li><code>constexpr double</code> <strong><code>hours_to_radians</code></strong><code>(double hrs, double min = 0, double sec = 0) noexcept</code></li>
+<li><code>constexpr double</code> <strong><code>radians_to_degrees</code></strong><code>(double rad) noexcept</code></li>
+<li><code>void</code> <strong><code>radians_to_degrees</code></strong><code>(double rad, int&amp; deg, double&amp; min) noexcept</code></li>
+<li><code>void</code> <strong><code>radians_to_degrees</code></strong><code>(double rad, int&amp; deg, int&amp; min, double&amp; sec) noexcept</code></li>
+<li><code>constexpr double</code> <strong><code>radians_to_hours</code></strong><code>(double rad) noexcept</code></li>
+<li><code>void</code> <strong><code>radians_to_hours</code></strong><code>(double rad, int&amp; hrs, double&amp; min) noexcept</code></li>
+<li><code>void</code> <strong><code>radians_to_hours</code></strong><code>(double rad, int&amp; hrs, int&amp; min, double&amp; sec) noexcept</code></li>
+</ul>
+<p>Conversion of angles between radians, degrees (with optional minutes and
+seconds), and hours of right ascension (with optional minutes and seconds).
+Where a broken down angle is passed in two or three arguments, the arguments
+are treated as being independently signed; if the angle is negative, all of
+the components should be signed.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Ustring</code> <strong><code>format_angle</code></strong><code>(double rad, Uview fmt = "dms")</code></li>
+</ul>
+<p>Format an angle as degrees (or hours), minutes, and seconds. The format string
+contains the following elements (order and case sensitive):</p>
+<ul>
+<li><code>d|dm|dms|h|hm|hms</code> = Breakdown format</li>
+<li><code>+</code> = Always insert a sign prefix <em>(optional)</em></li>
+<li><code>&lt;integer&gt;</code> = Number of decimal places for the last element <em>(optional; default 0)</em></li>
+<li><code>[ips]</code> = Flags <em>(optional)</em></li>
+<li><code>,&lt;string&gt;,&lt;string&gt;,&lt;string&gt;</code> = Postfix symbols for degrees (or hours), minutes, and seconds <em>(optional)</em></li>
+</ul>
+<p>Flags:</p>
+<ul>
+<li><code>i</code> = Insert the symbol attached to the last element before the decimal
+point instead of after the fractional part (e.g. <code>12˚34'56".789</code>). This flag
+has no effect if the precision is zero.</li>
+<li><code>p</code> = Pad the leading element with zeros to three (degrees) or two (hours)
+digits (other elements are always fixed width).</li>
+<li><code>s</code> = Use the standard unit symbols (<code>˚'"</code> for degrees, <code>hms</code> for hours).
+This may not be combined with explicit unit symbols at the end of the format
+string.</li>
+</ul>
+<p>If no unit symbols are given, the elements will be separated with spaces; to
+get space delimiters with unit symbols, include the trailing space with the
+symbols.</p>
+<p>The function will throw <code>std::invalid_argument</code> if the format string is
+invalid.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>double</code> <strong><code>parse_angle</code></strong><code>(const Ustring&amp; str, Uview fmt = "")</code></li>
+</ul>
+<p>Parse a angle expressed in degrees (or hours), minutes, and seconds. Any of
+the three elements may have a decimal part; the common astronomical convention
+of placing the unit before the decimal point is recognised. Whitespace between
+elements is ignored, apart from being recognised as a delimiter, as is leading
+and trailing whitespace.</p>
+<p>The only valid values for the format string are <code>"d[ms]"</code> (degrees), <code>"h[ms]"</code>
+(hours), or an empty string (characters after the first are ignored and do not
+imply a specific number of elements). If the format is empty, a unit is
+expected to be attached to the leading element. A unit starting with <code>"D"</code>,
+<code>"d"</code>, or <code>"˚"</code> is assumed to mean degrees; a unit starting with <code>"H"</code> or
+<code>"h"</code> is assumed to mean hours; any other unit (including none) is an error.
+If a specific format is supplied, it is an error if the unit on the leading
+element disagrees with the format, but a missing or unrecognised unit will be
+assumed to match the format.</p>
+<p>The function will throw <code>std::invalid_argument</code> if the angle string cannot be
+parsed, if the format string is not one of the legal values, or if the angle
+string and format string have different units.</p>
+</div>
+<h2 id="solar-system-data">Solar system data</h2>
+<div class="defns">
+<ul>
+<li><code>struct</code> <strong><code>SunData</code></strong><ul>
+<li><code>double</code>  <strong><code>mass</code></strong>         <code>= 1.988e30</code>  <em>- mass                           (kg)</em></li>
+<li><code>double</code>  <strong><code>luminosity</code></strong>   <code>= 3.828e26</code>  <em>- luminosity                     (W)</em></li>
+<li><code>double</code>  <strong><code>radius</code></strong>       <code>= 6.957e8</code>   <em>- radius                         (m)</em></li>
+<li><code>double</code>  <strong><code>temperature</code></strong>  <code>= 5772</code>      <em>- temperature                    (K)</em></li>
+<li><code>double</code>  <strong><code>V</code></strong>            <code>= -26.75</code>    <em>- apparent visual magnitude      (mag)</em></li>
+<li><code>double</code>  <strong><code>M_U</code></strong>          <code>= +5.66</code>     <em>- absolute U magnitude           (mag)</em></li>
+<li><code>double</code>  <strong><code>M_B</code></strong>          <code>= +5.47</code>     <em>- absolute B magnitude           (mag)</em></li>
+<li><code>double</code>  <strong><code>M_V</code></strong>          <code>= +4.82</code>     <em>- absolute V magnitude           (mag)</em></li>
+<li><code>double</code>  <strong><code>M_R</code></strong>          <code>= +4.28</code>     <em>- absolute R magnitude           (mag)</em></li>
+<li><code>double</code>  <strong><code>M_I</code></strong>          <code>= +3.94</code>     <em>- absolute I magnitude           (mag)</em></li>
+<li><code>double</code>  <strong><code>M_bol</code></strong>        <code>= +4.74</code>     <em>- absolute bolometric magnitude  (mag)</em></li>
+<li><code>double</code>  <strong><code>BC</code></strong>           <code>= -0.08</code>     <em>- bolometric correction          (mag)</em></li>
+<li><code>double</code>  <strong><code>B_V</code></strong>          <code>= +0.65</code>     <em>- colour index                   (mag)</em></li>
+</ul>
+</li>
+<li><code>struct</code> <strong><code>PlanetData</code></strong><ul>
+<li><code>Ustring</code>  <strong><code>name</code></strong>               <em>- name</em>                     <!-- --></li>
+<li><code>double</code>   <strong><code>distance</code></strong>           <em>- semi-major axis           (m)</em></li>
+<li><code>double</code>   <strong><code>period</code></strong>             <em>- orbital period            (s)</em></li>
+<li><code>double</code>   <strong><code>eccentriciy</code></strong>        <em>- orbital eccentricity</em>     <!-- --></li>
+<li><code>double</code>   <strong><code>inclination</code></strong>        <em>- orbital inclination       (rad)</em></li>
+<li><code>double</code>   <strong><code>mass</code></strong>               <em>- mass                      (kg)</em></li>
+<li><code>double</code>   <strong><code>radius</code></strong>             <em>- mean radius               (m)</em></li>
+<li><code>double</code>   <strong><code>equatorial_radius</code></strong>  <em>- equatorial radius         (m)</em></li>
+<li><code>double</code>   <strong><code>polar_radius</code></strong>       <em>- polar radius              (m)</em></li>
+<li><code>double</code>   <strong><code>density</code></strong>            <em>- mean density              (kg m<sup>-3</sup>)</em></li>
+<li><code>double</code>   <strong><code>rotation</code></strong>           <em>- sidereal rotation period  (s)</em></li>
+<li><code>double</code>   <strong><code>axial_inclination</code></strong>  <em>- axial inclination         (rad)</em></li>
+<li><code>int</code>      <strong><code>satellites</code></strong>         <em>- number of satellites</em>     <!-- --></li>
+</ul>
+</li>
+<li><code>struct</code> <strong><code>DwarfPlanetData</code></strong><ul>
+<li><code>int</code>      <strong><code>number</code></strong>       <em>- minor planet number       (0 if not numbered)</em></li>
+<li><code>Ustring</code>  <strong><code>name</code></strong>         <em>- name</em>                     <!-- --></li>
+<li><code>double</code>   <strong><code>distance</code></strong>     <em>- semi-major axis           (m)</em></li>
+<li><code>double</code>   <strong><code>period</code></strong>       <em>- orbital period            (s)</em></li>
+<li><code>double</code>   <strong><code>eccentriciy</code></strong>  <em>- orbital eccentricity</em>     <!-- --></li>
+<li><code>double</code>   <strong><code>inclination</code></strong>  <em>- orbital inclination       (rad)</em></li>
+<li><code>double</code>   <strong><code>mass</code></strong>         <em>- mass                      (kg; may be null)</em></li>
+<li><code>double</code>   <strong><code>radius</code></strong>       <em>- mean radius               (m)</em></li>
+<li><code>double</code>   <strong><code>density</code></strong>      <em>- mean density              (kg m<sup>-3</sup>; may be null)</em></li>
+<li><code>double</code>   <strong><code>rotation</code></strong>     <em>- sidereal rotation period  (s; may be null)</em></li>
+<li><code>int</code>      <strong><code>satellites</code></strong>   <em>- satellites</em>               <!-- --></li>
+</ul>
+</li>
+<li><code>struct</code> <strong><code>SatelliteData</code></strong><ul>
+<li><code>int</code>      <strong><code>planet</code></strong>     <em>- planet number          (1-based)</em></li>
+<li><code>int</code>      <strong><code>satellite</code></strong>  <em>- satellite number       (1-based)</em></li>
+<li><code>Ustring</code>  <strong><code>label</code></strong>      <em>- discovery label        (may be empty)</em></li>
+<li><code>Ustring</code>  <strong><code>name</code></strong>       <em>- name</em>                  <!-- --></li>
+<li><code>double</code>   <strong><code>distance</code></strong>   <em>- semi-major axis        (m)</em></li>
+<li><code>double</code>   <strong><code>period</code></strong>     <em>- orbital period         (s)</em></li>
+<li><code>double</code>   <strong><code>ecc</code></strong>        <em>- orbital eccentricity</em>  <!-- --></li>
+<li><code>double</code>   <strong><code>incl</code></strong>       <em>- orbital inclination    (rad)</em></li>
+<li><code>double</code>   <strong><code>mass</code></strong>       <em>- mass                   (kg)</em></li>
+<li><code>double</code>   <strong><code>radius</code></strong>     <em>- mean radius            (m)</em></li>
+<li><code>double</code>   <strong><code>density</code></strong>    <em>- mean density           (kg m<sup>-3</sup>)</em></li>
+</ul>
+</li>
+<li><code>enum class</code> <strong><code>Planet</code></strong><ul>
+<li><code>Planet::</code><strong><code>Mercury</code></strong>  <code>= 1</code></li>
+<li><code>Planet::</code><strong><code>Venus</code></strong>    <code>= 2</code></li>
+<li><code>Planet::</code><strong><code>Earth</code></strong>    <code>= 3</code></li>
+<li><code>Planet::</code><strong><code>Mars</code></strong>     <code>= 4</code></li>
+<li><code>Planet::</code><strong><code>Jupiter</code></strong>  <code>= 5</code></li>
+<li><code>Planet::</code><strong><code>Saturn</code></strong>   <code>= 6</code></li>
+<li><code>Planet::</code><strong><code>Uranus</code></strong>   <code>= 7</code></li>
+<li><code>Planet::</code><strong><code>Neptune</code></strong>  <code>= 8</code></li>
+</ul>
+</li>
+<li><code>constexpr SunData</code> <strong><code>Sun</code></strong></li>
+<li><code>inline const std::vector&lt;PlanetData&gt;&amp;</code> <strong><code>planets</code></strong></li>
+<li><code>inline const std::vector&lt;DwarfPlanetData&gt;&amp;</code> <strong><code>dwarf_planets</code></strong></li>
+<li><code>inline const std::vector&lt;SatelliteData&gt;&amp;</code> <strong><code>satellites</code></strong></li>
+</ul>
+<p>Reference data for solar system bodies. Null (unknown) values are represented
+by <code>NaN</code>. The <code>planets</code> table has a dummy entry at index zero, so that
+indexing reflects the conventional numbering of the planets. The
+<code>dwarf_planets</code> table includes all bodies currently known or suspected to be
+dwarf planets. Any specific values listed in the documentation above are
+convenient approximations and do not necessarily match the more exact values
+in the library.</p>
+</div>
+<h2 id="stars">Stars</h2>
+<h3 id="stellar-property-relations">Stellar property relations</h3>
+<div class="defns">
+<ul>
+<li><code>double</code> <strong><code>magnitude_to_ratio</code></strong><code>(double delta_mag) noexcept</code></li>
+<li><code>double</code> <strong><code>ratio_to_magnitude</code></strong><code>(double ratio) noexcept</code></li>
+</ul>
+<p>Conversions between a magnitude difference and a ratio. A ratio greater than 1
+corresponds to a negative magnitude difference, a ratio less than 1 to a
+negative difference. For the second function, behaviour is undefined if the
+ratio is less than or equal to zero.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>double</code> <strong><code>magnitude_to_luminosity</code></strong><code>(double M_bol) noexcept</code></li>
+<li><code>double</code> <strong><code>luminosity_to_magnitude</code></strong><code>(double L) noexcept</code></li>
+<li><code>double</code> <strong><code>magnitude_to_visual_luminosity</code></strong><code>(double M_V) noexcept</code></li>
+<li><code>double</code> <strong><code>visual_luminosity_to_magnitude</code></strong><code>(double L_V) noexcept</code></li>
+</ul>
+<p>Conversions between an absolute magnitude and a luminosity relative to the
+Sun. The first two functions work with bolometric luminosity and magnitude,
+the last two with visual luminosity and magnitude. For the versions that take
+a luminosity argument, behaviour is undefined if the argument is less than or
+equal to zero.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>double</code> <strong><code>luminosity_radius_to_temperature</code></strong><code>(double lum, double rad) noexcept</code></li>
+<li><code>double</code> <strong><code>luminosity_temperature_to_radius</code></strong><code>(double lum, double temp) noexcept</code></li>
+<li><code>double</code> <strong><code>radius_temperature_to_luminosity</code></strong><code>(double rad, double temp) noexcept</code></li>
+<li><code>double</code> <strong><code>solar_luminosity_radius_to_temperature</code></strong><code>(double lum, double rad) noexcept</code></li>
+<li><code>double</code> <strong><code>solar_luminosity_temperature_to_radius</code></strong><code>(double lum, double temp) noexcept</code></li>
+<li><code>double</code> <strong><code>solar_radius_temperature_to_luminosity</code></strong><code>(double rad, double temp) noexcept</code></li>
+</ul>
+<p>Conversions between bolometric luminosity, radius, and effective temperature.
+The first three functions express luminosity and radius in SI units (watts and
+metres, respectively); the last three express them in solar units. All
+functions express temperature in kelvins. For all of these functions,
+behaviour is undefined if any argument is less than or equal to zero.</p>
+</div>
+<h3 id="spectral-classification">Spectral classification</h3>
+<div class="defns">
+<ul>
+<li><code>enum class</code> <strong><code>LC</code></strong><code>: uint8_t</code><ul>
+<li><code>LC::</code><strong><code>Ia</code></strong></li>
+<li><code>LC::</code><strong><code>Ib</code></strong></li>
+<li><code>LC::</code><strong><code>II</code></strong></li>
+<li><code>LC::</code><strong><code>III</code></strong></li>
+<li><code>LC::</code><strong><code>IV</code></strong></li>
+<li><code>LC::</code><strong><code>V</code></strong></li>
+<li><code>LC::</code><strong><code>VI</code></strong></li>
+<li><code>LC::</code><strong><code>VII</code></strong></li>
+<li><code>LC::</code><strong><code>none</code></strong></li>
+</ul>
+</li>
+<li><code>enum class</code> <strong><code>Sp</code></strong><code>: uint8_t</code><ul>
+<li><code>Sp::</code><strong><code>O</code></strong><code>, Sp::</code><strong><code>B</code></strong><code>, Sp::</code><strong><code>A</code></strong><code>, Sp::</code><strong><code>F</code></strong><code>, Sp::</code><strong><code>G</code></strong><code>, Sp::</code><strong><code>K</code></strong><code>, Sp::</code><strong><code>M</code></strong>         <em>- Main sequence</em></li>
+<li><code>Sp::</code><strong><code>L</code></strong><code>, Sp::</code><strong><code>T</code></strong><code>, Sp::</code><strong><code>Y</code></strong>                                                                     <em>- Brown dwarfs</em></li>
+<li><code>Sp::</code><strong><code>DA</code></strong><code>, Sp::</code><strong><code>DB</code></strong><code>, Sp::</code><strong><code>DC</code></strong><code>, Sp::</code><strong><code>DO</code></strong><code>, Sp::</code><strong><code>DQ</code></strong><code>, Sp::</code><strong><code>DX</code></strong><code>, Sp::</code><strong><code>DZ</code></strong>  <em>- White dwarfs</em></li>
+<li><code>Sp::</code><strong><code>WC</code></strong><code>, Sp::</code><strong><code>WN</code></strong><code>, Sp::</code><strong><code>WNh</code></strong><code>, Sp::</code><strong><code>WO</code></strong>                                                 <em>- Wolf-Rayet stars</em></li>
+<li><code>Sp::</code><strong><code>C</code></strong><code>, Sp::</code><strong><code>S</code></strong>                                                                                    <em>- Carbon stars</em></li>
+<li><code>Sp::</code><strong><code>none</code></strong></li>
+</ul>
+</li>
+</ul>
+<p>Enumerations representing the standard luminosity classes and spectral classes.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>constexpr bool</code> <strong><code>is_main_sequence</code></strong><code>(Sp sp) noexcept</code> <em>- O through M</em></li>
+<li><code>constexpr bool</code> <strong><code>is_brown_dwarf</code></strong><code>(Sp sp) noexcept</code> <em>- L through Y</em></li>
+<li><code>constexpr bool</code> <strong><code>is_white_dwarf</code></strong><code>(Sp sp) noexcept</code> <em>-D A through DZ</em></li>
+<li><code>constexpr bool</code> <strong><code>is_wolf_rayet</code></strong><code>(Sp sp) noexcept</code> <em>-W C through WO</em></li>
+<li><code>constexpr bool</code> <strong><code>is_carbon_star</code></strong><code>(Sp sp) noexcept</code> <em>- C through S</em></li>
+</ul>
+<p>Broader classification of spectral classes. Note that <code>is_main_sequence()</code>
+only checks that the spectral class is one of the classes on the standard
+Hertzsprung-Russell diagram; it does not necessarily imply that the star is
+actually on the main sequence.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>struct</code> <strong><code>Spectrum</code></strong><ul>
+<li><code>LC Spectrum::</code><strong><code>lc</code></strong> <code>= LC::none</code></li>
+<li><code>Sp Spectrum::</code><strong><code>sp</code></strong> <code>= Sp::none</code></li>
+<li><code>uint8_t Spectrum::</code><strong><code>sub</code></strong> <code>= 0</code></li>
+<li><code>constexpr Spectrum::</code><strong><code>Spectrum</code></strong><code>() noexcept</code></li>
+<li><code>constexpr Spectrum::</code><strong><code>Spectrum</code></strong><code>(LC l, Sp s, uint8_t n = 5) noexcept</code></li>
+<li><code>constexpr Spectrum::</code><strong><code>Spectrum</code></strong><code>(LC l, int index) noexcept</code></li>
+<li><code>constexpr Spectrum::</code><strong><code>Spectrum</code></strong><code>(Sp s, uint8_t n = 5) noexcept</code></li>
+<li><code>explicit constexpr Spectrum::</code><strong><code>Spectrum</code></strong><code>(int index) noexcept</code></li>
+<li><code>explicit Spectrum::</code><strong><code>Spectrum</code></strong><code>(Uview str)</code></li>
+<li><code>constexpr int Spectrum::</code><strong><code>index</code></strong><code>() const noexcept</code></li>
+<li><code>Ustring Spectrum::</code><strong><code>str</code></strong><code>() const</code></li>
+<li><code>bool Spectrum::</code><strong><code>try_parse</code></strong><code>(Uview str) noexcept</code></li>
+<li><code>size_t Spectrum::</code><strong><code>hash</code></strong><code>() const noexcept</code></li>
+<li><code>constexpr void Spectrum::</code><strong><code>update_lc</code></strong><code>() noexcept</code></li>
+</ul>
+</li>
+<li><code>constexpr bool</code> <strong><code>operator==</code></strong><code>(const Spectrum&amp; lhs, const Spectrum&amp; rhs) noexcept</code></li>
+<li><code>constexpr bool</code> <strong><code>operator!=</code></strong><code>(const Spectrum&amp; lhs, const Spectrum&amp; rhs) noexcept</code></li>
+<li><code>constexpr bool</code> <strong><code>operator&lt;</code></strong><code>(const Spectrum&amp; lhs, const Spectrum&amp; rhs) noexcept</code></li>
+<li><code>constexpr bool</code> <strong><code>operator&gt;</code></strong><code>(const Spectrum&amp; lhs, const Spectrum&amp; rhs) noexcept</code></li>
+<li><code>constexpr bool</code> <strong><code>operator&lt;=</code></strong><code>(const Spectrum&amp; lhs, const Spectrum&amp; rhs) noexcept</code></li>
+<li><code>constexpr bool</code> <strong><code>operator&gt;=</code></strong><code>(const Spectrum&amp; lhs, const Spectrum&amp; rhs) noexcept</code></li>
+<li><code>inline std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const Spectrum&amp; spc)</code></li>
+<li><code>inline Ustring</code> <strong><code>to_str</code></strong><code>(const Spectrum&amp; spc)</code></li>
+<li><code>template &lt;&gt; class</code> <strong><code>std::hash</code></strong><code>&lt;Spectrum&gt;</code></li>
+</ul>
+<p>This structure represents a complete spectral class, consisting of a
+luminosity class, a spectral class, and a numeric subclass.</p>
+<p>The <code>index</code> value is an index into the standard main sequence and brown dwarf
+spectral types; it is equal to 10 times the spectral class (converted to an
+integer), plus the subclass, and ranges from 0 (class O0) to 99 (class Y9),
+although the extreme values probably do not represent the types of real stars.
+The index number is meaningless for star types outside the O-Y range.</p>
+<p>Comparison of <code>Spectrum</code> values goes by luminosity class first, then spectral
+class, then subclass.</p>
+<p>Conversion of a <code>Spectrum</code> to a string follows the usual conventions. The
+luminosity class is only included if the spectral class is O-M.</p>
+<p>The constructor from a string, and the <code>try_parse()</code> function, attempt to
+parse a spectral type in one of the standard formats. If the string is
+invalid, <code>try_parse()</code> returns false, while the constructor throws
+<code>std::invalid_argument</code>. For types O-M, luminosity class is assumed to be V if
+it is not present; for all other types, luminosity class is ignored and always
+set to VII for white dwarfs, otherwise to none. Luminosity class prefixes are
+recognised (<code>c→Ia</code>, <code>g→III</code>, <code>sg→IV</code>, <code>d→V</code>, <code>sd→VI</code>), but the suffix takes
+precedence if both are present. Decimal places in the subclass are ignored.
+Ranges such as <code>"B5-7 V"</code> or <code>"G5 III-IV"</code> are not supported.</p>
+</div>
+<h3 id="hertzsprung-russell-diagram">Hertzsprung-Russell diagram</h3>
+<div class="defns">
+<ul>
+<li><code>struct</code> <strong><code>ClassData</code></strong><ul>
+<li><code>Spectrum</code>  <strong><code>spectrum</code></strong>     <em>= spectral type</em></li>
+<li><code>double</code>    <strong><code>mass</code></strong>         <em>= mass (Sun = 1)</em></li>
+<li><code>double</code>    <strong><code>luminosity</code></strong>   <em>= luminosity (Sun = 1)</em></li>
+<li><code>double</code>    <strong><code>radius</code></strong>       <em>= radius (Sun = 1)</em></li>
+<li><code>double</code>    <strong><code>temperature</code></strong>  <em>= effective temperature (K)</em></li>
+<li><code>double</code>    <strong><code>M_V</code></strong>          <em>= absolute visual magnitude</em></li>
+<li><code>double</code>    <strong><code>M_bol</code></strong>        <em>= absolute bolometric magnitude</em></li>
+<li><code>double</code>    <strong><code>B_V</code></strong>          <em>= colour index</em></li>
+<li><code>double</code>    <strong><code>BC</code></strong>           <em>= bolometric correction</em></li>
+<li><code>constexpr ClassData::</code><strong><code>ClassData</code></strong><code>() noexcept</code></li>
+<li><code>explicit ClassData::</code><strong><code>ClassData</code></strong><code>(const Spectrum&amp; spc)</code></li>
+</ul>
+</li>
+</ul>
+<p>This class implements a table of the typical properties of stars for a given
+spectral type. Behaviour is undefined if the spectral class is invalid. (Note
+that <code>ClassData(Spectrum("G2 V"))</code> should not be expected to be an exact match
+for the Sun.)</p>
+<p>Sources:</p>
+<ul>
+<li>Arthur N. Cox, ed. (1999), <em>Astrophysical Quantities</em> (4th edition)</li>
+<li>Neill Reid (2002), <a href="http://www.stsci.edu/~inr/ldwarf3.html">"M dwarfs, L dwarfs, and T dwarfs"</a></li>
+<li>Wikipedia</li>
+</ul>
+</div>
+<h2 id="utilities">Utilities</h2>
+<h3 id="interpolation-table">Interpolation table</h3>
+<div class="defns">
+<ul>
+<li><code>template &lt;bool LogX = false, bool LogY = false&gt; class</code> <strong><code>InterpolationTable</code></strong><ul>
+<li><code>InterpolationTable</code><strong><code>InterpolationTable</code></strong><code>()</code></li>
+<li><code>InterpolationTable</code><strong><code>InterpolationTable</code></strong><code>(std::initializer_list&lt;std::pair&lt;double, double&gt;&gt; list)</code></li>
+<li><code>void InterpolationTable</code><strong><code>insert</code></strong><code>(double x, double y)</code></li>
+<li><code>double InterpolationTable</code><strong><code>operator()</code></strong><code>(double x) const</code></li>
+</ul>
+</li>
+</ul>
+<p>This is an interpolating lookup table (similar to a simplified version of
+<a href="scale-map.html"><code>ScaleMap</code></a>). Arguments between two data points will be
+interpolated; arguments outside the range of data points will be extrapolated
+from the nearest two points. If no points have been supplied, lookup will
+always return zero; if only one point has been supplied, lookup will always
+return that point's <code>y</code> value. The template arguments indicate whether the two
+coordinates are intended to be interpolated linearly or logarithmically.
+Behaviour is undefined if a value supplied for a logarithmic coordinate
+(either while building the table or in the lookup operator) is less than or
+equal to zero.</p></body>
+</html>

@@ -33,6 +33,14 @@ extern void test_core_algorithm_paired_transform();
 extern void test_core_array_map_array_map();
 extern void test_core_array_map_array_set();
 extern void test_core_array_map_general_associative_containers();
+extern void test_core_astronomy_interpolation_map();
+extern void test_core_astronomy_physical_constants();
+extern void test_core_astronomy_astronomical_constants();
+extern void test_core_astronomy_coordinate_systems();
+extern void test_core_astronomy_solar_system_data();
+extern void test_core_astronomy_stellar_property_relations();
+extern void test_core_astronomy_spectral_classification();
+extern void test_core_astronomy_hertzsprung_russell_diagram();
 extern void test_core_blob_class();
 extern void test_core_bounded_array_construction();
 extern void test_core_bounded_array_capacity();
@@ -428,6 +436,14 @@ int main() {
         { "core/array-map/array-map", test_core_array_map_array_map },
         { "core/array-map/array-set", test_core_array_map_array_set },
         { "core/array-map/general-associative-containers", test_core_array_map_general_associative_containers },
+        { "core/astronomy/interpolation-map", test_core_astronomy_interpolation_map },
+        { "core/astronomy/physical-constants", test_core_astronomy_physical_constants },
+        { "core/astronomy/astronomical-constants", test_core_astronomy_astronomical_constants },
+        { "core/astronomy/coordinate-systems", test_core_astronomy_coordinate_systems },
+        { "core/astronomy/solar-system-data", test_core_astronomy_solar_system_data },
+        { "core/astronomy/stellar-property-relations", test_core_astronomy_stellar_property_relations },
+        { "core/astronomy/spectral-classification", test_core_astronomy_spectral_classification },
+        { "core/astronomy/hertzsprung-russell-diagram", test_core_astronomy_hertzsprung_russell_diagram },
         { "core/blob/class", test_core_blob_class },
         { "core/bounded-array/construction", test_core_bounded_array_construction },
         { "core/bounded-array/capacity", test_core_bounded_array_capacity },

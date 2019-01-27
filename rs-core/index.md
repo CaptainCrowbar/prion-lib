@@ -38,6 +38,7 @@
     * [`"rs-core/net.hpp"`](net.html) - TCP/IP networking
     * [`"rs-core/terminal.hpp"`](terminal.html) - Terminal I/O
 * _Numerics_
+    * [`"rs-core/astronomy.hpp"`](astronomy.html) - Astronomical functions and reference data
     * [`"rs-core/fixed-binary.hpp"`](fixed-binary.html) - Fixed precision integers
     * [`"rs-core/float.hpp"`](float.html) - Floating point utilities
     * [`"rs-core/int128.hpp"`](int128.html) - 128-bit unsigned integer

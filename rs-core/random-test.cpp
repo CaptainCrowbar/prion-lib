@@ -606,6 +606,9 @@ void test_core_random_basic_distributions() {
     auto rd3 = [&] { return random_dice(rng, 3, 10); };
     CHECK_RANDOM_GENERATOR(rd3, 3, 30, 16.5, 4.97494);
 
+    auto ru1 = [&] { return random_unit(rng); };
+    CHECK_RANDOM_GENERATOR(ru1, 0, 1, 0.5, 0.288661);
+
     auto rf1 = [&] { return random_real<double>(rng); };
     CHECK_RANDOM_GENERATOR(rf1, 0, 1, 0.5, 0.288661);
     auto rf2 = [&] { return random_real(rng, -100.0, 100.0); };

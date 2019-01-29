@@ -454,6 +454,11 @@ namespace RS {
         return hi > lo ? lo + y : lo - y;
     }
 
+    template <typename RNG>
+    double random_unit(RNG& rng) {
+        return double(rng() - rng.min()) / (double(rng.max() - rng.min()) + 1.0);
+    }
+
     template <typename T, typename RNG>
     T random_real(RNG& rng, T a = T(1), T b = T(0)) {
         static_assert(std::is_floating_point<T>::value);

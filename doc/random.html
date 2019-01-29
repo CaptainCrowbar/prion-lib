@@ -258,19 +258,38 @@ from Pierre L'Ecuyer (1999),
 <h3 id="basic-random-distributions">Basic random distributions</h3>
 <div class="defns">
 <ul>
+<li><em>Bernoulli distributions</em><ul>
 <li><code>template &lt;typename RNG&gt; bool</code> <strong><code>random_bool</code></strong><code>(RNG&amp; rng)</code> <em>- True with probability 1/2</em></li>
 <li><code>template &lt;typename RNG&gt; bool</code> <strong><code>random_bool</code></strong><code>(RNG&amp; rng, double p)</code> <em>- True with probability p (clamped to 0-1)</em></li>
 <li><code>template &lt;typename RNG, typename T&gt; bool</code> <strong><code>random_bool</code></strong><code>(RNG&amp; rng, T num, T den)</code> <em>- True with probability num/den (clamped to 0-1)</em></li>
+</ul>
+</li>
+<li><em>Uniform integer distributions</em><ul>
 <li><code>template &lt;typename T, typename RNG&gt; T</code> <strong><code>random_integer</code></strong><code>(RNG&amp; rng, T t)</code> <em>- Random integer from 0 to t-1 (always 0 if t&lt;2)</em></li>
 <li><code>template &lt;typename T, typename RNG&gt; T</code> <strong><code>random_integer</code></strong><code>(RNG&amp; rng, T a, T b)</code> <em>- Random integer from a to b inclusive (limits may be in either order)</em></li>
+</ul>
+</li>
+<li><em>Non-uniform integer distributions</em><ul>
 <li><code>template &lt;typename T, typename RNG&gt; T</code> <strong><code>random_dice</code></strong><code>(RNG&amp; rng, T n = 1, T faces = 6)</code> <em>- Roll n dice numbered from 1 to faces (0 if either argument is &lt;1)</em></li>
 <li><code>template &lt;typename T, typename RNG&gt; T</code> <strong><code>random_triangle_integer</code></strong><code>(RNG&amp; rng, T hi, T lo)</code> <em>- Triangular distribution with max at hi, min at lo</em></li>
+</ul>
+</li>
+<li><em>Uniform real distributions</em><ul>
+<li><code>template &lt;typename RNG&gt; double</code> <strong><code>random_unit</code></strong><code>(RNG&amp; rng)</code> <em>- Random number between 0 and 1</em></li>
 <li><code>template &lt;typename T, typename RNG&gt; T</code> <strong><code>random_real</code></strong><code>(RNG&amp; rng, T a = 1, T b = 0)</code> <em>- Random number between a and b (limits may be in either order)</em></li>
+</ul>
+</li>
+<li><em>Normal distributions</em><ul>
 <li><code>template &lt;typename T, typename RNG&gt; T</code> <strong><code>random_normal</code></strong><code>(RNG&amp; rng)</code> <em>- Normal distribution with mean 0, sd 1</em></li>
 <li><code>template &lt;typename T, typename RNG&gt; T</code> <strong><code>random_normal</code></strong><code>(RNG&amp; rng, T m, T s)</code> <em>- Normal distribution with given mean and sd</em></li>
+</ul>
+</li>
+<li><em>Discrete selection</em><ul>
 <li><code>template &lt;typename ForwardRange, typename RNG&gt; [value type]</code> <strong><code>random_choice</code></strong><code>(RNG&amp; rng, const ForwardRange&amp; range)</code> <em>- Random element from range (default constructed value if range is empty)</em></li>
 <li><code>template &lt;typename T, typename RNG&gt; T</code> <strong><code>random_choice</code></strong><code>(RNG&amp; rng, initializer_list&lt;T&gt; list)</code> <em>- Random element from explicit list</em></li>
 <li><code>template &lt;typename ForwardRange, typename RNG&gt; vector&lt;[value type]&gt;</code> <strong><code>random_sample</code></strong><code>(RNG&amp; rng, const ForwardRange&amp; range, size_t k)</code> <em>- Random sample from range (throws length_error if k&gt;n)</em></li>
+</ul>
+</li>
 </ul>
 <p>Random distribution functions. These do not call the standard distribution
 classes; given the same underlying deterministic pseudo-random number engine

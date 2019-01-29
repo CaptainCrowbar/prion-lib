@@ -149,19 +149,26 @@ Algorithm         | Result      | State     | Recommendation
 
 ### Basic random distributions ###
 
-* `template <typename RNG> bool` **`random_bool`**`(RNG& rng)` _- True with probability 1/2_
-* `template <typename RNG> bool` **`random_bool`**`(RNG& rng, double p)` _- True with probability p (clamped to 0-1)_
-* `template <typename RNG, typename T> bool` **`random_bool`**`(RNG& rng, T num, T den)` _- True with probability num/den (clamped to 0-1)_
-* `template <typename T, typename RNG> T` **`random_integer`**`(RNG& rng, T t)` _- Random integer from 0 to t-1 (always 0 if t<2)_
-* `template <typename T, typename RNG> T` **`random_integer`**`(RNG& rng, T a, T b)` _- Random integer from a to b inclusive (limits may be in either order)_
-* `template <typename T, typename RNG> T` **`random_dice`**`(RNG& rng, T n = 1, T faces = 6)` _- Roll n dice numbered from 1 to faces (0 if either argument is <1)_
-* `template <typename T, typename RNG> T` **`random_triangle_integer`**`(RNG& rng, T hi, T lo)` _- Triangular distribution with max at hi, min at lo_
-* `template <typename T, typename RNG> T` **`random_real`**`(RNG& rng, T a = 1, T b = 0)` _- Random number between a and b (limits may be in either order)_
-* `template <typename T, typename RNG> T` **`random_normal`**`(RNG& rng)` _- Normal distribution with mean 0, sd 1_
-* `template <typename T, typename RNG> T` **`random_normal`**`(RNG& rng, T m, T s)` _- Normal distribution with given mean and sd_
-* `template <typename ForwardRange, typename RNG> [value type]` **`random_choice`**`(RNG& rng, const ForwardRange& range)` _- Random element from range (default constructed value if range is empty)_
-* `template <typename T, typename RNG> T` **`random_choice`**`(RNG& rng, initializer_list<T> list)` _- Random element from explicit list_
-* `template <typename ForwardRange, typename RNG> vector<[value type]>` **`random_sample`**`(RNG& rng, const ForwardRange& range, size_t k)` _- Random sample from range (throws length_error if k>n)_
+* _Bernoulli distributions_
+    * `template <typename RNG> bool` **`random_bool`**`(RNG& rng)` _- True with probability 1/2_
+    * `template <typename RNG> bool` **`random_bool`**`(RNG& rng, double p)` _- True with probability p (clamped to 0-1)_
+    * `template <typename RNG, typename T> bool` **`random_bool`**`(RNG& rng, T num, T den)` _- True with probability num/den (clamped to 0-1)_
+* _Uniform integer distributions_
+    * `template <typename T, typename RNG> T` **`random_integer`**`(RNG& rng, T t)` _- Random integer from 0 to t-1 (always 0 if t<2)_
+    * `template <typename T, typename RNG> T` **`random_integer`**`(RNG& rng, T a, T b)` _- Random integer from a to b inclusive (limits may be in either order)_
+* _Non-uniform integer distributions_
+    * `template <typename T, typename RNG> T` **`random_dice`**`(RNG& rng, T n = 1, T faces = 6)` _- Roll n dice numbered from 1 to faces (0 if either argument is <1)_
+    * `template <typename T, typename RNG> T` **`random_triangle_integer`**`(RNG& rng, T hi, T lo)` _- Triangular distribution with max at hi, min at lo_
+* _Uniform real distributions_
+    * `template <typename RNG> double` **`random_unit`**`(RNG& rng)` _- Random number between 0 and 1_
+    * `template <typename T, typename RNG> T` **`random_real`**`(RNG& rng, T a = 1, T b = 0)` _- Random number between a and b (limits may be in either order)_
+* _Normal distributions_
+    * `template <typename T, typename RNG> T` **`random_normal`**`(RNG& rng)` _- Normal distribution with mean 0, sd 1_
+    * `template <typename T, typename RNG> T` **`random_normal`**`(RNG& rng, T m, T s)` _- Normal distribution with given mean and sd_
+* _Discrete selection_
+    * `template <typename ForwardRange, typename RNG> [value type]` **`random_choice`**`(RNG& rng, const ForwardRange& range)` _- Random element from range (default constructed value if range is empty)_
+    * `template <typename T, typename RNG> T` **`random_choice`**`(RNG& rng, initializer_list<T> list)` _- Random element from explicit list_
+    * `template <typename ForwardRange, typename RNG> vector<[value type]>` **`random_sample`**`(RNG& rng, const ForwardRange& range, size_t k)` _- Random sample from range (throws length_error if k>n)_
 
 Random distribution functions. These do not call the standard distribution
 classes; given the same underlying deterministic pseudo-random number engine

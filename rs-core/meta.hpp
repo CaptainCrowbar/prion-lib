@@ -724,6 +724,11 @@ namespace RS::Meta {
         template <typename T, typename... Args> using HasMethod_##func = ::RS::Meta::IsDetected<HasMethodArchetype_##func, T, Args...>; \
         template <typename T, typename... Args> constexpr bool has_method_##func = HasMethod_##func<T, Args...>::value;
 
+    #define RS_DETECT_MEMBER(name) \
+        template <typename T> using HasMemberArchetype_##name = decltype(std::declval<T>().name); \
+        template <typename T> using HasMember_##name = ::RS::Meta::IsDetected<HasMemberArchetype_##name, T>; \
+        template <typename T> constexpr bool has_member_##name = HasMember_##name<T>::value;
+
     #define RS_DETECT_MEMBER_TYPE(type) \
         template <typename T> using HasMemberTypeArchetype_##type = typename T::type; \
         template <typename T> using HasMemberType_##type = ::RS::Meta::IsDetected<HasMemberTypeArchetype_##type, T>; \
@@ -746,6 +751,9 @@ namespace RS::Meta {
 
         template <typename T> using HasStdSwapArchetype = decltype(std::swap(std::declval<T&>(), std::declval<T&>()));
         template <typename T> using HasAdlSwapArchetype = decltype(swap(std::declval<T&>(), std::declval<T&>()));
+
+        template <typename T> using HasFirstFieldArchetype = decltype(std::declval<T&>().first);
+        template <typename T> using HasSecondFieldArchetype = decltype(std::declval<T&>().second);
 
         template <typename T> using HasBeginMethodArchetype = decltype(std::declval<T>().begin());
         template <typename T> using HasEndMethodArchetype = decltype(std::declval<T>().end());
@@ -772,6 +780,8 @@ namespace RS::Meta {
     template <typename T, bool = IsContainer<T>::value> struct IsInsertableContainer: std::false_type {};
     template <typename T> struct IsInsertableContainer<T, true>: IsDetected<MetaDetail::HasInsertMethodArchetype, T&, typename T::iterator, typename T::value_type> {};
 
+    template <typename T> using IsPair = And<IsDetected<MetaDetail::HasFirstFieldArchetype, T>, IsDetected<MetaDetail::HasSecondFieldArchetype, T>>;
+
     template <typename T> using IsSwappable = Or<IsDetected<MetaDetail::HasStdSwapArchetype, T>, IsDetected<MetaDetail::HasAdlSwapArchetype, T>>;
 
     template <typename T> constexpr bool is_hashable = IsHashable<T>::value;
@@ -782,6 +792,7 @@ namespace RS::Meta {
     template <typename T> constexpr bool is_mutable_range = IsMutableRange<T>::value;
     template <typename T> constexpr bool is_container = IsContainer<T>::value;
     template <typename T> constexpr bool is_insertable_container = IsInsertableContainer<T>::value;
+    template <typename T> constexpr bool is_pair = IsPair<T>::value;
     template <typename T> constexpr bool is_swappable = IsSwappable<T>::value;
 
     // Iterator utilities

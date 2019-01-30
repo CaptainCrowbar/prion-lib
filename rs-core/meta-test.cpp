@@ -82,14 +82,15 @@ namespace {
         }
     };
 
-    struct NoBar {};
-    struct Bar0 { int bar() const; };
-    struct Bar1 { int bar(int) const; };
-    struct Bar2 { int bar(int, int) const; };
+    struct NoBar { int foo; };
+    struct Bar0 { int foo; int bar() const; };
+    struct Bar1 { int foo; int bar(int) const; };
+    struct Bar2 { int foo; int bar(int, int) const; };
 
     RS_DETECT_FUNCTION(foo);
     RS_DETECT_STD_FUNCTION(begin);
     RS_DETECT_METHOD(bar);
+    RS_DETECT_MEMBER(foo);
     RS_DETECT_MEMBER_TYPE(value_type);
 
 }
@@ -1306,6 +1307,12 @@ void test_core_meta_function_detection() {
     TEST((has_method_bar<Bar2, int, int>));
     TEST((! has_method_bar<Bar2, std::string>));
 
+    TEST(! has_member_foo<int>);
+    TEST(! has_member_foo<std::string>);
+    TEST(has_member_foo<Bar0>);
+    TEST(has_member_foo<Bar1>);
+    TEST(has_member_foo<Bar2>);
+
     TEST((has_member_type_value_type<std::string>));
     TEST((has_member_type_value_type<std::vector<int>>));
     TEST((! has_member_type_value_type<int>));
@@ -1387,6 +1394,14 @@ void test_core_meta_type_categories() {
     TEST(! is_insertable_container<int*>);
     TEST(is_insertable_container<std::string>);
     TEST(is_insertable_container<std::vector<int>>);
+
+    TEST(! is_pair<int>);
+    TEST(! is_pair<std::string>);
+    TEST((is_pair<std::pair<int, int>>));
+    TEST((is_pair<std::pair<std::string, std::string>>));
+    TEST((is_pair<Irange<int*>>));
+    TEST((is_pair<Irange<std::string::iterator>>));
+    TEST((is_pair<Irange<std::string::const_iterator>>));
 
     TEST(is_swappable<int>);
     TEST(is_swappable<char*>);

@@ -805,20 +805,26 @@ operators.</p>
 <li><em>true if <code>T::function(Args...)</code> exists</em></li>
 </ul>
 </li>
+<li><code>#define</code> <strong><code>RS_DETECT_MEMBER</code></strong><code>(name)</code><ul>
+<li><code>template &lt;typename T&gt; using</code> <strong><code>HasMember_</code></strong><em><code>&lt;name&gt;</code></em></li>
+<li><code>template &lt;typename T&gt; constexpr bool</code> <strong><code>has_member_</code></strong><em><code>&lt;name&gt;</code></em></li>
+<li><em>true if <code>T::name</code> exists and is a data member or function</em></li>
+</ul>
+</li>
 <li><code>#define</code> <strong><code>RS_DETECT_MEMBER_TYPE</code></strong><code>(type)</code><ul>
 <li><code>template &lt;typename T&gt; using</code> <strong><code>HasMemberType_</code></strong><em><code>&lt;type&gt;</code></em></li>
 <li><code>template &lt;typename T&gt; constexpr bool</code> <strong><code>has_member_type_</code></strong><em><code>&lt;type&gt;</code></em></li>
-<li><em>true if <code>T::type</code> exists</em></li>
+<li><em>true if <code>T::type</code> exists and is a type</em></li>
 </ul>
 </li>
 </ul>
 <p>Each of these macros defines a metafunction predicate (in the usual two forms)
-that can be used to detect the existence of a function or type.</p>
+that can be used to detect the existence of a function, member, or type.</p>
 <p>Example:</p>
 <pre><code>RS_DETECT_FUNCTION(foo);
 int foo(int, string) { ... }
-assert(has_function_foo&lt;int, string&gt;);
-assert(! has_function_foo&lt;string, int&gt;);
+has_function_foo&lt;int, string&gt;; // true
+has_function_foo&lt;string, int&gt;; // false
 </code></pre>
 </div>
 <h3 id="type-categories">Type categories</h3>
@@ -874,6 +880,10 @@ assert(! has_function_foo&lt;string, int&gt;);
 <td><strong><code>is_insertable_container</code></strong><code>&lt;T&gt;</code></td>
 </tr>
 <tr>
+<td><strong><code>IsPair</code></strong><code>&lt;T&gt;</code></td>
+<td><strong><code>is_pair</code></strong><code>&lt;T&gt;</code></td>
+</tr>
+<tr>
 <td><strong><code>IsSwappable</code></strong><code>&lt;T&gt;</code></td>
 <td><strong><code>is_swappable</code></strong><code>&lt;T&gt;</code></td>
 </tr>
@@ -887,6 +897,7 @@ have no way to check their semantics.</p>
 <li><code>is_hashable</code> is true if <code>std::hash&lt;T&gt;()(t)</code> is valid.</li>
 <li>Iterator category predicates are true if the iterator is at least that category.</li>
 <li><code>is_[mutable_]range</code> is true if <code>begin()</code> and <code>end()</code> can be found either in <code>namespace std</code> or by ADL.</li>
+<li><code>is_pair</code> is true if <code>T</code> has public <code>first</code> and <code>second</code> members.</li>
 <li><code>is_swappable</code> is true if <code>swap()</code> can be found either in <code>namespace std</code> or by ADL.</li>
 </ul>
 </div>

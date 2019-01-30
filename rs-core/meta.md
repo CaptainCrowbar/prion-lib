@@ -284,20 +284,24 @@ Combined tests for groups of operators.
     * `template <typename T, typename... Args> using` **`HasMethod_`**_`<function>`_
     * `template <typename T, typename... Args> constexpr bool` **`has_method_`**_`<function>`_
     * _true if `T::function(Args...)` exists_
+* `#define` **`RS_DETECT_MEMBER`**`(name)`
+    * `template <typename T> using` **`HasMember_`**_`<name>`_
+    * `template <typename T> constexpr bool` **`has_member_`**_`<name>`_
+    * _true if `T::name` exists and is a data member or function_
 * `#define` **`RS_DETECT_MEMBER_TYPE`**`(type)`
     * `template <typename T> using` **`HasMemberType_`**_`<type>`_
     * `template <typename T> constexpr bool` **`has_member_type_`**_`<type>`_
-    * _true if `T::type` exists_
+    * _true if `T::type` exists and is a type_
 
 Each of these macros defines a metafunction predicate (in the usual two forms)
-that can be used to detect the existence of a function or type.
+that can be used to detect the existence of a function, member, or type.
 
 Example:
 
     RS_DETECT_FUNCTION(foo);
     int foo(int, string) { ... }
-    assert(has_function_foo<int, string>);
-    assert(! has_function_foo<string, int>);
+    has_function_foo<int, string>; // true
+    has_function_foo<string, int>; // false
 
 ### Type categories ###
 
@@ -315,6 +319,7 @@ Example:
 | **`IsMutableRange`**`<T>`           | **`is_mutable_range`**`<T>`           |
 | **`IsContainer`**`<T>`              | **`is_container`**`<T>`               |
 | **`IsInsertableContainer`**`<T>`    | **`is_insertable_container`**`<T>`    |
+| **`IsPair`**`<T>`                   | **`is_pair`**`<T>`                    |
 | **`IsSwappable`**`<T>`              | **`is_swappable`**`<T>`               |
 
 Metafunction predicates that attempt to detect certain kinds of type. In most
@@ -326,6 +331,7 @@ Notes on specific predicates:
 * `is_hashable` is true if `std::hash<T>()(t)` is valid.
 * Iterator category predicates are true if the iterator is at least that category.
 * `is_[mutable_]range` is true if `begin()` and `end()` can be found either in `namespace std` or by ADL.
+* `is_pair` is true if `T` has public `first` and `second` members.
 * `is_swappable` is true if `swap()` can be found either in `namespace std` or by ADL.
 
 ### Associated types ###

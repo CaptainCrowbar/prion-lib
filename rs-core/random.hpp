@@ -4,6 +4,7 @@
 #include "rs-core/float.hpp"
 #include "rs-core/int128.hpp"
 #include "rs-core/meta.hpp"
+#include "rs-core/rational.hpp"
 #include "rs-core/string.hpp"
 #include "rs-core/vector.hpp"
 #include <algorithm>
@@ -493,9 +494,14 @@ namespace RS {
         return x > cutoff;
     }
 
-    template <typename RNG>
-    bool random_bool(RNG& rng, double p) {
-        return random_real<double>(rng) <= p;
+    template <typename RNG, typename T>
+    bool random_bool(RNG& rng, T p, std::enable_if_t<std::is_floating_point_v<T>>* = nullptr) {
+        return random_real<T>(rng) <= p;
+    }
+
+    template <typename RNG, typename T>
+    bool random_bool(RNG& rng, Rational<T> p) {
+        return random_integer(rng, p.den()) < p.num();
     }
 
     template <typename RNG, typename T>

@@ -1,4 +1,5 @@
 #include "rs-core/random.hpp"
+#include "rs-core/rational.hpp"
 #include "rs-core/unit-test.hpp"
 #include "rs-core/vector.hpp"
 #include <algorithm>
@@ -31,41 +32,43 @@ namespace {
 
     #define CHECK_RANDOM_GENERATOR(gen, xmin, xmax, xmean, xsd) { \
         using T = std::decay_t<decltype(gen())>; \
-        double epsilon, lo = inf, hi = - inf, sum = 0, sum2 = 0; \
+        double range; \
         if (xmin > - inf && xmax < inf) \
-            epsilon = (xmax - xmin) / std::sqrt(double(iterations)); \
+            range = xmax - xmin; \
         else \
-            epsilon = 2 * xsd / std::sqrt(double(iterations)); \
+            range = 2 * xsd; \
+        double epsilon = 2 * range / std::sqrt(double(iterations)); \
+        double min = inf, max = - inf, sum = 0, sum2 = 0; \
         T t = {}; \
         for (size_t i = 0; i < iterations; ++i) { \
             TRY(t = gen()); \
             auto x = double(t); \
-            lo = std::min(lo, x); \
-            hi = std::max(hi, x); \
+            min = std::min(min, x); \
+            max = std::max(max, x); \
             sum += x; \
             sum2 += x * x; \
         } \
         if (std::is_floating_point<T>::value) { \
             if (xmin == xmax) { \
-                TEST_EQUAL(lo, xmin); \
-                TEST_EQUAL(hi, xmax); \
+                TEST_EQUAL(min, xmin); \
+                TEST_EQUAL(max, xmax); \
             } else { \
-                TEST_COMPARE(lo, >, xmin); \
-                TEST_COMPARE(hi, <, xmax); \
+                TEST_COMPARE(min, >, xmin); \
+                TEST_COMPARE(max, <, xmax); \
             } \
         } else { \
             if (xmax - xmin < 0.1 * iterations) { \
-                TEST_EQUAL(lo, xmin); \
-                TEST_EQUAL(hi, xmax); \
+                TEST_EQUAL(min, xmin); \
+                TEST_EQUAL(max, xmax); \
             } else { \
-                TEST_COMPARE(lo, >=, xmin); \
-                TEST_COMPARE(hi, <=, xmax); \
+                TEST_COMPARE(min, >=, xmin); \
+                TEST_COMPARE(max, <=, xmax); \
             } \
         } \
-        double m = sum / iterations; \
-        double s = std::sqrt(sum2 / iterations - m * m); \
-        TEST_NEAR_EPSILON(m, xmean, epsilon); \
-        TEST_NEAR_EPSILON(s, xsd, epsilon); \
+        double mean = sum / iterations; \
+        double sd = std::sqrt(sum2 / iterations - mean * mean); \
+        TEST_NEAR_EPSILON(mean, xmean, epsilon); \
+        TEST_NEAR_EPSILON(sd, xsd, epsilon); \
     }
 
 }
@@ -581,12 +584,14 @@ void test_core_random_basic_distributions() {
 
     std::mt19937 rng(42);
 
-    auto rbq = [&] { return random_bool(rng); };
-    CHECK_RANDOM_GENERATOR(rbq, 0, 1, 0.5, 0.5);
+    auto rb1 = [&] { return random_bool(rng); };
+    CHECK_RANDOM_GENERATOR(rb1, 0, 1, 0.5, 0.5);
     auto rb2 = [&] { return random_bool(rng, 0.25); };
     CHECK_RANDOM_GENERATOR(rb2, 0, 1, 0.25, 0.433013);
-    auto rb3 = [&] { return random_bool(rng, 3, 4); };
+    auto rb3 = [&] { return random_bool(rng, Rat(3, 4)); };
     CHECK_RANDOM_GENERATOR(rb3, 0, 1, 0.75, 0.433013);
+    auto rb4 = [&] { return random_bool(rng, 3, 4); };
+    CHECK_RANDOM_GENERATOR(rb4, 0, 1, 0.75, 0.433013);
 
     auto ri1 = [&] { return random_integer(rng, 100); };
     CHECK_RANDOM_GENERATOR(ri1, 0, 99, 49.5, 28.8661);

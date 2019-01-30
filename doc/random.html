@@ -261,6 +261,7 @@ from Pierre L'Ecuyer (1999),
 <li><em>Bernoulli distributions</em><ul>
 <li><code>template &lt;typename RNG&gt; bool</code> <strong><code>random_bool</code></strong><code>(RNG&amp; rng)</code> <em>- True with probability 1/2</em></li>
 <li><code>template &lt;typename RNG&gt; bool</code> <strong><code>random_bool</code></strong><code>(RNG&amp; rng, double p)</code> <em>- True with probability p (clamped to 0-1)</em></li>
+<li><code>template &lt;typename RNG, typename T&gt; bool</code> <strong><code>random_bool</code></strong><code>(RNG&amp; rng, Rational&lt;T&gt; p)</code> <em>- True with probability p (clamped to 0-1)</em></li>
 <li><code>template &lt;typename RNG, typename T&gt; bool</code> <strong><code>random_bool</code></strong><code>(RNG&amp; rng, T num, T den)</code> <em>- True with probability num/den (clamped to 0-1)</em></li>
 </ul>
 </li>

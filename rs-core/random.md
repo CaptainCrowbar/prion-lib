@@ -152,6 +152,7 @@ Algorithm         | Result      | State     | Recommendation
 * _Bernoulli distributions_
     * `template <typename RNG> bool` **`random_bool`**`(RNG& rng)` _- True with probability 1/2_
     * `template <typename RNG> bool` **`random_bool`**`(RNG& rng, double p)` _- True with probability p (clamped to 0-1)_
+    * `template <typename RNG, typename T> bool` **`random_bool`**`(RNG& rng, Rational<T> p)` _- True with probability p (clamped to 0-1)_
     * `template <typename RNG, typename T> bool` **`random_bool`**`(RNG& rng, T num, T den)` _- True with probability num/den (clamped to 0-1)_
 * _Uniform integer distributions_
     * `template <typename T, typename RNG> T` **`random_integer`**`(RNG& rng, T t)` _- Random integer from 0 to t-1 (always 0 if t<2)_

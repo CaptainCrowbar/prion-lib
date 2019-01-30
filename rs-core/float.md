@@ -118,6 +118,11 @@ infinity (`ifloor()`), or to the nearest integer (`iround()`; halves round
 up), converting the result to the specified return type. The usual arithmetic
 rules apply if the result is not representable by the return type.
 
+* `template <typename T> T` **`round_to_digits`**`(T x, int prec)`
+
+Rounds the first argument to the specified number of significant digits
+(minimum 1).
+
 ## Arithmetic literals ##
 
 * `namespace RS::`**`Literals`**

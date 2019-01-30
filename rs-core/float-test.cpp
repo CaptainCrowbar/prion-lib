@@ -195,6 +195,49 @@ void test_core_float_arithmetic_functions() {
     TEST_EQUAL(iceil<double>(-0.75), 0.0);   TEST_EQUAL(ifloor<double>(-0.75), -1.0);  TEST_EQUAL(iround<double>(-0.75), -1.0);
     TEST_EQUAL(iceil<double>(-1), -1.0);     TEST_EQUAL(ifloor<double>(-1), -1.0);     TEST_EQUAL(iround<double>(-1), -1.0);
 
+    TEST_EQUAL(round_to_digits(0.0, 1), 0);
+    TEST_EQUAL(round_to_digits(0.0, 2), 0);
+    TEST_EQUAL(round_to_digits(0.0, 3), 0);
+    TEST_NEAR(round_to_digits(0.0125, 1), 0.01);
+    TEST_NEAR(round_to_digits(0.0175, 1), 0.02);
+    TEST_NEAR(round_to_digits(0.0925, 1), 0.09);
+    TEST_NEAR(round_to_digits(0.0975, 1), 0.1);
+    TEST_NEAR(round_to_digits(0.125, 1), 0.1);
+    TEST_NEAR(round_to_digits(0.175, 1), 0.2);
+    TEST_NEAR(round_to_digits(0.925, 1), 0.9);
+    TEST_EQUAL(round_to_digits(0.975, 1), 1);
+    TEST_EQUAL(round_to_digits(1.25, 1), 1);
+    TEST_EQUAL(round_to_digits(1.75, 1), 2);
+    TEST_EQUAL(round_to_digits(9.25, 1), 9);
+    TEST_EQUAL(round_to_digits(9.75, 1), 10);
+    TEST_EQUAL(round_to_digits(12.5, 1), 10);
+    TEST_EQUAL(round_to_digits(17.5, 1), 20);
+    TEST_EQUAL(round_to_digits(92.5, 1), 90);
+    TEST_EQUAL(round_to_digits(97.5, 1), 100);
+    TEST_EQUAL(round_to_digits(125.0, 1), 100);
+    TEST_EQUAL(round_to_digits(175.0, 1), 200);
+    TEST_EQUAL(round_to_digits(925.0, 1), 900);
+    TEST_EQUAL(round_to_digits(975.0, 1), 1000);
+    TEST_NEAR(round_to_digits(0.01025, 2), 0.01);
+    TEST_NEAR(round_to_digits(0.01975, 2), 0.02);
+    TEST_NEAR(round_to_digits(0.09975, 2), 0.1);
+    TEST_NEAR(round_to_digits(0.1025, 2), 0.1);
+    TEST_NEAR(round_to_digits(0.1975, 2), 0.2);
+    TEST_EQUAL(round_to_digits(0.9975, 2), 1);
+    TEST_EQUAL(round_to_digits(1.025, 2), 1);
+    TEST_EQUAL(round_to_digits(1.975, 2), 2);
+    TEST_EQUAL(round_to_digits(9.975, 2), 10);
+    TEST_EQUAL(round_to_digits(10.25, 2), 10);
+    TEST_EQUAL(round_to_digits(19.75, 2), 20);
+    TEST_EQUAL(round_to_digits(99.75, 2), 100);
+    TEST_EQUAL(round_to_digits(102.5, 2), 100);
+    TEST_EQUAL(round_to_digits(197.5, 2), 200);
+    TEST_EQUAL(round_to_digits(997.5, 2), 1000);
+    TEST_EQUAL(round_to_digits(-1.25, 1), -1);
+    TEST_EQUAL(round_to_digits(-1.75, 1), -2);
+    TEST_EQUAL(round_to_digits(-9.25, 1), -9);
+    TEST_EQUAL(round_to_digits(-9.75, 1), -10);
+
 }
 
 void test_core_float_arithmetic_literals() {

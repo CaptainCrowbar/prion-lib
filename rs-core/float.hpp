@@ -134,6 +134,21 @@ namespace RS {
     template <typename T2, typename T1> T2 ifloor(T1 value) noexcept { return RS_Detail::Round<T2, T1, '<'>()(value); }
     template <typename T2, typename T1> T2 iround(T1 value) noexcept { return RS_Detail::Round<T2, T1, '='>()(value); }
 
+    template <typename T>
+    T round_to_digits(T x, int prec) {
+        static_assert(std::is_floating_point_v<T>);
+        if (x == 0)
+            return 0;
+        prec = std::max(prec, 1);
+        T y = std::abs(x);
+        T scale = std::floor(std::log10(y)) - prec + 1;
+        T factor = std::pow(T(10), scale);
+        y = factor * std::floor(y / factor + T(0.5));
+        if (x < 0)
+            y = - y;
+        return y;
+    }
+
     // Arithmetic literals
 
     namespace Literals {

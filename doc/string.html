@@ -82,10 +82,11 @@ parsed as <code>"HTTP Response"</code>). Numbers are parsed as separate name ele
 </div>
 <div class="defns">
 <ul>
+<li><code>Ustring</code> <strong><code>name_to_initials</code></strong><code>(Uview name)</code> <em>- e.g. <code>"QBF"</code></em></li>
 <li><code>Ustring</code> <strong><code>name_to_lower_case</code></strong><code>(Uview name, char delim = '_')</code> <em>- e.g. <code>"quick_brown_fox"</code></em></li>
 <li><code>Ustring</code> <strong><code>name_to_upper_case</code></strong><code>(Uview name, char delim = '_')</code> <em>- e.g. <code>"QUICK_BROWN_FOX"</code></em></li>
-<li><code>Ustring</code> <strong><code>name_to_title_case</code></strong><code>(Uview name, char delim = '\0')</code> <em>- e.g. <code>"QuickBrownFox"</code></em></li>
-<li><code>Ustring</code> <strong><code>name_to_camel_case</code></strong><code>(Uview name, char delim = '\0')</code> <em>- e.g. <code>"quickBrownFox"</code></em></li>
+<li><code>Ustring</code> <strong><code>name_to_title_case</code></strong><code>(Uview name, char delim = 0)</code> <em>- e.g. <code>"QuickBrownFox"</code></em></li>
+<li><code>Ustring</code> <strong><code>name_to_camel_case</code></strong><code>(Uview name, char delim = 0)</code> <em>- e.g. <code>"quickBrownFox"</code></em></li>
 <li><code>Ustring</code> <strong><code>name_to_sentence_case</code></strong><code>(Uview name, char delim = ' ')</code> <em>- e.g. <code>"Quick brown fox"</code></em></li>
 </ul>
 <p>These convert a name (parsed as described above) to various casing

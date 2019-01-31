@@ -26,6 +26,7 @@ namespace RS {
     // Case conversion functions
 
     Strings name_breakdown(Uview name);
+    Ustring name_to_initials(Uview name);
     Ustring name_to_lower_case(Uview name, char delim = '_');
     Ustring name_to_upper_case(Uview name, char delim = '_');
     Ustring name_to_title_case(Uview name, char delim = '\0');

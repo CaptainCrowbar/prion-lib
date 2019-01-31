@@ -82,6 +82,7 @@ void test_core_string_case_conversion() {
 
     static const Ustring n1 = "... ALPHA ... bravo ... charlie ... 12345 ...";
     static const Ustring n2 = "ALPHABravo/Charlie12345";
+    static const Ustring in = "ABC1";
     static const Ustring lc = "alpha_bravo_charlie_12345";
     static const Ustring uc = "ALPHA_BRAVO_CHARLIE_12345";
     static const Ustring tc = "AlphaBravoCharlie12345";
@@ -98,6 +99,14 @@ void test_core_string_case_conversion() {
     TRY(vec = name_breakdown(tc));  TEST_EQUAL(vec.size(), 4);  TRY(str = to_str(vec));  TEST_EQUAL(str, "[Alpha,Bravo,Charlie,12345]");
     TRY(vec = name_breakdown(cc));  TEST_EQUAL(vec.size(), 4);  TRY(str = to_str(vec));  TEST_EQUAL(str, "[alpha,Bravo,Charlie,12345]");
     TRY(vec = name_breakdown(sc));  TEST_EQUAL(vec.size(), 4);  TRY(str = to_str(vec));  TEST_EQUAL(str, "[Alpha,bravo,charlie,12345]");
+
+    TRY(str = name_to_initials(n1));  TEST_EQUAL(str, in);
+    TRY(str = name_to_initials(n2));  TEST_EQUAL(str, in);
+    TRY(str = name_to_initials(lc));  TEST_EQUAL(str, in);
+    TRY(str = name_to_initials(uc));  TEST_EQUAL(str, in);
+    TRY(str = name_to_initials(tc));  TEST_EQUAL(str, in);
+    TRY(str = name_to_initials(cc));  TEST_EQUAL(str, in);
+    TRY(str = name_to_initials(sc));  TEST_EQUAL(str, in);
 
     TRY(str = name_to_lower_case(n1));  TEST_EQUAL(str, lc);
     TRY(str = name_to_lower_case(n2));  TEST_EQUAL(str, lc);

@@ -48,6 +48,13 @@ namespace RS {
         return vec;
     }
 
+    Ustring name_to_initials(Uview name) {
+        Strings vec = name_breakdown(name);
+        Ustring initials;
+        std::transform(vec.begin(), vec.end(), append(initials), [] (Uview v) { return ascii_toupper(v[0]); });
+        return initials;
+    }
+
     Ustring name_to_lower_case(Uview name, char delim) {
         const char dchars[] = {delim, '\0'};
         Strings vec = name_breakdown(name);

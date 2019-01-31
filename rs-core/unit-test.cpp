@@ -81,6 +81,10 @@ extern void test_core_encoding_base32();
 extern void test_core_encoding_base64();
 extern void test_core_encoding_ascii85();
 extern void test_core_encoding_z85();
+extern void test_source_english_case_conversion();
+extern void test_source_english_list_formatting();
+extern void test_source_english_number_formatting();
+extern void test_source_english_pluralization();
 extern void test_core_file_system_standard_directories();
 extern void test_core_file_system_search_path();
 extern void test_core_fixed_binary_implementation_selection();
@@ -484,6 +488,10 @@ int main() {
         { "core/encoding/base64", test_core_encoding_base64 },
         { "core/encoding/ascii85", test_core_encoding_ascii85 },
         { "core/encoding/z85", test_core_encoding_z85 },
+        { "source/english/case-conversion", test_source_english_case_conversion },
+        { "source/english/list-formatting", test_source_english_list_formatting },
+        { "source/english/number-formatting", test_source_english_number_formatting },
+        { "source/english/pluralization", test_source_english_pluralization },
         { "core/file-system/standard-directories", test_core_file_system_standard_directories },
         { "core/file-system/search-path", test_core_file_system_search_path },
         { "core/fixed-binary/implementation-selection", test_core_fixed_binary_implementation_selection },

@@ -51,6 +51,7 @@
 * _Text processing_
     * [`"rs-core/digest.hpp"`](digest.html) -- Message digest algorithms
     * [`"rs-core/encoding.hpp"`](encoding.html) -- Binary and text encodings
+    * [`"rs-core/english.hpp"`](english.html) -- English language specific functions
     * [`"rs-core/serial.hpp"`](serial.html) -- JSON serialization
     * [`"rs-core/string.hpp"`](string.html) - String algorithms
     * [`"rs-core/table.hpp"`](table.html) - Simple table layout

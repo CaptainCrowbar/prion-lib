@@ -34,6 +34,10 @@ $(BUILD)/dso.o: rs-core/dso.cpp rs-core/common.hpp rs-core/dso.hpp rs-core/strin
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/path.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/encoding-test.o: rs-core/encoding-test.cpp rs-core/common.hpp rs-core/encoding.hpp rs-core/float.hpp rs-core/int128.hpp rs-core/meta.hpp rs-core/random.hpp rs-core/rational.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp \
     /usr/local/include/unicorn/utility.hpp
+$(BUILD)/english-test.o: rs-core/english-test.cpp rs-core/common.hpp rs-core/english.hpp rs-core/string.hpp rs-core/unit-test.hpp \
+    /usr/local/include/unicorn/utility.hpp
+$(BUILD)/english.o: rs-core/english.cpp rs-core/common.hpp rs-core/english.hpp rs-core/float.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/vector.hpp \
+    /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/format.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/regex.hpp /usr/local/include/unicorn/segment.hpp /usr/local/include/unicorn/string.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/file-system-test.o: rs-core/file-system-test.cpp rs-core/common.hpp rs-core/file-system.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/path.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/regex.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/file-system.o: rs-core/file-system.cpp rs-core/common.hpp rs-core/file-system.hpp \

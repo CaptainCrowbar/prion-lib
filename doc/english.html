@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>English Language Specific Functions</title>
+<link type="text/css" rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<h1 id="english-language-specific-functions">English Language Specific Functions</h1>
+<p>By Ross Smith</p>
+<ul>
+<li><code>#include "rs-core/english.hpp"</code></li>
+</ul>
+<h2 id="contents">Contents</h2>
+<div class="toc">
+<ul>
+<li><a href="#english-language-specific-functions">English Language Specific Functions</a><ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#case-conversion-functions">Case conversion functions</a></li>
+<li><a href="#list-formatting-functions">List formatting functions</a></li>
+<li><a href="#number-formatting-functions">Number formatting functions</a></li>
+<li><a href="#pluralization-functions">Pluralization functions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="case-conversion-functions">Case conversion functions</h2>
+<div class="defns">
+<ul>
+<li><code>Ustring</code> <strong><code>extended_title_case</code></strong><code>(Uview str)</code></li>
+<li><code>void</code> <strong><code>extended_title_case_in</code></strong><code>(Ustring&amp; str)</code></li>
+</ul>
+<p>Convert a string to title case, checking for common short English words that
+are conventionally set in lower case.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; Ustring</code> <strong><code>format_enum</code></strong><code>(T t, Uview flags = "")</code></li>
+</ul>
+<p>Format an enumeration type originally defined using one of the
+<code>RS_ENUM[_CLASS]()</code> macros. Type and namespace prefixes are removed. The flags
+consist of an optional case conversion flag (defaulting to lower case),
+followed by an optional delimiter to place between words (defaulting to a
+space).</p>
+<p>Case flags:</p>
+<ul>
+<li><code>'l'</code> = lower case</li>
+<li><code>'s'</code> = title case in first word, otherwise lower case</li>
+<li><code>'t'</code> = title case</li>
+<li><code>'x'</code> = extended title case (as above)</li>
+</ul>
+</div>
+<h2 id="list-formatting-functions">List formatting functions</h2>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename Range&gt; Ustring</code> <strong><code>comma_list</code></strong><code>(const Range&amp; range, Uview conj = "")</code></li>
+</ul>
+<p>Format a list of strings as a comma delimited list, with an optional
+conjunction between the last two items, following the usual English
+conventions.</p>
+<p>Examples:</p>
+<pre><code>list = {"abc"};                comma_list(list) == "abc";
+list = {"abc", "def"};         comma_list(list) == "abc, def";
+list = {"abc", "def", "ghi"};  comma_list(list) == "abc, def, ghi";
+list = {"abc"};                comma_list(list, "and") == "abc";
+list = {"abc", "def"};         comma_list(list, "and") == "abc and def";
+list = {"abc", "def", "ghi"};  comma_list(list, "and") == "abc, def, and ghi";
+</code></pre>
+</div>
+<h2 id="number-formatting-functions">Number formatting functions</h2>
+<div class="defns">
+<ul>
+<li><code>Ustring</code> <strong><code>cardinal</code></strong><code>(size_t n, size_t threshold = npos)</code></li>
+<li><code>Ustring</code> <strong><code>ordinal</code></strong><code>(size_t n, size_t threshold = npos)</code></li>
+</ul>
+<p>Generate the English name for a number, in cardinal (<code>"forty-two"</code>) or ordinal
+(<code>"forty-second"</code>) form. Numbers greater than or equal to the threshold value
+will be left in numeric form (with a suffix on the ordinal numbers).</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Ustring</code> <strong><code>format_count</code></strong><code>(double x, int prec)</code></li>
+</ul>
+<p>Formats a number to the specified number of significant digits. the number is
+written directly, rounded to the nearest integer, if it is under
+10<sup>4</sup>; followed by a name if it is under 10<sup>12</sup>; or in
+scientific notation otherwise.</p>
+<p>Examples:</p>
+<pre><code>format_count(1.23, 3) == "1";
+format_count(12.3, 3) == "12";
+format_count(123.0, 3) == "123";
+format_count(1.23e3, 3) == "1230";
+format_count(1.23e4, 3) == "12.3 thousand";
+format_count(1.23e5, 3) == "123 thousand";
+format_count(1.23e6, 3) == "1.23 million";
+format_count(1.23e7, 3) == "12.3 million";
+format_count(1.23e8, 3) == "123 million";
+format_count(1.23e9, 3) == "1.23 billion";
+format_count(1.23e10, 3) == "12.3 billion";
+format_count(1.23e11, 3) == "123 billion";
+format_count(1.23e12, 3) == "1.23x10^12";
+format_count(1.23e13, 3) == "1.23x10^13";
+format_count(1.23e14, 3) == "1.23x10^14";
+format_count(1.23e15, 3) == "1.23x10^15";
+</code></pre>
+</div>
+<div class="defns">
+<ul>
+<li><code>Ustring</code> <strong><code>number_of</code></strong><code>(size_t n, Uview name, Uview plural_name = "", size_t threshold = 21)</code></li>
+</ul>
+<p>Combines a cardinal number with the singular or plural of a noun. The plural
+form may be supplied explicitly; if not, it will be obtained by calling the
+<code>plural()</code> function described below. The <code>threshold</code> argument has the same
+meaning as for the <code>cardinal()</code> function.</p>
+<p>Examples:</p>
+<pre><code>number_of(0, "thing") == "no things";
+number_of(1, "thing") == "one thing";
+number_of(2, "thing") == "two things";
+number_of(3, "thing") == "three things";
+number_of(10, "thing") == "ten things";
+number_of(20, "thing") == "twenty things";
+number_of(30, "thing") == "30 things";
+</code></pre>
+</div>
+<h2 id="pluralization-functions">Pluralization functions</h2>
+<div class="defns">
+<ul>
+<li><code>Ustring</code> <strong><code>plural</code></strong><code>(Uview noun)</code></li>
+</ul>
+<p>Returns the plural form of a singular noun. This function is aware of most of
+the irregular plurals in English.</p>
+<p>Partly based on <a href="http://www.csse.monash.edu.au/~damian/papers/HTML/Plurals.html">Damian Conway's work</a>.</p></body>
+</html>

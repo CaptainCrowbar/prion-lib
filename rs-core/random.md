@@ -124,7 +124,7 @@ PCG generators by [Melissa O'Neill](http://www.pcg-random.org/).
     * `constexpr [Xoshiro]::`**`[Class]`**`(result_type s, result_type t, result_type u, result_type v) noexcept`
     * `constexpr result_type [Class]::`**`operator()`**`() noexcept`
     * `constexpr void [Class]::`**`seed`**`(result_type s = 0) noexcept`
-    * `constexpr void [Xoroshiro]::`**`seed`**`(result_type s, result_type t) noexcept`
+    * `constexpr void [Class]::`**`seed`**`(result_type s, result_type t) noexcept`
     * `constexpr void [Xoshiro]::`**`seed`**`(result_type s, result_type t, result_type u, result_type v) noexcept`
     * `static constexpr result_type [Class]::`**`min`**`() noexcept`
     * `static constexpr result_type [Class]::`**`max`**`() noexcept`

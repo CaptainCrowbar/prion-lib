@@ -196,11 +196,31 @@ namespace RS {
 
     namespace RS_Detail {
 
-        constexpr void seed_sm64(SplitMix64&) noexcept {}
-        template <typename T, typename... Args> constexpr void seed_sm64(SplitMix64& g, T& t, Args&... args) noexcept
-            { t = T(g()); seed_sm64(g, args...); }
-        template <typename... Args> constexpr void seed_sm64(uint64_t s, Args&... args) noexcept
-            { SplitMix64 g(s); seed_sm64(g, args...); }
+        template <typename T>
+        constexpr void seed_sm64_1_2(T s, T& a, T& b) noexcept {
+            SplitMix64 sm(s);
+            a = T(sm());
+            b = T(sm());
+        }
+
+        template <typename T>
+        constexpr void seed_sm64_1_4(T s, T& a, T& b, T& c, T& d) noexcept {
+            SplitMix64 sm(s);
+            a = T(sm());
+            b = T(sm());
+            c = T(sm());
+            d = T(sm());
+        }
+
+        template <typename T>
+        constexpr void seed_sm64_2_4(T s, T t, T& a, T& b, T& c, T& d) noexcept {
+            SplitMix64 sm(s);
+            a = T(sm());
+            b = T(sm());
+            sm.seed(t);
+            c = T(sm());
+            d = T(sm());
+        }
 
     }
 
@@ -218,7 +238,7 @@ namespace RS {
             b = rotl(b, 13);
             return x;
         }
-        constexpr void seed(uint32_t s = 0) noexcept { RS_Detail::seed_sm64(s, a, b); }
+        constexpr void seed(uint32_t s = 0) noexcept { RS_Detail::seed_sm64_1_2(s, a, b); }
         constexpr void seed(uint32_t s, uint32_t t) noexcept { a = s; b = t; }
         static constexpr uint32_t min() noexcept { return 0; }
         static constexpr uint32_t max() noexcept { return ~ uint32_t(0); }
@@ -240,7 +260,7 @@ namespace RS {
             b = rotl(b, 13);
             return x;
         }
-        constexpr void seed(uint32_t s = 0) noexcept { RS_Detail::seed_sm64(s, a, b); }
+        constexpr void seed(uint32_t s = 0) noexcept { RS_Detail::seed_sm64_1_2(s, a, b); }
         constexpr void seed(uint32_t s, uint32_t t) noexcept { a = s; b = t; }
         static constexpr uint32_t min() noexcept { return 0; }
         static constexpr uint32_t max() noexcept { return ~ uint32_t(0); }
@@ -261,7 +281,7 @@ namespace RS {
             b = rotl(b, 37);
             return x;
         }
-        constexpr void seed(uint64_t s = 0) noexcept { RS_Detail::seed_sm64(s, a, b); }
+        constexpr void seed(uint64_t s = 0) noexcept { RS_Detail::seed_sm64_1_2(s, a, b); }
         constexpr void seed(uint64_t s, uint64_t t) noexcept { a = s; b = t; }
         static constexpr uint64_t min() noexcept { return 0; }
         static constexpr uint64_t max() noexcept { return ~ uint64_t(0); }
@@ -282,7 +302,7 @@ namespace RS {
             b = rotl(b, 37);
             return x;
         }
-        constexpr void seed(uint64_t s = 0) noexcept { RS_Detail::seed_sm64(s, a, b); }
+        constexpr void seed(uint64_t s = 0) noexcept { RS_Detail::seed_sm64_1_2(s, a, b); }
         constexpr void seed(uint64_t s, uint64_t t) noexcept { a = s; b = t; }
         static constexpr uint64_t min() noexcept { return 0; }
         static constexpr uint64_t max() noexcept { return ~ uint64_t(0); }
@@ -295,6 +315,7 @@ namespace RS {
         using result_type = uint32_t;
         constexpr Xoshiro128p() noexcept { seed(0); }
         constexpr explicit Xoshiro128p(uint32_t s) noexcept { seed(s); }
+        constexpr Xoshiro128p(uint32_t s, uint32_t t) noexcept { seed(s, t); }
         constexpr Xoshiro128p(uint32_t s, uint32_t t, uint32_t u, uint32_t v) noexcept { seed(s, t, u, v); }
         constexpr uint32_t operator()() noexcept {
             uint32_t x = a + d, y = b << 9;
@@ -302,7 +323,8 @@ namespace RS {
             d = rotl(d, 11);
             return x;
         }
-        constexpr void seed(uint32_t s = 0) noexcept { RS_Detail::seed_sm64(s, a, b, c, d); }
+        constexpr void seed(uint32_t s = 0) noexcept { RS_Detail::seed_sm64_1_4(s, a, b, c, d); }
+        constexpr void seed(uint32_t s, uint32_t t) noexcept { RS_Detail::seed_sm64_2_4(s, t, a, b, c, d); }
         constexpr void seed(uint32_t s, uint32_t t, uint32_t u, uint32_t v) noexcept { a = s; b = t; c = u; d = v; }
         static constexpr uint32_t min() noexcept { return 0; }
         static constexpr uint32_t max() noexcept { return ~ uint32_t(0); }
@@ -315,6 +337,7 @@ namespace RS {
         using result_type = uint32_t;
         constexpr Xoshiro128ss() noexcept { seed(0); }
         constexpr explicit Xoshiro128ss(uint32_t s) noexcept { seed(s); }
+        constexpr Xoshiro128ss(uint32_t s, uint32_t t) noexcept { seed(s, t); }
         constexpr Xoshiro128ss(uint32_t s, uint32_t t, uint32_t u, uint32_t v) noexcept { seed(s, t, u, v); }
         constexpr uint32_t operator()() noexcept {
             uint32_t x = rotl(a * 5, 7) * 9, y = b << 9;
@@ -322,7 +345,8 @@ namespace RS {
             d = rotl(d, 11);
             return x;
         }
-        constexpr void seed(uint32_t s = 0) noexcept { RS_Detail::seed_sm64(s, a, b, c, d); }
+        constexpr void seed(uint32_t s = 0) noexcept { RS_Detail::seed_sm64_1_4(s, a, b, c, d); }
+        constexpr void seed(uint32_t s, uint32_t t) noexcept { RS_Detail::seed_sm64_2_4(s, t, a, b, c, d); }
         constexpr void seed(uint32_t s, uint32_t t, uint32_t u, uint32_t v) noexcept { a = s; b = t; c = u; d = v; }
         static constexpr uint32_t min() noexcept { return 0; }
         static constexpr uint32_t max() noexcept { return ~ uint32_t(0); }
@@ -335,6 +359,7 @@ namespace RS {
         using result_type = uint64_t;
         constexpr Xoshiro256p() noexcept { seed(0); }
         constexpr explicit Xoshiro256p(uint64_t s) noexcept { seed(s); }
+        constexpr Xoshiro256p(uint64_t s, uint64_t t) noexcept { seed(s, t); }
         constexpr Xoshiro256p(uint64_t s, uint64_t t, uint64_t u, uint64_t v) noexcept { seed(s, t, u, v); }
         constexpr uint64_t operator()() noexcept {
             uint64_t x = a + d, y = b << 17;
@@ -342,7 +367,8 @@ namespace RS {
             d = rotl(d, 45);
             return x;
         }
-        constexpr void seed(uint64_t s = 0) noexcept { RS_Detail::seed_sm64(s, a, b, c, d); }
+        constexpr void seed(uint64_t s = 0) noexcept { RS_Detail::seed_sm64_1_4(s, a, b, c, d); }
+        constexpr void seed(uint64_t s, uint64_t t) noexcept { RS_Detail::seed_sm64_2_4(s, t, a, b, c, d); }
         constexpr void seed(uint64_t s, uint64_t t, uint64_t u, uint64_t v) noexcept { a = s; b = t; c = u; d = v; }
         static constexpr uint64_t min() noexcept { return 0; }
         static constexpr uint64_t max() noexcept { return ~ uint64_t(0); }
@@ -355,6 +381,7 @@ namespace RS {
         using result_type = uint64_t;
         constexpr Xoshiro256ss() noexcept { seed(0); }
         constexpr explicit Xoshiro256ss(uint64_t s) noexcept { seed(s); }
+        constexpr Xoshiro256ss(uint64_t s, uint64_t t) noexcept { seed(s, t); }
         constexpr Xoshiro256ss(uint64_t s, uint64_t t, uint64_t u, uint64_t v) noexcept { seed(s, t, u, v); }
         constexpr uint64_t operator()() noexcept {
             uint64_t x = rotl(b * 5, 7) * 9, y = b << 17;
@@ -362,7 +389,8 @@ namespace RS {
             d = rotl(d, 45);
             return x;
         }
-        constexpr void seed(uint64_t s = 0) noexcept { RS_Detail::seed_sm64(s, a, b, c, d); }
+        constexpr void seed(uint64_t s = 0) noexcept { RS_Detail::seed_sm64_1_4(s, a, b, c, d); }
+        constexpr void seed(uint64_t s, uint64_t t) noexcept { RS_Detail::seed_sm64_2_4(s, t, a, b, c, d); }
         constexpr void seed(uint64_t s, uint64_t t, uint64_t u, uint64_t v) noexcept { a = s; b = t; c = u; d = v; }
         static constexpr uint64_t min() noexcept { return 0; }
         static constexpr uint64_t max() noexcept { return ~ uint64_t(0); }

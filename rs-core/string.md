@@ -127,7 +127,7 @@ argument is set, an extra delimiter will be added after the last element
 (useful when joining lines to form a text that would be expected to end with a
 line break).
 
-* `std::string` **`linearize`**`(std::strings str)`
+* `std::string` **`linearize`**`(std::string_view str)`
 
 Replaces all whitespace in a string with a single space, and trims leading and
 trailing whitespace. All non-ASCII bytes are treated as non-whitespace

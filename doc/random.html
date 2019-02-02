@@ -187,6 +187,7 @@ from Pierre L'Ecuyer (1999),
 <th>Algorithm</th>
 <th>Result</th>
 <th>State</th>
+<th>Seeds</th>
 <th>Recommendation</th>
 </tr>
 </thead>
@@ -195,60 +196,70 @@ from Pierre L'Ecuyer (1999),
 <td><code>SplitMix64</code></td>
 <td><code>uint64_t</code></td>
 <td>8 bytes</td>
+<td>1 <code>uint64_t</code></td>
 <td>Used internally in <code>Xoshiro/Xoroshiro</code>; not recommended for general purpose</td>
 </tr>
 <tr>
 <td><code>Xoroshiro64s</code></td>
 <td><code>uint32_t</code></td>
 <td>8 bytes</td>
+<td>1 or 2 <code>uint32_t</code></td>
 <td>Substitute for <code>Xoshiro128p</code> when small state is important</td>
 </tr>
 <tr>
 <td><code>Xoroshiro64ss</code></td>
 <td><code>uint32_t</code></td>
 <td>8 bytes</td>
+<td>1 or 2 <code>uint32_t</code></td>
 <td>Substitute for <code>Xoshiro128ss</code> when small state is important</td>
 </tr>
 <tr>
 <td><code>Xoroshiro128p</code></td>
 <td><code>uint64_t</code></td>
 <td>16 bytes</td>
+<td>1 or 2 <code>uint64_t</code></td>
 <td>Substitute for <code>Xoshiro256p</code> when small state is important</td>
 </tr>
 <tr>
 <td><code>Xoroshiro128ss</code></td>
 <td><code>uint64_t</code></td>
 <td>16 bytes</td>
+<td>1 or 2 <code>uint64_t</code></td>
 <td>Substitute for <code>Xoshiro256ss</code> when small state is important</td>
 </tr>
 <tr>
 <td><code>Xoshiro128p</code></td>
 <td><code>uint32_t</code></td>
 <td>16 bytes</td>
+<td>1, 2, or 4 <code>uint32_t</code></td>
 <td>Faster than <code>Xoshiro128ss</code>, but low bits are poor</td>
 </tr>
 <tr>
 <td><code>Xoshiro128ss</code></td>
 <td><code>uint32_t</code></td>
 <td>16 bytes</td>
+<td>1, 2, or 4 <code>uint32_t</code></td>
 <td>Best general purpose 32-bit</td>
 </tr>
 <tr>
 <td><code>Xoshiro256p</code></td>
 <td><code>uint64_t</code></td>
 <td>32 bytes</td>
+<td>1, 2, or 4 <code>uint64_t</code></td>
 <td>Faster than <code>Xoshiro256ss</code>, but low bits are poor</td>
 </tr>
 <tr>
 <td><code>Xoshiro256ss</code></td>
 <td><code>uint64_t</code></td>
 <td>32 bytes</td>
+<td>1, 2, or 4 <code>uint64_t</code></td>
 <td>Best general purpose</td>
 </tr>
 <tr>
 <td><code>Xoshiro</code></td>
 <td><code>uint64_t</code></td>
 <td>32 bytes</td>
+<td>1, 2, or 4 <code>uint64_t</code></td>
 <td>Synonym for <code>Xoshiro256ss</code></td>
 </tr>
 </tbody>

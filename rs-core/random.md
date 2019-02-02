@@ -132,18 +132,18 @@ PCG generators by [Melissa O'Neill](http://www.pcg-random.org/).
 
 Xoshiro and related algorithms by [David Blackman and Sebastiano Vigna](http://xoshiro.di.unimi.it/).
 
-Algorithm         | Result      | State     | Recommendation
----------         | ------      | -----     | --------------
-`SplitMix64`      | `uint64_t`  | 8 bytes   | Used internally in `Xoshiro/Xoroshiro`; not recommended for general purpose
-`Xoroshiro64s`    | `uint32_t`  | 8 bytes   | Substitute for `Xoshiro128p` when small state is important
-`Xoroshiro64ss`   | `uint32_t`  | 8 bytes   | Substitute for `Xoshiro128ss` when small state is important
-`Xoroshiro128p`   | `uint64_t`  | 16 bytes  | Substitute for `Xoshiro256p` when small state is important
-`Xoroshiro128ss`  | `uint64_t`  | 16 bytes  | Substitute for `Xoshiro256ss` when small state is important
-`Xoshiro128p`     | `uint32_t`  | 16 bytes  | Faster than `Xoshiro128ss`, but low bits are poor
-`Xoshiro128ss`    | `uint32_t`  | 16 bytes  | Best general purpose 32-bit
-`Xoshiro256p`     | `uint64_t`  | 32 bytes  | Faster than `Xoshiro256ss`, but low bits are poor
-`Xoshiro256ss`    | `uint64_t`  | 32 bytes  | Best general purpose
-`Xoshiro`         | `uint64_t`  | 32 bytes  | Synonym for `Xoshiro256ss`
+Algorithm         | Result      | State     | Seeds                  | Recommendation
+---------         | ------      | -----     | -----                  | --------------
+`SplitMix64`      | `uint64_t`  | 8 bytes   | 1 `uint64_t`           | Used internally in `Xoshiro/Xoroshiro`; not recommended for general purpose
+`Xoroshiro64s`    | `uint32_t`  | 8 bytes   | 1 or 2 `uint32_t`      | Substitute for `Xoshiro128p` when small state is important
+`Xoroshiro64ss`   | `uint32_t`  | 8 bytes   | 1 or 2 `uint32_t`      | Substitute for `Xoshiro128ss` when small state is important
+`Xoroshiro128p`   | `uint64_t`  | 16 bytes  | 1 or 2 `uint64_t`      | Substitute for `Xoshiro256p` when small state is important
+`Xoroshiro128ss`  | `uint64_t`  | 16 bytes  | 1 or 2 `uint64_t`      | Substitute for `Xoshiro256ss` when small state is important
+`Xoshiro128p`     | `uint32_t`  | 16 bytes  | 1, 2, or 4 `uint32_t`  | Faster than `Xoshiro128ss`, but low bits are poor
+`Xoshiro128ss`    | `uint32_t`  | 16 bytes  | 1, 2, or 4 `uint32_t`  | Best general purpose 32-bit
+`Xoshiro256p`     | `uint64_t`  | 32 bytes  | 1, 2, or 4 `uint64_t`  | Faster than `Xoshiro256ss`, but low bits are poor
+`Xoshiro256ss`    | `uint64_t`  | 32 bytes  | 1, 2, or 4 `uint64_t`  | Best general purpose
+`Xoshiro`         | `uint64_t`  | 32 bytes  | 1, 2, or 4 `uint64_t`  | Synonym for `Xoshiro256ss`
 
 ## Random distributions ##
 

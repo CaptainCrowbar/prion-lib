@@ -142,8 +142,9 @@ otherwise return the string unchanged.</p>
 <ul>
 <li><code>template &lt;typename... Args&gt; std::string</code> <strong><code>catstr</code></strong><code>(Args... args)</code></li>
 </ul>
-<p>Generalized string concatenation. The arguments can be any of <code>char</code>, <code>const
-char*</code>, <code>std::string</code>, or <code>std::string_view</code>.</p>
+<p>Generalized string concatenation. The arguments can be any type that can be
+implicitly or explicitly converted to <code>std::string</code>, <code>char</code>, or any other
+arithmetic type that can be converted using <code>std::to_string()</code>.</p>
 </div>
 <div class="defns">
 <ul>

@@ -263,11 +263,12 @@ void test_core_string_manipulation() {
     s1 = "Hello";
     s2 = "world";
 
-    TRY(s = catstr());                    TEST_EQUAL(s, "");
-    TRY(s = catstr('x'));                 TEST_EQUAL(s, "x");
-    TRY(s = catstr("Hello"));             TEST_EQUAL(s, "Hello");
-    TRY(s = catstr(s1));                  TEST_EQUAL(s, "Hello");
-    TRY(s = catstr(s1, ' ', s2, "!\n"));  TEST_EQUAL(s, "Hello world!\n");
+    TRY(s = catstr());                           TEST_EQUAL(s, "");
+    TRY(s = catstr('x'));                        TEST_EQUAL(s, "x");
+    TRY(s = catstr("Hello"));                    TEST_EQUAL(s, "Hello");
+    TRY(s = catstr(s1));                         TEST_EQUAL(s, "Hello");
+    TRY(s = catstr(s1, ' ', s2, "!\n"));         TEST_EQUAL(s, "Hello world!\n");
+    TRY(s = catstr(s1, ' ', 42, ' ', s2, 's'));  TEST_EQUAL(s, "Hello 42 worlds");
 
     TRY(s = indent("", 2));
     TEST_EQUAL(s, "");

@@ -1,10 +1,12 @@
 #pragma once
 
 #include "rs-core/common.hpp"
+#include "rs-core/meta.hpp"
 #include <array>
 #include <ostream>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <utility>
 
 namespace RS {
@@ -49,12 +51,20 @@ namespace RS {
 
     namespace RS_Detail {
 
-        inline void catstr_helper(std::string&) noexcept {}
-
         template <typename T, typename... Args>
-        void catstr_helper(std::string& dst, const T& t, const Args&... args) {
-            dst += t;
-            catstr_helper(dst, args...);
+        inline void catstr_helper(std::string& s, const T& t, const Args&... args) {
+            if constexpr (std::is_same_v<T, char>)
+                s += t;
+            else if constexpr (std::is_arithmetic_v<T>)
+                s += std::to_string(t);
+            else if constexpr (Meta::has_plus_assign_operator<std::string, T>)
+                s += t;
+            else if constexpr (std::is_constructible_v<std::string, T>)
+                s += std::string(t);
+            else
+                static_assert(dependent_false<T>);
+            if constexpr (sizeof...(Args) > 0)
+                catstr_helper(s, args...);
         }
 
     }
@@ -81,7 +91,8 @@ namespace RS {
     template <typename... Args>
     std::string catstr(const Args&... args) {
         std::string s;
-        RS_Detail::catstr_helper(s, args...);
+        if constexpr (sizeof...(Args) > 0)
+            RS_Detail::catstr_helper(s, args...);
         return s;
     }
 

@@ -112,8 +112,9 @@ otherwise return the string unchanged.
 
 * `template <typename... Args> std::string` **`catstr`**`(Args... args)`
 
-Generalized string concatenation. The arguments can be any of `char`, `const
-char*`, `std::string`, or `std::string_view`.
+Generalized string concatenation. The arguments can be any type that can be
+implicitly or explicitly converted to `std::string`, `char`, or any other
+arithmetic type that can be converted using `std::to_string()`.
 
 * `Ustring` **`indent`**`(Uview str, size_t depth)`
 

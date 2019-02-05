@@ -34,12 +34,23 @@
 <p>Runs a shell command synchronously (via <code>popen()</code> or the equivalent),
 capturing standard output. No error indication is returned; standard error
 still goes to its usual destination, unless explicitly redirected in the
-command line.</p>
+command line. This function may throw <code>system_error</code> if anything goes wrong.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void</code> <strong><code>preview_file</code></strong><code>(const Unicorn::Path&amp; file)</code></li>
+</ul>
+<p>Displays a file on the screen, using the operating system's default behaviour
+for the file type. This will throw <code>system_error</code> if the file does not exist,
+if the command processor fails to start, or if the file opening command
+returns a non-zero exit status. Whether execution is synchronous or
+asynchronous is operating system dependent.</p>
 </div>
 <h2 id="spawned-process-channels">Spawned process channels</h2>
 <p>These classes call <code>popen()</code> to create a child process on construction, with
 its standard output connected to the channel. Closing or destroying the
-channel calls <code>pclose()</code>.</p>
+channel calls <code>pclose()</code>. They may throw <code>system_error</code> if anything goes
+wrong.</p>
 <h3 id="class-streamprocess">Class StreamProcess</h3>
 <div class="defns">
 <ul>

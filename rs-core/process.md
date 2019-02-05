@@ -15,13 +15,22 @@ By Ross Smith
 Runs a shell command synchronously (via `popen()` or the equivalent),
 capturing standard output. No error indication is returned; standard error
 still goes to its usual destination, unless explicitly redirected in the
-command line.
+command line. This function may throw `system_error` if anything goes wrong.
+
+* `void` **`preview_file`**`(const Unicorn::Path& file)`
+
+Displays a file on the screen, using the operating system's default behaviour
+for the file type. This will throw `system_error` if the file does not exist,
+if the command processor fails to start, or if the file opening command
+returns a non-zero exit status. Whether execution is synchronous or
+asynchronous is operating system dependent.
 
 ## Spawned process channels ##
 
 These classes call `popen()` to create a child process on construction, with
 its standard output connected to the channel. Closing or destroying the
-channel calls `pclose()`.
+channel calls `pclose()`. They may throw `system_error` if anything goes
+wrong.
 
 ### Class StreamProcess ###
 

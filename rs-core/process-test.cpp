@@ -16,25 +16,6 @@ namespace {
 
 }
 
-void test_core_process_shell_commands() {
-
-    Ustring s;
-    std::set<Ustring> ss;
-
-    #ifdef _XOPEN_SOURCE
-        TRY(s = shell("ls"));
-    #else
-        TRY(s = shell("dir /b"));
-    #endif
-
-    TEST(! s.empty());
-    TRY(split(s, overwrite(ss), "\r\n"));
-    TEST(! ss.empty());
-    TEST(ss.count("Makefile"));
-    TEST(ss.count("build"));
-
-}
-
 void test_core_process_stream() {
 
     std::unique_ptr<StreamProcess> chan;
@@ -109,5 +90,33 @@ void test_core_process_text() {
     std::sort(v.begin(), v.end());
     TRY(s = to_str(v));
     TEST_EQUAL(s, files);
+
+}
+
+void test_core_process_shell_command() {
+
+    Ustring s;
+    std::set<Ustring> ss;
+
+    #ifdef _XOPEN_SOURCE
+        TRY(s = shell("ls"));
+    #else
+        TRY(s = shell("dir /b"));
+    #endif
+
+    TEST(! s.empty());
+    TRY(split(s, overwrite(ss), "\r\n"));
+    TEST(! ss.empty());
+    TEST(ss.count("Makefile"));
+    TEST(ss.count("build"));
+
+}
+
+void test_core_process_preview_file() {
+
+    // preview_file("samples/flowchart.png");
+    // preview_file("samples/piper.pdf");
+    // preview_file("samples/roget.txt");
+    // preview_file("samples/tesseract.gif");
 
 }

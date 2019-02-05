@@ -226,9 +226,10 @@ extern void test_core_prime_list_primes_basic_int();
 extern void test_core_prime_list_primes_fixed_binary();
 extern void test_core_prime_list_primes_int128();
 extern void test_core_prime_list_primes_mp_integer();
-extern void test_core_process_shell_commands();
 extern void test_core_process_stream();
 extern void test_core_process_text();
+extern void test_core_process_shell_command();
+extern void test_core_process_preview_file();
 extern void test_core_random_lcg();
 extern void test_core_random_isaac32();
 extern void test_core_random_isaac64();
@@ -362,7 +363,6 @@ extern void test_core_string_property();
 extern void test_core_string_manipulation();
 extern void test_core_string_formatting();
 extern void test_core_string_html_xml_tags();
-extern void test_core_system_preview();
 extern void test_core_table_class();
 extern void test_core_terminal_xterm_control_codes();
 extern void test_core_terminal_xterm_colour_class();
@@ -634,9 +634,10 @@ int main() {
         { "core/prime/list-primes-fixed-binary", test_core_prime_list_primes_fixed_binary },
         { "core/prime/list-primes-int128", test_core_prime_list_primes_int128 },
         { "core/prime/list-primes-mp-integer", test_core_prime_list_primes_mp_integer },
-        { "core/process/shell-commands", test_core_process_shell_commands },
         { "core/process/stream", test_core_process_stream },
         { "core/process/text", test_core_process_text },
+        { "core/process/shell-command", test_core_process_shell_command },
+        { "core/process/preview-file", test_core_process_preview_file },
         { "core/random/lcg", test_core_random_lcg },
         { "core/random/isaac32", test_core_random_isaac32 },
         { "core/random/isaac64", test_core_random_isaac64 },
@@ -770,7 +771,6 @@ int main() {
         { "core/string/manipulation", test_core_string_manipulation },
         { "core/string/formatting", test_core_string_formatting },
         { "core/string/html-xml-tags", test_core_string_html_xml_tags },
-        { "core/system/preview", test_core_system_preview },
         { "core/table/class", test_core_table_class },
         { "core/terminal/xterm-control-codes", test_core_terminal_xterm_control_codes },
         { "core/terminal/xterm-colour-class", test_core_terminal_xterm_colour_class },

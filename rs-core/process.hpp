@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rs-core/channel.hpp"
+#include "unicorn/path.hpp"
 #include "unicorn/utf.hpp"
 #include <atomic>
 #include <string>
@@ -47,5 +48,6 @@ namespace RS {
     // Shell commands
 
     std::string shell(const Ustring& cmd);
+    void preview_file(const Unicorn::Path& file);
 
 }

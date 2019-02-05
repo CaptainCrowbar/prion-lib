@@ -48,6 +48,7 @@
 #include "rs-core/stack.hpp"
 #include "rs-core/statistics.hpp"
 #include "rs-core/string.hpp"
+#include "rs-core/system.hpp"
 #include "rs-core/table.hpp"
 #include "rs-core/terminal.hpp"
 #include "rs-core/thread-pool.hpp"

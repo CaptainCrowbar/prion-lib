@@ -130,6 +130,10 @@ $(BUILD)/string-test.o: rs-core/string-test.cpp rs-core/common.hpp rs-core/meta.
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/string.o: rs-core/string.cpp rs-core/common.hpp rs-core/meta.hpp rs-core/string.hpp \
     /usr/local/include/unicorn/utility.hpp
+$(BUILD)/system-test.o: rs-core/system-test.cpp rs-core/common.hpp rs-core/system.hpp rs-core/unit-test.hpp \
+    /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/path.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
+$(BUILD)/system.o: rs-core/system.cpp rs-core/common.hpp rs-core/system.hpp \
+    /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/path.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/table-test.o: rs-core/table-test.cpp rs-core/common.hpp rs-core/table.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/table.o: rs-core/table.cpp rs-core/common.hpp rs-core/table.hpp \

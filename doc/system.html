@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Miscellanous System Facilities</title>
+<link type="text/css" rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<h1 id="miscellanous-system-facilities">Miscellanous System Facilities</h1>
+<p>By Ross Smith</p>
+<ul>
+<li><code>#include "rs-core/system.hpp"</code></li>
+</ul>
+<h2 id="contents">Contents</h2>
+<div class="toc">
+<ul>
+<li><a href="#miscellanous-system-facilities">Miscellanous System Facilities</a><ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#file-preview">File preview</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="file-preview">File preview</h2>
+<div class="defns">
+<ul>
+<li><code>void</code> <strong><code>preview_file</code></strong><code>(const Unicorn::Path&amp; file)</code></li>
+</ul>
+<p>Attempts to display a file on the screen, using the operating system's default
+behaviour for the file type. This will throw <code>system_error</code> if the file does
+not exist, if the command processor fails to start, or if the file opening
+command returns a non-zero exit status. Whether the child process is
+synchronous or asynchronous is operating system dependent.</p></body>
+</html>

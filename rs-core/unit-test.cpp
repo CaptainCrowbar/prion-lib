@@ -362,6 +362,7 @@ extern void test_core_string_property();
 extern void test_core_string_manipulation();
 extern void test_core_string_formatting();
 extern void test_core_string_html_xml_tags();
+extern void test_core_system_preview();
 extern void test_core_table_class();
 extern void test_core_terminal_xterm_control_codes();
 extern void test_core_terminal_xterm_colour_class();
@@ -769,6 +770,7 @@ int main() {
         { "core/string/manipulation", test_core_string_manipulation },
         { "core/string/formatting", test_core_string_formatting },
         { "core/string/html-xml-tags", test_core_string_html_xml_tags },
+        { "core/system/preview", test_core_system_preview },
         { "core/table/class", test_core_table_class },
         { "core/terminal/xterm-control-codes", test_core_terminal_xterm_control_codes },
         { "core/terminal/xterm-colour-class", test_core_terminal_xterm_colour_class },

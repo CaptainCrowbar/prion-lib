@@ -59,6 +59,7 @@
     * [`"rs-core/uuid.hpp"`](uuid.html) - UUID
 * _System facilities_
     * [`"rs-core/dso.hpp"`](dso.html) - Dynamic library
+    * [`"rs-core/system.hpp"`](system.html) - Miscellaneous system facilities
 * _Time and date_
     * [`"rs-core/time.hpp"`](time.html) - Time and date algorithms
 * _Unit testing_

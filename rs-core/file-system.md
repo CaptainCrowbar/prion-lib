@@ -29,29 +29,45 @@ By Ross Smith
 
 Query some of the standard locations on the host file system. The `SystemPath`
 enumeration values refer to system-wide standard directories, while the
-`UserPath` values refer to User-specific directories. These functions will
+`UserPath` values refer to user-specific directories. These functions will
 throw `std::invalid_argument` if the argument is not one of the listed
 enumeration values, or `std::system_error` if anything goes wrong with a
 system API query (which probably means the operating system is incorrectly
 configured, or the user associated with the calling process has been
 incorrectly set up).
 
-Typical locations on common operating systems:
+Sources for these directories:
 
-Directory              | Interpretation                               | Linux               | Mac                                   | Windows
----------              | --------------                               | -----               | ---                                   | -------
-`SystemPath::apps`     | System-wide application install directory    | `/usr/local/bin`    | `/Applications`                       | `C:\Program Files`
-`SystemPath::os`       | Base directory for operating system files    | `/`                 | `/`                                   | `C:\Windows`
-`UserPath::apps`       | User-specific application install directory  | `<home>/bin`        | `<home>/Applications`                 | `<home>\AppData\Local\Programs`
-`UserPath::cache`      | User-specific local application data cache   | `<home>/.cache`     | `<home>/Library/Caches`               | `<home>\AppData\Local`
-`UserPath::desktop`    | User's desktop                               | `<home>/Desktop`    | `<home>/Desktop`                      | `<home>\Desktop`
-`UserPath::documents`  | User's documents                             | `<home>/Documents`  | `<home>/Documents`                    | `<home>\Documents`
-`UserPath::downloads`  | User's downloads                             | `<home>/Downloads`  | `<home>/Downloads`                    | `<home>\Downloads`
-`UserPath::home`       | User's home directory                        | `/home/<user>`      | `/Users/<user>`                       | `C:\Users\<user>`
-`UserPath::movies`     | User's movies                                | `<home>/Videos`     | `<home>/Movies`                       | `<home>\Videos`
-`UserPath::music`      | User's music                                 | `<home>/Music`      | `<home>/Music`                        | `<home>\Music`
-`UserPath::pictures`   | User's pictures                              | `<home>/Pictures`   | `<home>/Pictures`                     | `<home>\Pictures`
-`UserPath::settings`   | User-specific application settings           | `<home>/.config`    | `<home>/Library/Application Support`  | `<home>\AppData\Roaming`
+* **Linux**
+    * `SystemPath::apps` -- Always `"/usr/local/bin"`
+    * `SystemPath::os` -- Always `"/"`
+    * `UserPath::home` -- Try `"$HOME"` first, then try calling `getpwuid_r(geteuid())`, fall back on `"/home/$USER"` if these fail
+    * `UserPath::apps` -- Always `"<home>/bin"`
+    * All others -- Try the relevant `"$XDG_*"` environment variable first, fall back on conventional paths if this fails
+* **Mac**
+    * `SystemPath::apps` -- Always `"/Applications"`
+    * `SystemPath::os` -- Always `"/"`
+    * `UserPath::home` -- Try `"$HOME"` first, then try calling `getpwuid_r(geteuid())`, fall back on `"/Users/$USER"` if these fail
+    * All others -- Standard paths relative to home directory
+* **Windows**
+    * All paths -- Call `SHGetKnownFolderPath()`
+
+Typical locations:
+
+Directory              | Linux               | Mac                                   | Windows
+---------              | -----               | ---                                   | -------
+`SystemPath::apps`     | `/usr/local/bin`    | `/Applications`                       | `C:\Program Files`
+`SystemPath::os`       | `/`                 | `/`                                   | `C:\Windows`
+`UserPath::apps`       | `<home>/bin`        | `<home>/Applications`                 | `<home>\AppData\Local\Programs`
+`UserPath::cache`      | `<home>/.cache`     | `<home>/Library/Caches`               | `<home>\AppData\Local`
+`UserPath::desktop`    | `<home>/Desktop`    | `<home>/Desktop`                      | `<home>\Desktop`
+`UserPath::documents`  | `<home>/Documents`  | `<home>/Documents`                    | `<home>\Documents`
+`UserPath::downloads`  | `<home>/Downloads`  | `<home>/Downloads`                    | `<home>\Downloads`
+`UserPath::home`       | `/home/<user>`      | `/Users/<user>`                       | `C:\Users\<user>`
+`UserPath::movies`     | `<home>/Videos`     | `<home>/Movies`                       | `<home>\Videos`
+`UserPath::music`      | `<home>/Music`      | `<home>/Music`                        | `<home>\Music`
+`UserPath::pictures`   | `<home>/Pictures`   | `<home>/Pictures`                     | `<home>\Pictures`
+`UserPath::settings`   | `<home>/.config`    | `<home>/Library/Application Support`  | `<home>\AppData\Roaming`
 
 ## Search path ##
 

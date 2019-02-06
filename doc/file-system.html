@@ -50,18 +50,39 @@
 </ul>
 <p>Query some of the standard locations on the host file system. The <code>SystemPath</code>
 enumeration values refer to system-wide standard directories, while the
-<code>UserPath</code> values refer to User-specific directories. These functions will
+<code>UserPath</code> values refer to user-specific directories. These functions will
 throw <code>std::invalid_argument</code> if the argument is not one of the listed
 enumeration values, or <code>std::system_error</code> if anything goes wrong with a
 system API query (which probably means the operating system is incorrectly
 configured, or the user associated with the calling process has been
 incorrectly set up).</p>
-<p>Typical locations on common operating systems:</p>
+<p>Sources for these directories:</p>
+<ul>
+<li><strong>Linux</strong><ul>
+<li><code>SystemPath::apps</code> -- Always <code>"/usr/local/bin"</code></li>
+<li><code>SystemPath::os</code> -- Always <code>"/"</code></li>
+<li><code>UserPath::home</code> -- Try <code>"$HOME"</code> first, then try calling <code>getpwuid_r(geteuid())</code>, fall back on <code>"/home/$USER"</code> if these fail</li>
+<li><code>UserPath::apps</code> -- Always <code>"&lt;home&gt;/bin"</code></li>
+<li>All others -- Try the relevant <code>"$XDG_*"</code> environment variable first, fall back on conventional paths if this fails</li>
+</ul>
+</li>
+<li><strong>Mac</strong><ul>
+<li><code>SystemPath::apps</code> -- Always <code>"/Applications"</code></li>
+<li><code>SystemPath::os</code> -- Always <code>"/"</code></li>
+<li><code>UserPath::home</code> -- Try <code>"$HOME"</code> first, then try calling <code>getpwuid_r(geteuid())</code>, fall back on <code>"/Users/$USER"</code> if these fail</li>
+<li>All others -- Standard paths relative to home directory</li>
+</ul>
+</li>
+<li><strong>Windows</strong><ul>
+<li>All paths -- Call <code>SHGetKnownFolderPath()</code></li>
+</ul>
+</li>
+</ul>
+<p>Typical locations:</p>
 <table>
 <thead>
 <tr>
 <th>Directory</th>
-<th>Interpretation</th>
 <th>Linux</th>
 <th>Mac</th>
 <th>Windows</th>
@@ -70,84 +91,72 @@ incorrectly set up).</p>
 <tbody>
 <tr>
 <td><code>SystemPath::apps</code></td>
-<td>System-wide application install directory</td>
 <td><code>/usr/local/bin</code></td>
 <td><code>/Applications</code></td>
 <td><code>C:\Program Files</code></td>
 </tr>
 <tr>
 <td><code>SystemPath::os</code></td>
-<td>Base directory for operating system files</td>
 <td><code>/</code></td>
 <td><code>/</code></td>
 <td><code>C:\Windows</code></td>
 </tr>
 <tr>
 <td><code>UserPath::apps</code></td>
-<td>User-specific application install directory</td>
 <td><code>&lt;home&gt;/bin</code></td>
 <td><code>&lt;home&gt;/Applications</code></td>
 <td><code>&lt;home&gt;\AppData\Local\Programs</code></td>
 </tr>
 <tr>
 <td><code>UserPath::cache</code></td>
-<td>User-specific local application data cache</td>
 <td><code>&lt;home&gt;/.cache</code></td>
 <td><code>&lt;home&gt;/Library/Caches</code></td>
 <td><code>&lt;home&gt;\AppData\Local</code></td>
 </tr>
 <tr>
 <td><code>UserPath::desktop</code></td>
-<td>User's desktop</td>
 <td><code>&lt;home&gt;/Desktop</code></td>
 <td><code>&lt;home&gt;/Desktop</code></td>
 <td><code>&lt;home&gt;\Desktop</code></td>
 </tr>
 <tr>
 <td><code>UserPath::documents</code></td>
-<td>User's documents</td>
 <td><code>&lt;home&gt;/Documents</code></td>
 <td><code>&lt;home&gt;/Documents</code></td>
 <td><code>&lt;home&gt;\Documents</code></td>
 </tr>
 <tr>
 <td><code>UserPath::downloads</code></td>
-<td>User's downloads</td>
 <td><code>&lt;home&gt;/Downloads</code></td>
 <td><code>&lt;home&gt;/Downloads</code></td>
 <td><code>&lt;home&gt;\Downloads</code></td>
 </tr>
 <tr>
 <td><code>UserPath::home</code></td>
-<td>User's home directory</td>
 <td><code>/home/&lt;user&gt;</code></td>
 <td><code>/Users/&lt;user&gt;</code></td>
 <td><code>C:\Users\&lt;user&gt;</code></td>
 </tr>
 <tr>
 <td><code>UserPath::movies</code></td>
-<td>User's movies</td>
 <td><code>&lt;home&gt;/Videos</code></td>
 <td><code>&lt;home&gt;/Movies</code></td>
 <td><code>&lt;home&gt;\Videos</code></td>
 </tr>
 <tr>
 <td><code>UserPath::music</code></td>
-<td>User's music</td>
 <td><code>&lt;home&gt;/Music</code></td>
 <td><code>&lt;home&gt;/Music</code></td>
 <td><code>&lt;home&gt;\Music</code></td>
 </tr>
 <tr>
 <td><code>UserPath::pictures</code></td>
-<td>User's pictures</td>
 <td><code>&lt;home&gt;/Pictures</code></td>
 <td><code>&lt;home&gt;/Pictures</code></td>
 <td><code>&lt;home&gt;\Pictures</code></td>
 </tr>
 <tr>
 <td><code>UserPath::settings</code></td>
-<td>User-specific application settings</td>
 <td><code>&lt;home&gt;/.config</code></td>
 <td><code>&lt;home&gt;/Library/Application Support</code></td>
 <td><code>&lt;home&gt;\AppData\Roaming</code></td>

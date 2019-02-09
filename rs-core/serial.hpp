@@ -79,9 +79,13 @@ namespace RS {
 
     template <typename T>
     void from_json(const json& j, Rational<T>& x) {
-        T num = j.at(0).get<T>();
-        T den = j.at(1).get<T>();
-        x = {num, den};
+        if (j.is_number()) {
+            x = j.get<T>();
+        } else {
+            T num = j.at(0).get<T>();
+            T den = j.at(1).get<T>();
+            x = {num, den};
+        }
     }
 
     inline void to_json(json& j, const Uuid& x) { j = x.str(); }

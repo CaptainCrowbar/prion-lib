@@ -188,8 +188,9 @@ void test_core_serial_rational() {
     json j;
     Rat r;
 
-    TRY(j = cr1);  TRY(r = j.get<Rat>());  TEST_EQUAL(r, cr1);  TEST_EQUAL(r.num(), 0);  TEST_EQUAL(r.den(), 1);
-    TRY(j = cr2);  TRY(r = j.get<Rat>());  TEST_EQUAL(r, cr2);  TEST_EQUAL(r.num(), 8);  TEST_EQUAL(r.den(), 5);
+    TRY(j = cr1);  TRY(r = j.get<Rat>());  TEST_EQUAL(r, cr1);  TEST_EQUAL(r.num(), 0);   TEST_EQUAL(r.den(), 1);
+    TRY(j = cr2);  TRY(r = j.get<Rat>());  TEST_EQUAL(r, cr2);  TEST_EQUAL(r.num(), 8);   TEST_EQUAL(r.den(), 5);
+    TRY(j = 42);   TRY(r = j.get<Rat>());  TEST_EQUAL(r, 42);   TEST_EQUAL(r.num(), 42);  TEST_EQUAL(r.den(), 1);
 
 }
 

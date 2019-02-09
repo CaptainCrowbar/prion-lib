@@ -1,5 +1,6 @@
 #include "rs-core/rational.hpp"
 #include "rs-core/unit-test.hpp"
+#include <limits>
 #include <stdexcept>
 #include <unordered_set>
 
@@ -93,10 +94,20 @@ void test_core_rational_arithmetic() {
     TRY(r = Rat(5, 3));
     TRY(s = Rat(7, 9));
 
-    TRY(t = r + s);  TEST_EQUAL(t.num(), 22);  TEST_EQUAL(t.den(), 9);
-    TRY(t = r - s);  TEST_EQUAL(t.num(), 8);   TEST_EQUAL(t.den(), 9);
-    TRY(t = r * s);  TEST_EQUAL(t.num(), 35);  TEST_EQUAL(t.den(), 27);
-    TRY(t = r / s);  TEST_EQUAL(t.num(), 15);  TEST_EQUAL(t.den(), 7);
+    TRY(t = + r);    TEST_EQUAL(t.num(), 5);    TEST_EQUAL(t.den(), 3);
+    TRY(t = - r);    TEST_EQUAL(t.num(), -5);   TEST_EQUAL(t.den(), 3);
+    TRY(t = r + s);  TEST_EQUAL(t.num(), 22);   TEST_EQUAL(t.den(), 9);
+    TRY(t = r - s);  TEST_EQUAL(t.num(), 8);    TEST_EQUAL(t.den(), 9);
+    TRY(t = r * s);  TEST_EQUAL(t.num(), 35);   TEST_EQUAL(t.den(), 27);
+    TRY(t = r / s);  TEST_EQUAL(t.num(), 15);   TEST_EQUAL(t.den(), 7);
+    TRY(t = s + 6);  TEST_EQUAL(t.num(), 61);   TEST_EQUAL(t.den(), 9);
+    TRY(t = 6 + s);  TEST_EQUAL(t.num(), 61);   TEST_EQUAL(t.den(), 9);
+    TRY(t = s - 6);  TEST_EQUAL(t.num(), -47);  TEST_EQUAL(t.den(), 9);
+    TRY(t = 6 - s);  TEST_EQUAL(t.num(), 47);   TEST_EQUAL(t.den(), 9);
+    TRY(t = s * 6);  TEST_EQUAL(t.num(), 14);   TEST_EQUAL(t.den(), 3);
+    TRY(t = 6 * s);  TEST_EQUAL(t.num(), 14);   TEST_EQUAL(t.den(), 3);
+    TRY(t = s / 6);  TEST_EQUAL(t.num(), 7);    TEST_EQUAL(t.den(), 54);
+    TRY(t = 6 / s);  TEST_EQUAL(t.num(), 54);   TEST_EQUAL(t.den(), 7);
 
 }
 

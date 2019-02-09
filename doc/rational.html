@@ -93,7 +93,8 @@ converted and that has a division operator.</p>
 <li><code>Rational</code> <strong><code>operator*</code></strong><code>(const Rational&amp; lhs, const Rational&amp; rhs)</code></li>
 <li><code>Rational</code> <strong><code>operator/</code></strong><code>(const Rational&amp; lhs, const Rational&amp; rhs)</code></li>
 </ul>
-<p>Arithmetic operators. Division by zero will throw <code>std::domain_error</code>.</p>
+<p>Arithmetic operators. Mixed mode operations between rationals and integers are
+also defined. Behaviour is undefined on division by zero.</p>
 </div>
 <div class="defns">
 <ul>

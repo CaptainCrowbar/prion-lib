@@ -68,7 +68,8 @@ converted and that has a division operator.
 * `Rational` **`operator*`**`(const Rational& lhs, const Rational& rhs)`
 * `Rational` **`operator/`**`(const Rational& lhs, const Rational& rhs)`
 
-Arithmetic operators. Division by zero will throw `std::domain_error`.
+Arithmetic operators. Mixed mode operations between rationals and integers are
+also defined. Behaviour is undefined on division by zero.
 
 * `bool` **`operator==`**`(const Rational& lhs, const Rational& rhs) noexcept`
 * `bool` **`operator!=`**`(const Rational& lhs, const Rational& rhs) noexcept`

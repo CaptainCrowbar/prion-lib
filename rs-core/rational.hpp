@@ -3,10 +3,10 @@
 #include "rs-core/common.hpp"
 #include "rs-core/string.hpp"
 #include <algorithm>
-#include <functional>
 #include <limits>
 #include <ostream>
 #include <stdexcept>
+#include <type_traits>
 #include <vector>
 
 namespace RS {
@@ -75,26 +75,6 @@ namespace RS {
     }
 
     template <typename T>
-    Rational<T> operator+(const Rational<T>& lhs, const Rational<T>& rhs) {
-        return {lhs.num() * rhs.den() + rhs.num() * lhs.den(), lhs.den() * rhs.den()};
-    }
-
-    template <typename T>
-    Rational<T> operator-(const Rational<T>& lhs, const Rational<T>& rhs) {
-        return {lhs.num() * rhs.den() - rhs.num() * lhs.den(), lhs.den() * rhs.den()};
-    }
-
-    template <typename T>
-    Rational<T> operator*(const Rational<T>& lhs, const Rational<T>& rhs) {
-        return {lhs.num() * rhs.num(), lhs.den() * rhs.den()};
-    }
-
-    template <typename T>
-    Rational<T> operator/(const Rational<T>& lhs, const Rational<T>& rhs) {
-        return {lhs.num() * rhs.den(), lhs.den() * rhs.num()};
-    }
-
-    template <typename T>
     Rational<T> Rational<T>::abs() const {
         auto r = *this;
         if (numer < T(0))
@@ -122,8 +102,6 @@ namespace RS {
 
     template <typename T>
     Rational<T> Rational<T>::reciprocal() const {
-        if (numer == T(0))
-            throw std::domain_error("Division by zero");
         auto r = *this;
         std::swap(r.numer, r.denom);
         return r;
@@ -201,8 +179,6 @@ namespace RS {
 
     template <typename T>
     void Rational<T>::reduce() {
-        if (denom == T(0))
-            throw std::domain_error("Division by zero");
         T g = gcd(numer, denom);
         numer /= g;
         denom /= g;
@@ -217,20 +193,128 @@ namespace RS {
         return t;
     }
 
+    template <typename T1, typename T2>
+    auto operator+(const Rational<T1>& lhs, const Rational<T2>& rhs) {
+        using RT = std::common_type_t<T1, T2>;
+        RT num = lhs.num() * rhs.den() + rhs.num() * lhs.den();
+        RT den = lhs.den() * rhs.den();
+        Rational<RT> r = {num, den};
+        return r;
+    }
+
+    template <typename T1, typename T2>
+    auto operator-(const Rational<T1>& lhs, const Rational<T2>& rhs) {
+        using RT = std::common_type_t<T1, T2>;
+        RT num = lhs.num() * rhs.den() - rhs.num() * lhs.den();
+        RT den = lhs.den() * rhs.den();
+        Rational<RT> r = {num, den};
+        return r;
+    }
+
+    template <typename T1, typename T2>
+    auto operator*(const Rational<T1>& lhs, const Rational<T2>& rhs) {
+        using RT = std::common_type_t<T1, T2>;
+        RT num = lhs.num() * rhs.num();
+        RT den = lhs.den() * rhs.den();
+        Rational<RT> r = {num, den};
+        return r;
+    }
+
+    template <typename T1, typename T2>
+    auto operator/(const Rational<T1>& lhs, const Rational<T2>& rhs) {
+        using RT = std::common_type_t<T1, T2>;
+        RT num = lhs.num() * rhs.den();
+        RT den = lhs.den() * rhs.num();
+        Rational<RT> r = {num, den};
+        return r;
+    }
+
+    template <typename T1, typename T2>
+    auto operator+(const Rational<T1>& lhs, const T2& rhs) {
+        using RT = std::common_type_t<T1, T2>;
+        RT num = lhs.num() + rhs * lhs.den();
+        RT den = lhs.den();
+        Rational<RT> r = {num, den};
+        return r;
+    }
+
+    template <typename T1, typename T2>
+    auto operator-(const Rational<T1>& lhs, const T2& rhs) {
+        using RT = std::common_type_t<T1, T2>;
+        RT num = lhs.num() - rhs * lhs.den();
+        RT den = lhs.den();
+        Rational<RT> r = {num, den};
+        return r;
+    }
+
+    template <typename T1, typename T2>
+    auto operator*(const Rational<T1>& lhs, const T2& rhs) {
+        using RT = std::common_type_t<T1, T2>;
+        RT num = lhs.num() * rhs;
+        RT den = lhs.den();
+        Rational<RT> r = {num, den};
+        return r;
+    }
+
+    template <typename T1, typename T2>
+    auto operator/(const Rational<T1>& lhs, const T2& rhs) {
+        using RT = std::common_type_t<T1, T2>;
+        RT num = lhs.num();
+        RT den = lhs.den() * rhs;
+        Rational<RT> r = {num, den};
+        return r;
+    }
+
+    template <typename T1, typename T2>
+    auto operator+(const T1& lhs, const Rational<T2>& rhs) {
+        using RT = std::common_type_t<T1, T2>;
+        RT num = lhs * rhs.den() + rhs.num();
+        RT den = rhs.den();
+        Rational<RT> r = {num, den};
+        return r;
+    }
+
+    template <typename T1, typename T2>
+    auto operator-(const T1& lhs, const Rational<T2>& rhs) {
+        using RT = std::common_type_t<T1, T2>;
+        RT num = lhs * rhs.den() - rhs.num();
+        RT den = rhs.den();
+        Rational<RT> r = {num, den};
+        return r;
+    }
+
+    template <typename T1, typename T2>
+    auto operator*(const T1& lhs, const Rational<T2>& rhs) {
+        using RT = std::common_type_t<T1, T2>;
+        RT num = lhs * rhs.num();
+        RT den = rhs.den();
+        Rational<RT> r = {num, den};
+        return r;
+    }
+
+    template <typename T1, typename T2>
+    auto operator/(const T1& lhs, const Rational<T2>& rhs) {
+        using RT = std::common_type_t<T1, T2>;
+        RT num = lhs * rhs.den();
+        RT den = rhs.num();
+        Rational<RT> r = {num, den};
+        return r;
+    }
+
     template <typename T1, typename T2> bool operator==(const Rational<T1>& x, const Rational<T2>& y) { return x.num() == y.num() && x.den() == y.den(); }
     template <typename T1, typename T2> bool operator<(const Rational<T1>& x, const Rational<T2>& y) { return x.num() * y.den() < y.num() * x.den(); }
-    template <typename T1, typename T2> bool operator==(const Rational<T1>& x, const T2& y) { return x.num() == y && x.den() == T1(1); }
-    template <typename T1, typename T2> bool operator<(const Rational<T1>& x, const T2& y) { return x.num() < y * x.den(); }
-    template <typename T1, typename T2> bool operator==(const T1& x, const Rational<T2>& y) { return x == y.num() && y.den() == T2(1); }
-    template <typename T1, typename T2> bool operator<(const T1& x, const Rational<T2>& y) { return x * y.den() < y.num(); }
     template <typename T1, typename T2> bool operator!=(const Rational<T1>& x, const Rational<T2>& y) { return ! (x == y); }
     template <typename T1, typename T2> bool operator>(const Rational<T1>& x, const Rational<T2>& y) { return y < x; }
     template <typename T1, typename T2> bool operator<=(const Rational<T1>& x, const Rational<T2>& y) { return ! (y < x); }
     template <typename T1, typename T2> bool operator>=(const Rational<T1>& x, const Rational<T2>& y) { return ! (x < y); }
+    template <typename T1, typename T2> bool operator==(const Rational<T1>& x, const T2& y) { return x.num() == y && x.den() == T1(1); }
+    template <typename T1, typename T2> bool operator<(const Rational<T1>& x, const T2& y) { return x.num() < y * x.den(); }
     template <typename T1, typename T2> bool operator!=(const Rational<T1>& x, const T2& y) { return ! (x == y); }
     template <typename T1, typename T2> bool operator>(const Rational<T1>& x, const T2& y) { return y < x; }
     template <typename T1, typename T2> bool operator<=(const Rational<T1>& x, const T2& y) { return ! (y < x); }
     template <typename T1, typename T2> bool operator>=(const Rational<T1>& x, const T2& y) { return ! (x < y); }
+    template <typename T1, typename T2> bool operator==(const T1& x, const Rational<T2>& y) { return x == y.num() && y.den() == T2(1); }
+    template <typename T1, typename T2> bool operator<(const T1& x, const Rational<T2>& y) { return x * y.den() < y.num(); }
     template <typename T1, typename T2> bool operator!=(const T1& x, const Rational<T2>& y) { return ! (x == y); }
     template <typename T1, typename T2> bool operator>(const T1& x, const Rational<T2>& y) { return y < x; }
     template <typename T1, typename T2> bool operator<=(const T1& x, const Rational<T2>& y) { return ! (y < x); }

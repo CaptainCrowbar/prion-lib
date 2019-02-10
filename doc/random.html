@@ -287,15 +287,32 @@ the class.</p>
 <li><code>Rat RandomBoolean::</code><strong><code>prob</code></strong><code>() const noexcept</code></li>
 </ul>
 </li>
-<li><code>inline RandomBoolean</code> <strong><code>random_boolean</code></strong><code>()</code></li>
-<li><code>inline RandomBoolean</code> <strong><code>random_boolean</code></strong><code>(Rat p)</code></li>
-<li><code>inline RandomBoolean</code> <strong><code>random_boolean</code></strong><code>(int a, int b)</code></li>
-<li><code>inline RandomBoolean</code> <strong><code>random_boolean</code></strong><code>(double p)</code></li>
+<li><code>RandomBoolean</code> <strong><code>random_boolean</code></strong><code>()</code></li>
+<li><code>RandomBoolean</code> <strong><code>random_boolean</code></strong><code>(Rat p)</code></li>
+<li><code>RandomBoolean</code> <strong><code>random_boolean</code></strong><code>(int a, int b)</code></li>
+<li><code>RandomBoolean</code> <strong><code>random_boolean</code></strong><code>(double p)</code></li>
 </ul>
 <p>Random boolean (Bernoulli) distribution. The probability of success defaults
 to 1/2; it can be supplied as a rational, a pair of integers (representing a
 ratio), or a floating point number. Probabilities outside the 0-1 range are
 clamped to the nearest end of the range.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>RandomBinomial</code></strong><ul>
+<li><code>using RandomBinomial::</code><strong><code>result_type</code></strong> <code>= T</code></li>
+<li><code>RandomBinomial::</code><strong><code>RandomBinomial</code></strong><code>() noexcept</code></li>
+<li><code>RandomBinomial::</code><strong><code>RandomBinomial</code></strong><code>(const Rational&lt;T&gt;&amp; p, T n) noexcept</code></li>
+<li><code>template &lt;typename RNG&gt; bool RandomBinomial::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
+<li><code>Rational&lt;T&gt; RandomBinomial::</code><strong><code>prob</code></strong><code>() const noexcept</code></li>
+<li><code>T RandomBinomial::</code><strong><code>number</code></strong><code>() const noexcept</code></li>
+</ul>
+</li>
+<li><code>template &lt;typename T&gt; RandomBinomial</code> <strong><code>random_boolean</code></strong><code>(const Rational&lt;T&gt;&amp; p, T n) noexcept</code></li>
+</ul>
+<p>Binomial distribution, reporting the number of successes after <code>n</code> tests each
+with probability <code>p</code>. The argument <code>p</code> is clamped to the 0-1 range; the result
+is always zero if <code>n&lt;1</code>.</p>
 </div>
 <div class="defns">
 <ul>

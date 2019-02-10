@@ -49,23 +49,8 @@ namespace {
             sum += x; \
             sum2 += x * x; \
         } \
-        if (std::is_floating_point<T>::value) { \
-            if (xmin == xmax) { \
-                TEST_EQUAL(min, xmin); \
-                TEST_EQUAL(max, xmax); \
-            } else { \
-                TEST_COMPARE(min, >, xmin); \
-                TEST_COMPARE(max, <, xmax); \
-            } \
-        } else { \
-            if (xmax - xmin < 0.1 * iterations) { \
-                TEST_EQUAL(min, xmin); \
-                TEST_EQUAL(max, xmax); \
-            } else { \
-                TEST_COMPARE(min, >=, xmin); \
-                TEST_COMPARE(max, <=, xmax); \
-            } \
-        } \
+        TEST_COMPARE(min, >=, xmin); \
+        TEST_COMPARE(max, <=, xmax); \
         double mean = sum / iterations; \
         double sd = std::sqrt(sum2 / iterations - mean * mean); \
         TEST_NEAR_EPSILON(mean, xmean, epsilon); \
@@ -582,61 +567,38 @@ void test_core_random_xoshiro256ss() {
 void test_core_random_basic_distributions() {
 
     static constexpr size_t iterations = 100'000;
+    static constexpr double xmax64 = 18'446'744'073'709'551'615.0;
+    static constexpr double xmean64 = 9'223'372'036'854'775'807.5;
+    static constexpr double xsd64 = 5'325'116'328'314'171'700.52;
+    static const std::vector<int> v = {1,2,3,4,5,6,7,8,9,10};
 
     std::mt19937 rng(42);
 
-    auto x_ri1 = [&] { return random_integer(100)(rng); };
-    CHECK_RANDOM_GENERATOR(x_ri1, 0, 99, 49.5, 28.8661);
-    auto x_ri2 = [&] { return random_integer(101, 200)(rng); };
-    CHECK_RANDOM_GENERATOR(x_ri2, 101, 200, 150.5, 28.8661);
-    auto x_ri3 = [&] { return random_integer(int64_t(0), int64_t(1e18))(rng); };
-    CHECK_RANDOM_GENERATOR(x_ri3, 0, 1e18, 5e17, 2.88661e17);
-    auto x_ri4 = [&] { return random_integer(uint64_t(0), uint64_t(-1))(rng); };
-    CHECK_RANDOM_GENERATOR(x_ri4, 0, 18'446'744'073'709'551'615.0, 9'223'372'036'854'775'807.5, 5'325'116'328'314'171'700.52);
-    auto x_ri5 = [&] { return random_integer(42, 42)(rng); };
-    CHECK_RANDOM_GENERATOR(x_ri5, 42, 42, 42, 0);
-
-    auto x_rb1 = [&] { return random_boolean()(rng); };
-    CHECK_RANDOM_GENERATOR(x_rb1, 0, 1, 0.5, 0.5);
-    auto x_rb2 = [&] { return random_boolean(0.25)(rng); };
-    CHECK_RANDOM_GENERATOR(x_rb2, 0, 1, 0.25, 0.433013);
-    auto x_rb3 = [&] { return random_boolean(Rat(3, 4))(rng); };
-    CHECK_RANDOM_GENERATOR(x_rb3, 0, 1, 0.75, 0.433013);
-    auto x_rb4 = [&] { return random_boolean(3, 4)(rng); };
-    CHECK_RANDOM_GENERATOR(x_rb4, 0, 1, 0.75, 0.433013);
-
-    auto x_rd1 = [&] { return random_dice<int>()(rng); };
-    CHECK_RANDOM_GENERATOR(x_rd1, 1, 6, 3.5, 1.70783);
-    auto x_rd2 = [&] { return random_dice(3)(rng); };
-    CHECK_RANDOM_GENERATOR(x_rd2, 3, 18, 10.5, 2.95804);
-    auto x_rd3 = [&] { return random_dice(3, 10)(rng); };
-    CHECK_RANDOM_GENERATOR(x_rd3, 3, 30, 16.5, 4.97494);
-
-    auto x_rf1 = [&] { return random_real<double>()(rng); };
-    CHECK_RANDOM_GENERATOR(x_rf1, 0, 1, 0.5, 0.288661);
-    auto x_rf2 = [&] { return random_real(-100.0, 100.0)(rng); };
-    CHECK_RANDOM_GENERATOR(x_rf2, -100, 100, 0, 57.7350);
-    auto x_rf3 = [&] { return random_real(42.0, 42.0)(rng); };
-    CHECK_RANDOM_GENERATOR(x_rf3, 42, 42, 42, 0);
-
-    auto x_rn1 = [&] { return random_normal<double>()(rng); };
-    CHECK_RANDOM_GENERATOR(x_rn1, - inf, inf, 0, 1);
-    auto x_rn2 = [&] { return random_normal(10.0, 5.0)(rng); };
-    CHECK_RANDOM_GENERATOR(x_rn2, - inf, inf, 10, 5);
-
-    std::vector<int> v = {1,2,3,4,5,6,7,8,9,10};
-    auto x_rc1 = [&] { return random_choice(v)(rng); };
-    CHECK_RANDOM_GENERATOR(x_rc1, 1, 10, 5.5, 2.88661);
-    auto x_rc2 = [&] { return random_choice(v.begin(), v.end())(rng); };
-    CHECK_RANDOM_GENERATOR(x_rc2, 1, 10, 5.5, 2.88661);
-    auto x_rc3 = [&] { return random_choice({1,2,3,4,5,6,7,8,9,10})(rng); };
-    CHECK_RANDOM_GENERATOR(x_rc3, 1, 10, 5.5, 2.88661);
-    auto x_rc4 = [&] { return random_choice_from(v, rng); };
-    CHECK_RANDOM_GENERATOR(x_rc4, 1, 10, 5.5, 2.88661);
-    auto x_rc5 = [&] { return random_choice_from(v.begin(), v.end(), rng); };
-    CHECK_RANDOM_GENERATOR(x_rc5, 1, 10, 5.5, 2.88661);
-    auto x_rc6 = [&] { return random_choice_from({1,2,3,4,5,6,7,8,9,10}, rng); };
-    CHECK_RANDOM_GENERATOR(x_rc6, 1, 10, 5.5, 2.88661);
+    { auto gen = [&] { return random_integer(100)(rng); };                         CHECK_RANDOM_GENERATOR(gen, 0, 99, 49.5, 28.8661); }
+    { auto gen = [&] { return random_integer(101, 200)(rng); };                    CHECK_RANDOM_GENERATOR(gen, 101, 200, 150.5, 28.8661); }
+    { auto gen = [&] { return random_integer(int64_t(0), int64_t(1e18))(rng); };   CHECK_RANDOM_GENERATOR(gen, 0, 1e18, 5e17, 2.88661e17); }
+    { auto gen = [&] { return random_integer(uint64_t(0), uint64_t(-1))(rng); };   CHECK_RANDOM_GENERATOR(gen, 0, xmax64, xmean64, xsd64); }
+    { auto gen = [&] { return random_integer(42, 42)(rng); };                      CHECK_RANDOM_GENERATOR(gen, 42, 42, 42, 0); }
+    { auto gen = [&] { return random_boolean()(rng); };                            CHECK_RANDOM_GENERATOR(gen, 0, 1, 0.5, 0.5); }
+    { auto gen = [&] { return random_boolean(0.25)(rng); };                        CHECK_RANDOM_GENERATOR(gen, 0, 1, 0.25, 0.433013); }
+    { auto gen = [&] { return random_boolean(Rat(3, 4))(rng); };                   CHECK_RANDOM_GENERATOR(gen, 0, 1, 0.75, 0.433013); }
+    { auto gen = [&] { return random_boolean(3, 4)(rng); };                        CHECK_RANDOM_GENERATOR(gen, 0, 1, 0.75, 0.433013); }
+    { auto gen = [&] { return random_binomial(Rat(3, 4), 10)(rng); };              CHECK_RANDOM_GENERATOR(gen, 0, 10, 7.5, 1.369306); }
+    { auto gen = [&] { return random_binomial(Rat(1, 4), 20)(rng); };              CHECK_RANDOM_GENERATOR(gen, 0, 20, 5, 1.936492); }
+    { auto gen = [&] { return random_dice<int>()(rng); };                          CHECK_RANDOM_GENERATOR(gen, 1, 6, 3.5, 1.70783); }
+    { auto gen = [&] { return random_dice(3)(rng); };                              CHECK_RANDOM_GENERATOR(gen, 3, 18, 10.5, 2.95804); }
+    { auto gen = [&] { return random_dice(3, 10)(rng); };                          CHECK_RANDOM_GENERATOR(gen, 3, 30, 16.5, 4.97494); }
+    { auto gen = [&] { return random_real<double>()(rng); };                       CHECK_RANDOM_GENERATOR(gen, 0, 1, 0.5, 0.288661); }
+    { auto gen = [&] { return random_real(-100.0, 100.0)(rng); };                  CHECK_RANDOM_GENERATOR(gen, -100, 100, 0, 57.7350); }
+    { auto gen = [&] { return random_real(42.0, 42.0)(rng); };                     CHECK_RANDOM_GENERATOR(gen, 42, 42, 42, 0); }
+    { auto gen = [&] { return random_normal<double>()(rng); };                     CHECK_RANDOM_GENERATOR(gen, - inf, inf, 0, 1); }
+    { auto gen = [&] { return random_normal(10.0, 5.0)(rng); };                    CHECK_RANDOM_GENERATOR(gen, - inf, inf, 10, 5); }
+    { auto gen = [&] { return random_choice(v)(rng); };                            CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
+    { auto gen = [&] { return random_choice(v.begin(), v.end())(rng); };           CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
+    { auto gen = [&] { return random_choice({1,2,3,4,5,6,7,8,9,10})(rng); };       CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
+    { auto gen = [&] { return random_choice_from(v, rng); };                       CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
+    { auto gen = [&] { return random_choice_from(v.begin(), v.end(), rng); };      CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
+    { auto gen = [&] { return random_choice_from({1,2,3,4,5,6,7,8,9,10}, rng); };  CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
 
 }
 

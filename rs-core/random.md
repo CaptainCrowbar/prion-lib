@@ -166,15 +166,28 @@ the class.
     * `explicit RandomBoolean::`**`RandomBoolean`**`(Rat p) noexcept`
     * `template <typename RNG> bool RandomBoolean::`**`operator()`**`(RNG& rng) const`
     * `Rat RandomBoolean::`**`prob`**`() const noexcept`
-* `inline RandomBoolean` **`random_boolean`**`()`
-* `inline RandomBoolean` **`random_boolean`**`(Rat p)`
-* `inline RandomBoolean` **`random_boolean`**`(int a, int b)`
-* `inline RandomBoolean` **`random_boolean`**`(double p)`
+* `RandomBoolean` **`random_boolean`**`()`
+* `RandomBoolean` **`random_boolean`**`(Rat p)`
+* `RandomBoolean` **`random_boolean`**`(int a, int b)`
+* `RandomBoolean` **`random_boolean`**`(double p)`
 
 Random boolean (Bernoulli) distribution. The probability of success defaults
 to 1/2; it can be supplied as a rational, a pair of integers (representing a
 ratio), or a floating point number. Probabilities outside the 0-1 range are
 clamped to the nearest end of the range.
+
+* `template <typename T> class` **`RandomBinomial`**
+    * `using RandomBinomial::`**`result_type`** `= T`
+    * `RandomBinomial::`**`RandomBinomial`**`() noexcept`
+    * `RandomBinomial::`**`RandomBinomial`**`(const Rational<T>& p, T n) noexcept`
+    * `template <typename RNG> bool RandomBinomial::`**`operator()`**`(RNG& rng) const`
+    * `Rational<T> RandomBinomial::`**`prob`**`() const noexcept`
+    * `T RandomBinomial::`**`number`**`() const noexcept`
+* `template <typename T> RandomBinomial` **`random_boolean`**`(const Rational<T>& p, T n) noexcept`
+
+Binomial distribution, reporting the number of successes after `n` tests each
+with probability `p`. The argument `p` is clamped to the 0-1 range; the result
+is always zero if `n<1`.
 
 * `template <typename T> class` **`RandomInteger`**
     * `using RandomInteger::`**`result_type`** `= T`

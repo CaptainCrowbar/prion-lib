@@ -474,7 +474,7 @@ namespace RS {
     public:
         using result_type = bool;
         RandomBoolean() = default;
-        explicit RandomBoolean(Rat p) noexcept: prob_(p) {}
+        explicit RandomBoolean(Rat p) noexcept: prob_(std::clamp(p, Rat(0), Rat(1))) {}
         template <typename RNG> bool operator()(RNG& rng) const { return random_integer(prob_.den())(rng) < prob_.num(); }
         Rat prob() const noexcept { return prob_; }
     private:
@@ -496,6 +496,31 @@ namespace RS {
             r = {int(maxint * p), maxint};
         return RandomBoolean(r);
     }
+
+    template <typename T>
+    class RandomBinomial {
+    public:
+        static_assert(std::is_integral_v<T>);
+        using result_type = T;
+        RandomBinomial() = default;
+        RandomBinomial(const Rational<T>& p, T n) noexcept:
+            prob_(std::clamp(p, Rational<T>(0), Rational<T>(1))), num_(std::max(n, T(0))), gen_(0, prob_.den() - 1) {}
+        template <typename RNG> T operator()(RNG& rng) const {
+            T count = 0;
+            for (T i = 0; i < num_; ++i)
+                if (gen_(rng) < prob_.num())
+                    ++count;
+            return count;
+        }
+        Rational<T> prob() const noexcept { return prob_; }
+        T number() const noexcept { return num_; }
+    private:
+        Rational<T> prob_;
+        T num_ = 0;
+        RandomInteger<T> gen_;
+    };
+
+    template <typename T> RandomBinomial<T> random_binomial(const Rational<T>& p, T n) { return {p, n}; }
 
     template <typename T>
     class RandomDice {

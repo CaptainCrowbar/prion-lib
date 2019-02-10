@@ -389,6 +389,23 @@ sets <code>mean=0</code> and <code>sd=1</code>.</p>
 </div>
 <div class="defns">
 <ul>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>RandomDiscreteNormal</code></strong><ul>
+<li><code>using RandomDiscreteNormal::</code><strong><code>result_type</code></strong> <code>= T</code></li>
+<li><code>RandomDiscreteNormal::</code><strong><code>RandomDiscreteNormal</code></strong><code>()</code></li>
+<li><code>RandomDiscreteNormal::</code><strong><code>RandomDiscreteNormal</code></strong><code>(const Rational&lt;T&gt;&amp; mean, const Rational&lt;T&gt;&amp; sd)</code></li>
+<li><code>template &lt;typename RNG&gt; T RandomDiscreteNormal::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
+<li><code>Rational&lt;T&gt; RandomDiscreteNormal::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
+<li><code>Rational&lt;T&gt; RandomDiscreteNormal::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
+</ul>
+</li>
+<li><code>template &lt;typename T&gt; RandomDiscreteNormal&lt;T&gt;</code> <strong><code>random_discrete_normal</code></strong><code>(const Rational&lt;T&gt;&amp; mean, const Rational&lt;T&gt;&amp; sd)</code></li>
+</ul>
+<p>Generates an integer that follows a good deterministic approximation to the
+result of generating a normally distributed real value and then rounding it to
+an integer.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>template &lt;typename T&gt; class</code> <strong><code>RandomChoice</code></strong><ul>
 <li><code>using RandomChoice::</code><strong><code>result_type</code></strong> <code>= T</code></li>
 <li><code>RandomChoice::</code><strong><code>RandomChoice</code></strong><code>() noexcept</code></li>

@@ -246,6 +246,19 @@ Normal (Gaussian) distribution, with the given mean and standard deviation.
 The absolute value of the standard deviation is used. The default constructor
 sets `mean=0` and `sd=1`.
 
+* `template <typename T> class` **`RandomDiscreteNormal`**
+    * `using RandomDiscreteNormal::`**`result_type`** `= T`
+    * `RandomDiscreteNormal::`**`RandomDiscreteNormal`**`()`
+    * `RandomDiscreteNormal::`**`RandomDiscreteNormal`**`(const Rational<T>& mean, const Rational<T>& sd)`
+    * `template <typename RNG> T RandomDiscreteNormal::`**`operator()`**`(RNG& rng) const`
+    * `Rational<T> RandomDiscreteNormal::`**`mean`**`() const noexcept`
+    * `Rational<T> RandomDiscreteNormal::`**`sd`**`() const noexcept`
+* `template <typename T> RandomDiscreteNormal<T>` **`random_discrete_normal`**`(const Rational<T>& mean, const Rational<T>& sd)`
+
+Generates an integer that follows a good deterministic approximation to the
+result of generating a normally distributed real value and then rounding it to
+an integer.
+
 * `template <typename T> class` **`RandomChoice`**
     * `using RandomChoice::`**`result_type`** `= T`
     * `RandomChoice::`**`RandomChoice`**`() noexcept`

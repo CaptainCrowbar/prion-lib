@@ -84,7 +84,7 @@ $(BUILD)/process-test.o: rs-core/process-test.cpp rs-core/channel.hpp rs-core/co
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/path.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/process.o: rs-core/process.cpp rs-core/channel.hpp rs-core/common.hpp rs-core/io.hpp rs-core/meta.hpp rs-core/optional.hpp rs-core/process.hpp rs-core/string.hpp rs-core/time.hpp \
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/path.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
-$(BUILD)/random-test.o: rs-core/random-test.cpp rs-core/common.hpp rs-core/float.hpp rs-core/int128.hpp rs-core/meta.hpp rs-core/random.hpp rs-core/rational.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp \
+$(BUILD)/random-test.o: rs-core/random-test.cpp rs-core/common.hpp rs-core/float.hpp rs-core/int128.hpp rs-core/meta.hpp rs-core/random.hpp rs-core/rational.hpp rs-core/statistics.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp \
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/random.o: rs-core/random.cpp rs-core/common.hpp rs-core/float.hpp rs-core/int128.hpp rs-core/meta.hpp rs-core/random.hpp rs-core/rational.hpp rs-core/string.hpp rs-core/vector.hpp \
     /usr/local/include/unicorn/utility.hpp

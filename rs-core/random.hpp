@@ -597,6 +597,51 @@ namespace RS {
     template <typename T> RandomNormal<T> random_normal(T mean, T sd) { return {mean, sd}; }
 
     template <typename T>
+    class RandomDiscreteNormal {
+    public:
+        static_assert(std::is_integral_v<T>);
+        using result_type = T;
+        RandomDiscreteNormal(): RandomDiscreteNormal(0, 1) {}
+        RandomDiscreteNormal(const Rational<T>& mean, const Rational<T>& sd);
+        template <typename RNG> T operator()(RNG& rng) const;
+        Rational<T> mean() const noexcept { return mean_; }
+        Rational<T> sd() const noexcept { return sd_; }
+    private:
+        Rational<T> mean_;
+        Rational<T> sd_;
+        RandomInteger<T> gen_;
+        int num_;
+        Rational<T> scale_;
+        Rational<T> offset_;
+    };
+
+    template <typename T>
+    RandomDiscreteNormal<T>::RandomDiscreteNormal(const Rational<T>& mean, const Rational<T>& sd) {
+        static constexpr int sqrt_n = 3;
+        static const Rational<T> k = 100;
+        static const Rational<T> sqrt_12 = {97,28};
+        mean_ = mean;
+        sd_ = sd.abs();
+        T max = (k * sqrt_12 * sd_).round();
+        gen_ = {0, max};
+        num_ = sqrt_n * sqrt_n;
+        scale_ = 1 / (k * sqrt_n);
+        offset_ = mean_ - scale_ * num_ * max / 2;
+    }
+
+    template <typename T>
+    template <typename RNG>
+    T RandomDiscreteNormal<T>::operator()(RNG& rng) const {
+        T sum = 0;
+        for (int i = 0; i < num_; ++i)
+            sum += gen_(rng);
+        auto r = scale_ * sum + offset_;
+        return r.round();
+    }
+
+    template <typename T> RandomDiscreteNormal<T> random_discrete_normal(const Rational<T>& mean, const Rational<T>& sd) { return {mean,sd}; }
+
+    template <typename T>
     class RandomChoice {
     public:
         using result_type = T;
@@ -646,133 +691,6 @@ namespace RS {
     template <typename T, typename RNG> const T& random_choice_from(std::initializer_list<T> list, RNG& rng) {
         return list.begin()[random_integer(list.size())(rng)];
     }
-
-    // template <typename T, typename RNG>
-    // T random_integer(RNG& rng, T t) {
-    //     static_assert(std::is_integral<T>::value);
-    //     if (t <= T(1))
-    //         return T(0);
-    //     else
-    //         return random_integer(rng, T(0), t - T(1));
-    // }
-
-    // template <typename T, typename RNG>
-    // T random_dice(RNG& rng, T n = T(1), T faces = T(6)) {
-    //     static_assert(std::is_integral<T>::value);
-    //     if (n < T(1) || faces < T(1))
-    //         return T(0);
-    //     T sum = T(0);
-    //     for (T i = T(0); i < n; ++i)
-    //         sum += random_integer(rng, T(1), faces);
-    //     return sum;
-    // }
-
-    // template <typename T, typename RNG>
-    // T random_triangle_integer(RNG& rng, T hi, T lo) {
-    //     static_assert(std::is_integral<T>::value);
-    //     if (hi == lo)
-    //         return hi;
-    //     T d = hi > lo ? hi - lo : lo - hi;
-    //     T x = random_integer(rng, (d + T(1)) * (d + T(2)) / T(2));
-    //     T y = (int_sqrt(T(8) * x + T(1)) - T(1)) / T(2);
-    //     return hi > lo ? lo + y : lo - y;
-    // }
-
-    // template <typename RNG>
-    // double random_unit(RNG& rng) {
-    //     return double(rng() - rng.min()) / (double(rng.max() - rng.min()) + 1.0);
-    // }
-
-    // template <typename T, typename RNG>
-    // T random_real(RNG& rng, T a = T(1), T b = T(0)) {
-    //     static_assert(std::is_floating_point<T>::value);
-    //     return a + (b - a) * (T(rng() - rng.min()) / (T(rng.max() - rng.min()) + T(1)));
-    // }
-
-    // template <typename T, typename RNG>
-    // T random_normal(RNG& rng) {
-    //     static_assert(std::is_floating_point<T>::value);
-    //     T u1 = random_real<T>(rng);
-    //     T u2 = random_real<T>(rng);
-    //     return std::sqrt(T(-2) * std::log(u1)) * std::cos(T(2) * pi_c<T> * u2);
-    // }
-
-    // template <typename T, typename RNG>
-    // T random_normal(RNG& rng, T m, T s) {
-    //     static_assert(std::is_floating_point<T>::value);
-    //     return m + s * random_normal<T>(rng);
-    // }
-
-    // template <typename RNG>
-    // bool random_bool(RNG& rng) {
-    //     using R = typename RNG::result_type;
-    //     R min = rng.min();
-    //     R range = rng.max() - min;
-    //     R cutoff = min + range / R(2);
-    //     // Test for odd range is reversed because range is one less than the number of values
-    //     bool odd = range % R(1) == R(0);
-    //     R x = R();
-    //     do x = rng();
-    //         while (odd && x == min);
-    //     return x > cutoff;
-    // }
-
-    // template <typename RNG, typename T>
-    // bool random_bool(RNG& rng, T p, std::enable_if_t<std::is_floating_point_v<T>>* = nullptr) {
-    //     return random_real<T>(rng) <= p;
-    // }
-
-    // template <typename RNG, typename T>
-    // bool random_bool(RNG& rng, Rational<T> p) {
-    //     return random_integer(rng, p.den()) < p.num();
-    // }
-
-    // template <typename RNG, typename T>
-    // bool random_bool(RNG& rng, T num, T den) {
-    //     static_assert(std::is_integral<T>::value);
-    //     return random_integer(rng, den) < num;
-    // }
-
-    // template <typename ForwardRange, typename RNG>
-    // Meta::RangeValue<ForwardRange> random_choice(RNG& rng, const ForwardRange& range) {
-    //     using T = Meta::RangeValue<ForwardRange>;
-    //     using std::begin;
-    //     using std::end;
-    //     auto i = begin(range), j = end(range);
-    //     if (i == j)
-    //         return T();
-    //     size_t n = std::distance(i, j);
-    //     std::advance(i, random_integer(rng, n));
-    //     return *i;
-    // }
-
-    // template <typename T, typename RNG>
-    // T random_choice(RNG& rng, std::initializer_list<T> list) {
-    //     if (list.size() == 0)
-    //         return T();
-    //     else
-    //         return list.begin()[random_integer(rng, list.size())];
-    // }
-
-    // template <typename ForwardRange, typename RNG>
-    // std::vector<Meta::RangeValue<ForwardRange>> random_sample(RNG& rng, const ForwardRange& range, size_t k) {
-    //     using T = Meta::RangeValue<ForwardRange>;
-    //     using std::begin;
-    //     using std::end;
-    //     auto b = begin(range), e = end(range);
-    //     size_t n = std::distance(b, e);
-    //     if (k > n)
-    //         throw std::length_error("Sample size requested is larger than the population");
-    //     auto p = b;
-    //     std::advance(p, k);
-    //     std::vector<T> sample(b, p);
-    //     for (size_t i = k; i < n; ++i, ++p) {
-    //         auto j = random_integer(rng, i);
-    //         if (j < k)
-    //             sample[j] = *p;
-    //     }
-    //     return sample;
-    // }
 
     // Random distribution properties
 

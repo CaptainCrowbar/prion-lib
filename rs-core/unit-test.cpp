@@ -245,13 +245,14 @@ extern void test_core_random_xoshiro128ss();
 extern void test_core_random_xoshiro256p();
 extern void test_core_random_xoshiro256ss();
 extern void test_core_random_basic_distributions();
+extern void test_core_random_discrete_normal_distribution();
+extern void test_core_random_triangular_distribution();
 extern void test_core_random_sample();
-extern void test_core_random_triangular();
-extern void test_core_random_uniform_integer_distribution();
-extern void test_core_random_binomial_distribution();
-extern void test_core_random_dice_distribution();
-extern void test_core_random_uniform_real_distribution();
-extern void test_core_random_normal_distribution();
+extern void test_core_random_uniform_integer_distribution_properties();
+extern void test_core_random_binomial_distribution_properties();
+extern void test_core_random_dice_distribution_properties();
+extern void test_core_random_uniform_real_distribution_properties();
+extern void test_core_random_normal_distribution_properties();
 extern void test_core_random_vectors();
 extern void test_core_random_random_in_sphere();
 extern void test_core_random_random_on_sphere();
@@ -653,13 +654,14 @@ int main() {
         { "core/random/xoshiro256p", test_core_random_xoshiro256p },
         { "core/random/xoshiro256ss", test_core_random_xoshiro256ss },
         { "core/random/basic-distributions", test_core_random_basic_distributions },
+        { "core/random/discrete-normal-distribution", test_core_random_discrete_normal_distribution },
+        { "core/random/triangular-distribution", test_core_random_triangular_distribution },
         { "core/random/sample", test_core_random_sample },
-        { "core/random/triangular", test_core_random_triangular },
-        { "core/random/uniform-integer-distribution", test_core_random_uniform_integer_distribution },
-        { "core/random/binomial-distribution", test_core_random_binomial_distribution },
-        { "core/random/dice-distribution", test_core_random_dice_distribution },
-        { "core/random/uniform-real-distribution", test_core_random_uniform_real_distribution },
-        { "core/random/normal-distribution", test_core_random_normal_distribution },
+        { "core/random/uniform-integer-distribution-properties", test_core_random_uniform_integer_distribution_properties },
+        { "core/random/binomial-distribution-properties", test_core_random_binomial_distribution_properties },
+        { "core/random/dice-distribution-properties", test_core_random_dice_distribution_properties },
+        { "core/random/uniform-real-distribution-properties", test_core_random_uniform_real_distribution_properties },
+        { "core/random/normal-distribution-properties", test_core_random_normal_distribution_properties },
         { "core/random/vectors", test_core_random_vectors },
         { "core/random/random-in-sphere", test_core_random_random_in_sphere },
         { "core/random/random-on-sphere", test_core_random_random_on_sphere },

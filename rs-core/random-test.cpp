@@ -1,5 +1,6 @@
 #include "rs-core/random.hpp"
 #include "rs-core/rational.hpp"
+#include "rs-core/statistics.hpp"
 #include "rs-core/unit-test.hpp"
 #include "rs-core/vector.hpp"
 #include <algorithm>
@@ -639,45 +640,38 @@ void test_core_random_basic_distributions() {
 
 }
 
-void test_core_random_sample() {
+void test_core_random_discrete_normal_distribution() {
 
-    static constexpr size_t pop_size = 100;
-    static constexpr size_t sample_iterations = 100;
-    const double expect_mean = double(pop_size + 1) / 2;
-    const double expect_sd = std::sqrt(double(pop_size * pop_size - 1) / 12);
+    static constexpr int iterations = 100'000;
+    static constexpr int mean = 100;
+    static constexpr int sd = 10;
 
-    std::mt19937 rng(42);
-    std::vector<int> pop(pop_size), sample;
-    std::iota(pop.begin(), pop.end(), 1);
+    Statistics<> stats;
+    Xoshiro rng(42);
+    int n = 0;
+    uint64_t u = 0;
 
-    for (size_t k = 0; k <= pop_size; ++k) {
-        double count = 0, sum = 0, sum2 = 0;
-        for (size_t i = 0; i < sample_iterations; ++i) {
-            TRY(sample = random_sample_from(pop, k, rng));
-            TEST_EQUAL(sample.size(), k);
-            TRY(con_sort_unique(sample));
-            TEST_EQUAL(sample.size(), k);
-            count += sample.size();
-            for (auto x: sample) {
-                sum += x;
-                sum2 += x * x;
-            }
-        }
-        if (k >= 1) {
-            double mean = sum / count;
-            TEST_NEAR_EPSILON(mean, expect_mean, 4);
-            if (k >= 2) {
-                double sd = std::sqrt((sum2 - count * mean * mean) / (count - 1));
-                TEST_NEAR_EPSILON(sd, expect_sd, 2);
-            }
-        }
+    for (int i = 0; i < iterations; ++i) {
+        TRY(n = random_discrete_normal<int>(mean, sd)(rng));
+        stats.add(n);
     }
 
-    TEST_THROW(random_sample_from(pop, 101, rng), std::length_error);
+    TEST_NEAR_EPSILON(stats.mean(), double(mean), 0.05);
+    TEST_NEAR_EPSILON(stats.stdevp(), double(sd), 0.05);
+
+    stats.clear();
+
+    for (int i = 0; i < iterations; ++i) {
+        TRY(u = random_discrete_normal<uint64_t>(mean, sd)(rng));
+        stats.add(u);
+    }
+
+    TEST_NEAR_EPSILON(stats.mean(), double(mean), 0.05);
+    TEST_NEAR_EPSILON(stats.stdevp(), double(sd), 0.05);
 
 }
 
-void test_core_random_triangular() {
+void test_core_random_triangular_distribution() {
 
     static constexpr int iterations = 100'000;
     const double epsilon = 1 / std::sqrt(double(iterations));
@@ -726,7 +720,45 @@ void test_core_random_triangular() {
 
 }
 
-void test_core_random_uniform_integer_distribution() {
+void test_core_random_sample() {
+
+    static constexpr size_t pop_size = 100;
+    static constexpr size_t sample_iterations = 100;
+    const double expect_mean = double(pop_size + 1) / 2;
+    const double expect_sd = std::sqrt(double(pop_size * pop_size - 1) / 12);
+
+    std::mt19937 rng(42);
+    std::vector<int> pop(pop_size), sample;
+    std::iota(pop.begin(), pop.end(), 1);
+
+    for (size_t k = 0; k <= pop_size; ++k) {
+        double count = 0, sum = 0, sum2 = 0;
+        for (size_t i = 0; i < sample_iterations; ++i) {
+            TRY(sample = random_sample_from(pop, k, rng));
+            TEST_EQUAL(sample.size(), k);
+            TRY(con_sort_unique(sample));
+            TEST_EQUAL(sample.size(), k);
+            count += sample.size();
+            for (auto x: sample) {
+                sum += x;
+                sum2 += x * x;
+            }
+        }
+        if (k >= 1) {
+            double mean = sum / count;
+            TEST_NEAR_EPSILON(mean, expect_mean, 4);
+            if (k >= 2) {
+                double sd = std::sqrt((sum2 - count * mean * mean) / (count - 1));
+                TEST_NEAR_EPSILON(sd, expect_sd, 2);
+            }
+        }
+    }
+
+    TEST_THROW(random_sample_from(pop, 101, rng), std::length_error);
+
+}
+
+void test_core_random_uniform_integer_distribution_properties() {
 
     UniformIntegerProperties ui(1, 8);
 
@@ -771,7 +803,7 @@ void test_core_random_uniform_integer_distribution() {
 
 }
 
-void test_core_random_binomial_distribution() {
+void test_core_random_binomial_distribution_properties() {
 
     BinomialDistributionProperties bin(4, 0.2);
 
@@ -801,7 +833,7 @@ void test_core_random_binomial_distribution() {
 
 }
 
-void test_core_random_dice_distribution() {
+void test_core_random_dice_distribution_properties() {
 
     DiceProperties dp;
 
@@ -878,7 +910,7 @@ void test_core_random_dice_distribution() {
 
 }
 
-void test_core_random_uniform_real_distribution() {
+void test_core_random_uniform_real_distribution_properties() {
 
     UniformRealProperties ur(10, 20);
 
@@ -930,7 +962,7 @@ void test_core_random_uniform_real_distribution() {
 
 }
 
-void test_core_random_normal_distribution() {
+void test_core_random_normal_distribution_properties() {
 
     struct sample_type { double z, pdf, cdf; };
 

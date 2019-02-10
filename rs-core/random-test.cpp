@@ -608,7 +608,7 @@ void test_core_random_discrete_normal_distribution() {
 
     for (int i = 0; i < iterations; ++i) {
         TRY(n = random_discrete_normal<int>(mean, sd)(rng));
-        stats.add(n);
+        stats.add(double(n));
     }
 
     TEST_NEAR_EPSILON(stats.mean(), double(mean), 0.05);
@@ -618,7 +618,7 @@ void test_core_random_discrete_normal_distribution() {
 
     for (int i = 0; i < iterations; ++i) {
         TRY(u = random_discrete_normal<uint64_t>(mean, sd)(rng));
-        stats.add(u);
+        stats.add(double(u));
     }
 
     TEST_NEAR_EPSILON(stats.mean(), double(mean), 0.05);

@@ -77,8 +77,9 @@ namespace RS {
     template <typename T>
     Rational<T> Rational<T>::abs() const {
         auto r = *this;
-        if (numer < T(0))
-            r.numer = - numer;
+        if constexpr (! std::is_scalar_v<T> || std::is_signed_v<T>)
+            if (numer < T(0))
+                r.numer = - numer;
         return r;
     }
 

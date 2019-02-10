@@ -1124,7 +1124,7 @@ namespace RS {
     private:
         static_assert(std::is_arithmetic<F>::value);
         std::map<F, T> table;
-        F total() const { return std::prev(table.end())->first; }
+        F total() const { return table.empty() ? 0 : std::prev(table.end())->first; }
     };
 
         template <typename T, typename F>

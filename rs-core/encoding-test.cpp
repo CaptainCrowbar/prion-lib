@@ -74,7 +74,7 @@ void test_core_encoding_base32() {
     for (size_t n = 0; n <= limit; ++n) {
         s1.resize(n, '\0');
         for (char& c: s1)
-            c = char(random_integer(rng, 256));
+            c = char(random_integer(256)(rng));
         size_t expanded = (n * 8 + 4) / 5;
         if (width != 0 && expanded > width)
             expanded += (expanded - 1) / width;

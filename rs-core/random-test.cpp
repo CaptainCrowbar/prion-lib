@@ -584,53 +584,58 @@ void test_core_random_basic_distributions() {
 
     std::mt19937 rng(42);
 
-    auto rb1 = [&] { return random_bool(rng); };
-    CHECK_RANDOM_GENERATOR(rb1, 0, 1, 0.5, 0.5);
-    auto rb2 = [&] { return random_bool(rng, 0.25); };
-    CHECK_RANDOM_GENERATOR(rb2, 0, 1, 0.25, 0.433013);
-    auto rb3 = [&] { return random_bool(rng, Rat(3, 4)); };
-    CHECK_RANDOM_GENERATOR(rb3, 0, 1, 0.75, 0.433013);
-    auto rb4 = [&] { return random_bool(rng, 3, 4); };
-    CHECK_RANDOM_GENERATOR(rb4, 0, 1, 0.75, 0.433013);
+    auto x_ri1 = [&] { return random_integer(100)(rng); };
+    CHECK_RANDOM_GENERATOR(x_ri1, 0, 99, 49.5, 28.8661);
+    auto x_ri2 = [&] { return random_integer(101, 200)(rng); };
+    CHECK_RANDOM_GENERATOR(x_ri2, 101, 200, 150.5, 28.8661);
+    auto x_ri3 = [&] { return random_integer(int64_t(0), int64_t(1e18))(rng); };
+    CHECK_RANDOM_GENERATOR(x_ri3, 0, 1e18, 5e17, 2.88661e17);
+    auto x_ri4 = [&] { return random_integer(uint64_t(0), uint64_t(-1))(rng); };
+    CHECK_RANDOM_GENERATOR(x_ri4, 0, 18'446'744'073'709'551'615.0, 9'223'372'036'854'775'807.5, 5'325'116'328'314'171'700.52);
+    auto x_ri5 = [&] { return random_integer(42, 42)(rng); };
+    CHECK_RANDOM_GENERATOR(x_ri5, 42, 42, 42, 0);
 
-    auto ri1 = [&] { return random_integer(rng, 100); };
-    CHECK_RANDOM_GENERATOR(ri1, 0, 99, 49.5, 28.8661);
-    auto ri2 = [&] { return random_integer(rng, 101, 200); };
-    CHECK_RANDOM_GENERATOR(ri2, 101, 200, 150.5, 28.8661);
-    auto ri3 = [&] { return random_integer(rng, int64_t(0), int64_t(1e18)); };
-    CHECK_RANDOM_GENERATOR(ri3, 0, 1e18, 5e17, 2.88661e17);
-    auto ri4 = [&] { return random_integer(rng, uint64_t(0), uint64_t(-1)); };
-    CHECK_RANDOM_GENERATOR(ri4, 0, 18'446'744'073'709'551'615.0, 9'223'372'036'854'775'807.5, 5'325'116'328'314'171'700.52);
-    auto ri5 = [&] { return random_integer(rng, 42, 42); };
-    CHECK_RANDOM_GENERATOR(ri5, 42, 42, 42, 0);
+    auto x_rb1 = [&] { return random_boolean()(rng); };
+    CHECK_RANDOM_GENERATOR(x_rb1, 0, 1, 0.5, 0.5);
+    auto x_rb2 = [&] { return random_boolean(0.25)(rng); };
+    CHECK_RANDOM_GENERATOR(x_rb2, 0, 1, 0.25, 0.433013);
+    auto x_rb3 = [&] { return random_boolean(Rat(3, 4))(rng); };
+    CHECK_RANDOM_GENERATOR(x_rb3, 0, 1, 0.75, 0.433013);
+    auto x_rb4 = [&] { return random_boolean(3, 4)(rng); };
+    CHECK_RANDOM_GENERATOR(x_rb4, 0, 1, 0.75, 0.433013);
 
-    auto rd1 = [&] { return random_dice<int>(rng); };
-    CHECK_RANDOM_GENERATOR(rd1, 1, 6, 3.5, 1.70783);
-    auto rd2 = [&] { return random_dice(rng, 3); };
-    CHECK_RANDOM_GENERATOR(rd2, 3, 18, 10.5, 2.95804);
-    auto rd3 = [&] { return random_dice(rng, 3, 10); };
-    CHECK_RANDOM_GENERATOR(rd3, 3, 30, 16.5, 4.97494);
+    auto x_rd1 = [&] { return random_dice<int>()(rng); };
+    CHECK_RANDOM_GENERATOR(x_rd1, 1, 6, 3.5, 1.70783);
+    auto x_rd2 = [&] { return random_dice(3)(rng); };
+    CHECK_RANDOM_GENERATOR(x_rd2, 3, 18, 10.5, 2.95804);
+    auto x_rd3 = [&] { return random_dice(3, 10)(rng); };
+    CHECK_RANDOM_GENERATOR(x_rd3, 3, 30, 16.5, 4.97494);
 
-    auto ru1 = [&] { return random_unit(rng); };
-    CHECK_RANDOM_GENERATOR(ru1, 0, 1, 0.5, 0.288661);
+    auto x_rf1 = [&] { return random_real<double>()(rng); };
+    CHECK_RANDOM_GENERATOR(x_rf1, 0, 1, 0.5, 0.288661);
+    auto x_rf2 = [&] { return random_real(-100.0, 100.0)(rng); };
+    CHECK_RANDOM_GENERATOR(x_rf2, -100, 100, 0, 57.7350);
+    auto x_rf3 = [&] { return random_real(42.0, 42.0)(rng); };
+    CHECK_RANDOM_GENERATOR(x_rf3, 42, 42, 42, 0);
 
-    auto rf1 = [&] { return random_real<double>(rng); };
-    CHECK_RANDOM_GENERATOR(rf1, 0, 1, 0.5, 0.288661);
-    auto rf2 = [&] { return random_real(rng, -100.0, 100.0); };
-    CHECK_RANDOM_GENERATOR(rf2, -100, 100, 0, 57.7350);
-    auto rf3 = [&] { return random_real(rng, 42.0, 42.0); };
-    CHECK_RANDOM_GENERATOR(rf3, 42, 42, 42, 0);
-
-    auto rn1 = [&] { return random_normal<double>(rng); };
-    CHECK_RANDOM_GENERATOR(rn1, - inf, inf, 0, 1);
-    auto rn2 = [&] { return random_normal(rng, 10.0, 5.0); };
-    CHECK_RANDOM_GENERATOR(rn2, - inf, inf, 10, 5);
+    auto x_rn1 = [&] { return random_normal<double>()(rng); };
+    CHECK_RANDOM_GENERATOR(x_rn1, - inf, inf, 0, 1);
+    auto x_rn2 = [&] { return random_normal(10.0, 5.0)(rng); };
+    CHECK_RANDOM_GENERATOR(x_rn2, - inf, inf, 10, 5);
 
     std::vector<int> v = {1,2,3,4,5,6,7,8,9,10};
-    auto rc1 = [&] { return random_choice(rng, v); };
-    CHECK_RANDOM_GENERATOR(rc1, 1, 10, 5.5, 2.88661);
-    auto rc2 = [&] { return random_choice(rng, {1,2,3,4,5,6,7,8,9,10}); };
-    CHECK_RANDOM_GENERATOR(rc2, 1, 10, 5.5, 2.88661);
+    auto x_rc1 = [&] { return random_choice(v)(rng); };
+    CHECK_RANDOM_GENERATOR(x_rc1, 1, 10, 5.5, 2.88661);
+    auto x_rc2 = [&] { return random_choice(v.begin(), v.end())(rng); };
+    CHECK_RANDOM_GENERATOR(x_rc2, 1, 10, 5.5, 2.88661);
+    auto x_rc3 = [&] { return random_choice({1,2,3,4,5,6,7,8,9,10})(rng); };
+    CHECK_RANDOM_GENERATOR(x_rc3, 1, 10, 5.5, 2.88661);
+    auto x_rc4 = [&] { return random_choice_from(v, rng); };
+    CHECK_RANDOM_GENERATOR(x_rc4, 1, 10, 5.5, 2.88661);
+    auto x_rc5 = [&] { return random_choice_from(v.begin(), v.end(), rng); };
+    CHECK_RANDOM_GENERATOR(x_rc5, 1, 10, 5.5, 2.88661);
+    auto x_rc6 = [&] { return random_choice_from({1,2,3,4,5,6,7,8,9,10}, rng); };
+    CHECK_RANDOM_GENERATOR(x_rc6, 1, 10, 5.5, 2.88661);
 
 }
 
@@ -648,7 +653,7 @@ void test_core_random_sample() {
     for (size_t k = 0; k <= pop_size; ++k) {
         double count = 0, sum = 0, sum2 = 0;
         for (size_t i = 0; i < sample_iterations; ++i) {
-            TRY(sample = random_sample(rng, pop, k));
+            TRY(sample = random_sample_from(pop, k, rng));
             TEST_EQUAL(sample.size(), k);
             TRY(con_sort_unique(sample));
             TEST_EQUAL(sample.size(), k);
@@ -668,7 +673,7 @@ void test_core_random_sample() {
         }
     }
 
-    TEST_THROW(random_sample(rng, pop, 101), std::length_error);
+    TEST_THROW(random_sample_from(pop, 101, rng), std::length_error);
 
 }
 
@@ -679,9 +684,10 @@ void test_core_random_triangular() {
 
     std::mt19937 rng(42);
     std::map<int, double> census;
+    auto gen = random_triangle_integer(5, 0);
 
     for (int i = 0; i < iterations; ++i) {
-        int x = random_triangle_integer(rng, 5, 0);
+        int x = gen(rng);
         ++census[x];
     }
 
@@ -696,9 +702,10 @@ void test_core_random_triangular() {
     TEST_NEAR_EPSILON(census[5], 0.285714, epsilon);
 
     census.clear();
+    gen = random_triangle_integer(5, 15);
 
     for (int i = 0; i < iterations; ++i) {
-        int x = random_triangle_integer(rng, 5, 15);
+        int x = gen(rng);
         ++census[x];
     }
 

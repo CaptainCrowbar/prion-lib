@@ -309,7 +309,7 @@ namespace RS::Range {
         size_t n = std::distance(b, e), m = std::min(rhs.num, n);
         auto result = make_shared_range<Meta::RangeValue<RandomAccessRange>>(b, b + m);
         for (size_t i = m; i < n; ++i) {
-            auto j = random_integer<size_t>(*rhs.rng, i);
+            auto j = random_integer(i)(*rhs.rng);
             if (j < m)
                 result.first[j] = b[i];
         }
@@ -358,7 +358,7 @@ namespace RS::Range {
         underlying_iterator end;
         double prob = 0;
         RandomEngine* rng = nullptr;
-        void update() { while (iter != end && ! random_bool(*rng, prob)) ++iter; }
+        void update() { while (iter != end && ! random_boolean(prob)(*rng)) ++iter; }
     };
 
     template <typename Range, typename RandomEngine>
@@ -374,7 +374,7 @@ namespace RS::Range {
         using std::begin;
         using std::end;
         Container temp;
-        std::copy_if(begin(lhs), end(lhs), append(temp), [&] (auto&) { return random_bool(*rhs.rng, rhs.prob); });
+        std::copy_if(begin(lhs), end(lhs), append(temp), [&] (auto&) { return random_boolean(rhs.prob)(*rhs.rng); });
         lhs = move(temp);
         return lhs;
     }
@@ -401,8 +401,9 @@ namespace RS::Range {
         auto b = begin(lhs), e = end(lhs);
         size_t n = std::distance(b, e);
         auto result = make_shared_range<Meta::RangeValue<RandomAccessRange>>(rhs.num);
+        auto gen = random_integer(n);
         for (auto& x: result)
-            x = b[random_integer(*rhs.rng, n)];
+            x = b[gen(*rhs.rng)];
         return result;
     }
 

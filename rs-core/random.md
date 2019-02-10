@@ -149,33 +149,122 @@ Algorithm         | Result      | State     | Seeds                  | Recommend
 
 ### Basic random distributions ###
 
-* _Bernoulli distributions_
-    * `template <typename RNG> bool` **`random_bool`**`(RNG& rng)` _- True with probability 1/2_
-    * `template <typename RNG> bool` **`random_bool`**`(RNG& rng, double p)` _- True with probability p (clamped to 0-1)_
-    * `template <typename RNG, typename T> bool` **`random_bool`**`(RNG& rng, Rational<T> p)` _- True with probability p (clamped to 0-1)_
-    * `template <typename RNG, typename T> bool` **`random_bool`**`(RNG& rng, T num, T den)` _- True with probability num/den (clamped to 0-1)_
-* _Uniform integer distributions_
-    * `template <typename T, typename RNG> T` **`random_integer`**`(RNG& rng, T t)` _- Random integer from 0 to t-1 (always 0 if t<2)_
-    * `template <typename T, typename RNG> T` **`random_integer`**`(RNG& rng, T a, T b)` _- Random integer from a to b inclusive (limits may be in either order)_
-* _Non-uniform integer distributions_
-    * `template <typename T, typename RNG> T` **`random_dice`**`(RNG& rng, T n = 1, T faces = 6)` _- Roll n dice numbered from 1 to faces (0 if either argument is <1)_
-    * `template <typename T, typename RNG> T` **`random_triangle_integer`**`(RNG& rng, T hi, T lo)` _- Triangular distribution with max at hi, min at lo_
-* _Uniform real distributions_
-    * `template <typename RNG> double` **`random_unit`**`(RNG& rng)` _- Random number between 0 and 1_
-    * `template <typename T, typename RNG> T` **`random_real`**`(RNG& rng, T a = 1, T b = 0)` _- Random number between a and b (limits may be in either order)_
-* _Normal distributions_
-    * `template <typename T, typename RNG> T` **`random_normal`**`(RNG& rng)` _- Normal distribution with mean 0, sd 1_
-    * `template <typename T, typename RNG> T` **`random_normal`**`(RNG& rng, T m, T s)` _- Normal distribution with given mean and sd_
-* _Discrete selection_
-    * `template <typename ForwardRange, typename RNG> [value type]` **`random_choice`**`(RNG& rng, const ForwardRange& range)` _- Random element from range (default constructed value if range is empty)_
-    * `template <typename T, typename RNG> T` **`random_choice`**`(RNG& rng, initializer_list<T> list)` _- Random element from explicit list_
-    * `template <typename ForwardRange, typename RNG> vector<[value type]>` **`random_sample`**`(RNG& rng, const ForwardRange& range, size_t k)` _- Random sample from range (throws length_error if k>n)_
+These are similar to the standard distribution classes, but provide portable
+deterministic behaviour: given the same pseudo-random number engine (the `RNG`
+type), these can be relied on to return the same values on different systems
+and compilers (apart from small differences due to rounding errors in the
+floating point distributions).
 
-Random distribution functions. These do not call the standard distribution
-classes; given the same underlying deterministic pseudo-random number engine
-(the `RNG` type), these can be relied on to return the same values on
-different systems and compilers (apart from small differences due to rounding
-errors in the floating point functions).
+Each distribution (apart from the boolean distribution) is provided both as a
+class template, which requires the result type to be supplied explicitly, and
+as one or more functions that deduce the result type and return an instance of
+the class.
+
+* `class` **`RandomBoolean`**
+    * `using RandomBoolean::`**`result_type`** `= bool`
+    * `RandomBoolean::`**`RandomBoolean`**`() noexcept`
+    * `explicit RandomBoolean::`**`RandomBoolean`**`(Rat p) noexcept`
+    * `template <typename RNG> bool RandomBoolean::`**`operator()`**`(RNG& rng) const`
+    * `Rat RandomBoolean::`**`prob`**`() const noexcept`
+* `inline RandomBoolean` **`random_boolean`**`()`
+* `inline RandomBoolean` **`random_boolean`**`(Rat p)`
+* `inline RandomBoolean` **`random_boolean`**`(int a, int b)`
+* `inline RandomBoolean` **`random_boolean`**`(double p)`
+
+Random boolean (Bernoulli) distribution. The probability of success defaults
+to 1/2; it can be supplied as a rational, a pair of integers (representing a
+ratio), or a floating point number. Probabilities outside the 0-1 range are
+clamped to the nearest end of the range.
+
+* `template <typename T> class` **`RandomInteger`**
+    * `using RandomInteger::`**`result_type`** `= T`
+    * `RandomInteger::`**`RandomInteger`**`() noexcept`
+    * `RandomInteger::`**`RandomInteger`**`(T a, T b) noexcept`
+    * `template <typename RNG> T RandomInteger::`**`operator()`**`(RNG& rng) const`
+    * `T RandomInteger::`**`min`**`() const noexcept`
+    * `T RandomInteger::`**`max`**`() const noexcept`
+* `template <typename T> RandomInteger<T>` **`random_integer`**`(T t)`
+* `template <typename T> RandomInteger<T>` **`random_integer`**`(T a, T b)`
+
+Uniform random integer distribution. This returns an integer from `a` to `b`
+inclusive; the bounds can be supplied in either order. If a single argument is
+supplied, it returns an integer from 0 to `t-1` inclusive (always 0 if `t<2`).
+A default constructed distribution always returns zero.
+
+* `template <typename T> class` **`RandomDice`**
+    * `using RandomDice::`**`result_type`** `= T`
+    * `RandomDice::`**`RandomDice`**`() noexcept`
+    * `RandomDice::`**`RandomDice`**`(T n, T faces) noexcept`
+    * `template <typename RNG> T RandomDice::`**`operator()`**`(RNG& rng) const`
+    * `T RandomDice::`**`number`**`() const noexcept`
+    * `T RandomDice::`**`faces`**`() const noexcept`
+* `template <typename T> RandomDice<T>` **`random_dice`**`(T n = 1, T faces = 6)`
+
+This generates the result of rolling `n` dice, each numbered from `1` to
+`faces`. The default constructor sets `n=1` and `faces=6`. This will always
+return zero if either argument is less than 1.
+
+* `template <typename T> class` **`RandomTriangleInteger`**
+    * `using RandomTriangleInteger::`**`result_type`** `= T`
+    * `RandomTriangleInteger::`**`RandomTriangleInteger`**`() noexcept`
+    * `RandomTriangleInteger::`**`RandomTriangleInteger`**`(T hi, T lo) noexcept`
+    * `template <typename RNG> T RandomTriangleInteger::`**`operator()`**`(RNG& rng) const`
+    * `T RandomTriangleInteger::`**`high_end`**`() const noexcept`
+    * `T RandomTriangleInteger::`**`low_end`**`() const noexcept`
+* `template <typename T> RandomTriangleInteger<T>` **`random_triangle_integer`**`(T hi, T lo)`
+
+This returns an integer with a triangular distribution, with the highest
+probability at `hi` and the lowest at `lo`.
+
+* `template <typename T> class` **`RandomReal`**
+    * `using RandomReal::`**`result_type`** `= T`
+    * `RandomReal::`**`RandomReal`**`() noexcept`
+    * `RandomReal::`**`RandomReal`**`(T a, T b) noexcept`
+    * `template <typename RNG> T RandomReal::`**`operator()`**`(RNG& rng) const`
+    * `T RandomReal::`**`min`**`() const noexcept`
+    * `T RandomReal::`**`max`**`() const noexcept`
+* `template <typename T> RandomReal<T>` **`random_real`**`()`
+* `template <typename T> RandomReal<T>` **`random_real`**`(T max)`
+* `template <typename T> RandomReal<T>` **`random_real`**`(T a, T b)`
+
+Uniform random floating point distribution. This returns a number from `a` to
+`b`; the bounds can be supplied in either order. If a single argument is
+supplied, it returns a number from 0 to `t` ('t' may be negative). A default
+constructed distribution return a value in the unit range.
+
+* `template <typename T> class` **`RandomNormal`**
+    * `using RandomNormal::`**`result_type`** `= T`
+    * `RandomNormal::`**`RandomNormal`**`() noexcept`
+    * `RandomNormal::`**`RandomNormal`**`(T mean, T sd) noexcept`
+    * `template <typename RNG> T RandomNormal::`**`operator()`**`(RNG& rng) const`
+    * `T RandomNormal::`**`mean`**`() const noexcept`
+    * `T RandomNormal::`**`sd`**`() const noexcept`
+* `template <typename T> RandomNormal<T>` **`random_normal`**`()`
+* `template <typename T> RandomNormal<T>` **`random_normal`**`(T mean, T sd)`
+
+Normal (Gaussian) distribution, with the given mean and standard deviation.
+The absolute value of the standard deviation is used. The default constructor
+sets `mean=0` and `sd=1`.
+
+* `template <typename T> class` **`RandomChoice`**
+    * `using RandomChoice::`**`result_type`** `= T`
+    * `RandomChoice::`**`RandomChoice`**`() noexcept`
+    * `template <typename InputIterator> RandomChoice::`**`RandomChoice(InputIterator i, InputIterator j)`
+    * `template <typename InputRange> explicit RandomChoice::`**`RandomChoice(const InputRange& list)`
+    * `RandomChoice::`**`RandomChoice`**`(std::initializer_list<T> list)`
+    * `template <typename RNG> const T& RandomChoice::`**`operator()`**`(RNG& rng)`
+    * `bool RandomChoice::`**`empty`**`() const noexcept`
+    * `size_t RandomChoice::`**`size`**`() const noexcept`
+* `template <typename InputIterator> RandomChoice<[value type]>` **`random_choice`**`(InputIterator i, InputIterator j)`
+* `template <typename InputRange> RandomChoice<[value type]>` **`random_choice`**`(const InputRange& list)`
+* `template <typename T> RandomChoice<T>` **`random_choice`**`(std::initializer_list<T> list)`
+* `template <typename ForwardIterator, typename RNG> const [value type]&` **`random_choice_from`**`(ForwardIterator i, ForwardIterator j, RNG& rng)`
+* `template <typename ForwardRange, typename RNG> const [value type]&` **`random_choice_from`**`(const ForwardRange& list, RNG& rng)`
+* `template <typename T, typename RNG> const T&` **`random_choice_from`**`(std::initializer_list<T> list, RNG& rng)`
+
+Selects an element at random from the input list. The `random_choice_from()`
+functions are shortcuts that can be used to avoid the overhead of copying the
+list in one-time calls.
 
 ### Random distribution properties ###
 
@@ -284,6 +373,13 @@ quantile functions use the Beasley-Springer approximation: for `|z|<3.75`,
 absolute error is less than `1e-6`, relative error is less than `2.5e-7`; for
 `|z|<7.5`, absolute error is less than `5e-4`, relative error is less than
 `5e-5`.
+
+### Random samples ###
+
+* `template <typename ForwardRange, typename RNG> vector<[value type]>` **`random_sample_from`**`(const ForwardRange& range, size_t k, RNG& rng)`
+
+Returns a random sample of `k` elements from the input range. This will throw
+`std::length_error` if `k` is larger than the size of the range.
 
 ### Spatial distributions ###
 

@@ -257,6 +257,7 @@ extern void test_core_random_vectors();
 extern void test_core_random_random_in_sphere();
 extern void test_core_random_random_on_sphere();
 extern void test_core_random_unique_distribution();
+extern void test_core_random_uniform_choice_distribution();
 extern void test_core_random_weighted_choice_distribution();
 extern void test_core_random_bytes();
 extern void test_core_random_shuffle();
@@ -666,6 +667,7 @@ int main() {
         { "core/random/random-in-sphere", test_core_random_random_in_sphere },
         { "core/random/random-on-sphere", test_core_random_random_on_sphere },
         { "core/random/unique-distribution", test_core_random_unique_distribution },
+        { "core/random/uniform-choice-distribution", test_core_random_uniform_choice_distribution },
         { "core/random/weighted-choice-distribution", test_core_random_weighted_choice_distribution },
         { "core/random/bytes", test_core_random_bytes },
         { "core/random/shuffle", test_core_random_shuffle },

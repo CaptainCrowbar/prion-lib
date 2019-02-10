@@ -160,6 +160,46 @@ class template, which requires the result type to be supplied explicitly, and
 as one or more functions that deduce the result type and return an instance of
 the class.
 
+Most of these also provide statistical functions that return properties of the
+distribution:
+
+The `pdf()`, `cdf()`, and `ccdf()` functions represent the probability
+distribution function, cumulative distribution function, and complementary
+cumulative distribution function. For discrete distributions, `pdf(x)` is the
+probably of a result exactly equal to `x`, `cdf(x)` is the probability of a
+result less than or equal to `x`, and `ccdf(x)` is the probability of a result
+greater than or equal to `x` (`cdf+ccdf-pdf=1`). For continuous distributions,
+`pdf(x)` is the probably density at `x`, `cdf(x)` is the probability of a
+result less than `x`, and `ccdf(x)` is the probability of a result greater
+than `x` (`cdf+ccdf=1`).
+
+The `quantile()` and `cquantile()` (complementary quantile) functions are only
+defined for continuous distributions, and are the inverse of `cdf()` and
+`ccdf()` respectively. Behaviour is undefined if the argument to one of the
+quantile functions is less than 0 or greater than 1; it may or may not be
+defined for exactly 0 or 1, depending on how the distribution is bounded.
+
+* `template <typename T> class` **`RandomInteger`**
+    * `using RandomInteger::`**`result_type`** `= T`
+    * `RandomInteger::`**`RandomInteger`**`() noexcept`
+    * `RandomInteger::`**`RandomInteger`**`(T a, T b) noexcept`
+    * `template <typename RNG> T RandomInteger::`**`operator()`**`(RNG& rng) const`
+    * `T RandomInteger::`**`min`**`() const noexcept`
+    * `T RandomInteger::`**`max`**`() const noexcept`
+    * `Rational<T> RandomInteger::`**`mean`**`() const noexcept`
+    * `Rational<T> RandomInteger::`**`variance`**`() const noexcept`
+    * `double RandomInteger::`**`sd`**`() const noexcept`
+    * `double RandomInteger::`**`pdf`**`(T x) const noexcept`
+    * `double RandomInteger::`**`cdf`**`(T x) const noexcept`
+    * `double RandomInteger::`**`ccdf`**`(T x) const noexcept`
+* `template <typename T> RandomInteger<T>` **`random_integer`**`(T t)`
+* `template <typename T> RandomInteger<T>` **`random_integer`**`(T a, T b)`
+
+Uniform random integer distribution. This returns an integer from `a` to `b`
+inclusive; the bounds can be supplied in either order. If a single argument is
+supplied, it returns an integer from 0 to `t-1` inclusive (always 0 if `t<2`).
+A default constructed distribution always returns zero.
+
 * `class` **`RandomBoolean`**
     * `using RandomBoolean::`**`result_type`** `= bool`
     * `RandomBoolean::`**`RandomBoolean`**`() noexcept`
@@ -183,26 +223,19 @@ clamped to the nearest end of the range.
     * `template <typename RNG> bool RandomBinomial::`**`operator()`**`(RNG& rng) const`
     * `Rational<T> RandomBinomial::`**`prob`**`() const noexcept`
     * `T RandomBinomial::`**`number`**`() const noexcept`
+    * `T RandomBinomial::`**`min`**`() const  noexcept`
+    * `T RandomBinomial::`**`max`**`() const  noexcept`
+    * `Rational<T> RandomBinomial::`**`mean`**`() const noexcept`
+    * `Rational<T> RandomBinomial::`**`variance`**`() const noexcept`
+    * `double RandomBinomial::`**`sd`**`() const  noexcept`
+    * `double RandomBinomial::`**`pdf`**`(T x) const noexcept`
+    * `double RandomBinomial::`**`cdf`**`(T x) const noexcept`
+    * `double RandomBinomial::`**`ccdf`**`(T x) const noexcept`
 * `template <typename T> RandomBinomial` **`random_boolean`**`(const Rational<T>& p, T n) noexcept`
 
 Binomial distribution, reporting the number of successes after `n` tests each
 with probability `p`. The argument `p` is clamped to the 0-1 range; the result
 is always zero if `n<1`.
-
-* `template <typename T> class` **`RandomInteger`**
-    * `using RandomInteger::`**`result_type`** `= T`
-    * `RandomInteger::`**`RandomInteger`**`() noexcept`
-    * `RandomInteger::`**`RandomInteger`**`(T a, T b) noexcept`
-    * `template <typename RNG> T RandomInteger::`**`operator()`**`(RNG& rng) const`
-    * `T RandomInteger::`**`min`**`() const noexcept`
-    * `T RandomInteger::`**`max`**`() const noexcept`
-* `template <typename T> RandomInteger<T>` **`random_integer`**`(T t)`
-* `template <typename T> RandomInteger<T>` **`random_integer`**`(T a, T b)`
-
-Uniform random integer distribution. This returns an integer from `a` to `b`
-inclusive; the bounds can be supplied in either order. If a single argument is
-supplied, it returns an integer from 0 to `t-1` inclusive (always 0 if `t<2`).
-A default constructed distribution always returns zero.
 
 * `template <typename T> class` **`RandomDice`**
     * `using RandomDice::`**`result_type`** `= T`
@@ -211,6 +244,14 @@ A default constructed distribution always returns zero.
     * `template <typename RNG> T RandomDice::`**`operator()`**`(RNG& rng) const`
     * `T RandomDice::`**`number`**`() const noexcept`
     * `T RandomDice::`**`faces`**`() const noexcept`
+    * `T RandomDice::`**`min`**`() const noexcept`
+    * `T RandomDice::`**`max`**`() const noexcept`
+    * `Rational<T> RandomDice::`**`mean`**`() const noexcept`
+    * `Rational<T> RandomDice::`**`variance`**`() const noexcept`
+    * `double RandomDice::`**`sd`**`() const noexcept`
+    * `double RandomDice::`**`pdf`**`(T x) const noexcept`
+    * `double RandomDice::`**`cdf`**`(T x) const noexcept`
+    * `double RandomDice::`**`ccdf`**`(T x) const noexcept`
 * `template <typename T> RandomDice<T>` **`random_dice`**`(T n = 1, T faces = 6)`
 
 This generates the result of rolling `n` dice, each numbered from `1` to
@@ -236,6 +277,14 @@ probability at `hi` and the lowest at `lo`.
     * `template <typename RNG> T RandomReal::`**`operator()`**`(RNG& rng) const`
     * `T RandomReal::`**`min`**`() const noexcept`
     * `T RandomReal::`**`max`**`() const noexcept`
+    * `T RandomReal::`**`mean`**`() const noexcept`
+    * `T RandomReal::`**`sd`**`() const noexcept`
+    * `T RandomReal::`**`variance`**`() const noexcept`
+    * `T RandomReal::`**`pdf`**`(T x) const noexcept`
+    * `T RandomReal::`**`cdf`**`(T x) const noexcept`
+    * `T RandomReal::`**`ccdf`**`(T x) const noexcept`
+    * `T RandomReal::`**`quantile`**`(T p) const noexcept`
+    * `T RandomReal::`**`cquantile`**`(T q) const noexcept`
 * `template <typename T> RandomReal<T>` **`random_real`**`()`
 * `template <typename T> RandomReal<T>` **`random_real`**`(T max)`
 * `template <typename T> RandomReal<T>` **`random_real`**`(T a, T b)`
@@ -252,12 +301,23 @@ constructed distribution return a value in the unit range.
     * `template <typename RNG> T RandomNormal::`**`operator()`**`(RNG& rng) const`
     * `T RandomNormal::`**`mean`**`() const noexcept`
     * `T RandomNormal::`**`sd`**`() const noexcept`
+    * `T RandomNormal::`**`variance`**`() const noexcept`
+    * `T RandomNormal::`**`pdf`**`(T x) const noexcept`
+    * `T RandomNormal::`**`cdf`**`(T x) const noexcept`
+    * `T RandomNormal::`**`ccdf`**`(T x) const noexcept`
+    * `T RandomNormal::`**`quantile`**`(T p) const noexcept`
+    * `T RandomNormal::`**`cquantile`**`(T q) const noexcept`
 * `template <typename T> RandomNormal<T>` **`random_normal`**`()`
 * `template <typename T> RandomNormal<T>` **`random_normal`**`(T mean, T sd)`
 
 Normal (Gaussian) distribution, with the given mean and standard deviation.
 The absolute value of the standard deviation is used. The default constructor
-sets `mean=0` and `sd=1`.
+sets `mean=0` and `sd=1`. The quantile functions use the Beasley-Springer
+approximation: for `|z|<3.75`, absolute error is less than `1e-6`, relative
+error is less than `2.5e-7`; for `|z|<7.5`, absolute error is less than
+`5e-4`, relative error is less than `5e-5`. Behaviour is undefined if the
+distribution property functions are called when the standard deviation is
+zero.
 
 * `template <typename T> class` **`RandomDiscreteNormal`**
     * `using RandomDiscreteNormal::`**`result_type`** `= T`
@@ -271,134 +331,6 @@ sets `mean=0` and `sd=1`.
 Generates an integer that follows a good deterministic approximation to the
 result of generating a normally distributed real value and then rounding it to
 an integer.
-
-* `template <typename T> class` **`RandomChoice`**
-    * `using RandomChoice::`**`result_type`** `= T`
-    * `RandomChoice::`**`RandomChoice`**`() noexcept`
-    * `template <typename InputIterator> RandomChoice::`**`RandomChoice(InputIterator i, InputIterator j)`
-    * `template <typename InputRange> explicit RandomChoice::`**`RandomChoice(const InputRange& list)`
-    * `RandomChoice::`**`RandomChoice`**`(std::initializer_list<T> list)`
-    * `template <typename RNG> const T& RandomChoice::`**`operator()`**`(RNG& rng)`
-    * `bool RandomChoice::`**`empty`**`() const noexcept`
-    * `size_t RandomChoice::`**`size`**`() const noexcept`
-* `template <typename InputIterator> RandomChoice<[value type]>` **`random_choice`**`(InputIterator i, InputIterator j)`
-* `template <typename InputRange> RandomChoice<[value type]>` **`random_choice`**`(const InputRange& list)`
-* `template <typename T> RandomChoice<T>` **`random_choice`**`(std::initializer_list<T> list)`
-* `template <typename ForwardIterator, typename RNG> const [value type]&` **`random_choice_from`**`(ForwardIterator i, ForwardIterator j, RNG& rng)`
-* `template <typename ForwardRange, typename RNG> const [value type]&` **`random_choice_from`**`(const ForwardRange& list, RNG& rng)`
-* `template <typename T, typename RNG> const T&` **`random_choice_from`**`(std::initializer_list<T> list, RNG& rng)`
-
-Selects an element at random from the input list. The `random_choice_from()`
-functions are shortcuts that can be used to avoid the overhead of copying the
-list in one-time calls.
-
-### Random distribution properties ###
-
-The `pdf()`, `cdf()`, and `ccdf()` functions represent the probability
-distribution function, cumulative distribution function, and complementary
-cumulative distribution function. For discrete distributions, `pdf(x)` is the
-probably of a result exactly equal to `x`, `cdf(x)` is the probability of a
-result less than or equal to `x`, and `ccdf(x)` is the probability of a result
-greater than or equal to `x` (`cdf+ccdf-pdf=1`). For continuous distributions,
-`pdf(x)` is the probably density at `x`, `cdf(x)` is the probability of a
-result less than `x`, and `ccdf(x)` is the probability of a result greater
-than `x` (`cdf+ccdf=1`).
-
-The `quantile()` and `cquantile()` (complementary quantile) functions are only
-defined for continuous distributions, and are the inverse of `cdf()` and
-`ccdf()` respectively. Behaviour is undefined if the argument to one of the
-quantile functions is less than 0 or greater than 1; it may or may not be
-defined for exactly 0 or 1, depending on how the distribution is bounded.
-
-* `class` **`UniformIntegerProperties`**
-    * `explicit UniformIntegerProperties::`**`UniformIntegerProperties`**`(int n) noexcept`
-    * `explicit UniformIntegerProperties::`**`UniformIntegerProperties`**`(int a, int b) noexcept`
-    * `int UniformIntegerProperties::`**`min`**`() const noexcept`
-    * `int UniformIntegerProperties::`**`max`**`() const noexcept`
-    * `double UniformIntegerProperties::`**`mean`**`() const noexcept`
-    * `double UniformIntegerProperties::`**`sd`**`() const noexcept`
-    * `double UniformIntegerProperties::`**`variance`**`() const noexcept`
-    * `double UniformIntegerProperties::`**`pdf`**`(int x) const noexcept`
-    * `double UniformIntegerProperties::`**`cdf`**`(int x) const noexcept`
-    * `double UniformIntegerProperties::`**`ccdf`**`(int x) const noexcept`
-
-Uniform discrete distribution over the range from `a` to `b` inclusive. The
-bounds will be swapped if they are in the wrong order. The constructor from a
-single integer is equivalent to `UniformIntegerProperties(0,n-1)`.
-
-* `class` **`BinomialDistributionProperties`**
-    * `explicit BinomialDistributionProperties::`**`BinomialDistributionProperties`**`(int t, double p) noexcept`
-    * `int BinomialDistributionProperties::`**`t`**`() const noexcept`
-    * `double BinomialDistributionProperties::`**`p`**`() const noexcept`
-    * `int BinomialDistributionProperties::`**`min`**`() const  noexcept`
-    * `int BinomialDistributionProperties::`**`max`**`() const  noexcept`
-    * `double BinomialDistributionProperties::`**`mean`**`() const noexcept`
-    * `double BinomialDistributionProperties::`**`sd`**`() const  noexcept`
-    * `double BinomialDistributionProperties::`**`variance`**`() const noexcept`
-    * `double BinomialDistributionProperties::`**`pdf`**`(int x) const noexcept`
-    * `double BinomialDistributionProperties::`**`cdf`**`(int x) const noexcept`
-    * `double BinomialDistributionProperties::`**`ccdf`**`(int x) const noexcept`
-
-Binomial distribution (representing the distribution of the number of
-successes after `t` tries with success probability `p` per try). Behaviour is
-undefined if `t<0`, `p<0`, or `p>1`.
-
-* `class` **`DiceProperties`**
-    * `DiceProperties::`**`DiceProperties`**`() noexcept`
-    * `explicit DiceProperties::`**`DiceProperties`**`(int number, int faces = 6) noexcept`
-    * `int DiceProperties::`**`number`**`() const noexcept`
-    * `int DiceProperties::`**`faces`**`() const noexcept`
-    * `int DiceProperties::`**`min`**`() const noexcept`
-    * `int DiceProperties::`**`max`**`() const noexcept`
-    * `double DiceProperties::`**`mean`**`() const noexcept`
-    * `double DiceProperties::`**`sd`**`() const noexcept`
-    * `double DiceProperties::`**`variance`**`() const noexcept`
-    * `double DiceProperties::`**`pdf`**`(int x) const noexcept`
-    * `double DiceProperties::`**`cdf`**`(int x) const noexcept`
-    * `double DiceProperties::`**`ccdf`**`(int x) const noexcept`
-
-The distribution resulting from rolling `number` dice, each numbered from 1 to
-`faces` (defaulting to `number=1` and `faces=6`). If either argument is less
-than 1, the distribution has a fixed value of zero.
-
-* `class` **`UniformRealProperties`**
-    * `UniformRealProperties::`**`UniformRealProperties`**`() noexcept`
-    * `explicit UniformRealProperties::`**`UniformRealProperties`**`(double a, double b = 0) noexcept`
-    * `double UniformRealProperties::`**`min`**`() const noexcept`
-    * `double UniformRealProperties::`**`max`**`() const noexcept`
-    * `double UniformRealProperties::`**`mean`**`() const noexcept`
-    * `double UniformRealProperties::`**`sd`**`() const noexcept`
-    * `double UniformRealProperties::`**`variance`**`() const noexcept`
-    * `double UniformRealProperties::`**`pdf`**`(double x) const noexcept`
-    * `double UniformRealProperties::`**`cdf`**`(double x) const noexcept`
-    * `double UniformRealProperties::`**`ccdf`**`(double x) const noexcept`
-    * `double UniformRealProperties::`**`quantile`**`(double p) const noexcept`
-    * `double UniformRealProperties::`**`cquantile`**`(double q) const noexcept`
-
-Uniform continuous distribution over the range from `a` to `b` (0 to 1 by
-default). The bounds will be swapped if they are in the wrong order.
-
-* `class` **`NormalDistributionProperties`**
-    * `NormalDistributionProperties::`**`NormalDistributionProperties`**`() noexcept`
-    * `explicit NormalDistributionProperties::`**`NormalDistributionProperties`**`(double m, double s) noexcept`
-    * `double NormalDistributionProperties::`**`min`**`() const noexcept`
-    * `double NormalDistributionProperties::`**`max`**`() const noexcept`
-    * `double NormalDistributionProperties::`**`mean`**`() const noexcept`
-    * `double NormalDistributionProperties::`**`sd`**`() const noexcept`
-    * `double NormalDistributionProperties::`**`variance`**`() const noexcept`
-    * `double NormalDistributionProperties::`**`pdf`**`(double x) const noexcept`
-    * `double NormalDistributionProperties::`**`cdf`**`(double x) const noexcept`
-    * `double NormalDistributionProperties::`**`ccdf`**`(double x) const noexcept`
-    * `double NormalDistributionProperties::`**`quantile`**`(double p) const noexcept`
-    * `double NormalDistributionProperties::`**`cquantile`**`(double q) const noexcept`
-
-Normal distribution with the given mean and standard deviation (0 and 1 by
-default). The sign of the standard deviation is ignored. The results of the
-statistical functions are unspecified if the standard deviation is zero. The
-quantile functions use the Beasley-Springer approximation: for `|z|<3.75`,
-absolute error is less than `1e-6`, relative error is less than `2.5e-7`; for
-`|z|<7.5`, absolute error is less than `5e-4`, relative error is less than
-`5e-5`.
 
 ### Random samples ###
 
@@ -488,7 +420,27 @@ underlying distribution is destroyed while a `UniqueDistribution` object still
 has a reference to it, or if `UniqueDistribution::operator()` is called when
 the cache already contains every possible value of the result type.
 
-### Weighted choice distribution ###
+### Random choice distributions ###
+
+* `template <typename T> class` **`RandomChoice`**
+    * `using RandomChoice::`**`result_type`** `= T`
+    * `RandomChoice::`**`RandomChoice`**`() noexcept`
+    * `template <typename InputIterator> RandomChoice::`**`RandomChoice`**`(InputIterator i, InputIterator j)`
+    * `template <typename InputRange> explicit RandomChoice::`**`RandomChoice`**`(const InputRange& list)`
+    * `RandomChoice::`**`RandomChoice`**`(std::initializer_list<T> list)`
+    * `template <typename RNG> const T& RandomChoice::`**`operator()`**`(RNG& rng) const`
+    * `bool RandomChoice::`**`empty`**`() const noexcept`
+    * `size_t RandomChoice::`**`size`**`() const noexcept`
+* `template <typename InputIterator> RandomChoice<[value type]>` **`random_choice`**`(InputIterator i, InputIterator j)`
+* `template <typename InputRange> RandomChoice<[value type]>` **`random_choice`**`(const InputRange& list)`
+* `template <typename T> RandomChoice<T>` **`random_choice`**`(std::initializer_list<T> list)`
+* `template <typename ForwardIterator, typename RNG> const [value type]&` **`random_choice_from`**`(ForwardIterator i, ForwardIterator j, RNG& rng)`
+* `template <typename ForwardRange, typename RNG> const [value type]&` **`random_choice_from`**`(const ForwardRange& list, RNG& rng)`
+* `template <typename T, typename RNG> const T&` **`random_choice_from`**`(std::initializer_list<T> list, RNG& rng)`
+
+Selects an element at random from the input list. The `random_choice_from()`
+functions are shortcuts that can be used to avoid the overhead of copying the
+list in one-time calls.
 
 * `template <typename T, typename F = double> class` **`WeightedChoice`**
     * `using WeightedChoice::`**`frequency_type`** `= F`
@@ -507,8 +459,8 @@ an arithmetic type; it can be an integer or floating point type. The default
 constructor creates an empty list; the other constructors copy a list of
 `(value,frequency)` pairs. The `add()` and `append()` functions can be used to
 add `(value,frequency)` pairs, one at a time or in bulk. Entries with a
-frequency less than or equal to zero are ignored. The function call operator
-will return a default constructed `T` if the list is empty.
+frequency less than or equal to zero are ignored. Behaviour is undefined if
+the function call operator is called on an empty set.
 
 ## Other random algorithms ##
 

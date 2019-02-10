@@ -570,35 +570,28 @@ void test_core_random_basic_distributions() {
     static constexpr double xmax64 = 18'446'744'073'709'551'615.0;
     static constexpr double xmean64 = 9'223'372'036'854'775'807.5;
     static constexpr double xsd64 = 5'325'116'328'314'171'700.52;
-    static const std::vector<int> v = {1,2,3,4,5,6,7,8,9,10};
 
     std::mt19937 rng(42);
 
-    { auto gen = [&] { return random_integer(100)(rng); };                         CHECK_RANDOM_GENERATOR(gen, 0, 99, 49.5, 28.8661); }
-    { auto gen = [&] { return random_integer(101, 200)(rng); };                    CHECK_RANDOM_GENERATOR(gen, 101, 200, 150.5, 28.8661); }
-    { auto gen = [&] { return random_integer(int64_t(0), int64_t(1e18))(rng); };   CHECK_RANDOM_GENERATOR(gen, 0, 1e18, 5e17, 2.88661e17); }
-    { auto gen = [&] { return random_integer(uint64_t(0), uint64_t(-1))(rng); };   CHECK_RANDOM_GENERATOR(gen, 0, xmax64, xmean64, xsd64); }
-    { auto gen = [&] { return random_integer(42, 42)(rng); };                      CHECK_RANDOM_GENERATOR(gen, 42, 42, 42, 0); }
-    { auto gen = [&] { return random_boolean()(rng); };                            CHECK_RANDOM_GENERATOR(gen, 0, 1, 0.5, 0.5); }
-    { auto gen = [&] { return random_boolean(0.25)(rng); };                        CHECK_RANDOM_GENERATOR(gen, 0, 1, 0.25, 0.433013); }
-    { auto gen = [&] { return random_boolean(Rat(3, 4))(rng); };                   CHECK_RANDOM_GENERATOR(gen, 0, 1, 0.75, 0.433013); }
-    { auto gen = [&] { return random_boolean(3, 4)(rng); };                        CHECK_RANDOM_GENERATOR(gen, 0, 1, 0.75, 0.433013); }
-    { auto gen = [&] { return random_binomial(Rat(3, 4), 10)(rng); };              CHECK_RANDOM_GENERATOR(gen, 0, 10, 7.5, 1.369306); }
-    { auto gen = [&] { return random_binomial(Rat(1, 4), 20)(rng); };              CHECK_RANDOM_GENERATOR(gen, 0, 20, 5, 1.936492); }
-    { auto gen = [&] { return random_dice<int>()(rng); };                          CHECK_RANDOM_GENERATOR(gen, 1, 6, 3.5, 1.70783); }
-    { auto gen = [&] { return random_dice(3)(rng); };                              CHECK_RANDOM_GENERATOR(gen, 3, 18, 10.5, 2.95804); }
-    { auto gen = [&] { return random_dice(3, 10)(rng); };                          CHECK_RANDOM_GENERATOR(gen, 3, 30, 16.5, 4.97494); }
-    { auto gen = [&] { return random_real<double>()(rng); };                       CHECK_RANDOM_GENERATOR(gen, 0, 1, 0.5, 0.288661); }
-    { auto gen = [&] { return random_real(-100.0, 100.0)(rng); };                  CHECK_RANDOM_GENERATOR(gen, -100, 100, 0, 57.7350); }
-    { auto gen = [&] { return random_real(42.0, 42.0)(rng); };                     CHECK_RANDOM_GENERATOR(gen, 42, 42, 42, 0); }
-    { auto gen = [&] { return random_normal<double>()(rng); };                     CHECK_RANDOM_GENERATOR(gen, - inf, inf, 0, 1); }
-    { auto gen = [&] { return random_normal(10.0, 5.0)(rng); };                    CHECK_RANDOM_GENERATOR(gen, - inf, inf, 10, 5); }
-    { auto gen = [&] { return random_choice(v)(rng); };                            CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
-    { auto gen = [&] { return random_choice(v.begin(), v.end())(rng); };           CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
-    { auto gen = [&] { return random_choice({1,2,3,4,5,6,7,8,9,10})(rng); };       CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
-    { auto gen = [&] { return random_choice_from(v, rng); };                       CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
-    { auto gen = [&] { return random_choice_from(v.begin(), v.end(), rng); };      CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
-    { auto gen = [&] { return random_choice_from({1,2,3,4,5,6,7,8,9,10}, rng); };  CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
+    { auto gen = [&] { return random_integer(100)(rng); };                        CHECK_RANDOM_GENERATOR(gen, 0, 99, 49.5, 28.8661); }
+    { auto gen = [&] { return random_integer(101, 200)(rng); };                   CHECK_RANDOM_GENERATOR(gen, 101, 200, 150.5, 28.8661); }
+    { auto gen = [&] { return random_integer(int64_t(0), int64_t(1e18))(rng); };  CHECK_RANDOM_GENERATOR(gen, 0, 1e18, 5e17, 2.88661e17); }
+    { auto gen = [&] { return random_integer(uint64_t(0), uint64_t(-1))(rng); };  CHECK_RANDOM_GENERATOR(gen, 0, xmax64, xmean64, xsd64); }
+    { auto gen = [&] { return random_integer(42, 42)(rng); };                     CHECK_RANDOM_GENERATOR(gen, 42, 42, 42, 0); }
+    { auto gen = [&] { return random_boolean()(rng); };                           CHECK_RANDOM_GENERATOR(gen, 0, 1, 0.5, 0.5); }
+    { auto gen = [&] { return random_boolean(0.25)(rng); };                       CHECK_RANDOM_GENERATOR(gen, 0, 1, 0.25, 0.433013); }
+    { auto gen = [&] { return random_boolean(Rat(3, 4))(rng); };                  CHECK_RANDOM_GENERATOR(gen, 0, 1, 0.75, 0.433013); }
+    { auto gen = [&] { return random_boolean(3, 4)(rng); };                       CHECK_RANDOM_GENERATOR(gen, 0, 1, 0.75, 0.433013); }
+    { auto gen = [&] { return random_binomial(Rat(3, 4), 10)(rng); };             CHECK_RANDOM_GENERATOR(gen, 0, 10, 7.5, 1.369306); }
+    { auto gen = [&] { return random_binomial(Rat(1, 4), 20)(rng); };             CHECK_RANDOM_GENERATOR(gen, 0, 20, 5, 1.936492); }
+    { auto gen = [&] { return random_dice<int>()(rng); };                         CHECK_RANDOM_GENERATOR(gen, 1, 6, 3.5, 1.70783); }
+    { auto gen = [&] { return random_dice(3)(rng); };                             CHECK_RANDOM_GENERATOR(gen, 3, 18, 10.5, 2.95804); }
+    { auto gen = [&] { return random_dice(3, 10)(rng); };                         CHECK_RANDOM_GENERATOR(gen, 3, 30, 16.5, 4.97494); }
+    { auto gen = [&] { return random_real<double>()(rng); };                      CHECK_RANDOM_GENERATOR(gen, 0, 1, 0.5, 0.288661); }
+    { auto gen = [&] { return random_real(-100.0, 100.0)(rng); };                 CHECK_RANDOM_GENERATOR(gen, -100, 100, 0, 57.7350); }
+    { auto gen = [&] { return random_real(42.0, 42.0)(rng); };                    CHECK_RANDOM_GENERATOR(gen, 42, 42, 42, 0); }
+    { auto gen = [&] { return random_normal<double>()(rng); };                    CHECK_RANDOM_GENERATOR(gen, - inf, inf, 0, 1); }
+    { auto gen = [&] { return random_normal(10.0, 5.0)(rng); };                   CHECK_RANDOM_GENERATOR(gen, - inf, inf, 10, 5); }
 
 }
 
@@ -722,54 +715,55 @@ void test_core_random_sample() {
 
 void test_core_random_uniform_integer_distribution_properties() {
 
-    UniformIntegerProperties ui(1, 8);
+    auto ri = random_integer(1, 8);
 
-    TEST_EQUAL(ui.min(), 1);
-    TEST_EQUAL(ui.max(), 8);
-    TEST_EQUAL(ui.mean(), 4.5);
-    TEST_NEAR(ui.sd(), 2.291288);
-    TEST_EQUAL(ui.variance(), 5.25);
+    TEST_EQUAL(ri.min(), 1);
+    TEST_EQUAL(ri.max(), 8);
+    TEST_EQUAL(ri.mean(), Rat(9,2));
+    TEST_EQUAL(ri.variance(), Rat(21,4));
+    TEST_NEAR(ri.sd(), 2.291288);
 
-    TEST_EQUAL(ui.pdf(0), 0);
-    TEST_EQUAL(ui.pdf(1), 0.125);
-    TEST_EQUAL(ui.pdf(2), 0.125);
-    TEST_EQUAL(ui.pdf(3), 0.125);
-    TEST_EQUAL(ui.pdf(4), 0.125);
-    TEST_EQUAL(ui.pdf(5), 0.125);
-    TEST_EQUAL(ui.pdf(6), 0.125);
-    TEST_EQUAL(ui.pdf(7), 0.125);
-    TEST_EQUAL(ui.pdf(8), 0.125);
-    TEST_EQUAL(ui.pdf(9), 0);
+    TEST_EQUAL(ri.pdf(0), 0);
+    TEST_EQUAL(ri.pdf(1), 0.125);
+    TEST_EQUAL(ri.pdf(2), 0.125);
+    TEST_EQUAL(ri.pdf(3), 0.125);
+    TEST_EQUAL(ri.pdf(4), 0.125);
+    TEST_EQUAL(ri.pdf(5), 0.125);
+    TEST_EQUAL(ri.pdf(6), 0.125);
+    TEST_EQUAL(ri.pdf(7), 0.125);
+    TEST_EQUAL(ri.pdf(8), 0.125);
+    TEST_EQUAL(ri.pdf(9), 0);
 
-    TEST_EQUAL(ui.cdf(0), 0);
-    TEST_EQUAL(ui.cdf(1), 0.125);
-    TEST_EQUAL(ui.cdf(2), 0.25);
-    TEST_EQUAL(ui.cdf(3), 0.375);
-    TEST_EQUAL(ui.cdf(4), 0.5);
-    TEST_EQUAL(ui.cdf(5), 0.625);
-    TEST_EQUAL(ui.cdf(6), 0.75);
-    TEST_EQUAL(ui.cdf(7), 0.875);
-    TEST_EQUAL(ui.cdf(8), 1);
-    TEST_EQUAL(ui.cdf(9), 1);
+    TEST_EQUAL(ri.cdf(0), 0);
+    TEST_EQUAL(ri.cdf(1), 0.125);
+    TEST_EQUAL(ri.cdf(2), 0.25);
+    TEST_EQUAL(ri.cdf(3), 0.375);
+    TEST_EQUAL(ri.cdf(4), 0.5);
+    TEST_EQUAL(ri.cdf(5), 0.625);
+    TEST_EQUAL(ri.cdf(6), 0.75);
+    TEST_EQUAL(ri.cdf(7), 0.875);
+    TEST_EQUAL(ri.cdf(8), 1);
+    TEST_EQUAL(ri.cdf(9), 1);
 
-    TEST_EQUAL(ui.ccdf(0), 1);
-    TEST_EQUAL(ui.ccdf(1), 1);
-    TEST_EQUAL(ui.ccdf(2), 0.875);
-    TEST_EQUAL(ui.ccdf(3), 0.75);
-    TEST_EQUAL(ui.ccdf(4), 0.625);
-    TEST_EQUAL(ui.ccdf(5), 0.5);
-    TEST_EQUAL(ui.ccdf(6), 0.375);
-    TEST_EQUAL(ui.ccdf(7), 0.25);
-    TEST_EQUAL(ui.ccdf(8), 0.125);
-    TEST_EQUAL(ui.ccdf(9), 0);
+    TEST_EQUAL(ri.ccdf(0), 1);
+    TEST_EQUAL(ri.ccdf(1), 1);
+    TEST_EQUAL(ri.ccdf(2), 0.875);
+    TEST_EQUAL(ri.ccdf(3), 0.75);
+    TEST_EQUAL(ri.ccdf(4), 0.625);
+    TEST_EQUAL(ri.ccdf(5), 0.5);
+    TEST_EQUAL(ri.ccdf(6), 0.375);
+    TEST_EQUAL(ri.ccdf(7), 0.25);
+    TEST_EQUAL(ri.ccdf(8), 0.125);
+    TEST_EQUAL(ri.ccdf(9), 0);
 
 }
 
 void test_core_random_binomial_distribution_properties() {
 
-    BinomialDistributionProperties bin(4, 0.2);
+    auto bin = random_binomial(Rat(1,5), 4);
 
-    TEST_NEAR(bin.mean(), 0.8);
+    TEST_EQUAL(bin.mean(), Rat(4,5));
+    TEST_EQUAL(bin.variance(), Rat(16,25));
     TEST_NEAR(bin.sd(), 0.8);
     TEST_EQUAL(bin.pdf(-1), 0);
     TEST_NEAR(bin.pdf(0), 0.4096);
@@ -797,90 +791,92 @@ void test_core_random_binomial_distribution_properties() {
 
 void test_core_random_dice_distribution_properties() {
 
-    DiceProperties dp;
+    RandomDice<int> dice;
 
-    TEST_EQUAL(dp.mean(), 3.5);
-    TEST_NEAR(dp.sd(), 1.707825);
-    TEST_EQUAL(dp.pdf(0), 0);
-    TEST_NEAR(dp.pdf(1), 0.166667);
-    TEST_NEAR(dp.pdf(2), 0.166667);
-    TEST_NEAR(dp.pdf(3), 0.166667);
-    TEST_NEAR(dp.pdf(4), 0.166667);
-    TEST_NEAR(dp.pdf(5), 0.166667);
-    TEST_NEAR(dp.pdf(6), 0.166667);
-    TEST_EQUAL(dp.pdf(7), 0);
-    TEST_EQUAL(dp.cdf(0), 0);
-    TEST_NEAR(dp.cdf(1), 0.166667);
-    TEST_NEAR(dp.cdf(2), 0.333333);
-    TEST_NEAR(dp.cdf(3), 0.5);
-    TEST_NEAR(dp.cdf(4), 0.666667);
-    TEST_NEAR(dp.cdf(5), 0.833333);
-    TEST_EQUAL(dp.cdf(6), 1);
-    TEST_EQUAL(dp.cdf(7), 1);
-    TEST_EQUAL(dp.ccdf(0), 1);
-    TEST_EQUAL(dp.ccdf(1), 1);
-    TEST_NEAR(dp.ccdf(2), 0.833333);
-    TEST_NEAR(dp.ccdf(3), 0.666667);
-    TEST_NEAR(dp.ccdf(4), 0.5);
-    TEST_NEAR(dp.ccdf(5), 0.333333);
-    TEST_NEAR(dp.ccdf(6), 0.166667);
-    TEST_EQUAL(dp.ccdf(7), 0);
+    TEST_EQUAL(dice.mean(), Rat(7,2));
+    TEST_EQUAL(dice.variance(), Rat(35,12));
+    TEST_NEAR(dice.sd(), 1.707825);
+    TEST_EQUAL(dice.pdf(0), 0);
+    TEST_NEAR(dice.pdf(1), 0.166667);
+    TEST_NEAR(dice.pdf(2), 0.166667);
+    TEST_NEAR(dice.pdf(3), 0.166667);
+    TEST_NEAR(dice.pdf(4), 0.166667);
+    TEST_NEAR(dice.pdf(5), 0.166667);
+    TEST_NEAR(dice.pdf(6), 0.166667);
+    TEST_EQUAL(dice.pdf(7), 0);
+    TEST_EQUAL(dice.cdf(0), 0);
+    TEST_NEAR(dice.cdf(1), 0.166667);
+    TEST_NEAR(dice.cdf(2), 0.333333);
+    TEST_NEAR(dice.cdf(3), 0.5);
+    TEST_NEAR(dice.cdf(4), 0.666667);
+    TEST_NEAR(dice.cdf(5), 0.833333);
+    TEST_EQUAL(dice.cdf(6), 1);
+    TEST_EQUAL(dice.cdf(7), 1);
+    TEST_EQUAL(dice.ccdf(0), 1);
+    TEST_EQUAL(dice.ccdf(1), 1);
+    TEST_NEAR(dice.ccdf(2), 0.833333);
+    TEST_NEAR(dice.ccdf(3), 0.666667);
+    TEST_NEAR(dice.ccdf(4), 0.5);
+    TEST_NEAR(dice.ccdf(5), 0.333333);
+    TEST_NEAR(dice.ccdf(6), 0.166667);
+    TEST_EQUAL(dice.ccdf(7), 0);
 
-    dp = DiceProperties(2, 6);
+    dice = random_dice(2, 6);
 
-    TEST_EQUAL(dp.mean(), 7);
-    TEST_NEAR(dp.sd(), 2.415229);
-    TEST_EQUAL(dp.pdf(1), 0);
-    TEST_NEAR(dp.pdf(2), 0.027778);
-    TEST_NEAR(dp.pdf(3), 0.055556);
-    TEST_NEAR(dp.pdf(4), 0.083333);
-    TEST_NEAR(dp.pdf(5), 0.111111);
-    TEST_NEAR(dp.pdf(6), 0.138889);
-    TEST_NEAR(dp.pdf(7), 0.166667);
-    TEST_NEAR(dp.pdf(8), 0.138889);
-    TEST_NEAR(dp.pdf(9), 0.111111);
-    TEST_NEAR(dp.pdf(10), 0.083333);
-    TEST_NEAR(dp.pdf(11), 0.055556);
-    TEST_NEAR(dp.pdf(12), 0.027778);
-    TEST_EQUAL(dp.pdf(13), 0);
-    TEST_EQUAL(dp.cdf(1), 0);
-    TEST_NEAR(dp.cdf(2), 0.027778);
-    TEST_NEAR(dp.cdf(3), 0.083333);
-    TEST_NEAR(dp.cdf(4), 0.166667);
-    TEST_NEAR(dp.cdf(5), 0.277778);
-    TEST_NEAR(dp.cdf(6), 0.416667);
-    TEST_NEAR(dp.cdf(7), 0.583333);
-    TEST_NEAR(dp.cdf(8), 0.722222);
-    TEST_NEAR(dp.cdf(9), 0.833333);
-    TEST_NEAR(dp.cdf(10), 0.916667);
-    TEST_NEAR(dp.cdf(11), 0.972222);
-    TEST_EQUAL(dp.cdf(12), 1);
-    TEST_EQUAL(dp.cdf(13), 1);
-    TEST_EQUAL(dp.ccdf(1), 1);
-    TEST_EQUAL(dp.ccdf(2), 1);
-    TEST_NEAR(dp.ccdf(3), 0.972222);
-    TEST_NEAR(dp.ccdf(4), 0.916667);
-    TEST_NEAR(dp.ccdf(5), 0.833333);
-    TEST_NEAR(dp.ccdf(6), 0.722222);
-    TEST_NEAR(dp.ccdf(7), 0.583333);
-    TEST_NEAR(dp.ccdf(8), 0.416667);
-    TEST_NEAR(dp.ccdf(9), 0.277778);
-    TEST_NEAR(dp.ccdf(10), 0.166667);
-    TEST_NEAR(dp.ccdf(11), 0.083333);
-    TEST_NEAR(dp.ccdf(12), 0.027778);
-    TEST_EQUAL(dp.ccdf(13), 0);
+    TEST_EQUAL(dice.mean(), 7);
+    TEST_EQUAL(dice.variance(), Rat(35,6));
+    TEST_NEAR(dice.sd(), 2.415229);
+    TEST_EQUAL(dice.pdf(1), 0);
+    TEST_NEAR(dice.pdf(2), 0.027778);
+    TEST_NEAR(dice.pdf(3), 0.055556);
+    TEST_NEAR(dice.pdf(4), 0.083333);
+    TEST_NEAR(dice.pdf(5), 0.111111);
+    TEST_NEAR(dice.pdf(6), 0.138889);
+    TEST_NEAR(dice.pdf(7), 0.166667);
+    TEST_NEAR(dice.pdf(8), 0.138889);
+    TEST_NEAR(dice.pdf(9), 0.111111);
+    TEST_NEAR(dice.pdf(10), 0.083333);
+    TEST_NEAR(dice.pdf(11), 0.055556);
+    TEST_NEAR(dice.pdf(12), 0.027778);
+    TEST_EQUAL(dice.pdf(13), 0);
+    TEST_EQUAL(dice.cdf(1), 0);
+    TEST_NEAR(dice.cdf(2), 0.027778);
+    TEST_NEAR(dice.cdf(3), 0.083333);
+    TEST_NEAR(dice.cdf(4), 0.166667);
+    TEST_NEAR(dice.cdf(5), 0.277778);
+    TEST_NEAR(dice.cdf(6), 0.416667);
+    TEST_NEAR(dice.cdf(7), 0.583333);
+    TEST_NEAR(dice.cdf(8), 0.722222);
+    TEST_NEAR(dice.cdf(9), 0.833333);
+    TEST_NEAR(dice.cdf(10), 0.916667);
+    TEST_NEAR(dice.cdf(11), 0.972222);
+    TEST_EQUAL(dice.cdf(12), 1);
+    TEST_EQUAL(dice.cdf(13), 1);
+    TEST_EQUAL(dice.ccdf(1), 1);
+    TEST_EQUAL(dice.ccdf(2), 1);
+    TEST_NEAR(dice.ccdf(3), 0.972222);
+    TEST_NEAR(dice.ccdf(4), 0.916667);
+    TEST_NEAR(dice.ccdf(5), 0.833333);
+    TEST_NEAR(dice.ccdf(6), 0.722222);
+    TEST_NEAR(dice.ccdf(7), 0.583333);
+    TEST_NEAR(dice.ccdf(8), 0.416667);
+    TEST_NEAR(dice.ccdf(9), 0.277778);
+    TEST_NEAR(dice.ccdf(10), 0.166667);
+    TEST_NEAR(dice.ccdf(11), 0.083333);
+    TEST_NEAR(dice.ccdf(12), 0.027778);
+    TEST_EQUAL(dice.ccdf(13), 0);
 
 }
 
 void test_core_random_uniform_real_distribution_properties() {
 
-    UniformRealProperties ur(10, 20);
+    auto ur = random_real(10.0, 20.0);
 
     TEST_EQUAL(ur.min(), 10);
     TEST_EQUAL(ur.max(), 20);
     TEST_EQUAL(ur.mean(), 15);
-    TEST_NEAR(ur.sd(), 2.886751);
     TEST_NEAR(ur.variance(), 8.333333);
+    TEST_NEAR(ur.sd(), 2.886751);
 
     TEST_EQUAL(ur.pdf(9), 0);
     TEST_EQUAL(ur.pdf(11), 0.1);
@@ -972,11 +968,11 @@ void test_core_random_normal_distribution_properties() {
         { 5.00,   0.000001486720,  0.999999713348 },
     };
 
-    NormalDistributionProperties norm;
+    RandomNormal<double> norm;
 
     TEST_EQUAL(norm.mean(), 0);
-    TEST_NEAR(norm.sd(), 1);
     TEST_NEAR(norm.variance(), 1);
+    TEST_NEAR(norm.sd(), 1);
 
     double p, q, y, z;
 
@@ -1160,6 +1156,21 @@ void test_core_random_unique_distribution() {
 
 }
 
+void test_core_random_uniform_choice_distribution() {
+
+    static constexpr size_t iterations = 100'000;
+    static const std::vector<int> v = {1,2,3,4,5,6,7,8,9,10};
+    std::mt19937 rng(42);
+
+    { auto gen = [&] { return random_choice(v)(rng); };                            CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
+    { auto gen = [&] { return random_choice(v.begin(), v.end())(rng); };           CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
+    { auto gen = [&] { return random_choice({1,2,3,4,5,6,7,8,9,10})(rng); };       CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
+    { auto gen = [&] { return random_choice_from(v, rng); };                       CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
+    { auto gen = [&] { return random_choice_from(v.begin(), v.end(), rng); };      CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
+    { auto gen = [&] { return random_choice_from({1,2,3,4,5,6,7,8,9,10}, rng); };  CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
+
+}
+
 void test_core_random_weighted_choice_distribution() {
 
     const int iterations = 1000000;
@@ -1169,15 +1180,12 @@ void test_core_random_weighted_choice_distribution() {
 
     {
         WeightedChoice<Ustring> choice;
-        TEST(choice.empty());
-        TEST_EQUAL(choice(rng), "");
         TRY((choice = {
             {"alpha", 0.4},
             {"bravo", 0.3},
             {"charlie", 0.2},
             {"delta", 0.1},
         }));
-        TEST(! choice.empty());
         census.clear();
         for (int i = 0; i < iterations; ++i)
             TRY(++census[choice(rng)]);
@@ -1189,15 +1197,12 @@ void test_core_random_weighted_choice_distribution() {
 
     {
         WeightedChoice<Ustring, int> choice;
-        TEST(choice.empty());
-        TEST_EQUAL(choice(rng), "");
         TRY((choice = {
             {"alpha", 40},
             {"bravo", 30},
             {"charlie", 20},
             {"delta", 10},
         }));
-        TEST(! choice.empty());
         census.clear();
         for (int i = 0; i < iterations; ++i)
             TRY(++census[choice(rng)]);

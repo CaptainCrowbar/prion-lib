@@ -25,11 +25,10 @@
 </li>
 <li><a href="#random-distributions">Random distributions</a><ul>
 <li><a href="#basic-random-distributions">Basic random distributions</a></li>
-<li><a href="#random-distribution-properties">Random distribution properties</a></li>
 <li><a href="#random-samples">Random samples</a></li>
 <li><a href="#spatial-distributions">Spatial distributions</a></li>
 <li><a href="#unique-distribution">Unique distribution</a></li>
-<li><a href="#weighted-choice-distribution">Weighted choice distribution</a></li>
+<li><a href="#random-choice-distributions">Random choice distributions</a></li>
 </ul>
 </li>
 <li><a href="#other-random-algorithms">Other random algorithms</a></li>
@@ -277,6 +276,47 @@ floating point distributions).</p>
 class template, which requires the result type to be supplied explicitly, and
 as one or more functions that deduce the result type and return an instance of
 the class.</p>
+<p>Most of these also provide statistical functions that return properties of the
+distribution:</p>
+<p>The <code>pdf()</code>, <code>cdf()</code>, and <code>ccdf()</code> functions represent the probability
+distribution function, cumulative distribution function, and complementary
+cumulative distribution function. For discrete distributions, <code>pdf(x)</code> is the
+probably of a result exactly equal to <code>x</code>, <code>cdf(x)</code> is the probability of a
+result less than or equal to <code>x</code>, and <code>ccdf(x)</code> is the probability of a result
+greater than or equal to <code>x</code> (<code>cdf+ccdf-pdf=1</code>). For continuous distributions,
+<code>pdf(x)</code> is the probably density at <code>x</code>, <code>cdf(x)</code> is the probability of a
+result less than <code>x</code>, and <code>ccdf(x)</code> is the probability of a result greater
+than <code>x</code> (<code>cdf+ccdf=1</code>).</p>
+<p>The <code>quantile()</code> and <code>cquantile()</code> (complementary quantile) functions are only
+defined for continuous distributions, and are the inverse of <code>cdf()</code> and
+<code>ccdf()</code> respectively. Behaviour is undefined if the argument to one of the
+quantile functions is less than 0 or greater than 1; it may or may not be
+defined for exactly 0 or 1, depending on how the distribution is bounded.</p>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>RandomInteger</code></strong><ul>
+<li><code>using RandomInteger::</code><strong><code>result_type</code></strong> <code>= T</code></li>
+<li><code>RandomInteger::</code><strong><code>RandomInteger</code></strong><code>() noexcept</code></li>
+<li><code>RandomInteger::</code><strong><code>RandomInteger</code></strong><code>(T a, T b) noexcept</code></li>
+<li><code>template &lt;typename RNG&gt; T RandomInteger::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
+<li><code>T RandomInteger::</code><strong><code>min</code></strong><code>() const noexcept</code></li>
+<li><code>T RandomInteger::</code><strong><code>max</code></strong><code>() const noexcept</code></li>
+<li><code>Rational&lt;T&gt; RandomInteger::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
+<li><code>Rational&lt;T&gt; RandomInteger::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
+<li><code>double RandomInteger::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
+<li><code>double RandomInteger::</code><strong><code>pdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>double RandomInteger::</code><strong><code>cdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>double RandomInteger::</code><strong><code>ccdf</code></strong><code>(T x) const noexcept</code></li>
+</ul>
+</li>
+<li><code>template &lt;typename T&gt; RandomInteger&lt;T&gt;</code> <strong><code>random_integer</code></strong><code>(T t)</code></li>
+<li><code>template &lt;typename T&gt; RandomInteger&lt;T&gt;</code> <strong><code>random_integer</code></strong><code>(T a, T b)</code></li>
+</ul>
+<p>Uniform random integer distribution. This returns an integer from <code>a</code> to <code>b</code>
+inclusive; the bounds can be supplied in either order. If a single argument is
+supplied, it returns an integer from 0 to <code>t-1</code> inclusive (always 0 if <code>t&lt;2</code>).
+A default constructed distribution always returns zero.</p>
+</div>
 <div class="defns">
 <ul>
 <li><code>class</code> <strong><code>RandomBoolean</code></strong><ul>
@@ -306,6 +346,14 @@ clamped to the nearest end of the range.</p>
 <li><code>template &lt;typename RNG&gt; bool RandomBinomial::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
 <li><code>Rational&lt;T&gt; RandomBinomial::</code><strong><code>prob</code></strong><code>() const noexcept</code></li>
 <li><code>T RandomBinomial::</code><strong><code>number</code></strong><code>() const noexcept</code></li>
+<li><code>T RandomBinomial::</code><strong><code>min</code></strong><code>() const  noexcept</code></li>
+<li><code>T RandomBinomial::</code><strong><code>max</code></strong><code>() const  noexcept</code></li>
+<li><code>Rational&lt;T&gt; RandomBinomial::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
+<li><code>Rational&lt;T&gt; RandomBinomial::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
+<li><code>double RandomBinomial::</code><strong><code>sd</code></strong><code>() const  noexcept</code></li>
+<li><code>double RandomBinomial::</code><strong><code>pdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>double RandomBinomial::</code><strong><code>cdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>double RandomBinomial::</code><strong><code>ccdf</code></strong><code>(T x) const noexcept</code></li>
 </ul>
 </li>
 <li><code>template &lt;typename T&gt; RandomBinomial</code> <strong><code>random_boolean</code></strong><code>(const Rational&lt;T&gt;&amp; p, T n) noexcept</code></li>
@@ -316,25 +364,6 @@ is always zero if <code>n&lt;1</code>.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; class</code> <strong><code>RandomInteger</code></strong><ul>
-<li><code>using RandomInteger::</code><strong><code>result_type</code></strong> <code>= T</code></li>
-<li><code>RandomInteger::</code><strong><code>RandomInteger</code></strong><code>() noexcept</code></li>
-<li><code>RandomInteger::</code><strong><code>RandomInteger</code></strong><code>(T a, T b) noexcept</code></li>
-<li><code>template &lt;typename RNG&gt; T RandomInteger::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
-<li><code>T RandomInteger::</code><strong><code>min</code></strong><code>() const noexcept</code></li>
-<li><code>T RandomInteger::</code><strong><code>max</code></strong><code>() const noexcept</code></li>
-</ul>
-</li>
-<li><code>template &lt;typename T&gt; RandomInteger&lt;T&gt;</code> <strong><code>random_integer</code></strong><code>(T t)</code></li>
-<li><code>template &lt;typename T&gt; RandomInteger&lt;T&gt;</code> <strong><code>random_integer</code></strong><code>(T a, T b)</code></li>
-</ul>
-<p>Uniform random integer distribution. This returns an integer from <code>a</code> to <code>b</code>
-inclusive; the bounds can be supplied in either order. If a single argument is
-supplied, it returns an integer from 0 to <code>t-1</code> inclusive (always 0 if <code>t&lt;2</code>).
-A default constructed distribution always returns zero.</p>
-</div>
-<div class="defns">
-<ul>
 <li><code>template &lt;typename T&gt; class</code> <strong><code>RandomDice</code></strong><ul>
 <li><code>using RandomDice::</code><strong><code>result_type</code></strong> <code>= T</code></li>
 <li><code>RandomDice::</code><strong><code>RandomDice</code></strong><code>() noexcept</code></li>
@@ -342,6 +371,14 @@ A default constructed distribution always returns zero.</p>
 <li><code>template &lt;typename RNG&gt; T RandomDice::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
 <li><code>T RandomDice::</code><strong><code>number</code></strong><code>() const noexcept</code></li>
 <li><code>T RandomDice::</code><strong><code>faces</code></strong><code>() const noexcept</code></li>
+<li><code>T RandomDice::</code><strong><code>min</code></strong><code>() const noexcept</code></li>
+<li><code>T RandomDice::</code><strong><code>max</code></strong><code>() const noexcept</code></li>
+<li><code>Rational&lt;T&gt; RandomDice::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
+<li><code>Rational&lt;T&gt; RandomDice::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
+<li><code>double RandomDice::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
+<li><code>double RandomDice::</code><strong><code>pdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>double RandomDice::</code><strong><code>cdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>double RandomDice::</code><strong><code>ccdf</code></strong><code>(T x) const noexcept</code></li>
 </ul>
 </li>
 <li><code>template &lt;typename T&gt; RandomDice&lt;T&gt;</code> <strong><code>random_dice</code></strong><code>(T n = 1, T faces = 6)</code></li>
@@ -375,6 +412,14 @@ probability at <code>hi</code> and the lowest at <code>lo</code>.</p>
 <li><code>template &lt;typename RNG&gt; T RandomReal::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
 <li><code>T RandomReal::</code><strong><code>min</code></strong><code>() const noexcept</code></li>
 <li><code>T RandomReal::</code><strong><code>max</code></strong><code>() const noexcept</code></li>
+<li><code>T RandomReal::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
+<li><code>T RandomReal::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
+<li><code>T RandomReal::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
+<li><code>T RandomReal::</code><strong><code>pdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>T RandomReal::</code><strong><code>cdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>T RandomReal::</code><strong><code>ccdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>T RandomReal::</code><strong><code>quantile</code></strong><code>(T p) const noexcept</code></li>
+<li><code>T RandomReal::</code><strong><code>cquantile</code></strong><code>(T q) const noexcept</code></li>
 </ul>
 </li>
 <li><code>template &lt;typename T&gt; RandomReal&lt;T&gt;</code> <strong><code>random_real</code></strong><code>()</code></li>
@@ -395,6 +440,12 @@ constructed distribution return a value in the unit range.</p>
 <li><code>template &lt;typename RNG&gt; T RandomNormal::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
 <li><code>T RandomNormal::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
 <li><code>T RandomNormal::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
+<li><code>T RandomNormal::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
+<li><code>T RandomNormal::</code><strong><code>pdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>T RandomNormal::</code><strong><code>cdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>T RandomNormal::</code><strong><code>ccdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>T RandomNormal::</code><strong><code>quantile</code></strong><code>(T p) const noexcept</code></li>
+<li><code>T RandomNormal::</code><strong><code>cquantile</code></strong><code>(T q) const noexcept</code></li>
 </ul>
 </li>
 <li><code>template &lt;typename T&gt; RandomNormal&lt;T&gt;</code> <strong><code>random_normal</code></strong><code>()</code></li>
@@ -402,7 +453,12 @@ constructed distribution return a value in the unit range.</p>
 </ul>
 <p>Normal (Gaussian) distribution, with the given mean and standard deviation.
 The absolute value of the standard deviation is used. The default constructor
-sets <code>mean=0</code> and <code>sd=1</code>.</p>
+sets <code>mean=0</code> and <code>sd=1</code>. The quantile functions use the Beasley-Springer
+approximation: for <code>|z|&lt;3.75</code>, absolute error is less than <code>1e-6</code>, relative
+error is less than <code>2.5e-7</code>; for <code>|z|&lt;7.5</code>, absolute error is less than
+<code>5e-4</code>, relative error is less than <code>5e-5</code>. Behaviour is undefined if the
+distribution property functions are called when the standard deviation is
+zero.</p>
 </div>
 <div class="defns">
 <ul>
@@ -420,155 +476,6 @@ sets <code>mean=0</code> and <code>sd=1</code>.</p>
 <p>Generates an integer that follows a good deterministic approximation to the
 result of generating a normally distributed real value and then rounding it to
 an integer.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>template &lt;typename T&gt; class</code> <strong><code>RandomChoice</code></strong><ul>
-<li><code>using RandomChoice::</code><strong><code>result_type</code></strong> <code>= T</code></li>
-<li><code>RandomChoice::</code><strong><code>RandomChoice</code></strong><code>() noexcept</code></li>
-<li><code>template &lt;typename InputIterator&gt; RandomChoice::</code>**<code>RandomChoice(InputIterator i, InputIterator j)</code></li>
-<li><code>template &lt;typename InputRange&gt; explicit RandomChoice::</code>**<code>RandomChoice(const InputRange&amp; list)</code></li>
-<li><code>RandomChoice::</code><strong><code>RandomChoice</code></strong><code>(std::initializer_list&lt;T&gt; list)</code></li>
-<li><code>template &lt;typename RNG&gt; const T&amp; RandomChoice::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng)</code></li>
-<li><code>bool RandomChoice::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
-<li><code>size_t RandomChoice::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
-</ul>
-</li>
-<li><code>template &lt;typename InputIterator&gt; RandomChoice&lt;[value type]&gt;</code> <strong><code>random_choice</code></strong><code>(InputIterator i, InputIterator j)</code></li>
-<li><code>template &lt;typename InputRange&gt; RandomChoice&lt;[value type]&gt;</code> <strong><code>random_choice</code></strong><code>(const InputRange&amp; list)</code></li>
-<li><code>template &lt;typename T&gt; RandomChoice&lt;T&gt;</code> <strong><code>random_choice</code></strong><code>(std::initializer_list&lt;T&gt; list)</code></li>
-<li><code>template &lt;typename ForwardIterator, typename RNG&gt; const [value type]&amp;</code> <strong><code>random_choice_from</code></strong><code>(ForwardIterator i, ForwardIterator j, RNG&amp; rng)</code></li>
-<li><code>template &lt;typename ForwardRange, typename RNG&gt; const [value type]&amp;</code> <strong><code>random_choice_from</code></strong><code>(const ForwardRange&amp; list, RNG&amp; rng)</code></li>
-<li><code>template &lt;typename T, typename RNG&gt; const T&amp;</code> <strong><code>random_choice_from</code></strong><code>(std::initializer_list&lt;T&gt; list, RNG&amp; rng)</code></li>
-</ul>
-<p>Selects an element at random from the input list. The <code>random_choice_from()</code>
-functions are shortcuts that can be used to avoid the overhead of copying the
-list in one-time calls.</p>
-</div>
-<h3 id="random-distribution-properties">Random distribution properties</h3>
-<p>The <code>pdf()</code>, <code>cdf()</code>, and <code>ccdf()</code> functions represent the probability
-distribution function, cumulative distribution function, and complementary
-cumulative distribution function. For discrete distributions, <code>pdf(x)</code> is the
-probably of a result exactly equal to <code>x</code>, <code>cdf(x)</code> is the probability of a
-result less than or equal to <code>x</code>, and <code>ccdf(x)</code> is the probability of a result
-greater than or equal to <code>x</code> (<code>cdf+ccdf-pdf=1</code>). For continuous distributions,
-<code>pdf(x)</code> is the probably density at <code>x</code>, <code>cdf(x)</code> is the probability of a
-result less than <code>x</code>, and <code>ccdf(x)</code> is the probability of a result greater
-than <code>x</code> (<code>cdf+ccdf=1</code>).</p>
-<p>The <code>quantile()</code> and <code>cquantile()</code> (complementary quantile) functions are only
-defined for continuous distributions, and are the inverse of <code>cdf()</code> and
-<code>ccdf()</code> respectively. Behaviour is undefined if the argument to one of the
-quantile functions is less than 0 or greater than 1; it may or may not be
-defined for exactly 0 or 1, depending on how the distribution is bounded.</p>
-<div class="defns">
-<ul>
-<li><code>class</code> <strong><code>UniformIntegerProperties</code></strong><ul>
-<li><code>explicit UniformIntegerProperties::</code><strong><code>UniformIntegerProperties</code></strong><code>(int n) noexcept</code></li>
-<li><code>explicit UniformIntegerProperties::</code><strong><code>UniformIntegerProperties</code></strong><code>(int a, int b) noexcept</code></li>
-<li><code>int UniformIntegerProperties::</code><strong><code>min</code></strong><code>() const noexcept</code></li>
-<li><code>int UniformIntegerProperties::</code><strong><code>max</code></strong><code>() const noexcept</code></li>
-<li><code>double UniformIntegerProperties::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
-<li><code>double UniformIntegerProperties::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
-<li><code>double UniformIntegerProperties::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
-<li><code>double UniformIntegerProperties::</code><strong><code>pdf</code></strong><code>(int x) const noexcept</code></li>
-<li><code>double UniformIntegerProperties::</code><strong><code>cdf</code></strong><code>(int x) const noexcept</code></li>
-<li><code>double UniformIntegerProperties::</code><strong><code>ccdf</code></strong><code>(int x) const noexcept</code></li>
-</ul>
-</li>
-</ul>
-<p>Uniform discrete distribution over the range from <code>a</code> to <code>b</code> inclusive. The
-bounds will be swapped if they are in the wrong order. The constructor from a
-single integer is equivalent to <code>UniformIntegerProperties(0,n-1)</code>.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>class</code> <strong><code>BinomialDistributionProperties</code></strong><ul>
-<li><code>explicit BinomialDistributionProperties::</code><strong><code>BinomialDistributionProperties</code></strong><code>(int t, double p) noexcept</code></li>
-<li><code>int BinomialDistributionProperties::</code><strong><code>t</code></strong><code>() const noexcept</code></li>
-<li><code>double BinomialDistributionProperties::</code><strong><code>p</code></strong><code>() const noexcept</code></li>
-<li><code>int BinomialDistributionProperties::</code><strong><code>min</code></strong><code>() const  noexcept</code></li>
-<li><code>int BinomialDistributionProperties::</code><strong><code>max</code></strong><code>() const  noexcept</code></li>
-<li><code>double BinomialDistributionProperties::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
-<li><code>double BinomialDistributionProperties::</code><strong><code>sd</code></strong><code>() const  noexcept</code></li>
-<li><code>double BinomialDistributionProperties::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
-<li><code>double BinomialDistributionProperties::</code><strong><code>pdf</code></strong><code>(int x) const noexcept</code></li>
-<li><code>double BinomialDistributionProperties::</code><strong><code>cdf</code></strong><code>(int x) const noexcept</code></li>
-<li><code>double BinomialDistributionProperties::</code><strong><code>ccdf</code></strong><code>(int x) const noexcept</code></li>
-</ul>
-</li>
-</ul>
-<p>Binomial distribution (representing the distribution of the number of
-successes after <code>t</code> tries with success probability <code>p</code> per try). Behaviour is
-undefined if <code>t&lt;0</code>, <code>p&lt;0</code>, or <code>p&gt;1</code>.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>class</code> <strong><code>DiceProperties</code></strong><ul>
-<li><code>DiceProperties::</code><strong><code>DiceProperties</code></strong><code>() noexcept</code></li>
-<li><code>explicit DiceProperties::</code><strong><code>DiceProperties</code></strong><code>(int number, int faces = 6) noexcept</code></li>
-<li><code>int DiceProperties::</code><strong><code>number</code></strong><code>() const noexcept</code></li>
-<li><code>int DiceProperties::</code><strong><code>faces</code></strong><code>() const noexcept</code></li>
-<li><code>int DiceProperties::</code><strong><code>min</code></strong><code>() const noexcept</code></li>
-<li><code>int DiceProperties::</code><strong><code>max</code></strong><code>() const noexcept</code></li>
-<li><code>double DiceProperties::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
-<li><code>double DiceProperties::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
-<li><code>double DiceProperties::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
-<li><code>double DiceProperties::</code><strong><code>pdf</code></strong><code>(int x) const noexcept</code></li>
-<li><code>double DiceProperties::</code><strong><code>cdf</code></strong><code>(int x) const noexcept</code></li>
-<li><code>double DiceProperties::</code><strong><code>ccdf</code></strong><code>(int x) const noexcept</code></li>
-</ul>
-</li>
-</ul>
-<p>The distribution resulting from rolling <code>number</code> dice, each numbered from 1 to
-<code>faces</code> (defaulting to <code>number=1</code> and <code>faces=6</code>). If either argument is less
-than 1, the distribution has a fixed value of zero.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>class</code> <strong><code>UniformRealProperties</code></strong><ul>
-<li><code>UniformRealProperties::</code><strong><code>UniformRealProperties</code></strong><code>() noexcept</code></li>
-<li><code>explicit UniformRealProperties::</code><strong><code>UniformRealProperties</code></strong><code>(double a, double b = 0) noexcept</code></li>
-<li><code>double UniformRealProperties::</code><strong><code>min</code></strong><code>() const noexcept</code></li>
-<li><code>double UniformRealProperties::</code><strong><code>max</code></strong><code>() const noexcept</code></li>
-<li><code>double UniformRealProperties::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
-<li><code>double UniformRealProperties::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
-<li><code>double UniformRealProperties::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
-<li><code>double UniformRealProperties::</code><strong><code>pdf</code></strong><code>(double x) const noexcept</code></li>
-<li><code>double UniformRealProperties::</code><strong><code>cdf</code></strong><code>(double x) const noexcept</code></li>
-<li><code>double UniformRealProperties::</code><strong><code>ccdf</code></strong><code>(double x) const noexcept</code></li>
-<li><code>double UniformRealProperties::</code><strong><code>quantile</code></strong><code>(double p) const noexcept</code></li>
-<li><code>double UniformRealProperties::</code><strong><code>cquantile</code></strong><code>(double q) const noexcept</code></li>
-</ul>
-</li>
-</ul>
-<p>Uniform continuous distribution over the range from <code>a</code> to <code>b</code> (0 to 1 by
-default). The bounds will be swapped if they are in the wrong order.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>class</code> <strong><code>NormalDistributionProperties</code></strong><ul>
-<li><code>NormalDistributionProperties::</code><strong><code>NormalDistributionProperties</code></strong><code>() noexcept</code></li>
-<li><code>explicit NormalDistributionProperties::</code><strong><code>NormalDistributionProperties</code></strong><code>(double m, double s) noexcept</code></li>
-<li><code>double NormalDistributionProperties::</code><strong><code>min</code></strong><code>() const noexcept</code></li>
-<li><code>double NormalDistributionProperties::</code><strong><code>max</code></strong><code>() const noexcept</code></li>
-<li><code>double NormalDistributionProperties::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
-<li><code>double NormalDistributionProperties::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
-<li><code>double NormalDistributionProperties::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
-<li><code>double NormalDistributionProperties::</code><strong><code>pdf</code></strong><code>(double x) const noexcept</code></li>
-<li><code>double NormalDistributionProperties::</code><strong><code>cdf</code></strong><code>(double x) const noexcept</code></li>
-<li><code>double NormalDistributionProperties::</code><strong><code>ccdf</code></strong><code>(double x) const noexcept</code></li>
-<li><code>double NormalDistributionProperties::</code><strong><code>quantile</code></strong><code>(double p) const noexcept</code></li>
-<li><code>double NormalDistributionProperties::</code><strong><code>cquantile</code></strong><code>(double q) const noexcept</code></li>
-</ul>
-</li>
-</ul>
-<p>Normal distribution with the given mean and standard deviation (0 and 1 by
-default). The sign of the standard deviation is ignored. The results of the
-statistical functions are unspecified if the standard deviation is zero. The
-quantile functions use the Beasley-Springer approximation: for <code>|z|&lt;3.75</code>,
-absolute error is less than <code>1e-6</code>, relative error is less than <code>2.5e-7</code>; for
-<code>|z|&lt;7.5</code>, absolute error is less than <code>5e-4</code>, relative error is less than
-<code>5e-5</code>.</p>
 </div>
 <h3 id="random-samples">Random samples</h3>
 <div class="defns">
@@ -671,7 +578,31 @@ underlying distribution is destroyed while a <code>UniqueDistribution</code> obj
 has a reference to it, or if <code>UniqueDistribution::operator()</code> is called when
 the cache already contains every possible value of the result type.</p>
 </div>
-<h3 id="weighted-choice-distribution">Weighted choice distribution</h3>
+<h3 id="random-choice-distributions">Random choice distributions</h3>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>RandomChoice</code></strong><ul>
+<li><code>using RandomChoice::</code><strong><code>result_type</code></strong> <code>= T</code></li>
+<li><code>RandomChoice::</code><strong><code>RandomChoice</code></strong><code>() noexcept</code></li>
+<li><code>template &lt;typename InputIterator&gt; RandomChoice::</code><strong><code>RandomChoice</code></strong><code>(InputIterator i, InputIterator j)</code></li>
+<li><code>template &lt;typename InputRange&gt; explicit RandomChoice::</code><strong><code>RandomChoice</code></strong><code>(const InputRange&amp; list)</code></li>
+<li><code>RandomChoice::</code><strong><code>RandomChoice</code></strong><code>(std::initializer_list&lt;T&gt; list)</code></li>
+<li><code>template &lt;typename RNG&gt; const T&amp; RandomChoice::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
+<li><code>bool RandomChoice::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
+<li><code>size_t RandomChoice::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
+</ul>
+</li>
+<li><code>template &lt;typename InputIterator&gt; RandomChoice&lt;[value type]&gt;</code> <strong><code>random_choice</code></strong><code>(InputIterator i, InputIterator j)</code></li>
+<li><code>template &lt;typename InputRange&gt; RandomChoice&lt;[value type]&gt;</code> <strong><code>random_choice</code></strong><code>(const InputRange&amp; list)</code></li>
+<li><code>template &lt;typename T&gt; RandomChoice&lt;T&gt;</code> <strong><code>random_choice</code></strong><code>(std::initializer_list&lt;T&gt; list)</code></li>
+<li><code>template &lt;typename ForwardIterator, typename RNG&gt; const [value type]&amp;</code> <strong><code>random_choice_from</code></strong><code>(ForwardIterator i, ForwardIterator j, RNG&amp; rng)</code></li>
+<li><code>template &lt;typename ForwardRange, typename RNG&gt; const [value type]&amp;</code> <strong><code>random_choice_from</code></strong><code>(const ForwardRange&amp; list, RNG&amp; rng)</code></li>
+<li><code>template &lt;typename T, typename RNG&gt; const T&amp;</code> <strong><code>random_choice_from</code></strong><code>(std::initializer_list&lt;T&gt; list, RNG&amp; rng)</code></li>
+</ul>
+<p>Selects an element at random from the input list. The <code>random_choice_from()</code>
+functions are shortcuts that can be used to avoid the overhead of copying the
+list in one-time calls.</p>
+</div>
 <div class="defns">
 <ul>
 <li><code>template &lt;typename T, typename F = double&gt; class</code> <strong><code>WeightedChoice</code></strong><ul>
@@ -693,8 +624,8 @@ an arithmetic type; it can be an integer or floating point type. The default
 constructor creates an empty list; the other constructors copy a list of
 <code>(value,frequency)</code> pairs. The <code>add()</code> and <code>append()</code> functions can be used to
 add <code>(value,frequency)</code> pairs, one at a time or in bulk. Entries with a
-frequency less than or equal to zero are ignored. The function call operator
-will return a default constructed <code>T</code> if the list is empty.</p>
+frequency less than or equal to zero are ignored. Behaviour is undefined if
+the function call operator is called on an empty set.</p>
 </div>
 <h2 id="other-random-algorithms">Other random algorithms</h2>
 <div class="defns">

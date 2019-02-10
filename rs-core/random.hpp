@@ -462,13 +462,47 @@ namespace RS {
         template <typename RNG> T operator()(RNG& rng) const { return general_random_integer(rng, min_, max_); }
         T min() const noexcept { return min_; }
         T max() const noexcept { return max_; }
+        Rational<T> mean() const noexcept { return {max_ + min_, 2}; }
+        Rational<T> variance() const noexcept { T range = max_ - min_ + 1; return {range * range - 1, 12}; }
+        double sd() const noexcept { return std::sqrt(double(variance())); }
+        double pdf(T x) const noexcept;
+        double cdf(T x) const noexcept;
+        double ccdf(T x) const noexcept;
     private:
         T min_ = T(0);
         T max_ = T(0);
     };
 
-    template <typename T> RandomInteger<T> random_integer(T t) { if (t <= T(1)) return {}; else return {T(0), t - T(1)}; }
-    template <typename T> RandomInteger<T> random_integer(T a, T b) { return {a, b}; }
+        template <typename T>
+        double RandomInteger<T>::pdf(T x) const noexcept {
+            if (x >= min_ && x <= max_)
+                return 1.0 / double(max_ - min_ + 1);
+            else
+                return 0;
+        }
+
+        template <typename T>
+        double RandomInteger<T>::cdf(T x) const noexcept {
+            if (x < min_)
+                return 0;
+            else if (x < max_)
+                return double(x - min_ + 1) / double(max_ - min_ + 1);
+            else
+                return 1;
+        }
+
+        template <typename T>
+        double RandomInteger<T>::ccdf(T x) const noexcept {
+            if (x <= min_)
+                return 1;
+            else if (x <= max_)
+                return double(max_ - x + 1) / double(max_ - min_ + 1);
+            else
+                return 0;
+        }
+
+        template <typename T> RandomInteger<T> random_integer(T t) { if (t <= T(1)) return {}; else return {T(0), t - T(1)}; }
+        template <typename T> RandomInteger<T> random_integer(T a, T b) { return {a, b}; }
 
     class RandomBoolean {
     public:
@@ -514,13 +548,53 @@ namespace RS {
         }
         Rational<T> prob() const noexcept { return prob_; }
         T number() const noexcept { return num_; }
+        T min() const noexcept { return 0; }
+        T max() const noexcept { return num_; }
+        Rational<T> mean() const noexcept { return prob_ * num_; }
+        Rational<T> variance() const noexcept { return num_ * prob_ * (1 - prob_); }
+        double sd() const noexcept { return std::sqrt(double(variance())); }
+        double pdf(T x) const noexcept;
+        double cdf(T x) const noexcept;
+        double ccdf(T x) const noexcept;
     private:
         Rational<T> prob_;
         T num_ = 0;
         RandomInteger<T> gen_;
     };
 
-    template <typename T> RandomBinomial<T> random_binomial(const Rational<T>& p, T n) { return {p, n}; }
+        template <typename T>
+        double RandomBinomial<T>::pdf(T x) const noexcept {
+            if (x >= 0 && x <= num_)
+                return xbinomial(num_, x) * std::pow(double(prob_), double(x)) * std::pow(1 - double(prob_), double(num_ - x));
+            else
+                return 0;
+        }
+
+        template <typename T>
+        double RandomBinomial<T>::cdf(T x) const noexcept {
+            if (x < 0)
+                return 0;
+            else if (x >= num_)
+                return 1;
+            double c = 0;
+            for (int y = 0; y <= x; ++y)
+                c += pdf(y);
+            return c;
+        }
+
+        template <typename T>
+        double RandomBinomial<T>::ccdf(T x) const noexcept {
+            if (x <= 0)
+                return 1;
+            else if (x > num_)
+                return 0;
+            double c = 0;
+            for (int y = num_; y >= x; --y)
+                c += pdf(y);
+            return c;
+        }
+
+        template <typename T> RandomBinomial<T> random_binomial(const Rational<T>& p, T n) { return {p, n}; }
 
     template <typename T>
     class RandomDice {
@@ -540,12 +614,42 @@ namespace RS {
         }
         T number() const noexcept { return num_; }
         T faces() const noexcept { return faces_; }
+        T min() const noexcept { return num_; }
+        T max() const noexcept { return num_ * faces_; }
+        Rational<T> mean() const noexcept { return {num_ * (faces_ + 1), 2}; }
+        Rational<T> variance() const noexcept { return {num_ * (faces_ * faces_ - 1), 12}; }
+        double sd() const noexcept { return std::sqrt(double(variance())); }
+        double pdf(T x) const noexcept;
+        double cdf(T x) const noexcept { return ccdf(num_ * (faces_ + 1) - x); }
+        double ccdf(T x) const noexcept;
     private:
         T num_ = T(1);
         T faces_ = T(6);
     };
 
-    template <typename T> RandomDice<T> random_dice(T n = 1, T faces = 6) { return {n, faces}; }
+        template <typename T>
+        double RandomDice<T>::pdf(T x) const noexcept {
+            if (x < num_ || x > max())
+                return 0;
+            double s = 1, t = 0;
+            for (T i = 0, j = x - 1; i < num_; ++i, j -= faces_, s = - s)
+                t += s * xbinomial(j, num_ - 1) * xbinomial(num_, i);
+            return t * std::pow(double(faces_), - double(num_));
+        }
+
+        template <typename T>
+        double RandomDice<T>::ccdf(T x) const noexcept {
+            if (x <= num_)
+                return 1;
+            if (x > max())
+                return 0;
+            double s = 1, t = 0;
+            for (T i = 0, j = num_ * (faces_ + 1) - x; i < num_; ++i, j -= faces_, s = - s)
+                t += s * xbinomial(j, num_) * xbinomial(num_, i);
+            return t * std::pow(double(faces_), - double(num_));
+        }
+
+        template <typename T> RandomDice<T> random_dice(T n = 1, T faces = 6) { return {n, faces}; }
 
     template <typename T>
     class RandomTriangleInteger {
@@ -574,7 +678,7 @@ namespace RS {
         RandomInteger<T> gen_;
     };
 
-    template <typename T> RandomTriangleInteger<T> random_triangle_integer(T hi, T lo) { return {hi, lo}; }
+        template <typename T> RandomTriangleInteger<T> random_triangle_integer(T hi, T lo) { return {hi, lo}; }
 
     template <typename T>
     class RandomReal {
@@ -583,19 +687,54 @@ namespace RS {
         using result_type = T;
         RandomReal() = default;
         RandomReal(T a, T b) noexcept: min_(a), max_(b) { if (min_ > max_) std::swap(min_, max_); }
-        template <typename RNG> T operator()(RNG& rng) const {
-            return min_ + (max_ - min_) * (T(rng() - rng.min()) / (T(rng.max() - rng.min()) + 1));
-        }
+        template <typename RNG> T operator()(RNG& rng) const
+            { return min_ + (max_ - min_) * (T(rng() - rng.min()) / (T(rng.max() - rng.min()) + 1)); }
         T min() const noexcept { return min_; }
         T max() const noexcept { return max_; }
+        T mean() const noexcept { return (min_ + max_) / 2; }
+        T variance() const noexcept { T range = max_ - min_; return range * range / 12; }
+        T sd() const noexcept { static const T isr12 = 1 / std::sqrt(T(12)); return isr12 * (max_ - min_); }
+        T pdf(T x) const noexcept;
+        T cdf(T x) const noexcept;
+        T ccdf(T x) const noexcept;
+        T quantile(T p) const noexcept { return min_ + p * (max_ - min_); }
+        T cquantile(T q) const noexcept { return max_ - q * (max_ - min_); }
     private:
         T min_ = 0;
         T max_ = 1;
     };
 
-    template <typename T> RandomReal<T> random_real() { return {}; }
-    template <typename T> RandomReal<T> random_real(T t) { return {0, t}; }
-    template <typename T> RandomReal<T> random_real(T a, T b) { return {a, b}; }
+        template <typename T>
+        T RandomReal<T>::pdf(T x) const noexcept {
+            if (x > min_ && x < max_)
+                return 1 / (max_ - min_);
+            else
+                return 0;
+        }
+
+        template <typename T>
+        T RandomReal<T>::cdf(T x) const noexcept {
+            if (x <= min_)
+                return 0;
+            else if (x < max_)
+                return (x - min_) / (max_ - min_);
+            else
+                return 1;
+        }
+
+        template <typename T>
+        T RandomReal<T>::ccdf(T x) const noexcept {
+            if (x <= min_)
+                return 1;
+            else if (x < max_)
+                return (max_ - x) / (max_ - min_);
+            else
+                return 0;
+        }
+
+        template <typename T> RandomReal<T> random_real() { return {}; }
+        template <typename T> RandomReal<T> random_real(T t) { return {0, t}; }
+        template <typename T> RandomReal<T> random_real(T a, T b) { return {a, b}; }
 
     template <typename T>
     class RandomNormal {
@@ -613,13 +752,73 @@ namespace RS {
         }
         T mean() const noexcept { return mean_; }
         T sd() const noexcept { return sd_; }
+        T variance() const noexcept { return sd_ * sd_; }
+        T pdf(T x) const noexcept { return pdf_z((x - mean_) / sd_); }
+        T cdf(T x) const noexcept { return cdf_z((x - mean_) / sd_); }
+        T ccdf(T x) const noexcept { return cdf_z((mean_ - x) / sd_); }
+        T quantile(T p) const noexcept;
+        T cquantile(T q) const noexcept;
     private:
         T mean_ = 0;
         T sd_ = 1;
+        T pdf_z(T z) const noexcept { return inv_sqrt2_c<T> * inv_sqrtpi_c<T> * std::exp(- z * z / 2); }
+        T cdf_z(T z) const noexcept { return (std::erf(inv_sqrt2_c<T> * z) + 1) / 2; }
+        T cq_z(T q) const noexcept;
     };
 
-    template <typename T> RandomNormal<T> random_normal() { return {}; }
-    template <typename T> RandomNormal<T> random_normal(T mean, T sd) { return {mean, sd}; }
+        template <typename T>
+        T RandomNormal<T>::quantile(T p) const noexcept {
+            if (p < T(0.5))
+                return mean_ - sd_ * cq_z(p);
+            else if (p == T(0.5))
+                return mean_;
+            else
+                return mean_ + sd_ * cq_z(1 - p);
+        }
+
+        template <typename T>
+        T RandomNormal<T>::cquantile(T q) const noexcept {
+            if (q < T(0.5))
+                return mean_ + sd_ * cq_z(q);
+            else if (q == T(0.5))
+                return mean_;
+            else
+                return mean_ - sd_ * cq_z(1 - q);
+        }
+
+        template <typename T>
+        T RandomNormal<T>::cq_z(T q) const noexcept {
+            // Beasley-Springer approximation
+            // For |z|<3.75, absolute error <1e-6, relative error <2.5e-7
+            // For |z|<7.5, absolute error <5e-4, relative error <5e-5
+            // This will always be called with 0<q<1/2
+            static constexpr T threshold = T(0.08);
+            static constexpr T a1 = T(2.321213);
+            static constexpr T a2 = T(4.850141);
+            static constexpr T a3 = T(-2.297965);
+            static constexpr T a4 = T(-2.787189);
+            static constexpr T b1 = T(1.637068);
+            static constexpr T b2 = T(3.543889);
+            static constexpr T c1 = T(-25.44106);
+            static constexpr T c2 = T(41.3912);
+            static constexpr T c3 = T(-18.615);
+            static constexpr T c4 = T(2.506628);
+            static constexpr T d1 = T(3.130829);
+            static constexpr T d2 = T(-21.06224);
+            static constexpr T d3 = T(23.08337);
+            static constexpr T d4 = T(-8.473511);
+            if (q < threshold) {
+                T r = sqrt(- log(q));
+                return (((a1 * r + a2) * r + a3) * r + a4) / ((b1 * r + b2) * r + 1);
+            } else {
+                T q1 = T(0.5) - q;
+                T r = q1 * q1;
+                return q1 * (((c1 * r + c2) * r + c3) * r + c4) / ((((d1 * r + d2) * r + d3) * r + d4) * r + 1);
+            }
+        }
+
+        template <typename T> RandomNormal<T> random_normal() { return {}; }
+        template <typename T> RandomNormal<T> random_normal(T mean, T sd) { return {mean, sd}; }
 
     template <typename T>
     class RandomDiscreteNormal {
@@ -640,175 +839,34 @@ namespace RS {
         Rational<T> offset_;
     };
 
-    template <typename T>
-    RandomDiscreteNormal<T>::RandomDiscreteNormal(const Rational<T>& mean, const Rational<T>& sd) {
-        static constexpr int sqrt_n = 3;
-        static const Rational<T> k = 100;
-        static const Rational<T> sqrt_12 = {97,28};
-        mean_ = mean;
-        sd_ = sd.abs();
-        T max = (k * sqrt_12 * sd_).round();
-        gen_ = {0, max};
-        num_ = sqrt_n * sqrt_n;
-        scale_ = 1 / (k * sqrt_n);
-        offset_ = mean_ - scale_ * num_ * max / 2;
-    }
-
-    template <typename T>
-    template <typename RNG>
-    T RandomDiscreteNormal<T>::operator()(RNG& rng) const {
-        T sum = 0;
-        for (int i = 0; i < num_; ++i)
-            sum += gen_(rng);
-        auto r = scale_ * sum + offset_;
-        return r.round();
-    }
-
-    template <typename T> RandomDiscreteNormal<T> random_discrete_normal(const Rational<T>& mean, const Rational<T>& sd) { return {mean,sd}; }
-
-    template <typename T>
-    class RandomChoice {
-    public:
-        using result_type = T;
-        RandomChoice() = default;
-        template <typename InputIterator> RandomChoice(InputIterator i, InputIterator j): list_(i, j) {}
-        template <typename InputRange> explicit RandomChoice(const InputRange& list) {
-            using std::begin;
-            using std::end;
-            list_.assign(begin(list), end(list));
+        template <typename T>
+        RandomDiscreteNormal<T>::RandomDiscreteNormal(const Rational<T>& mean, const Rational<T>& sd) {
+            static constexpr int sqrt_n = 3;
+            static const Rational<T> k = 100;
+            static const Rational<T> sqrt_12 = {97,28};
+            mean_ = mean;
+            sd_ = sd.abs();
+            T max = (k * sqrt_12 * sd_).round();
+            gen_ = {0, max};
+            num_ = sqrt_n * sqrt_n;
+            scale_ = 1 / (k * sqrt_n);
+            offset_ = mean_ - scale_ * num_ * max / 2;
         }
-        RandomChoice(std::initializer_list<T> list): list_(list) {}
-        template <typename RNG> const T& operator()(RNG& rng) { return list_[random_integer(list_.size())(rng)]; }
-        bool empty() const noexcept { return list_.empty(); }
-        size_t size() const noexcept { return list_.size(); }
-    private:
-        std::vector<T> list_;
-    };
 
-    template <typename InputIterator> RandomChoice<Meta::IteratorValue<InputIterator>> random_choice(InputIterator i, InputIterator j) {
-        using RC = RandomChoice<Meta::IteratorValue<InputIterator>>;
-        return RC(i, j);
-    }
+        template <typename T>
+        template <typename RNG>
+        T RandomDiscreteNormal<T>::operator()(RNG& rng) const {
+            T sum = 0;
+            for (int i = 0; i < num_; ++i)
+                sum += gen_(rng);
+            auto r = scale_ * sum + offset_;
+            return r.round();
+        }
 
-    template <typename InputRange> RandomChoice<Meta::RangeValue<InputRange>> random_choice(const InputRange& list) {
-        using RC = RandomChoice<Meta::RangeValue<InputRange>>;
-        return RC(list);
-    }
-
-    template <typename T> RandomChoice<T> random_choice(std::initializer_list<T> list) {
-        using RC = RandomChoice<T>;
-        return RC(list);
-    }
-
-    template <typename ForwardIterator, typename RNG> const auto& random_choice_from(ForwardIterator i, ForwardIterator j, RNG& rng) {
-        auto n = std::distance(i, j);
-        auto x = random_integer(n)(rng);
-        std::advance(i, x);
-        return *i;
-    }
-
-    template <typename ForwardRange, typename RNG> const auto& random_choice_from(const ForwardRange& list, RNG& rng) {
-        using std::begin;
-        using std::end;
-        return random_choice_from(begin(list), end(list), rng);
-    }
-
-    template <typename T, typename RNG> const T& random_choice_from(std::initializer_list<T> list, RNG& rng) {
-        return list.begin()[random_integer(list.size())(rng)];
-    }
-
-    // Random distribution properties
-
-    class UniformIntegerProperties {
-    public:
-        explicit UniformIntegerProperties(int n) noexcept: UniformIntegerProperties(0, std::max(n, 1) - 1) {}
-        explicit UniformIntegerProperties(int a, int b) noexcept: lo(std::min(a, b)), hi(std::max(a, b)) {}
-        int min() const noexcept { return lo; }
-        int max() const noexcept { return hi; }
-        double mean() const noexcept { return (double(lo) + double(hi)) / 2; }
-        double sd() const noexcept { return sqrt(variance()); }
-        double variance() const noexcept { double r = hi - lo + 1; return (r * r - 1) / 12; }
-        double pdf(int x) const noexcept;
-        double cdf(int x) const noexcept;
-        double ccdf(int x) const noexcept;
-    private:
-        int lo, hi;
-    };
-
-    class BinomialDistributionProperties {
-    public:
-        BinomialDistributionProperties(int t, double p) noexcept: tests(t), prob(p) {}
-        int t() const noexcept { return tests; }
-        double p() const noexcept { return prob; }
-        int min() const noexcept { return 0; }
-        int max() const noexcept { return tests; }
-        double mean() const noexcept { return t() * p(); }
-        double sd() const noexcept { return sqrt(variance()); }
-        double variance() const noexcept { return t() * p() * (1 - p()); }
-        double pdf(int x) const noexcept;
-        double cdf(int x) const noexcept;
-        double ccdf(int x) const noexcept;
-    private:
-        int tests;
-        double prob;
-    };
-
-    class DiceProperties {
-    public:
-        DiceProperties() = default;
-        explicit DiceProperties(int number, int faces = 6) noexcept: num(number), fac(faces) {}
-        int number() const noexcept { return num; }
-        int faces() const noexcept { return fac; }
-        int min() const noexcept { return num; }
-        int max() const noexcept { return num * fac; }
-        double mean() const noexcept { return num * (double(fac) + 1) / 2; }
-        double sd() const noexcept { return sqrt(variance()); }
-        double variance() const noexcept { double f = fac; return num * (f * f - 1) / 12; }
-        double pdf(int x) const noexcept;
-        double cdf(int x) const noexcept { return ccdf(num * (fac + 1) - x); }
-        double ccdf(int x) const noexcept;
-    private:
-        int num = 1, fac = 6;
-    };
-
-    class UniformRealProperties {
-    public:
-        UniformRealProperties() = default;
-        explicit UniformRealProperties(double a, double b = 0) noexcept: lo(std::min(a, b)), hi(std::max(a, b)) {}
-        double min() const noexcept { return lo; }
-        double max() const noexcept { return hi; }
-        double mean() const noexcept { return (lo + hi) / 2; }
-        double sd() const noexcept;
-        double variance() const noexcept { double r = hi - lo; return r * r / 12; }
-        double pdf(double x) const noexcept;
-        double cdf(double x) const noexcept;
-        double ccdf(double x) const noexcept;
-        double quantile(double p) const noexcept { return lo + p * (hi - lo); }
-        double cquantile(double q) const noexcept { return hi - q * (hi - lo); }
-    private:
-        double lo = 0, hi = 1;
-    };
-
-    class NormalDistributionProperties {
-    public:
-        NormalDistributionProperties() = default;
-        explicit NormalDistributionProperties(double m, double s) noexcept: xm(m), xs(std::abs(s)) {}
-        double min() const noexcept { return {}; }
-        double max() const noexcept { return {}; }
-        double mean() const noexcept { return xm; }
-        double sd() const noexcept { return xs; }
-        double variance() const noexcept { return xs * xs; }
-        double pdf(double x) const noexcept { return pdf_z((x - xm) / xs); }
-        double cdf(double x) const noexcept { return cdf_z((x - xm) / xs); }
-        double ccdf(double x) const noexcept { return cdf_z((xm - x) / xs); }
-        double quantile(double p) const noexcept;
-        double cquantile(double q) const noexcept;
-    private:
-        double xm = 0, xs = 1;
-        double pdf_z(double z) const noexcept;
-        double cdf_z(double z) const noexcept;
-        double cquantile_z(double q) const noexcept;
-    };
+        template <typename T>
+        RandomDiscreteNormal<T> random_discrete_normal(const Rational<T>& mean, const Rational<T>& sd) {
+            return {mean,sd};
+        }
 
     // Random samples
 
@@ -997,24 +1055,58 @@ namespace RS {
 
     template <typename T> inline UniqueDistribution<T> unique_distribution(T& t) { return UniqueDistribution<T>(t); }
 
-    // Weighted choice distribution
+    // Random choice distributions
 
-    namespace RS_Detail {
+    template <typename T>
+    class RandomChoice {
+    public:
+        using result_type = T;
+        RandomChoice() = default;
+        template <typename InputIterator> RandomChoice(InputIterator i, InputIterator j): list_(i, j) {}
+        template <typename InputRange> explicit RandomChoice(const InputRange& list) {
+            using std::begin;
+            using std::end;
+            list_.assign(begin(list), end(list));
+        }
+        RandomChoice(std::initializer_list<T> list): list_(list) {}
+        template <typename RNG> const T& operator()(RNG& rng) const { return list_[random_integer(list_.size())(rng)]; }
+        bool empty() const noexcept { return list_.empty(); }
+        size_t size() const noexcept { return list_.size(); }
+    private:
+        std::vector<T> list_;
+    };
 
-        template <typename F, bool Int = std::is_integral<F>::value>
-        struct WeightRange;
+        template <typename InputIterator> RandomChoice<Meta::IteratorValue<InputIterator>> random_choice(InputIterator i, InputIterator j) {
+            using RC = RandomChoice<Meta::IteratorValue<InputIterator>>;
+            return RC(i, j);
+        }
 
-        template <typename F>
-        struct WeightRange<F, true> {
-            template <typename RNG> F operator()(RNG& rng, F range) const { return random_integer(range)(rng); }
-        };
+        template <typename InputRange> RandomChoice<Meta::RangeValue<InputRange>> random_choice(const InputRange& list) {
+            using RC = RandomChoice<Meta::RangeValue<InputRange>>;
+            return RC(list);
+        }
 
-        template <typename F>
-        struct WeightRange<F, false> {
-            template <typename RNG> F operator()(RNG& rng, F range) const { return random_real(range)(rng); }
-        };
+        template <typename T> RandomChoice<T> random_choice(std::initializer_list<T> list) {
+            using RC = RandomChoice<T>;
+            return RC(list);
+        }
 
-    }
+        template <typename ForwardIterator, typename RNG> const auto& random_choice_from(ForwardIterator i, ForwardIterator j, RNG& rng) {
+            auto n = std::distance(i, j);
+            auto x = random_integer(n)(rng);
+            std::advance(i, x);
+            return *i;
+        }
+
+        template <typename ForwardRange, typename RNG> const auto& random_choice_from(const ForwardRange& list, RNG& rng) {
+            using std::begin;
+            using std::end;
+            return random_choice_from(begin(list), end(list), rng);
+        }
+
+        template <typename T, typename RNG> const T& random_choice_from(std::initializer_list<T> list, RNG& rng) {
+            return list.begin()[random_integer(list.size())(rng)];
+        }
 
     template <typename T, typename F = double>
     class WeightedChoice {
@@ -1031,9 +1123,8 @@ namespace RS {
         bool empty() const noexcept { return total() <= F(0); }
     private:
         static_assert(std::is_arithmetic<F>::value);
-        using weight_range = RS_Detail::WeightRange<F>;
         std::map<F, T> table;
-        F total() const { return table.empty() ? F() : std::prev(table.end())->first; }
+        F total() const { return std::prev(table.end())->first; }
     };
 
         template <typename T, typename F>
@@ -1041,8 +1132,12 @@ namespace RS {
         T WeightedChoice<T, F>::operator()(RNG& rng) const {
             if (empty())
                 return T();
+            F x;
+            if constexpr (std::is_integral_v<F>)
+                x = random_integer(total())(rng);
             else
-                return table.upper_bound(weight_range()(rng, total()))->second;
+                x = random_real(total())(rng);
+            return table.upper_bound(x)->second;
         }
 
         template <typename T, typename F>

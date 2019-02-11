@@ -247,6 +247,8 @@ extern void test_core_random_xoshiro256ss();
 extern void test_core_random_basic_distributions();
 extern void test_core_random_discrete_normal_distribution();
 extern void test_core_random_triangular_distribution();
+extern void test_core_random_poisson_distribution();
+extern void test_core_random_beta_distribution();
 extern void test_core_random_sample();
 extern void test_core_random_uniform_integer_distribution_properties();
 extern void test_core_random_binomial_distribution_properties();
@@ -657,6 +659,8 @@ int main() {
         { "core/random/basic-distributions", test_core_random_basic_distributions },
         { "core/random/discrete-normal-distribution", test_core_random_discrete_normal_distribution },
         { "core/random/triangular-distribution", test_core_random_triangular_distribution },
+        { "core/random/poisson-distribution", test_core_random_poisson_distribution },
+        { "core/random/beta-distribution", test_core_random_beta_distribution },
         { "core/random/sample", test_core_random_sample },
         { "core/random/uniform-integer-distribution-properties", test_core_random_uniform_integer_distribution_properties },
         { "core/random/binomial-distribution-properties", test_core_random_binomial_distribution_properties },

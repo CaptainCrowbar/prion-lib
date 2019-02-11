@@ -868,6 +868,192 @@ namespace RS {
             return {mean,sd};
         }
 
+    template <typename T, typename S = double>
+    class RandomPoisson {
+    public:
+        static_assert(std::is_integral_v<T>);
+        static_assert(std::is_floating_point_v<S>);
+        using result_type = T;
+        using scalar_type = S;
+        RandomPoisson(): RandomPoisson(1) {}
+        explicit RandomPoisson(S lambda) noexcept: lambda_(lambda), log_lambda_(std::log(lambda)) {}
+        template <typename RNG> T operator()(RNG& rng) const;
+        S lambda() const noexcept { return lambda_; }
+        S mean() const noexcept { return lambda_; }
+        S variance() const noexcept { return lambda_; }
+        S sd() const noexcept { return std::sqrt(lambda_); }
+        S pdf(T x) const noexcept { return std::exp(S(x) * log_lambda_ - lambda_ - std::lgamma(S(x + 1))); }
+        S cdf(T x) const noexcept { return x <= lambda_ + 5 ? make_cdf(x) : 1 - make_ccdf(x + 1); }
+        S ccdf(T x) const noexcept { return x <= lambda_ + 5 ? 1 - make_cdf(x - 1) : make_ccdf(x); }
+    private:
+        S lambda_;
+        S log_lambda_;
+        S make_cdf(T x) const noexcept;
+        S make_ccdf(T x) const noexcept;
+    };
+
+        template <typename T, typename S>
+        template <typename RNG>
+        T RandomPoisson<T, S>::operator()(RNG& rng) const {
+            // https://www.johndcook.com/blog/2010/06/14/generating-poisson-random-values/
+            if (lambda_ <= 30) {
+                // Knuth algorithm
+                RandomReal<S> unit;
+                S L = std::exp(- lambda_);
+                T k = 0;
+                S p = 1;
+                do {
+                    ++k;
+                    S u = unit(rng);
+                    p *= u;
+                } while (p > L);
+                return k - 1;
+            } else {
+                // Atkinson algorithm
+                RandomReal<S> unit;
+                S c = S(0.767) - S(3.36) / lambda_;
+                S beta = pi_c<S> / std::sqrt(3 * lambda_);
+                S alpha = beta * lambda_;
+                S k = std::log(c) - lambda_ - std::log(beta);
+                for (;;) {
+                    S u = unit(rng);
+                    S x = (alpha - std::log((1 - u) / u)) / beta;
+                    T n = T(std::floor(x + S(0.5)));
+                    if (n < 0)
+                        continue;
+                    S v = unit(rng);
+                    S y = alpha - beta * x;
+                    S z = 1 + std::exp(y);
+                    S lhs = y + std::log(v / (z * z));
+                    S rhs = S(k) + S(n) * log_lambda_ - std::lgamma(S(n) + 1);
+                    if (lhs <= rhs)
+                        return n;
+                }
+            }
+        }
+
+        template <typename T, typename S>
+        S RandomPoisson<T, S>::make_cdf(T x) const noexcept {
+            if (x < 0)
+                return 0;
+            S s = 0;
+            for (T y = 0; y <= x; ++y)
+                s += pdf(y);
+            return s;
+        }
+
+        template <typename T, typename S>
+        S RandomPoisson<T, S>::make_ccdf(T x) const noexcept {
+            if (x <= 0)
+                return 1;
+            S s = 0;
+            T y = x;
+            for (;;) {
+                S t = s + pdf(y);
+                if (t == s)
+                    return s;
+                s = t;
+                ++y;
+            }
+        }
+
+    template <typename T>
+    class RandomBeta {
+    public:
+        static_assert(std::is_floating_point_v<T>);
+        using result_type = T;
+        RandomBeta() noexcept: RandomBeta(1, 1) {}
+        RandomBeta(T a, T b) noexcept;
+        template <typename RNG> T operator()(RNG& rng) const;
+        T alpha() const noexcept { return alpha_; }
+        T beta() const noexcept { return beta_; }
+        T mean() const noexcept { return alpha_ / (alpha_ + beta_); }
+        T variance() const noexcept { T sum = alpha_ + beta_; return alpha_ * beta_ / (sum * sum * (sum + 1)); }
+        T sd() const noexcept { return std::sqrt(variance()); }
+        T pdf(T x) const noexcept;
+        T cdf(T x) const noexcept;
+        T ccdf(T x) const noexcept { return 1 - cdf(x); }
+        T quantile(T p) const noexcept;
+        T cquantile(T q) const noexcept { return quantile(1 - q); }
+    private:
+        using limits = std::numeric_limits<T>;
+        T alpha_;
+        T beta_;
+        T log_a_;
+        T log_b_;
+        T log_cbeta_ab_;
+        T ri_beta(T x, T a, T b, T log_a) const noexcept;
+        static constexpr T r0(int k, T a, T b) noexcept { return k * (b - k) / ((a + 2 * k - 1) * (a + 2 * k)); };
+        static constexpr T r1(int k, T a, T b) noexcept { return - (a + k) * (a + b + k) / ((a + 2 * k) * (a + 2 * k + 1)); };
+    };
+
+        template <typename T>
+        RandomBeta<T>::RandomBeta(T a, T b) noexcept:
+        alpha_(a), beta_(b), log_a_(std::log(a)), log_b_(std::log(b)),
+        log_cbeta_ab_(std::lgamma(a) + std::lgamma(b) - std::lgamma(a + b)) {}
+
+        template <typename T>
+        template <typename RNG>
+        T RandomBeta<T>::operator()(RNG& rng) const {
+            RandomReal<T> unit;
+            for (;;) {
+                T x = std::pow(unit(rng), 1 / alpha_);
+                T y = std::pow(unit(rng), 1 / beta_);
+                if (x + y <= 1)
+                    return x / (x + y);
+            }
+        }
+
+        template <typename T>
+        T RandomBeta<T>::pdf(T x) const noexcept {
+            if (x == 0) {
+                if (alpha_ < 1)                      return limits::infinity();
+                else if (alpha_ == 1 && beta_ == 1)  return 1;
+                else if (alpha_ == 1 && beta_ > 1)   return beta_;
+                else                                 return 0;
+            } else if (x == 1) {
+                if (beta_ < 1)                       return limits::infinity();
+                else if (alpha_ == 1 && beta_ == 1)  return 1;
+                else if (alpha_ > 1 && beta_ == 1)   return alpha_;
+                else                                 return 0;
+            } else {
+                return std::exp((alpha_ - 1) * std::log(x) + (beta_ - 1) * std::log(1 - x) - log_cbeta_ab_);
+            }
+        }
+
+        template <typename T>
+        T RandomBeta<T>::cdf(T x) const noexcept {
+            if (x <= T(0.5))
+                return ri_beta(x, alpha_, beta_, log_a_);
+            else
+                return 1 - ri_beta(1 - x, beta_, alpha_, log_b_);
+        }
+
+        template <typename T>
+        T RandomBeta<T>::quantile(T p) const noexcept {
+            if (p <= 0)
+                return 0;
+            else if (p >= 1)
+                return 1;
+            auto f = [this,p] (T t) { return cdf(t) - p; };
+            return Bisection<T>()(f, 0, 1);
+        }
+
+        template <typename T>
+        T RandomBeta<T>::ri_beta(T x, T a, T b, T log_a) const noexcept {
+            if (x <= 0)
+                return 0;
+            else if (x >= 1)
+                return 1;
+            T cf = 1;
+            for (int k = 10; k >= 1; --k) {
+                cf = 1 + x * r1(k, a, b) / cf;
+                cf = 1 + x * r0(k, a, b) / cf;
+            }
+            cf = 1 + x * r1(0, a, b) / cf;
+            return std::exp(a * std::log(x) + b * std::log(1 - x) - std::log(cf) - log_a - log_cbeta_ab_);
+        }
+
     // Random samples
 
     template <typename ForwardRange, typename RNG>

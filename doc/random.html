@@ -477,6 +477,51 @@ zero.</p>
 result of generating a normally distributed real value and then rounding it to
 an integer.</p>
 </div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T, typename S = double&gt; class</code> <strong><code>RandomPoisson</code></strong><ul>
+<li><code>using RandomPoisson::</code><strong><code>result_type</code></strong> <code>= T</code></li>
+<li><code>using RandomPoisson::</code><strong><code>scalar_type</code></strong> <code>= S</code></li>
+<li><code>RandomPoisson::</code><strong><code>RandomPoisson</code></strong><code>()</code></li>
+<li><code>explicit RandomPoisson::</code><strong><code>RandomPoisson</code></strong><code>(S lambda) noexcept</code></li>
+<li><code>template &lt;typename RNG&gt; T RandomPoisson::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
+<li><code>S RandomPoisson::</code><strong><code>lambda</code></strong><code>() const noexcept</code></li>
+<li><code>S RandomPoisson::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
+<li><code>S RandomPoisson::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
+<li><code>S RandomPoisson::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
+<li><code>S RandomPoisson::</code><strong><code>pdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>S RandomPoisson::</code><strong><code>cdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>S RandomPoisson::</code><strong><code>ccdf</code></strong><code>(T x) const noexcept</code></li>
+</ul>
+</li>
+</ul>
+<p>Poisson distribution. <code>T</code> and <code>S</code> must be integer and floating point types
+respectively. The default constructor sets <code>lambda=1</code>. Behaviour is undefined
+if <code>lambda&lt;=0</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>RandomBeta</code></strong><ul>
+<li><code>using RandomBeta::</code><strong><code>result_type</code></strong> <code>= T</code></li>
+<li><code>RandomBeta::</code><strong><code>RandomBeta</code></strong><code>() noexcept</code></li>
+<li><code>RandomBeta::</code><strong><code>RandomBeta</code></strong><code>(T a, T b) noexcept</code></li>
+<li><code>template &lt;typename RNG&gt; T RandomBeta::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
+<li><code>T RandomBeta::</code><strong><code>alpha</code></strong><code>() const noexcept</code></li>
+<li><code>T RandomBeta::</code><strong><code>beta</code></strong><code>() const noexcept</code></li>
+<li><code>T RandomBeta::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
+<li><code>T RandomBeta::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
+<li><code>T RandomBeta::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
+<li><code>T RandomBeta::</code><strong><code>pdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>T RandomBeta::</code><strong><code>cdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>T RandomBeta::</code><strong><code>ccdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>T RandomBeta::</code><strong><code>quantile</code></strong><code>(T p) const noexcept</code></li>
+<li><code>T RandomBeta::</code><strong><code>cquantile</code></strong><code>(T q) const noexcept</code></li>
+</ul>
+</li>
+</ul>
+<p>Beta distribution. The default constructor sets <code>a=b=1</code>, which produces a
+uniform distribution. Behaviour is undefined if <code>a&lt;=0</code> or <code>b&lt;=0</code>.</p>
+</div>
 <h3 id="random-samples">Random samples</h3>
 <div class="defns">
 <ul>

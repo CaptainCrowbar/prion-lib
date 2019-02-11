@@ -332,6 +332,43 @@ Generates an integer that follows a good deterministic approximation to the
 result of generating a normally distributed real value and then rounding it to
 an integer.
 
+* `template <typename T, typename S = double> class` **`RandomPoisson`**
+    * `using RandomPoisson::`**`result_type`** `= T`
+    * `using RandomPoisson::`**`scalar_type`** `= S`
+    * `RandomPoisson::`**`RandomPoisson`**`()`
+    * `explicit RandomPoisson::`**`RandomPoisson`**`(S lambda) noexcept`
+    * `template <typename RNG> T RandomPoisson::`**`operator()`**`(RNG& rng) const`
+    * `S RandomPoisson::`**`lambda`**`() const noexcept`
+    * `S RandomPoisson::`**`mean`**`() const noexcept`
+    * `S RandomPoisson::`**`variance`**`() const noexcept`
+    * `S RandomPoisson::`**`sd`**`() const noexcept`
+    * `S RandomPoisson::`**`pdf`**`(T x) const noexcept`
+    * `S RandomPoisson::`**`cdf`**`(T x) const noexcept`
+    * `S RandomPoisson::`**`ccdf`**`(T x) const noexcept`
+
+Poisson distribution. `T` and `S` must be integer and floating point types
+respectively. The default constructor sets `lambda=1`. Behaviour is undefined
+if `lambda<=0`.
+
+* `template <typename T> class` **`RandomBeta`**
+    * `using RandomBeta::`**`result_type`** `= T`
+    * `RandomBeta::`**`RandomBeta`**`() noexcept`
+    * `RandomBeta::`**`RandomBeta`**`(T a, T b) noexcept`
+    * `template <typename RNG> T RandomBeta::`**`operator()`**`(RNG& rng) const`
+    * `T RandomBeta::`**`alpha`**`() const noexcept`
+    * `T RandomBeta::`**`beta`**`() const noexcept`
+    * `T RandomBeta::`**`mean`**`() const noexcept`
+    * `T RandomBeta::`**`variance`**`() const noexcept`
+    * `T RandomBeta::`**`sd`**`() const noexcept`
+    * `T RandomBeta::`**`pdf`**`(T x) const noexcept`
+    * `T RandomBeta::`**`cdf`**`(T x) const noexcept`
+    * `T RandomBeta::`**`ccdf`**`(T x) const noexcept`
+    * `T RandomBeta::`**`quantile`**`(T p) const noexcept`
+    * `T RandomBeta::`**`cquantile`**`(T q) const noexcept`
+
+Beta distribution. The default constructor sets `a=b=1`, which produces a
+uniform distribution. Behaviour is undefined if `a<=0` or `b<=0`.
+
 ### Random samples ###
 
 * `template <typename ForwardRange, typename RNG> vector<[value type]>` **`random_sample_from`**`(const ForwardRange& range, size_t k, RNG& rng)`

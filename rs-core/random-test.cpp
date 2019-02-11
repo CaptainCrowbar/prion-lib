@@ -675,6 +675,224 @@ void test_core_random_triangular_distribution() {
 
 }
 
+void test_core_random_poisson_distribution() {
+
+    static constexpr int iterations = 1'000'000;
+
+    RandomPoisson<int> poi;
+    Statistics<double> stats;
+    std::mt19937 rng(42);
+    int x = 0;
+
+    TRY(poi = RandomPoisson<int>(4));
+    TEST_EQUAL(poi.lambda(), 4);
+    TEST_EQUAL(poi.mean(), 4);
+    TEST_EQUAL(poi.variance(), 4);
+    TEST_EQUAL(poi.sd(), 2);
+
+    x = 0;   TEST_NEAR(poi.pdf(x), 0.018316);  TEST_NEAR(poi.cdf(x), 0.018316);  TEST_EQUAL(poi.ccdf(x), 1);
+    x = 1;   TEST_NEAR(poi.pdf(x), 0.073263);  TEST_NEAR(poi.cdf(x), 0.091578);  TEST_NEAR(poi.ccdf(x), 0.981684);
+    x = 2;   TEST_NEAR(poi.pdf(x), 0.146525);  TEST_NEAR(poi.cdf(x), 0.238103);  TEST_NEAR(poi.ccdf(x), 0.908422);
+    x = 3;   TEST_NEAR(poi.pdf(x), 0.195367);  TEST_NEAR(poi.cdf(x), 0.433470);  TEST_NEAR(poi.ccdf(x), 0.761897);
+    x = 4;   TEST_NEAR(poi.pdf(x), 0.195367);  TEST_NEAR(poi.cdf(x), 0.628837);  TEST_NEAR(poi.ccdf(x), 0.566530);
+    x = 5;   TEST_NEAR(poi.pdf(x), 0.156293);  TEST_NEAR(poi.cdf(x), 0.785130);  TEST_NEAR(poi.ccdf(x), 0.371163);
+    x = 6;   TEST_NEAR(poi.pdf(x), 0.104196);  TEST_NEAR(poi.cdf(x), 0.889326);  TEST_NEAR(poi.ccdf(x), 0.214870);
+    x = 7;   TEST_NEAR(poi.pdf(x), 0.059540);  TEST_NEAR(poi.cdf(x), 0.948866);  TEST_NEAR(poi.ccdf(x), 0.110674);
+    x = 8;   TEST_NEAR(poi.pdf(x), 0.029770);  TEST_NEAR(poi.cdf(x), 0.978637);  TEST_NEAR(poi.ccdf(x), 0.051134);
+    x = 9;   TEST_NEAR(poi.pdf(x), 0.013231);  TEST_NEAR(poi.cdf(x), 0.991868);  TEST_NEAR(poi.ccdf(x), 0.021363);
+    x = 10;  TEST_NEAR(poi.pdf(x), 0.005292);  TEST_NEAR(poi.cdf(x), 0.997160);  TEST_NEAR(poi.ccdf(x), 0.008132);
+    x = 11;  TEST_NEAR(poi.pdf(x), 0.001925);  TEST_NEAR(poi.cdf(x), 0.999085);  TEST_NEAR(poi.ccdf(x), 0.002840);
+    x = 12;  TEST_NEAR(poi.pdf(x), 0.000642);  TEST_NEAR(poi.cdf(x), 0.999726);  TEST_NEAR(poi.ccdf(x), 0.000915);
+    x = 13;  TEST_NEAR(poi.pdf(x), 0.000197);  TEST_NEAR(poi.cdf(x), 0.999924);  TEST_NEAR(poi.ccdf(x), 0.000274);
+    x = 14;  TEST_NEAR(poi.pdf(x), 0.000056);  TEST_NEAR(poi.cdf(x), 0.999980);  TEST_NEAR(poi.ccdf(x), 0.000076);
+    x = 15;  TEST_NEAR(poi.pdf(x), 0.000015);  TEST_NEAR(poi.cdf(x), 0.999995);  TEST_NEAR(poi.ccdf(x), 0.000020);
+
+    for (int i = 0; i < iterations; ++i) {
+        TRY(x = poi(rng));
+        stats.add(x);
+    }
+
+    TEST_NEAR_EPSILON(stats.mean(), poi.mean(), 0.001);
+    TEST_NEAR_EPSILON(stats.stdevp(), poi.sd(), 0.001);
+
+    TRY(poi = RandomPoisson<int>(100));
+    TEST_EQUAL(poi.lambda(), 100);
+    TEST_EQUAL(poi.mean(), 100);
+    TEST_EQUAL(poi.variance(), 100);
+    TEST_EQUAL(poi.sd(), 10);
+
+    x = 0;    TEST_NEAR(poi.pdf(x), 0.000000);  TEST_NEAR(poi.cdf(x), 0.000000);  TEST_EQUAL(poi.ccdf(x), 1);
+    x = 5;    TEST_NEAR(poi.pdf(x), 0.000000);  TEST_NEAR(poi.cdf(x), 0.000000);  TEST_NEAR(poi.ccdf(x), 1.000000);
+    x = 10;   TEST_NEAR(poi.pdf(x), 0.000000);  TEST_NEAR(poi.cdf(x), 0.000000);  TEST_NEAR(poi.ccdf(x), 1.000000);
+    x = 15;   TEST_NEAR(poi.pdf(x), 0.000000);  TEST_NEAR(poi.cdf(x), 0.000000);  TEST_NEAR(poi.ccdf(x), 1.000000);
+    x = 20;   TEST_NEAR(poi.pdf(x), 0.000000);  TEST_NEAR(poi.cdf(x), 0.000000);  TEST_NEAR(poi.ccdf(x), 1.000000);
+    x = 25;   TEST_NEAR(poi.pdf(x), 0.000000);  TEST_NEAR(poi.cdf(x), 0.000000);  TEST_NEAR(poi.ccdf(x), 1.000000);
+    x = 30;   TEST_NEAR(poi.pdf(x), 0.000000);  TEST_NEAR(poi.cdf(x), 0.000000);  TEST_NEAR(poi.ccdf(x), 1.000000);
+    x = 35;   TEST_NEAR(poi.pdf(x), 0.000000);  TEST_NEAR(poi.cdf(x), 0.000000);  TEST_NEAR(poi.ccdf(x), 1.000000);
+    x = 40;   TEST_NEAR(poi.pdf(x), 0.000000);  TEST_NEAR(poi.cdf(x), 0.000000);  TEST_NEAR(poi.ccdf(x), 1.000000);
+    x = 45;   TEST_NEAR(poi.pdf(x), 0.000000);  TEST_NEAR(poi.cdf(x), 0.000000);  TEST_NEAR(poi.ccdf(x), 1.000000);
+    x = 50;   TEST_NEAR(poi.pdf(x), 0.000000);  TEST_NEAR(poi.cdf(x), 0.000000);  TEST_NEAR(poi.ccdf(x), 1.000000);
+    x = 55;   TEST_NEAR(poi.pdf(x), 0.000000);  TEST_NEAR(poi.cdf(x), 0.000001);  TEST_NEAR(poi.ccdf(x), 1.000000);
+    x = 60;   TEST_NEAR(poi.pdf(x), 0.000004);  TEST_NEAR(poi.cdf(x), 0.000011);  TEST_NEAR(poi.ccdf(x), 0.999994);
+    x = 65;   TEST_NEAR(poi.pdf(x), 0.000045);  TEST_NEAR(poi.cdf(x), 0.000123);  TEST_NEAR(poi.ccdf(x), 0.999922);
+    x = 70;   TEST_NEAR(poi.pdf(x), 0.000311);  TEST_NEAR(poi.cdf(x), 0.000971);  TEST_NEAR(poi.ccdf(x), 0.999339);
+    x = 75;   TEST_NEAR(poi.pdf(x), 0.001499);  TEST_NEAR(poi.cdf(x), 0.005473);  TEST_NEAR(poi.ccdf(x), 0.996027);
+    x = 80;   TEST_NEAR(poi.pdf(x), 0.005198);  TEST_NEAR(poi.cdf(x), 0.022649);  TEST_NEAR(poi.ccdf(x), 0.982549);
+    x = 85;   TEST_NEAR(poi.pdf(x), 0.013205);  TEST_NEAR(poi.cdf(x), 0.070750);  TEST_NEAR(poi.ccdf(x), 0.942455);
+    x = 90;   TEST_NEAR(poi.pdf(x), 0.025039);  TEST_NEAR(poi.cdf(x), 0.171385);  TEST_NEAR(poi.ccdf(x), 0.853654);
+    x = 95;   TEST_NEAR(poi.pdf(x), 0.036012);  TEST_NEAR(poi.cdf(x), 0.331192);  TEST_NEAR(poi.ccdf(x), 0.704821);
+    x = 100;  TEST_NEAR(poi.pdf(x), 0.039861);  TEST_NEAR(poi.cdf(x), 0.526562);  TEST_NEAR(poi.ccdf(x), 0.513299);
+    x = 105;  TEST_NEAR(poi.pdf(x), 0.034401);  TEST_NEAR(poi.cdf(x), 0.712808);  TEST_NEAR(poi.ccdf(x), 0.321593);
+    x = 110;  TEST_NEAR(poi.pdf(x), 0.023423);  TEST_NEAR(poi.cdf(x), 0.852863);  TEST_NEAR(poi.ccdf(x), 0.170560);
+    x = 115;  TEST_NEAR(poi.pdf(x), 0.012718);  TEST_NEAR(poi.cdf(x), 0.936821);  TEST_NEAR(poi.ccdf(x), 0.075897);
+    x = 120;  TEST_NEAR(poi.pdf(x), 0.005561);  TEST_NEAR(poi.cdf(x), 0.977331);  TEST_NEAR(poi.ccdf(x), 0.028230);
+    x = 125;  TEST_NEAR(poi.pdf(x), 0.001976);  TEST_NEAR(poi.cdf(x), 0.993202);  TEST_NEAR(poi.ccdf(x), 0.008774);
+    x = 130;  TEST_NEAR(poi.pdf(x), 0.000575);  TEST_NEAR(poi.cdf(x), 0.998293);  TEST_NEAR(poi.ccdf(x), 0.002282);
+    x = 135;  TEST_NEAR(poi.pdf(x), 0.000138);  TEST_NEAR(poi.cdf(x), 0.999640);  TEST_NEAR(poi.ccdf(x), 0.000498);
+    x = 140;  TEST_NEAR(poi.pdf(x), 0.000028);  TEST_NEAR(poi.cdf(x), 0.999936);  TEST_NEAR(poi.ccdf(x), 0.000092);
+    x = 145;  TEST_NEAR(poi.pdf(x), 0.000005);  TEST_NEAR(poi.cdf(x), 0.999990);  TEST_NEAR(poi.ccdf(x), 0.000014);
+    x = 150;  TEST_NEAR(poi.pdf(x), 0.000001);  TEST_NEAR(poi.cdf(x), 0.999999);  TEST_NEAR(poi.ccdf(x), 0.000002);
+
+    stats.clear();
+
+    for (int i = 0; i < iterations; ++i) {
+        TRY(x = poi(rng));
+        stats.add(x);
+    }
+
+    TEST_NEAR_EPSILON(stats.mean(), poi.mean(), 0.1);
+    TEST_NEAR_EPSILON(stats.stdevp(), poi.sd(), 0.1);
+
+}
+
+void test_core_random_beta_distribution() {
+
+    static constexpr int iterations = 100'000;
+
+    RandomBeta<double> beta;
+    Statistics<double> stats;
+    std::mt19937 rng(42);
+    double x = 0, p = 0;
+
+    TRY(beta = RandomBeta<double>(0.5, 0.5));
+    TEST_EQUAL(beta.alpha(), 0.5);
+    TEST_EQUAL(beta.beta(), 0.5);
+    TEST_EQUAL(beta.mean(), 0.5);
+    TEST_EQUAL(beta.variance(), 0.125);
+    TEST_NEAR(beta.sd(), 0.353553);
+
+    x = 0.0;  /**/                   /**/                     TRY(p = beta.cdf(x));  TEST_EQUAL(p, 0);        TRY(p = beta.ccdf(x));  TEST_EQUAL(p, 1);
+    x = 0.1;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 1.061033);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.204833);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.795167);
+    x = 0.2;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 0.795775);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.295167);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.704833);
+    x = 0.3;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 0.694609);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.369010);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.630990);
+    x = 0.4;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 0.649747);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.435906);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.564094);
+    x = 0.5;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 0.636620);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.500000);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.500000);
+    x = 0.6;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 0.649747);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.564094);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.435906);
+    x = 0.7;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 0.694609);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.630990);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.369010);
+    x = 0.8;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 0.795775);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.704833);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.295167);
+    x = 0.9;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 1.061033);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.795167);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.204833);
+    x = 1.0;  /**/                   /**/                     TRY(p = beta.cdf(x));  TEST_EQUAL(p, 1);        TRY(p = beta.ccdf(x));  TEST_EQUAL(p, 0);
+
+    p = 0.0;  TRY(x = beta.quantile(p));  TEST_EQUAL(x, 0);        TRY(x = beta.cquantile(p));  TEST_EQUAL(x, 1);
+    p = 0.1;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.024472);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.975528);
+    p = 0.2;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.095492);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.904508);
+    p = 0.3;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.206107);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.793893);
+    p = 0.4;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.345492);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.654508);
+    p = 0.5;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.500000);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.500000);
+    p = 0.6;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.654508);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.345492);
+    p = 0.7;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.793893);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.206107);
+    p = 0.8;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.904508);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.095492);
+    p = 0.9;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.975528);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.024472);
+    p = 1.0;  TRY(x = beta.quantile(p));  TEST_EQUAL(x, 1);        TRY(x = beta.cquantile(p));  TEST_EQUAL(x, 0);
+
+    stats.clear();
+    for (int i = 0; i < iterations; ++i) {
+        TRY(x = beta(rng));
+        stats.add(x);
+    }
+    TEST_NEAR_EPSILON(stats.mean(), beta.mean(), 0.005);
+    TEST_NEAR_EPSILON(stats.stdevp(), beta.sd(), 0.005);
+
+    TRY(beta = RandomBeta<double>(1, 3));
+    TEST_EQUAL(beta.alpha(), 1);
+    TEST_EQUAL(beta.beta(), 3);
+    TEST_EQUAL(beta.mean(), 0.25);
+    TEST_EQUAL(beta.variance(), 0.0375);
+    TEST_NEAR(beta.sd(), 0.193649);
+
+    x = 0.0;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 3.000000);  TRY(p = beta.cdf(x));  TEST_EQUAL(p, 0);        TRY(p = beta.ccdf(x));  TEST_EQUAL(p, 1);
+    x = 0.1;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 2.430000);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.271000);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.729000);
+    x = 0.2;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 1.920000);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.488000);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.512000);
+    x = 0.3;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 1.470000);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.657000);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.343000);
+    x = 0.4;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 1.080000);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.784000);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.216000);
+    x = 0.5;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 0.750000);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.875000);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.125000);
+    x = 0.6;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 0.480000);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.936000);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.064000);
+    x = 0.7;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 0.270000);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.973000);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.027000);
+    x = 0.8;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 0.120000);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.992000);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.008000);
+    x = 0.9;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 0.030000);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.999000);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.001000);
+    x = 1.0;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 0.000000);  TRY(p = beta.cdf(x));  TEST_EQUAL(p, 1);        TRY(p = beta.ccdf(x));  TEST_EQUAL(p, 0);
+
+    p = 0.0;  TRY(x = beta.quantile(p));  TEST_EQUAL(x, 0);        TRY(x = beta.cquantile(p));  TEST_EQUAL(x, 1);
+    p = 0.1;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.034511);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.535841);
+    p = 0.2;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.071682);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.415196);
+    p = 0.3;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.112096);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.330567);
+    p = 0.4;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.156567);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.263194);
+    p = 0.5;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.206299);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.206299);
+    p = 0.6;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.263194);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.156567);
+    p = 0.7;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.330567);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.112096);
+    p = 0.8;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.415196);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.071682);
+    p = 0.9;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.535841);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.034511);
+    p = 1.0;  TRY(x = beta.quantile(p));  TEST_EQUAL(x, 1);        TRY(x = beta.cquantile(p));  TEST_EQUAL(x, 0);
+
+    stats.clear();
+    for (int i = 0; i < iterations; ++i) {
+        TRY(x = beta(rng));
+        stats.add(x);
+    }
+    TEST_NEAR_EPSILON(stats.mean(), beta.mean(), 0.005);
+    TEST_NEAR_EPSILON(stats.stdevp(), beta.sd(), 0.005);
+
+    TRY(beta = RandomBeta<double>(2, 5));
+    TEST_EQUAL(beta.alpha(), 2);
+    TEST_EQUAL(beta.beta(), 5);
+    TEST_NEAR(beta.mean(), 0.285714);
+    TEST_NEAR(beta.variance(), 0.025510);
+    TEST_NEAR(beta.sd(), 0.159719);
+
+    x = 0.0;  TRY(p = beta.pdf(x));  TEST_EQUAL(p, 0);        TRY(p = beta.cdf(x));  TEST_EQUAL(p, 0);        TRY(p = beta.ccdf(x));  TEST_EQUAL(p, 1);
+    x = 0.1;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 1.968300);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.114265);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.885735);
+    x = 0.2;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 2.457600);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.344640);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.655360);
+    x = 0.3;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 2.160900);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.579825);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.420175);
+    x = 0.4;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 1.555200);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.766720);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.233280);
+    x = 0.5;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 0.937500);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.890625);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.109375);
+    x = 0.6;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 0.460800);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.959040);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.040960);
+    x = 0.7;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 0.170100);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.989065);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.010935);
+    x = 0.8;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 0.038400);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.998400);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.001600);
+    x = 0.9;  TRY(p = beta.pdf(x));  TEST_NEAR(p, 0.002700);  TRY(p = beta.cdf(x));  TEST_NEAR(p, 0.999945);  TRY(p = beta.ccdf(x));  TEST_NEAR(p, 0.000055);
+    x = 1.0;  TRY(p = beta.pdf(x));  TEST_EQUAL(p, 0);        TRY(p = beta.cdf(x));  TEST_EQUAL(p, 1);        TRY(p = beta.ccdf(x));  TEST_EQUAL(p, 0);
+
+    p = 0.0;  TRY(x = beta.quantile(p));  TEST_EQUAL(x, 0);        TRY(x = beta.cquantile(p));  TEST_EQUAL(x, 1);
+    p = 0.1;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.092595);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.510316);
+    p = 0.2;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.139881);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.422448);
+    p = 0.3;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.181803);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.360358);
+    p = 0.4;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.222584);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.309444);
+    p = 0.5;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.264450);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.264450);
+    p = 0.6;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.309444);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.222584);
+    p = 0.7;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.360358);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.181803);
+    p = 0.8;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.422448);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.139881);
+    p = 0.9;  TRY(x = beta.quantile(p));  TEST_NEAR(x, 0.510316);  TRY(x = beta.cquantile(p));  TEST_NEAR(x, 0.092595);
+    p = 1.0;  TRY(x = beta.quantile(p));  TEST_EQUAL(x, 1);        TRY(x = beta.cquantile(p));  TEST_EQUAL(x, 0);
+
+    stats.clear();
+    for (int i = 0; i < iterations; ++i) {
+        TRY(x = beta(rng));
+        stats.add(x);
+    }
+    TEST_NEAR_EPSILON(stats.mean(), beta.mean(), 0.005);
+    TEST_NEAR_EPSILON(stats.stdevp(), beta.sd(), 0.005);
+
+}
+
 void test_core_random_sample() {
 
     static constexpr size_t pop_size = 100;

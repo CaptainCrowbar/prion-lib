@@ -6,6 +6,8 @@ $(BUILD)/astronomy-test.o: rs-core/astronomy-test.cpp rs-core/astronomy.hpp rs-c
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/astronomy.o: rs-core/astronomy.cpp rs-core/astronomy.hpp rs-core/common.hpp rs-core/float.hpp rs-core/int128.hpp rs-core/meta.hpp rs-core/random.hpp rs-core/range-aggregation.hpp rs-core/range-combination.hpp rs-core/range-core.hpp rs-core/range-expansion.hpp rs-core/range-generation.hpp rs-core/range-permutation.hpp rs-core/range-reduction.hpp rs-core/range-selection.hpp rs-core/range-transformation.hpp rs-core/range.hpp rs-core/rational.hpp rs-core/statistics.hpp rs-core/string.hpp rs-core/vector.hpp \
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/regex.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
+$(BUILD)/auto-array-test.o: rs-core/auto-array-test.cpp rs-core/auto-array.hpp rs-core/common.hpp rs-core/unit-test.hpp \
+    /usr/local/include/unicorn/utility.hpp
 $(BUILD)/blob-test.o: rs-core/blob-test.cpp rs-core/blob.hpp rs-core/common.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/blob.o: rs-core/blob.cpp rs-core/blob.hpp rs-core/common.hpp rs-core/digest.hpp rs-core/meta.hpp rs-core/string.hpp \

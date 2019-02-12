@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Automatically Resized Arrays</title>
+<link type="text/css" rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<h1 id="automatically-resized-arrays">Automatically Resized Arrays</h1>
+<p>By Ross Smith</p>
+<ul>
+<li><code>#include "rs-core/auto-array.hpp"</code></li>
+</ul>
+<h2 id="contents">Contents</h2>
+<div class="toc">
+<ul>
+<li><a href="#automatically-resized-arrays">Automatically Resized Arrays</a><ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#class-arraymap">Class ArrayMap</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="class-arraymap">Class ArrayMap</h2>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>AutoVector</code></strong></li>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>AutoDeque</code></strong></li>
+</ul>
+<p>These classes are vector-like or deque-like containers that automatically
+resize themselves when elements are inserted at a new index. The constructor
+takes a default value, to be used when uninitialized elements are referenced.
+Calling the non-<code>const</code> version of <code>operator[]</code> extends the array, if
+necessary, to make the index valid. The <code>const</code> version of <code>operator[]</code> will
+also work for any index, but it may simply return a reference to the stored
+default value if the index is outside the current bounds.</p>
+<p>The <code>AutoDeque</code> container uses signed indexing, with the zero index remaining
+attached to the original beginning of the array. Elements before this point
+can be created or referenced by calling <code>set()</code>, <code>get()</code>, or <code>operator[]</code> with
+a negative index. The <code>realign()</code> function resets the zero index to the
+current beginning of the array.</p>
+<p>Most operations are common to both classes; these are indicated below by using
+<code>[Class]</code> instead of one of the specific class names.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>class [Class]::</code><strong><code>const_iterator</code></strong></li>
+<li><code>class [Class]::</code><strong><code>iterator</code></strong></li>
+<li><code>using [Class]::</code><strong><code>value_type</code></strong> <code>= T</code></li>
+<li><code>using AutoVector::</code><strong><code>index_type</code></strong> <code>= size_t</code></li>
+<li><code>using AutoDeque::</code><strong><code>index_type</code></strong> <code>= ptrdiff_t</code></li>
+</ul>
+<p>Member types. The iterators have the same properties as those of the
+corresponding standard containers.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>[Class]::</code><strong><code>[Class]</code></strong><code>()</code></li>
+<li><code>explicit [Class]::</code><strong><code>[Class]</code></strong><code>(const T&amp; def)</code></li>
+<li><code>explicit [Class]::</code><strong><code>[Class]</code></strong><code>(size_t n, const T&amp; t, const T&amp; def = T())</code></li>
+<li><code>template &lt;typename InIter&gt; [Class]::</code><strong><code>[Class]</code></strong><code>(InIter i1, InIter i2, const T&amp; def = T())</code></li>
+<li><code>[Class]::</code><strong><code>[Class]</code></strong><code>(std::initializer_list&lt;T&gt; list)</code></li>
+</ul>
+<p>Constructors. These differ from those of the standard containers in having an
+optional default value argument, defaulting to the element type's default
+value. The element type does not have to be default constructible if a default
+value is explicitly supplied.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>[Class]::</code><strong><code>~[Class]</code></strong><code>()</code></li>
+<li><code>[Class]::</code><strong><code>[Class]</code></strong><code>(const [Class]&amp; c)</code></li>
+<li><code>[Class]::</code><strong><code>[Class]</code></strong><code>([Class]&amp;&amp; c)</code></li>
+<li><code>[Class]&amp; [Class]::</code><strong><code>operator=</code></strong><code>(const [Class]&amp; c)</code></li>
+<li><code>[Class]&amp; [Class]::</code><strong><code>operator=</code></strong><code>([Class]&amp;&amp; c)</code></li>
+<li><code>[Class]&amp; [Class]::</code><strong><code>operator=</code></strong><code>(std::initializer_list&lt;T&gt; list)</code></li>
+</ul>
+<p>Other life cycle operations.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>T&amp; [Class]::</code><strong><code>operator[]</code></strong><code>(index_type i) noexcept</code></li>
+<li><code>const T&amp; [Class]::</code><strong><code>operator[]</code></strong><code>(index_type i) const noexcept</code></li>
+<li><code>T&amp; [Class]::</code><strong><code>ref</code></strong><code>(index_type i)</code></li>
+<li><code>const T&amp; [Class]::</code><strong><code>get</code></strong><code>(index_type i) const noexcept</code></li>
+</ul>
+<p>Indexing functions. The <code>set()</code> and <code>get()</code> functions are equivalent to the
+two overloads of <code>operator[]</code>. The non-<code>const</code> functions will return a
+reference to the stored default value if the index is outside the current
+range of the array; the <code>const</code> versions will extend the array if necessary to
+make the index valid, filling any newly created elements with the default
+value.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>const T&amp; [Class]::</code><strong><code>get_default</code></strong><code>() const noexcept</code></li>
+<li><code>void [Class]::</code><strong><code>set_default</code></strong><code>(const T&amp; def)</code></li>
+</ul>
+<p>Query or change the default value. Changing the default value does not affect
+any existing elements that have already been created with this value.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>ptrdiff_t AutoDeque::</code><strong><code>min_index</code></strong><code>() const noexcept</code></li>
+<li><code>ptrdiff_t AutoDeque::</code><strong><code>max_index</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>The minimum and maximum index of the array, as it is currently stored. If the
+array is empty, these will return 0 and -1 respectively.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void AutoDeque::</code><strong><code>realign</code></strong><code>() noexcept</code></li>
+</ul>
+<p>If the array is not empty, this resets the zero index to the current beginning
+of the array (the non-default element with the lowest index).</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void [Class]::</code><strong><code>trim</code></strong><code>() noexcept</code></li>
+</ul>
+<p>Removes all trailing elements that are equal to the default value. For
+<code>AutoDeque</code>, this also removes any leading default elements with negative
+indices.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const [Class]&amp; obj)</code></li>
+</ul>
+<p>Arrays are output in the same format as
+<a href="string.html#string-formatting-functions"><code>to_str()</code></a>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>iterator [Class]::</code><strong><code>begin</code></strong><code>() noexcept</code></li>
+<li><code>const_iterator [Class]::</code><strong><code>begin</code></strong><code>() const noexcept</code></li>
+<li><code>const_iterator [Class]::</code><strong><code>cbegin</code></strong><code>() const noexcept</code></li>
+<li><code>iterator [Class]::</code><strong><code>end</code></strong><code>() noexcept</code></li>
+<li><code>const_iterator [Class]::</code><strong><code>end</code></strong><code>() const noexcept</code></li>
+<li><code>const_iterator [Class]::</code><strong><code>cend</code></strong><code>() const noexcept</code></li>
+<li><code>bool [Class]::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
+<li><code>size_t [Class]::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
+<li><code>size_t AutoVector::</code><strong><code>capacity</code></strong><code>() const noexcept</code></li>
+<li><code>void [Class]::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
+<li><code>void [Class]::</code><strong><code>clear</code></strong><code>(const T&amp; def)</code></li>
+<li><code>void AutoVector::</code><strong><code>reserve</code></strong><code>(size_t n)</code></li>
+<li><code>void AutoVector::</code><strong><code>shrink_to_fit</code></strong><code>() noexcept</code></li>
+<li><code>iterator [Class]::</code><strong><code>insert</code></strong><code>(const_iterator i, const T&amp; t)</code></li>
+<li><code>iterator [Class]::</code><strong><code>insert</code></strong><code>(const_iterator i, size_t n, const T&amp; t)</code></li>
+<li><code>template &lt;typename InIter&gt; iterator [Class]::</code><strong><code>insert</code></strong><code>(const_iterator i, InIter j1, InIter j2)</code></li>
+<li><code>iterator [Class]::</code><strong><code>insert</code></strong><code>(const_iterator i, std::initializer_list&lt;T&gt; list)</code></li>
+<li><code>template &lt;typename... Args&gt; iterator [Class]::</code><strong><code>emplace</code></strong><code>(const_iterator i, Args&amp;&amp;... args)</code></li>
+<li><code>iterator [Class]::</code><strong><code>erase</code></strong><code>(const_iterator i) noexcept</code></li>
+<li><code>iterator [Class]::</code><strong><code>erase</code></strong><code>(const_iterator i1, const_iterator i2) noexcept</code></li>
+<li><code>void [Class]::</code><strong><code>swap</code></strong><code>([Class]&amp; obj) noexcept</code></li>
+<li><code>void</code> <strong><code>swap</code></strong><code>([Class]&amp; lhs, [Class]&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator==</code></strong><code>(const [Class]&amp; rhs) const noexcept</code></li>
+<li><code>bool</code> <strong><code>operator!=</code></strong><code>(const [Class]&amp; rhs) const noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&lt;</code></strong><code>(const [Class]&amp; rhs) const noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&gt;</code></strong><code>(const [Class]&amp; rhs) const noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&lt;=</code></strong><code>(const [Class]&amp; rhs) const noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&gt;=</code></strong><code>(const [Class]&amp; rhs) const noexcept</code></li>
+</ul>
+<p>These all have the same behaviour as the corresponding operations on the
+standard containers.</p></body>
+</html>

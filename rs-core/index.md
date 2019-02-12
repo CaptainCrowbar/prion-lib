@@ -17,6 +17,7 @@
     * [`"rs-core/thread-pool.hpp"`](thread-pool.html) - Thread pool
 * _Containers_
     * [`"rs-core/array-map.hpp"`](array-map.html) - Sequence based associative array
+    * [`"rs-core/auto-array.hpp"`](auto-array.html) - Automatically resized arrays
     * [`"rs-core/blob.hpp"`](blob.html) - Binary large object
     * [`"rs-core/bounded-array.hpp"`](bounded-array.html) - Stack-based array with bounded size
     * [`"rs-core/compact-array.hpp"`](compact-array.html) - Array optimized for small sizes

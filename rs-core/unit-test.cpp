@@ -41,6 +41,16 @@ extern void test_core_astronomy_solar_system_data();
 extern void test_core_astronomy_stellar_property_relations();
 extern void test_core_astronomy_spectral_classification();
 extern void test_core_astronomy_hertzsprung_russell_diagram();
+extern void test_core_auto_array_auto_vector_construction();
+extern void test_core_auto_array_auto_vector_defaults();
+extern void test_core_auto_array_auto_vector_element_access();
+extern void test_core_auto_array_auto_vector_insert_erase();
+extern void test_core_auto_array_auto_vector_comparison();
+extern void test_core_auto_array_auto_deque_construction();
+extern void test_core_auto_array_auto_deque_defaults();
+extern void test_core_auto_array_auto_deque_element_access();
+extern void test_core_auto_array_auto_deque_insert_erase();
+extern void test_core_auto_array_auto_deque_comparison();
 extern void test_core_blob_class();
 extern void test_core_bounded_array_construction();
 extern void test_core_bounded_array_capacity();
@@ -453,6 +463,16 @@ int main() {
         { "core/astronomy/stellar-property-relations", test_core_astronomy_stellar_property_relations },
         { "core/astronomy/spectral-classification", test_core_astronomy_spectral_classification },
         { "core/astronomy/hertzsprung-russell-diagram", test_core_astronomy_hertzsprung_russell_diagram },
+        { "core/auto-array/auto-vector-construction", test_core_auto_array_auto_vector_construction },
+        { "core/auto-array/auto-vector-defaults", test_core_auto_array_auto_vector_defaults },
+        { "core/auto-array/auto-vector-element-access", test_core_auto_array_auto_vector_element_access },
+        { "core/auto-array/auto-vector-insert-erase", test_core_auto_array_auto_vector_insert_erase },
+        { "core/auto-array/auto-vector-comparison", test_core_auto_array_auto_vector_comparison },
+        { "core/auto-array/auto-deque-construction", test_core_auto_array_auto_deque_construction },
+        { "core/auto-array/auto-deque-defaults", test_core_auto_array_auto_deque_defaults },
+        { "core/auto-array/auto-deque-element-access", test_core_auto_array_auto_deque_element_access },
+        { "core/auto-array/auto-deque-insert-erase", test_core_auto_array_auto_deque_insert_erase },
+        { "core/auto-array/auto-deque-comparison", test_core_auto_array_auto_deque_comparison },
         { "core/blob/class", test_core_blob_class },
         { "core/bounded-array/construction", test_core_bounded_array_construction },
         { "core/bounded-array/capacity", test_core_bounded_array_capacity },

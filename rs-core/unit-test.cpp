@@ -9,7 +9,6 @@ extern void test_core_common_string_types();
 extern void test_core_common_metaprogramming();
 extern void test_core_common_smart_pointers();
 extern void test_core_common_type_adapters();
-extern void test_core_common_type_names();
 extern void test_core_common_type_related_functions();
 extern void test_core_common_arithmetic_literals();
 extern void test_core_common_generic_algorithms();
@@ -431,7 +430,6 @@ int main() {
         { "core/common/metaprogramming", test_core_common_metaprogramming },
         { "core/common/smart-pointers", test_core_common_smart_pointers },
         { "core/common/type-adapters", test_core_common_type_adapters },
-        { "core/common/type-names", test_core_common_type_names },
         { "core/common/type-related-functions", test_core_common_type_related_functions },
         { "core/common/arithmetic-literals", test_core_common_arithmetic_literals },
         { "core/common/generic-algorithms", test_core_common_generic_algorithms },

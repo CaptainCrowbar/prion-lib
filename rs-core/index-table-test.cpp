@@ -13,17 +13,17 @@ namespace {
     class Neddie:
     public EqualityComparable<Neddie> {
     public:
-        Neddie(): n(0), s() {}
-        Neddie(int num, const std::string& str): n(num), s(str) {}
-        int num() const { return n; }
-        std::string str() const { return s; }
-        bool operator==(const Neddie& rhs) const { return n == rhs.n && s == rhs.s; }
+        Neddie(): num_(0), str_() {}
+        Neddie(int number, const std::string& name): num_(number), str_(name) {}
+        int number() const { return num_; }
+        std::string name() const { return str_; }
+        bool operator==(const Neddie& rhs) const { return num_ == rhs.num_ && str_ == rhs.str_; }
     private:
-        int n;
-        std::string s;
+        int num_;
+        std::string str_;
     };
 
-    std::ostream& operator<<(std::ostream& out, const Neddie& x) { return out << x.num() << ":" << x.str(); }
+    std::ostream& operator<<(std::ostream& out, const Neddie& x) { return out << x.number() << ":" << x.name(); }
 
 }
 
@@ -45,8 +45,8 @@ void test_core_index_table_classes() {
 
     TEST(t1.empty());
     TEST_EQUAL(t1.size(), 0);
-    TRY(iip = std::make_unique<int_index>(t1, &Neddie::num));
-    TRY(sip = std::make_unique<string_index>(t1, &Neddie::str, [] (std::string a, std::string b) { return a > b; }));
+    TRY(iip = std::make_unique<int_index>(t1, &Neddie::number));
+    TRY(sip = std::make_unique<string_index>(t1, &Neddie::name, [] (std::string a, std::string b) { return a > b; }));
 
     int_index& ii = *iip;
     string_index& si = *sip;
@@ -235,7 +235,7 @@ void test_core_index_table_classes() {
     TRY(t2.insert(Neddie(1, "zulu")));
     TRY(t2.insert(Neddie(1, "zulu")));
     TEST_EQUAL(t2.size(), 2);
-    TRY(int_index(t2, &Neddie::num));
-    TEST_THROW(string_index(t2, &Neddie::str), IndexCollision);
+    TRY(int_index(t2, &Neddie::number));
+    TEST_THROW(string_index(t2, &Neddie::name), IndexCollision);
 
 }

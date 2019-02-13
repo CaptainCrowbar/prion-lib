@@ -411,11 +411,11 @@ remain associated with object identity rather than object value.
 * `template <typename T> std::string` **`type_name`**`()`
 * `template <typename T> std::string` **`type_name`**`(const T& t)`
 
-Demangle a type name. The original mangled name can be supplied as an explicit
-string, as a `std::type_info` or `std:type_index` object, as a type argument
-to a template function (e.g. `type_name<int>()`), or as an object whose type
-is to be named (e.g. `type_name(42)`). The last version will report the
-dynamic type of the referenced object.
+`[unicorn]` Demangle a type name. The original mangled name can be supplied as
+an explicit string, as a `std::type_info` or `std:type_index` object, as a
+type argument to a template function (e.g. `type_name<int>()`), or as an
+object whose type is to be named (e.g. `type_name(42)`). The last version will
+report the dynamic type of the referenced object.
 
 ### Type related functions ###
 
@@ -1266,7 +1266,7 @@ ASCII range (0-127).
 instead of a punctuation mark. (The suffix is intended to suggest the `"\w"`
 regex element, which does much the same thing.)
 
-### Formatting functions ###
+### String conversion functions ###
 
 * `template <typename T> Ustring` **`bin`**`(T x, size_t digits = 8 * sizeof(T))`
 * `template <typename T> Ustring` **`dec`**`(T x, size_t digits = 1)`
@@ -1275,6 +1275,19 @@ regex element, which does much the same thing.)
 `[unicorn]` Simple number formatting functions. These convert an integer to a
 binary, decimal, or hexadecimal string, generating at least the specified
 number of digits.
+
+* `unsigned long long` **`binnum`**`(std::string_view str) noexcept`
+* `long long` **`decnum`**`(std::string_view str) noexcept`
+* `unsigned long long` **`hexnum`**`(std::string_view str) noexcept`
+* `double` **`fpnum`**`(std::string_view str) noexcept`
+
+`[unicorn]` The `binnum()`, `decnum()`, and `hexnum()` functions convert a
+binary, decimal, or hexadecimal string to a number; `fpnum()` converts a
+string to a floating point number. These will ignore any trailing characters
+that are not part of a number, and will return zero if the string is empty or
+does not contain a valid number. Results that are out of range will be clamped
+to the nearest end of the return type's range, or for `fpnum()`, to positive
+or negative infinity.
 
 * `template <typename Range> Ustring` **`format_list`**`(const Range& r)`
 * `template <typename Range> Ustring` **`format_list`**`(const Range& r, std::string_view prefix, std::string_view delimiter, std::string_view suffix)`
@@ -1313,40 +1326,6 @@ circumstances.
 will be written with an arbitrarily long sequence of `"M"`. This will return
 an empty string if the argument is less than 1.
 
-* `template <typename T> std::string` **`to_str`**`(const T& t)`
-
-`[unicorn]` Formats an object as a string. This uses the following rules for
-formatting various types:
-
-* `bool` - Written as `"true"` or `"false"`.
-* Integer types (other than `char`) - Formatted using `dec()`.
-* Floating point types - Formatted using `fp_format()`.
-* Strings and string-like types - The string content is simply copied verbatim; a null character pointer is treated as an empty string.
-* Exceptions derived from `std::exception` - Calls the exception's `what()` method.
-* Arrays and vectors of bytes (`unsigned char`) - Formatted in hexadecimal.
-* Ranges (other than strings and byte arrays) - Serialized in the same format as `format_list()` above, or `format_map()` if the value type is a pair.
-* Pairs and tuples - Formatted as a comma delimited list, enclosed in parentheses.
-* Otherwise - Call the type's output operator, or fail to compile if it does not have one.
-
-"String-like types" are defined as `std::string`, `std::string_view`, plain
-`char`, character pointers, and anything with an implicit conversion to
-`std::string` or `std::string_view`.
-
-### Parsing functions ###
-
-* `unsigned long long` **`binnum`**`(std::string_view str) noexcept`
-* `long long` **`decnum`**`(std::string_view str) noexcept`
-* `unsigned long long` **`hexnum`**`(std::string_view str) noexcept`
-* `double` **`fpnum`**`(std::string_view str) noexcept`
-
-`[unicorn]` The `binnum()`, `decnum()`, and `hexnum()` functions convert a
-binary, decimal, or hexadecimal string to a number; `fpnum()` converts a
-string to a floating point number. These will ignore any trailing characters
-that are not part of a number, and will return zero if the string is empty or
-does not contain a valid number. Results that are out of range will be clamped
-to the nearest end of the return type's range, or for `fpnum()`, to positive
-or negative infinity.
-
 * `int64_t` **`si_to_int`**`(Uview str)`
 * `double` **`si_to_float`**`(Uview str)`
 
@@ -1360,3 +1339,19 @@ space is allowed between the number and the tag, and any additional text after
 the number or tag is ignored. These will throw `std::invalid_argument` if the
 string does not start with a valid number, or `std::range_error` if the result
 is too big for the return type.
+
+* `template <typename T> bool` **`from_str`**`(std::string_view view, T& t) noexcept`
+* `template <typename T> T` **`from_str`**`(std::string_view view)`
+* `template <typename T> std::string` **`to_str`**`(const T& t)`
+
+`[unicorn]` Generic utility functions for converting arbitrary types to or
+from a string. The conversion rules are described below; `to_str()` and the
+first version of `from_str()` can also be overloaded for new types.
+
+The first version of `from_str()` writes the converted object into its second
+argument and returns true on success; otherwise, it returns false and leaves
+the referenced object unchanged. The second version calls the first version,
+throwing `invalid_argument` on failure, and returning the converted object on
+success; for this version, `T` must be default constructible.
+
+Refer to the Unicorn documentation for full details of the conversion rules.

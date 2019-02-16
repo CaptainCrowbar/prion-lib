@@ -620,8 +620,8 @@ If `con.size()<n`, `ensure_min()` calls `con.resize(n[,t])`; otherwise, it
 does nothing. If `con.size()>n`, `ensure_max()` calls `con.resize(n)`;
 otherwise, it does nothing.
 
-* `template <typename M, typename K> M::mapped_type` **`find_in_map`**`(const M& map, const K& key)`
-* `template <typename M, typename K, typename T> M::mapped_type` **`find_in_map`**`(const M& map, const K& key, const T& def)`
+* `template <typename M, typename K> const M::mapped_type&` **`find_in_map`**`(const M& map, const K& key)`
+* `template <typename M, typename K> const M::mapped_type&` **`find_in_map`**`(const M& map, const K& key, const M::mapped_type& def)`
 
 Find a key in a map, returning the corresponding value, or the supplied
 default value (or a default constructed `mapped_type`) if the key is not

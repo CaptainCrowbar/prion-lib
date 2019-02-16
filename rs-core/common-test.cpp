@@ -930,14 +930,14 @@ void test_core_common_generic_algorithms() {
         {30, "charlie"},
     };
 
-    TRY(s = find_in_map(m, 10));          TEST_EQUAL(s, "alpha");
-    TRY(s = find_in_map(m, 20));          TEST_EQUAL(s, "bravo");
-    TRY(s = find_in_map(m, 30));          TEST_EQUAL(s, "charlie");
-    TRY(s = find_in_map(m, 40));          TEST_EQUAL(s, "");
-    TRY(s = find_in_map(m, 10, "none"));  TEST_EQUAL(s, "alpha");
-    TRY(s = find_in_map(m, 20, "none"));  TEST_EQUAL(s, "bravo");
-    TRY(s = find_in_map(m, 30, "none"));  TEST_EQUAL(s, "charlie");
-    TRY(s = find_in_map(m, 40, "none"));  TEST_EQUAL(s, "none");
+    TRY(s = find_in_map(m, 10));           TEST_EQUAL(s, "alpha");
+    TRY(s = find_in_map(m, 20));           TEST_EQUAL(s, "bravo");
+    TRY(s = find_in_map(m, 30));           TEST_EQUAL(s, "charlie");
+    TRY(s = find_in_map(m, 40));           TEST_EQUAL(s, "");
+    TRY(s = find_in_map(m, 10, "none"s));  TEST_EQUAL(s, "alpha");
+    TRY(s = find_in_map(m, 20, "none"s));  TEST_EQUAL(s, "bravo");
+    TRY(s = find_in_map(m, 30, "none"s));  TEST_EQUAL(s, "charlie");
+    TRY(s = find_in_map(m, 40, "none"s));  TEST_EQUAL(s, "none");
 
     auto mi = m.begin();
     auto mci = m.cbegin();

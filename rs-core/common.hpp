@@ -612,8 +612,8 @@ namespace RS {
             f(i);
     }
 
-    template <typename M, typename K, typename T>
-    typename M::mapped_type find_in_map(const M& map, const K& key, const T& def) {
+    template <typename M, typename K>
+    const typename M::mapped_type& find_in_map(const M& map, const K& key, const typename M::mapped_type& def) {
         auto i = map.find(key);
         if (i == map.end())
             return def;
@@ -622,9 +622,9 @@ namespace RS {
     }
 
     template <typename M, typename K>
-    typename M::mapped_type find_in_map(const M& map, const K& key) {
-        typename M::mapped_type t{};
-        return find_in_map(map, key, t);
+    const typename M::mapped_type& find_in_map(const M& map, const K& key) {
+        static const typename M::mapped_type def;
+        return find_in_map(map, key, def);
     }
 
     template <typename M, typename K>

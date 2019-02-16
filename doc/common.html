@@ -838,8 +838,8 @@ otherwise, it does nothing.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename M, typename K&gt; M::mapped_type</code> <strong><code>find_in_map</code></strong><code>(const M&amp; map, const K&amp; key)</code></li>
-<li><code>template &lt;typename M, typename K, typename T&gt; M::mapped_type</code> <strong><code>find_in_map</code></strong><code>(const M&amp; map, const K&amp; key, const T&amp; def)</code></li>
+<li><code>template &lt;typename M, typename K&gt; const M::mapped_type&amp;</code> <strong><code>find_in_map</code></strong><code>(const M&amp; map, const K&amp; key)</code></li>
+<li><code>template &lt;typename M, typename K&gt; const M::mapped_type&amp;</code> <strong><code>find_in_map</code></strong><code>(const M&amp; map, const K&amp; key, const M::mapped_type&amp; def)</code></li>
 </ul>
 <p>Find a key in a map, returning the corresponding value, or the supplied
 default value (or a default constructed <code>mapped_type</code>) if the key is not

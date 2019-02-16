@@ -132,32 +132,29 @@ namespace RS {
 
     template <typename T, typename FieldPtr, typename... Args>
     void struct_to_json(json& j, const T& t, const Ustring& name, FieldPtr T::*field_ptr, const Ustring& field_name, Args... more_fields) {
-        Ustring t_name;
-        if (name.empty())
-            t_name = unqualify(type_name<T>());
-        else
-            t_name = name;
         j = json::object();
-        j["_type"] = t_name;
+        if (name == "*")
+            j["_type"] = unqualify(type_name<T>());
+        else if (! name.empty())
+            j["_type"] = name;
         RS_Detail::fields_to_json(j, t, field_ptr, field_name, more_fields...);
     }
 
     template <typename T, typename FieldPtr, typename... Args>
     void json_to_struct(const json& j, T& t, const Ustring& name, FieldPtr T::*field_ptr, const Ustring& field_name, Args... more_fields) {
-        Ustring error;
         if (! j.is_object())
-            error = "Not a JSON object";
-        if (! j.count("_type"))
-            error = "No type field";
-        Ustring t_name;
-        if (name.empty())
-            t_name = unqualify(type_name<T>());
-        else
-            t_name = name;
-        if (j["_type"] != t_name)
-            error = "Type is " + std::string(j["_type"]);
-        if (! error.empty())
-            throw std::invalid_argument("Invalid serialized " + name + ": " + error);
+            throw std::invalid_argument("Invalid serialized object: Not a JSON object");
+        if (! name.empty()) {
+            if (! j.count("_type"))
+                throw std::invalid_argument("Invalid serialized object: No type field");
+            Ustring t_name;
+            if (name == "*")
+                t_name = unqualify(type_name<T>());
+            else
+                t_name = name;
+            if (j["_type"] != t_name)
+                throw std::invalid_argument("Invalid serialized " + t_name + ": Type is " + std::string(j["_type"]));
+        }
         RS_Detail::json_to_fields(j, t, field_ptr, field_name, more_fields...);
     }
 

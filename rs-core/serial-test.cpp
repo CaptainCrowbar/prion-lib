@@ -274,12 +274,12 @@ namespace {
 
 void test_core_serial_helper_functions() {
 
-    Thing t1, t2;
+    Thing t;
     json j;
     Ustring s;
 
-    t1 = {"hello", "world", 86, 99};
-    TRY(struct_to_json(j, t1, "",
+    t = {"hello", "world", 86, 99};
+    TRY(struct_to_json(j, t, "*",
         &Thing::a, "a",
         &Thing::b, "b",
         &Thing::c, "c",
@@ -289,23 +289,54 @@ void test_core_serial_helper_functions() {
     TRY(s = j.dump());
     TEST_EQUAL(s, "{\"_type\":\"Thing\",\"a\":\"hello\",\"b\":\"world\",\"c\":86,\"d\":99}");
 
-    TRY(json_to_struct(j, t2, "",
+    t = {};
+    TRY(json_to_struct(j, t, "*",
         &Thing::a, "a",
         &Thing::b, "b",
         &Thing::c, "c",
         &Thing::d, "d"
     ));
-    TEST_EQUAL(t2.a, "hello");
-    TEST_EQUAL(t2.b, "world");
-    TEST_EQUAL(t2.c, 86);
-    TEST_EQUAL(t2.d, 99);
+    TEST_EQUAL(t.a, "hello");
+    TEST_EQUAL(t.b, "world");
+    TEST_EQUAL(t.c, 86);
+    TEST_EQUAL(t.d, 99);
 
-    TEST_THROW(json_to_struct(j, t2, "Nothing",
+    t = {};
+    TEST_THROW(json_to_struct(j, t, "Nothing",
         &Thing::a, "a",
         &Thing::b, "b",
         &Thing::c, "c",
         &Thing::d, "d"
     ), std::invalid_argument);
+    TEST_EQUAL(t.a, "");
+    TEST_EQUAL(t.b, "");
+    TEST_EQUAL(t.c, 0);
+    TEST_EQUAL(t.d, 0);
+
+    j.erase("_type");
+    t = {};
+    TEST_THROW(json_to_struct(j, t, "*",
+        &Thing::a, "a",
+        &Thing::b, "b",
+        &Thing::c, "c",
+        &Thing::d, "d"
+    ), std::invalid_argument);
+    TEST_EQUAL(t.a, "");
+    TEST_EQUAL(t.b, "");
+    TEST_EQUAL(t.c, 0);
+    TEST_EQUAL(t.d, 0);
+
+    t = {};
+    TRY(json_to_struct(j, t, "",
+        &Thing::a, "a",
+        &Thing::b, "b",
+        &Thing::c, "c",
+        &Thing::d, "d"
+    ));
+    TEST_EQUAL(t.a, "hello");
+    TEST_EQUAL(t.b, "world");
+    TEST_EQUAL(t.c, 86);
+    TEST_EQUAL(t.d, 99);
 
 }
 

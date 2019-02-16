@@ -58,12 +58,16 @@ These can be used to implement serialization functions (`to_json()` and
 `from_json()`) for a user defined `struct` or `class` type. Each function
 takes a JSON object, the user defined object to be serialized or deserialized,
 a string identifying the type, and one or more pairs containing a data member
-pointer and the name of that member. If the type name argument is an empty
-string, the unqualified name of the type will be used instead. The
-deserialization function (`json_to_struct()`) will throw
-`std::invalid_argument` if the input JSON value is not a JSON object
-(associative array), if it has no `"_type"` field, or if the `"_type"` field
-does not match the given type name.
+pointer and the name of that member.
+
+The `struct_to_json()` function will add a `"_type"` field to the JSON object
+if the type name supplied is not empty. For both functions, if the type name
+is `"*"`, the unqualified name of the type will be used instead.
+
+The `json_to_struct()` function will throw `std::invalid_argument` if the
+input JSON value is not a JSON object (associative array). If the type name is
+not empty, it will also check that the JSON object has a `"_type"` field that
+matches the given name.
 
 Example:
 
@@ -76,7 +80,7 @@ Example:
     Thing t = {"hello", "world", 86, 99};
 
     // Serialize a struct
-    struct_to_json(j, t, "",
+    struct_to_json(j, t, "*",
         &Thing::a, "a",
         &Thing::b, "b",
         &Thing::c, "c",
@@ -92,7 +96,7 @@ Example:
     //  }
 
     // Deserialize a struct
-    json_to_struct(j, t, "",
+    json_to_struct(j, t, "*",
         &Thing::a, "a",
         &Thing::b, "b",
         &Thing::c, "c",

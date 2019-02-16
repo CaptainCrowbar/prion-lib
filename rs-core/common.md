@@ -620,6 +620,21 @@ If `con.size()<n`, `ensure_min()` calls `con.resize(n[,t])`; otherwise, it
 does nothing. If `con.size()>n`, `ensure_max()` calls `con.resize(n)`;
 otherwise, it does nothing.
 
+* `template <typename M, typename K> M::mapped_type` **`find_in_map`**`(const M& map, const K& key)`
+* `template <typename M, typename K, typename T> M::mapped_type` **`find_in_map`**`(const M& map, const K& key, const T& def)`
+
+Find a key in a map, returning the corresponding value, or the supplied
+default value (or a default constructed `mapped_type`) if the key is not
+found.
+
+* `template <typename M, typename K> M::iterator` **`find_key_range`**`(M& map, const K& key)`
+* `template <typename M, typename K> M::const_iterator` **`find_key_range`**`(const M& map, const K& key)`
+
+Find the map entry matching a key, assuming the key represents the minimum
+value of a range. This will return the exact matching key if there is one,
+otherwise it will return the last key that is less than the target key, or
+`map.end()` if there is no such key.
+
 * `template <typename BidirectionalIterator, typename T> BidirectionalIterator` **`find_last`**`(BidirectionalIterator i, BidirectionalIterator j, const T& t)`
     * _Find the last element equal to the given value_
 * `template <typename BidirectionalIterator, typename T> BidirectionalIterator` **`find_last_not`**`(BidirectionalIterator i, BidirectionalIterator j, const T& t)`
@@ -633,13 +648,6 @@ otherwise, it does nothing.
 
 Additional find algorithms. All of these return the end iterator if the search
 fails.
-
-* `template <typename M, typename K> M::mapped_type` **`find_in_map`**`(const M& map, const K& key)`
-* `template <typename M, typename K, typename T> M::mapped_type` **`find_in_map`**`(const M& map, const K& key, const T& def)`
-
-Find a key in a map, returning the corresponding value, or the supplied
-default value (or a default constructed `mapped_type`) if the key is not
-found.
 
 * `template <typename Range1, typename Range2> bool` **`sets_intersect`**`(const Range1& r1, const Range2& r2)`
 * `template <typename Range1, typename Range2, typename Compare> bool` **`sets_intersect`**`(const Range1& r1, const Range2& r2, Compare c)`

@@ -925,19 +925,42 @@ void test_core_common_generic_algorithms() {
     s.clear();  TRY(for_n(3, f2));  TEST_EQUAL(s, "0;1;2;");
 
     std::map<int, Ustring> m = {
-        {1, "alpha"},
-        {2, "bravo"},
-        {3, "charlie"},
+        {10, "alpha"},
+        {20, "bravo"},
+        {30, "charlie"},
     };
 
-    TRY(s = find_in_map(m, 1));          TEST_EQUAL(s, "alpha");
-    TRY(s = find_in_map(m, 2));          TEST_EQUAL(s, "bravo");
-    TRY(s = find_in_map(m, 3));          TEST_EQUAL(s, "charlie");
-    TRY(s = find_in_map(m, 4));          TEST_EQUAL(s, "");
-    TRY(s = find_in_map(m, 1, "none"));  TEST_EQUAL(s, "alpha");
-    TRY(s = find_in_map(m, 2, "none"));  TEST_EQUAL(s, "bravo");
-    TRY(s = find_in_map(m, 3, "none"));  TEST_EQUAL(s, "charlie");
-    TRY(s = find_in_map(m, 4, "none"));  TEST_EQUAL(s, "none");
+    TRY(s = find_in_map(m, 10));          TEST_EQUAL(s, "alpha");
+    TRY(s = find_in_map(m, 20));          TEST_EQUAL(s, "bravo");
+    TRY(s = find_in_map(m, 30));          TEST_EQUAL(s, "charlie");
+    TRY(s = find_in_map(m, 40));          TEST_EQUAL(s, "");
+    TRY(s = find_in_map(m, 10, "none"));  TEST_EQUAL(s, "alpha");
+    TRY(s = find_in_map(m, 20, "none"));  TEST_EQUAL(s, "bravo");
+    TRY(s = find_in_map(m, 30, "none"));  TEST_EQUAL(s, "charlie");
+    TRY(s = find_in_map(m, 40, "none"));  TEST_EQUAL(s, "none");
+
+    auto mi = m.begin();
+    auto mci = m.cbegin();
+
+    TRY(mi = find_key_range(m, 0));   TEST(mi == m.end());
+    TRY(mi = find_key_range(m, 5));   TEST(mi == m.end());
+    TRY(mi = find_key_range(m, 10));  TEST(mi != m.end());  TEST_EQUAL(mi->first, 10);  TEST_EQUAL(mi->second, "alpha");
+    TRY(mi = find_key_range(m, 15));  TEST(mi != m.end());  TEST_EQUAL(mi->first, 10);  TEST_EQUAL(mi->second, "alpha");
+    TRY(mi = find_key_range(m, 20));  TEST(mi != m.end());  TEST_EQUAL(mi->first, 20);  TEST_EQUAL(mi->second, "bravo");
+    TRY(mi = find_key_range(m, 25));  TEST(mi != m.end());  TEST_EQUAL(mi->first, 20);  TEST_EQUAL(mi->second, "bravo");
+    TRY(mi = find_key_range(m, 30));  TEST(mi != m.end());  TEST_EQUAL(mi->first, 30);  TEST_EQUAL(mi->second, "charlie");
+    TRY(mi = find_key_range(m, 35));  TEST(mi != m.end());  TEST_EQUAL(mi->first, 30);  TEST_EQUAL(mi->second, "charlie");
+    TRY(mi = find_key_range(m, 40));  TEST(mi != m.end());  TEST_EQUAL(mi->first, 30);  TEST_EQUAL(mi->second, "charlie");
+
+    TRY(mci = find_key_range(m, 0));   TEST(mci == m.end());
+    TRY(mci = find_key_range(m, 5));   TEST(mci == m.end());
+    TRY(mci = find_key_range(m, 10));  TEST(mci != m.end());  TEST_EQUAL(mci->first, 10);  TEST_EQUAL(mci->second, "alpha");
+    TRY(mci = find_key_range(m, 15));  TEST(mci != m.end());  TEST_EQUAL(mci->first, 10);  TEST_EQUAL(mci->second, "alpha");
+    TRY(mci = find_key_range(m, 20));  TEST(mci != m.end());  TEST_EQUAL(mci->first, 20);  TEST_EQUAL(mci->second, "bravo");
+    TRY(mci = find_key_range(m, 25));  TEST(mci != m.end());  TEST_EQUAL(mci->first, 20);  TEST_EQUAL(mci->second, "bravo");
+    TRY(mci = find_key_range(m, 30));  TEST(mci != m.end());  TEST_EQUAL(mci->first, 30);  TEST_EQUAL(mci->second, "charlie");
+    TRY(mci = find_key_range(m, 35));  TEST(mci != m.end());  TEST_EQUAL(mci->first, 30);  TEST_EQUAL(mci->second, "charlie");
+    TRY(mci = find_key_range(m, 40));  TEST(mci != m.end());  TEST_EQUAL(mci->first, 30);  TEST_EQUAL(mci->second, "charlie");
 
     s = "Hello world";
 

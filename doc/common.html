@@ -838,6 +838,25 @@ otherwise, it does nothing.</p>
 </div>
 <div class="defns">
 <ul>
+<li><code>template &lt;typename M, typename K&gt; M::mapped_type</code> <strong><code>find_in_map</code></strong><code>(const M&amp; map, const K&amp; key)</code></li>
+<li><code>template &lt;typename M, typename K, typename T&gt; M::mapped_type</code> <strong><code>find_in_map</code></strong><code>(const M&amp; map, const K&amp; key, const T&amp; def)</code></li>
+</ul>
+<p>Find a key in a map, returning the corresponding value, or the supplied
+default value (or a default constructed <code>mapped_type</code>) if the key is not
+found.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename M, typename K&gt; M::iterator</code> <strong><code>find_key_range</code></strong><code>(M&amp; map, const K&amp; key)</code></li>
+<li><code>template &lt;typename M, typename K&gt; M::const_iterator</code> <strong><code>find_key_range</code></strong><code>(const M&amp; map, const K&amp; key)</code></li>
+</ul>
+<p>Find the map entry matching a key, assuming the key represents the minimum
+value of a range. This will return the exact matching key if there is one,
+otherwise it will return the last key that is less than the target key, or
+<code>map.end()</code> if there is no such key.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>template &lt;typename BidirectionalIterator, typename T&gt; BidirectionalIterator</code> <strong><code>find_last</code></strong><code>(BidirectionalIterator i, BidirectionalIterator j, const T&amp; t)</code><ul>
 <li><em>Find the last element equal to the given value</em></li>
 </ul>
@@ -861,15 +880,6 @@ otherwise, it does nothing.</p>
 </ul>
 <p>Additional find algorithms. All of these return the end iterator if the search
 fails.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>template &lt;typename M, typename K&gt; M::mapped_type</code> <strong><code>find_in_map</code></strong><code>(const M&amp; map, const K&amp; key)</code></li>
-<li><code>template &lt;typename M, typename K, typename T&gt; M::mapped_type</code> <strong><code>find_in_map</code></strong><code>(const M&amp; map, const K&amp; key, const T&amp; def)</code></li>
-</ul>
-<p>Find a key in a map, returning the corresponding value, or the supplied
-default value (or a default constructed <code>mapped_type</code>) if the key is not
-found.</p>
 </div>
 <div class="defns">
 <ul>

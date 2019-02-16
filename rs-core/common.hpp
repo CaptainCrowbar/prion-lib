@@ -627,6 +627,24 @@ namespace RS {
         return find_in_map(map, key, t);
     }
 
+    template <typename M, typename K>
+    typename M::iterator find_key_range(M& map, const K& key) {
+        auto i = map.upper_bound(key);
+        if (i == map.begin())
+            return map.end();
+        else
+            return std::prev(i);
+    }
+
+    template <typename M, typename K>
+    typename M::const_iterator find_key_range(const M& map, const K& key) {
+        auto i = map.upper_bound(key);
+        if (i == map.begin())
+            return map.end();
+        else
+            return std::prev(i);
+    }
+
     template <typename BidirectionalIterator, typename T>
     BidirectionalIterator find_last(BidirectionalIterator i, BidirectionalIterator j, const T& t) {
         if (i == j)

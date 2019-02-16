@@ -49,6 +49,56 @@ Specializations of `to_json()` and `from_json()` are provided for:
 * [`Vector<T,N>`](vector.html)
 * [`Version`](common.html)
 
+## Serialization helper functions ##
+
+* `template <typename T, typename FieldPtr, typename... Args> void` **`struct_to_json`**`(json& j, const T& t, const Ustring& name, FieldPtr T::*field_ptr, const Ustring& field_name, Args... more_fields)`
+* `template <typename T, typename FieldPtr, typename... Args> void` **`json_to_struct`**`(const json& j, T& t, const Ustring& name, FieldPtr T::*field_ptr, const Ustring& field_name, Args... more_fields)`
+
+These can be used to implement serialization functions (`to_json()` and
+`from_json()`) for a user defined `struct` or `class` type. Each function
+takes a JSON object, the user defined object to be serialized or deserialized,
+a string identifying the type, and one or more pairs containing a data member
+pointer and the name of that member. If the type name argument is an empty
+string, the unqualified name of the type will be used instead. The
+deserialization function (`json_to_struct()`) will throw
+`std::invalid_argument` if the input JSON value is not a JSON object
+(associative array), if it has no `"_type"` field, or if the `"_type"` field
+does not match the given type name.
+
+Example:
+
+    struct Thing {
+        std::string a, b;
+        int c, d;
+    };
+
+    json j;
+    Thing t = {"hello", "world", 86, 99};
+
+    // Serialize a struct
+    struct_to_json(j, t, "",
+        &Thing::a, "a",
+        &Thing::b, "b",
+        &Thing::c, "c",
+        &Thing::d, "d"
+    );
+
+    //  j = {
+    //      "_type": "Thing",
+    //      "a": "hello",
+    //      "b": "world",
+    //      "c": 86,
+    //      "d": 99
+    //  }
+
+    // Deserialize a struct
+    json_to_struct(j, t, "",
+        &Thing::a, "a",
+        &Thing::b, "b",
+        &Thing::c, "c",
+        &Thing::d, "d"
+    ));
+
 ## Persistent storage ##
 
 * `class` **`PersistState`**

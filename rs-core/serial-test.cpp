@@ -263,6 +263,52 @@ void test_core_serial_version() {
 
 }
 
+namespace {
+
+    struct Thing {
+        std::string a, b;
+        int c = 0, d = 0;
+    };
+
+}
+
+void test_core_serial_helper_functions() {
+
+    Thing t1, t2;
+    json j;
+    Ustring s;
+
+    t1 = {"hello", "world", 86, 99};
+    TRY(struct_to_json(j, t1, "",
+        &Thing::a, "a",
+        &Thing::b, "b",
+        &Thing::c, "c",
+        &Thing::d, "d"
+    ));
+
+    TRY(s = j.dump());
+    TEST_EQUAL(s, "{\"_type\":\"Thing\",\"a\":\"hello\",\"b\":\"world\",\"c\":86,\"d\":99}");
+
+    TRY(json_to_struct(j, t2, "",
+        &Thing::a, "a",
+        &Thing::b, "b",
+        &Thing::c, "c",
+        &Thing::d, "d"
+    ));
+    TEST_EQUAL(t2.a, "hello");
+    TEST_EQUAL(t2.b, "world");
+    TEST_EQUAL(t2.c, 86);
+    TEST_EQUAL(t2.d, 99);
+
+    TEST_THROW(json_to_struct(j, t2, "Nothing",
+        &Thing::a, "a",
+        &Thing::b, "b",
+        &Thing::c, "c",
+        &Thing::d, "d"
+    ), std::invalid_argument);
+
+}
+
 void test_core_serial_persistent_storage() {
 
     static constexpr const char* vendor = "com.captaincrowbar";

@@ -364,6 +364,7 @@ extern void test_core_serial_rational();
 extern void test_core_serial_uuid();
 extern void test_core_serial_vector_matrix_quaternion();
 extern void test_core_serial_version();
+extern void test_core_serial_helper_functions();
 extern void test_core_serial_persistent_storage();
 extern void test_core_signal_channel();
 extern void test_core_signal_name();
@@ -785,6 +786,7 @@ int main() {
         { "core/serial/uuid", test_core_serial_uuid },
         { "core/serial/vector-matrix-quaternion", test_core_serial_vector_matrix_quaternion },
         { "core/serial/version", test_core_serial_version },
+        { "core/serial/helper-functions", test_core_serial_helper_functions },
         { "core/serial/persistent-storage", test_core_serial_persistent_storage },
         { "core/signal/channel", test_core_signal_channel },
         { "core/signal/name", test_core_signal_name },

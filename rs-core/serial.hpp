@@ -7,6 +7,7 @@
 #include "rs-core/mp-integer.hpp"
 #include "rs-core/optional.hpp"
 #include "rs-core/rational.hpp"
+#include "rs-core/string.hpp"
 #include "rs-core/time.hpp"
 #include "rs-core/uuid.hpp"
 #include "rs-core/vector.hpp"
@@ -19,6 +20,7 @@
 #include <mutex>
 #include <new>
 #include <stdexcept>
+#include <type_traits>
 #include <vector>
 #include <nlohmann/json.hpp>
 
@@ -105,6 +107,59 @@ namespace RS {
 
     inline void to_json(json& j, const Version& x) { j = x.str(); }
     inline void from_json(const json& j, Version& x) { x = Version(j.get<Ustring>()); }
+
+    // Serialization helper functions
+
+    namespace RS_Detail {
+
+        template <typename T, typename FieldPtr, typename... Args>
+        void fields_to_json(json& j, const T& t, FieldPtr T::*field_ptr, const Ustring& field_name, Args... more_fields) {
+            j[field_name] = t.*field_ptr;
+            if constexpr (sizeof...(Args) > 0)
+                fields_to_json(j, t, more_fields...);
+        }
+
+        template <typename T, typename FieldPtr, typename... Args>
+        void json_to_fields(const json& j, T& t, FieldPtr T::*field_ptr, const Ustring& field_name, Args... more_fields) {
+            using FT = std::decay_t<decltype(t.*field_ptr)>;
+            if (j.count(field_name))
+                t.*field_ptr = j.at(field_name).get<FT>();
+            if constexpr (sizeof...(Args) > 0)
+                json_to_fields(j, t, more_fields...);
+        }
+
+    }
+
+    template <typename T, typename FieldPtr, typename... Args>
+    void struct_to_json(json& j, const T& t, const Ustring& name, FieldPtr T::*field_ptr, const Ustring& field_name, Args... more_fields) {
+        Ustring t_name;
+        if (name.empty())
+            t_name = unqualify(type_name<T>());
+        else
+            t_name = name;
+        j = json::object();
+        j["_type"] = t_name;
+        RS_Detail::fields_to_json(j, t, field_ptr, field_name, more_fields...);
+    }
+
+    template <typename T, typename FieldPtr, typename... Args>
+    void json_to_struct(const json& j, T& t, const Ustring& name, FieldPtr T::*field_ptr, const Ustring& field_name, Args... more_fields) {
+        Ustring error;
+        if (! j.is_object())
+            error = "Not a JSON object";
+        if (! j.count("_type"))
+            error = "No type field";
+        Ustring t_name;
+        if (name.empty())
+            t_name = unqualify(type_name<T>());
+        else
+            t_name = name;
+        if (j["_type"] != t_name)
+            error = "Type is " + std::string(j["_type"]);
+        if (! error.empty())
+            throw std::invalid_argument("Invalid serialized " + name + ": " + error);
+        RS_Detail::json_to_fields(j, t, field_ptr, field_name, more_fields...);
+    }
 
     // Persistent storage
 

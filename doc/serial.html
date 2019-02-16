@@ -21,6 +21,7 @@ library and uses it for serialization of the types in my core library.</p>
 <li><a href="#imports">Imports</a></li>
 <li><a href="#serialization-for-standard-library-types">Serialization for standard library types</a></li>
 <li><a href="#serialization-for-core-library-types">Serialization for core library types</a></li>
+<li><a href="#serialization-helper-functions">Serialization helper functions</a></li>
 <li><a href="#persistent-storage">Persistent storage</a></li>
 </ul>
 </li>
@@ -66,6 +67,56 @@ introduce rounding errors.</p>
 <li><a href="vector.html"><code>Vector&lt;T,N&gt;</code></a></li>
 <li><a href="common.html"><code>Version</code></a></li>
 </ul>
+</div>
+<h2 id="serialization-helper-functions">Serialization helper functions</h2>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T, typename FieldPtr, typename... Args&gt; void</code> <strong><code>struct_to_json</code></strong><code>(json&amp; j, const T&amp; t, const Ustring&amp; name, FieldPtr T::*field_ptr, const Ustring&amp; field_name, Args... more_fields)</code></li>
+<li><code>template &lt;typename T, typename FieldPtr, typename... Args&gt; void</code> <strong><code>json_to_struct</code></strong><code>(const json&amp; j, T&amp; t, const Ustring&amp; name, FieldPtr T::*field_ptr, const Ustring&amp; field_name, Args... more_fields)</code></li>
+</ul>
+<p>These can be used to implement serialization functions (<code>to_json()</code> and
+<code>from_json()</code>) for a user defined <code>struct</code> or <code>class</code> type. Each function
+takes a JSON object, the user defined object to be serialized or deserialized,
+a string identifying the type, and one or more pairs containing a data member
+pointer and the name of that member. If the type name argument is an empty
+string, the unqualified name of the type will be used instead. The
+deserialization function (<code>json_to_struct()</code>) will throw
+<code>std::invalid_argument</code> if the input JSON value is not a JSON object
+(associative array), if it has no <code>"_type"</code> field, or if the <code>"_type"</code> field
+does not match the given type name.</p>
+<p>Example:</p>
+<pre><code>struct Thing {
+    std::string a, b;
+    int c, d;
+};
+
+json j;
+Thing t = {"hello", "world", 86, 99};
+
+// Serialize a struct
+struct_to_json(j, t, "",
+    &amp;Thing::a, "a",
+    &amp;Thing::b, "b",
+    &amp;Thing::c, "c",
+    &amp;Thing::d, "d"
+);
+
+//  j = {
+//      "_type": "Thing",
+//      "a": "hello",
+//      "b": "world",
+//      "c": 86,
+//      "d": 99
+//  }
+
+// Deserialize a struct
+json_to_struct(j, t, "",
+    &amp;Thing::a, "a",
+    &amp;Thing::b, "b",
+    &amp;Thing::c, "c",
+    &amp;Thing::d, "d"
+));
+</code></pre>
 </div>
 <h2 id="persistent-storage">Persistent storage</h2>
 <div class="defns">

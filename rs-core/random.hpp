@@ -1302,7 +1302,7 @@ namespace RS {
         WeightedChoice() = default;
         WeightedChoice(std::initializer_list<std::pair<T, F>> pairs) { append(pairs); }
         template <typename InputRange> explicit WeightedChoice(const InputRange& pairs) { append(pairs); }
-        template <typename RNG> T operator()(RNG& rng) const;
+        template <typename RNG> const T& operator()(RNG& rng) const;
         void add(const T& t, F f);
         void append(std::initializer_list<std::pair<T, F>> pairs);
         template <typename InputRange> void append(const InputRange& pairs);
@@ -1315,9 +1315,7 @@ namespace RS {
 
         template <typename T, typename F>
         template <typename RNG>
-        T WeightedChoice<T, F>::operator()(RNG& rng) const {
-            if (empty())
-                return T();
+        const T& WeightedChoice<T, F>::operator()(RNG& rng) const {
             F x;
             if constexpr (std::is_integral_v<F>)
                 x = random_integer(total())(rng);

@@ -477,7 +477,7 @@ the cache already contains every possible value of the result type.
 
 Selects an element at random from the input list. The `random_choice_from()`
 functions are shortcuts that can be used to avoid the overhead of copying the
-list in one-time calls.
+list in one-time calls. Behaviour is undefined if the list is empty.
 
 * `template <typename T, typename F = double> class` **`WeightedChoice`**
     * `using WeightedChoice::`**`frequency_type`** `= F`
@@ -485,7 +485,7 @@ list in one-time calls.
     * `WeightedChoice::`**`WeightedChoice`**`() noexcept`
     * `WeightedChoice::`**`WeightedChoice`**`(initializer_list<pair<T, F>> pairs)`
     * `template <typename InputRange> explicit WeightedChoice::`**`WeightedChoice`**`(const InputRange& pairs)`
-    * `template <typename RNG> T WeightedChoice::`**`operator()`**`(RNG& rng) const`
+    * `template <typename RNG> const T& WeightedChoice::`**`operator()`**`(RNG& rng) const`
     * `void WeightedChoice::`**`add`**`(const T& t, F f)`
     * `void WeightedChoice::`**`append`**`(initializer_list<pair<T, F>> pairs)`
     * `template <typename InputRange> void WeightedChoice::`**`append`**`(const InputRange& pairs)`

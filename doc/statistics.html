@@ -26,10 +26,29 @@
 <h2 id="statistics-class">Statistics class</h2>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T = double&gt; class</code> <strong><code>Statistics</code></strong></li>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>Statistics</code></strong></li>
 </ul>
-<p>Accumulator class. This holds bivariate statistics for a set of <em>(x,y)</em> pairs,
-but can also be used to obtain univariate statistics for a single data set.</p>
+<p>The accumulator class keeps running single-variable and two-variable
+statistics for an arbitrary number of variables. The number of variables is
+determined at runtime, from either a column count supplied to the constructor,
+or the largest number of variables supplied to an update function, whichever
+is larger.</p>
+<p>Most of the statistical parameter queries take one or two indices indicating
+which column or columns are being queried. Single-column statistics default to
+the first column (index 0); two-column statistics default to the first two
+columns.</p>
+<p>Query functions whose names end in <code>_bc()</code> apply Bessel's correction,
+adjusting sample-based statistics to be more representative of the population
+from which the sample was drawn. For weighted data, the weights are assumed to
+be frequency-based by default; the alternative functions with names ending in
+<code>_bc_rel()</code> assume reliability-based weights instead (for unweighted data the
+<code>*_bc()</code> and <code>*_bc_rel()</code> functions will return the same result).</p>
+<p>Behaviour is undefined if any of the statistical parameters (other than
+<code>count()</code> or <code>weight()</code>) are requested for an empty set, if an index is out of
+bounds (greater than or equal to <code>columns()</code>), if any two-column statistics
+are requested for a data set with only one column, or if any of the functions
+that use Bessel's correction are called when either <code>count()</code> or <code>weight()</code> is
+less than or equal to 1.</p>
 </div>
 <div class="defns">
 <ul>
@@ -41,101 +60,126 @@ static assert).</p>
 <div class="defns">
 <ul>
 <li><code>Statistics::</code><strong><code>Statistics</code></strong><code>() noexcept</code></li>
+<li><code>explicit Statistics::</code><strong><code>Statistics</code></strong><code>(size_t columns)</code></li>
 <li><code>Statistics::</code><strong><code>~Statistics</code></strong><code>() noexcept</code></li>
 <li><code>Statistics::</code><strong><code>Statistics</code></strong><code>(const Statistics&amp; s) noexcept</code></li>
 <li><code>Statistics::</code><strong><code>Statistics</code></strong><code>(Statistics&amp;&amp; s) noexcept</code></li>
 <li><code>Statistics&amp; Statistics::</code><strong><code>operator=</code></strong><code>(const Statistics&amp; s) noexcept</code></li>
 <li><code>Statistics&amp; Statistics::</code><strong><code>operator=</code></strong><code>(Statistics&amp;&amp; s) noexcept</code></li>
 </ul>
-<p>Life cycle functions.</p>
+<p>Life cycle functions. Optionally a minimum number of columns can be supplied
+to the constructor.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>void Statistics::</code><strong><code>add</code></strong><code>(T x, T y = 0) noexcept</code></li>
-<li><code>void Statistics::</code><strong><code>add</code></strong><code>(const std::pair&lt;T, T&gt;&amp; xy) noexcept</code></li>
-<li><code>template &lt;typename InputRange&gt; void Statistics::</code><strong><code>append</code></strong><code>(const InputRange&amp; r)</code></li>
+<li><code>template &lt;typename... Args&gt; void Statistics::</code><strong><code>operator()</code></strong><code>(Args... args)</code></li>
+<li><code>template &lt;size_t N&gt; void Statistics::</code><strong><code>i</code></strong><code>(const std::array&lt;T, N&gt;&amp; array)</code></li>
+<li><code>template &lt;typename T1, typename T2&gt; void Statistics::</code><strong><code>i</code></strong><code>(const std::pair&lt;T1, T2&gt; pair)</code></li>
+<li><code>template &lt;typename... TS&gt; void Statistics::</code><strong><code>i</code></strong><code>(const std::tuple&lt;TS...&gt;&amp; tuple)</code></li>
+<li><code>template &lt;typename... Args&gt; void Statistics::</code><strong><code>i</code></strong><code>(Args... args)</code></li>
+<li><code>template &lt;size_t N&gt; void Statistics::</code><strong><code>w</code></strong><code>(T wt, const std::array&lt;T, N&gt;&amp; array)</code></li>
+<li><code>template &lt;typename T1, typename T2&gt; void Statistics::</code><strong><code>w</code></strong><code>(T wt, const std::pair&lt;T1, T2&gt; pair)</code></li>
+<li><code>template &lt;typename... TS&gt; void Statistics::</code><strong><code>w</code></strong><code>(T wt, const std::tuple&lt;TS...&gt;&amp; tuple)</code></li>
+<li><code>template &lt;typename... Args&gt; void Statistics::</code><strong><code>w</code></strong><code>(T wt, Args... args)</code></li>
 </ul>
-<p>Add one or more data points, either as univariate <code>x</code> values or bivariate
-<em>(x,y)</em> pairs. The <code>append()</code> function can read a vector-like range of values
-or a map-like range of pairs.</p>
+<p>Add a new data point. The <code>i()</code> functions add an unweighted data point
+(equivalent to a weight of 1); the <code>w()</code> functions add a weighted data point.
+The function call operator is equivalent to <code>i()</code>. The column count will be
+expanded if necessary to match the number of values in the update. If the
+column count is expanded, missing data in any previous updates is assumed to
+consist of zeros; if this call supplies less than the existing number of
+columns, the missing values are assumed to be zero. Behaviour is undefined if
+the weight is negative.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>void Statistics::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
+<li><code>size_t Statistics::</code><strong><code>columns</code></strong><code>() const noexcept</code></li>
 </ul>
-<p>Resets all of the internal accumulators.</p>
+<p>Returns the current number of columns.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>size_t Statistics::</code><strong><code>count</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>Returns the number of data points entered so far.</p>
 </div>
 <div class="defns">
 <ul>
 <li><code>bool Statistics::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
 </ul>
-<p>True if the data set is empty (<code>num()==0</code>).</p>
+<p>True if no data has been entered yet (equivalent to <code>count()==0</code>).</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>size_t Statistics::</code><strong><code>num</code></strong><code>() const noexcept</code></li>
-<li><code>T Statistics::</code><strong><code>t_num</code></strong><code>() const noexcept</code></li>
+<li><code>T Statistics::</code><strong><code>weight</code></strong><code>() const noexcept</code></li>
 </ul>
-<p>Return the number of data points entered.</p>
+<p>Returns the total of all weights so far. For unweighted data this will be
+equal to <code>count()</code>.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>T Statistics::</code><strong><code>min</code></strong><code>() const noexcept</code></li>
-<li><code>T Statistics::</code><strong><code>min_x</code></strong><code>() const noexcept</code></li>
-<li><code>T Statistics::</code><strong><code>min_y</code></strong><code>() const noexcept</code></li>
-<li><code>T Statistics::</code><strong><code>max</code></strong><code>() const noexcept</code></li>
-<li><code>T Statistics::</code><strong><code>max_x</code></strong><code>() const noexcept</code></li>
-<li><code>T Statistics::</code><strong><code>max_y</code></strong><code>() const noexcept</code></li>
+<li><code>T Statistics::</code><strong><code>min</code></strong><code>(size_t i = 0) const noexcept</code></li>
+<li><code>T Statistics::</code><strong><code>max</code></strong><code>(size_t i = 0) const noexcept</code></li>
 </ul>
-<p>Minimum and maximum values of <code>x</code> and <code>y</code>. These will return zero if the data
-set is empty. The functions with no suffix return the univariate statistics
-(the same values as the <code>*_x()</code> functions).</p>
+<p>Maximum and minimum values of each column.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>T Statistics::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
-<li><code>T Statistics::</code><strong><code>mean_x</code></strong><code>() const noexcept</code></li>
-<li><code>T Statistics::</code><strong><code>mean_y</code></strong><code>() const noexcept</code></li>
+<li><code>T Statistics::</code><strong><code>sum</code></strong><code>(size_t i = 0) const noexcept</code></li>
 </ul>
-<p>Mean values of <code>x</code> and <code>y</code>. These will return zero if the data set is empty.
-The function with no suffix returns the univariate statistics (the same value
-as <code>mean_x()</code>).</p>
+<p>Weighted sum of each column.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>T Statistics::</code><strong><code>stdevp</code></strong><code>() const noexcept</code></li>
-<li><code>T Statistics::</code><strong><code>stdevp_x</code></strong><code>() const noexcept</code></li>
-<li><code>T Statistics::</code><strong><code>stdevp_y</code></strong><code>() const noexcept</code></li>
-<li><code>T Statistics::</code><strong><code>stdevs</code></strong><code>() const noexcept</code></li>
-<li><code>T Statistics::</code><strong><code>stdevs_x</code></strong><code>() const noexcept</code></li>
-<li><code>T Statistics::</code><strong><code>stdevs_y</code></strong><code>() const noexcept</code></li>
+<li><code>T Statistics::</code><strong><code>mean</code></strong><code>(size_t i = 0) const noexcept</code></li>
 </ul>
-<p>Standard deviations of <code>x</code> and <code>y</code>. The <code>stdevp*()</code> functions return the
-population standard deviation (assuming the supplied data is the complete
-population); the <code>stdevs*()</code> functions return the sample standard deviation
-(assuming the supplied data is a sample of a large population). All of these
-will return zero if the data set is empty; the sample functions will return
-zero if less than two data points are available. The functions with no suffix
-return the univariate statistics (the same values as the <code>*_x()</code> functions).</p>
+<p>Weighted mean of each column.</p>
 </div>
 <div class="defns">
 <ul>
+<li><code>T Statistics::</code><strong><code>variance</code></strong><code>(size_t i = 0) const noexcept</code></li>
+<li><code>T Statistics::</code><strong><code>variance_bc</code></strong><code>(size_t i = 0) const noexcept</code></li>
+<li><code>T Statistics::</code><strong><code>variance_bc_rel</code></strong><code>(size_t i = 0) const noexcept</code></li>
+<li><code>T Statistics::</code><strong><code>sd</code></strong><code>(size_t i = 0) const noexcept</code></li>
+<li><code>T Statistics::</code><strong><code>sd_bc</code></strong><code>(size_t i = 0) const noexcept</code></li>
+<li><code>T Statistics::</code><strong><code>sd_bc_rel</code></strong><code>(size_t i = 0) const noexcept</code></li>
+</ul>
+<p>Standard deviation of each column.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>T Statistics::</code><strong><code>covariance</code></strong><code>() const noexcept</code></li>
+<li><code>T Statistics::</code><strong><code>covariance</code></strong><code>(size_t i, size_t j) const noexcept</code></li>
+<li><code>T Statistics::</code><strong><code>covariance_bc</code></strong><code>() const noexcept</code></li>
+<li><code>T Statistics::</code><strong><code>covariance_bc</code></strong><code>(size_t i, size_t j) const noexcept</code></li>
+<li><code>T Statistics::</code><strong><code>covariance_bc_rel</code></strong><code>() const noexcept</code></li>
+<li><code>T Statistics::</code><strong><code>covariance_bc_rel</code></strong><code>(size_t i, size_t j) const noexcept</code></li>
 <li><code>T Statistics::</code><strong><code>correlation</code></strong><code>() const noexcept</code></li>
+<li><code>T Statistics::</code><strong><code>correlation</code></strong><code>(size_t i, size_t j) const noexcept</code></li>
 </ul>
-<p>Returns Pearson's product moment correlation coefficient. This will return
-zero if less than two data points are available, or if the data set is
-degenerate and no correlation can be calculated.</p>
+<p>Covariance and correlation (Pearson's product moment correlation coefficient)
+of each pair of columns.</p>
 </div>
 <div class="defns">
 <ul>
 <li><code>std::pair&lt;T, T&gt; Statistics::</code><strong><code>linear</code></strong><code>() const noexcept</code></li>
-<li><code>std::pair&lt;T, T&gt; Statistics::</code><strong><code>linear_xy</code></strong><code>() const noexcept</code></li>
-<li><code>std::pair&lt;T, T&gt; Statistics::</code><strong><code>linear_yx</code></strong><code>() const noexcept</code></li>
+<li><code>std::pair&lt;T, T&gt; Statistics::</code><strong><code>linear</code></strong><code>(size_t i, size_t j) const noexcept</code></li>
 </ul>
-<p>Return the coefficients of the least squares linear regression equation (the
-coefficients <em>(a,b)</em> in <em>y&#x302;=ax+b</em> or <em>x&#x302;=ay+b</em>); <code>linear()</code> is a
-synonym for <code>linear_xy()</code>. If the data set is empty, these will all return
-<em>(0,0)</em>; if only one data point has been supplied, or if the data set is
-degenerate and no regression can be calculated, they will return
-<em>(0,y&#x304;)</em> or <em>(0,x&#x304;)</em>.</p></body>
+<p>The coefficients of the least squares linear regression equation for each pair
+of columns (the coefficients <em>(a,b)</em> in <em>y&#x302;=ax+b</em> or <em>x&#x302;=ay+b</em>).</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void Statistics::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
+<li><code>void Statistics::</code><strong><code>clear</code></strong><code>(size_t columns) noexcept</code></li>
+</ul>
+<p>Reset the accumulator to an empty set, optionally setting an initial column
+count.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void Statistics::</code><strong><code>swap</code></strong><code>(Statistics&amp; s) noexcept</code></li>
+<li><code>void</code> <strong><code>swap</code></strong><code>(Statistics&amp; s1, Statistics&amp; s2) noexcept</code></li>
+</ul>
+<p>Swap two objects.</p></body>
 </html>

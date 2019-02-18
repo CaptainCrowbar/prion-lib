@@ -601,28 +601,28 @@ void test_core_random_discrete_normal_distribution() {
     static constexpr int mean = 100;
     static constexpr int sd = 10;
 
-    Statistics<> stats;
+    Statistics<double> stats;
     Xoshiro rng(42);
     int n = 0;
     uint64_t u = 0;
 
     for (int i = 0; i < iterations; ++i) {
         TRY(n = random_discrete_normal<int>(mean, sd)(rng));
-        stats.add(double(n));
+        stats(double(n));
     }
 
     TEST_NEAR_EPSILON(stats.mean(), double(mean), 0.05);
-    TEST_NEAR_EPSILON(stats.stdevp(), double(sd), 0.05);
+    TEST_NEAR_EPSILON(stats.sd_bc(), double(sd), 0.05);
 
     stats.clear();
 
     for (int i = 0; i < iterations; ++i) {
         TRY(u = random_discrete_normal<uint64_t>(mean, sd)(rng));
-        stats.add(double(u));
+        stats(double(u));
     }
 
     TEST_NEAR_EPSILON(stats.mean(), double(mean), 0.05);
-    TEST_NEAR_EPSILON(stats.stdevp(), double(sd), 0.05);
+    TEST_NEAR_EPSILON(stats.sd_bc(), double(sd), 0.05);
 
 }
 
@@ -709,11 +709,11 @@ void test_core_random_poisson_distribution() {
 
     for (int i = 0; i < iterations; ++i) {
         TRY(x = poi(rng));
-        stats.add(x);
+        stats(double(x));
     }
 
     TEST_NEAR_EPSILON(stats.mean(), poi.mean(), 0.001);
-    TEST_NEAR_EPSILON(stats.stdevp(), poi.sd(), 0.001);
+    TEST_NEAR_EPSILON(stats.sd_bc(), poi.sd(), 0.001);
 
     TRY(poi = RandomPoisson<int>(100));
     TEST_EQUAL(poi.lambda(), 100);
@@ -757,11 +757,11 @@ void test_core_random_poisson_distribution() {
 
     for (int i = 0; i < iterations; ++i) {
         TRY(x = poi(rng));
-        stats.add(x);
+        stats(double(x));
     }
 
     TEST_NEAR_EPSILON(stats.mean(), poi.mean(), 0.1);
-    TEST_NEAR_EPSILON(stats.stdevp(), poi.sd(), 0.1);
+    TEST_NEAR_EPSILON(stats.sd_bc(), poi.sd(), 0.1);
 
 }
 
@@ -808,10 +808,10 @@ void test_core_random_beta_distribution() {
     stats.clear();
     for (int i = 0; i < iterations; ++i) {
         TRY(x = beta(rng));
-        stats.add(x);
+        stats(x);
     }
     TEST_NEAR_EPSILON(stats.mean(), beta.mean(), 0.005);
-    TEST_NEAR_EPSILON(stats.stdevp(), beta.sd(), 0.005);
+    TEST_NEAR_EPSILON(stats.sd_bc(), beta.sd(), 0.005);
 
     TRY(beta = RandomBeta<double>(1, 3));
     TEST_EQUAL(beta.alpha(), 1);
@@ -847,10 +847,10 @@ void test_core_random_beta_distribution() {
     stats.clear();
     for (int i = 0; i < iterations; ++i) {
         TRY(x = beta(rng));
-        stats.add(x);
+        stats(x);
     }
     TEST_NEAR_EPSILON(stats.mean(), beta.mean(), 0.005);
-    TEST_NEAR_EPSILON(stats.stdevp(), beta.sd(), 0.005);
+    TEST_NEAR_EPSILON(stats.sd_bc(), beta.sd(), 0.005);
 
     TRY(beta = RandomBeta<double>(2, 5));
     TEST_EQUAL(beta.alpha(), 2);
@@ -886,10 +886,10 @@ void test_core_random_beta_distribution() {
     stats.clear();
     for (int i = 0; i < iterations; ++i) {
         TRY(x = beta(rng));
-        stats.add(x);
+        stats(x);
     }
     TEST_NEAR_EPSILON(stats.mean(), beta.mean(), 0.005);
-    TEST_NEAR_EPSILON(stats.stdevp(), beta.sd(), 0.005);
+    TEST_NEAR_EPSILON(stats.sd_bc(), beta.sd(), 0.005);
 
 }
 

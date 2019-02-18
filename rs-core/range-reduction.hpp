@@ -4,11 +4,13 @@
 #include "rs-core/range-permutation.hpp"
 #include "rs-core/statistics.hpp"
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdlib>
 #include <functional>
 #include <iterator>
 #include <numeric>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -313,20 +315,27 @@ namespace RS::Range {
     template <typename T>
     struct StatisticsType {
         using base_type = std::decay_t<T>;
-        using data_type = std::conditional_t<std::is_floating_point<base_type>::value, base_type, double>;
+        using data_type = std::conditional_t<std::is_integral_v<base_type>, double, base_type>;
         using result_type = Statistics<data_type>;
-        static void tally(T x, result_type& s) noexcept { s.add(data_type(x)); }
+        static void tally(T x, result_type& s) noexcept { s(static_cast<data_type>(x)); }
+    };
+
+    template <typename T, size_t N>
+    struct StatisticsType<std::array<T, N>> {
+        using result_type = Statistics<T>;
+        static void tally(const std::array<T, N>& x, result_type& s) noexcept { s(x); }
     };
 
     template <typename T1, typename T2>
     struct StatisticsType<std::pair<T1, T2>> {
-        using base_type1 = std::decay_t<T1>;
-        using base_type2 = std::decay_t<T2>;
-        using data_type1 = std::conditional_t<std::is_floating_point<base_type1>::value, base_type1, double>;
-        using data_type2 = std::conditional_t<std::is_floating_point<base_type2>::value, base_type2, double>;
-        using data_type = std::conditional_t<(sizeof(data_type2) > sizeof(data_type1)), data_type2, data_type1>;
-        using result_type = Statistics<data_type>;
-        static void tally(std::pair<T1, T2> xy, result_type& s) noexcept { s.add(data_type(xy.first), data_type(xy.second)); }
+        using result_type = Statistics<std::common_type_t<T1, T2>>;
+        static void tally(const std::pair<T1, T2>& x, result_type& s) noexcept { s(x); }
+    };
+
+    template <typename... TS>
+    struct StatisticsType<std::tuple<TS...>> {
+        using result_type = Statistics<std::common_type_t<TS...>>;
+        static void tally(const std::tuple<TS...>& x, result_type& s) noexcept { s(x); }
     };
 
     template <typename Range>

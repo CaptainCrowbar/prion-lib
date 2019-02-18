@@ -631,55 +631,55 @@ void test_core_fixed_binary_random_numbers() {
     Statistics<double> stats;
 
     for (int i = 0; i < iterations; ++i)
-        TRY(stats.add(SB5::random(rng).as_double()));
+        TRY(stats(SB5::random(rng).as_double()));
     TEST_COMPARE(stats.min(), >=, 0);
     TEST_COMPARE(stats.max(), <=, 31);
     TEST_NEAR_EPSILON(stats.mean(), 15.5, 0.2);
-    TEST_NEAR_EPSILON(stats.stdevs(), 9.24, 0.1);
+    TEST_NEAR_EPSILON(stats.sd_bc(), 9.24, 0.1);
 
     stats.clear();
     for (int i = 0; i < iterations; ++i)
-        TRY(stats.add(SB35::random(rng).as_double()));
+        TRY(stats(SB35::random(rng).as_double()));
     TEST_COMPARE(stats.min(), >=, 0);
     TEST_COMPARE(stats.max(), <=, 0x7ffffffff_u64);
     TEST_NEAR_EPSILON(stats.mean(), 1.72e10, 2e8);
-    TEST_NEAR_EPSILON(stats.stdevs(), 9.92e9, 1e8);
+    TEST_NEAR_EPSILON(stats.sd_bc(), 9.92e9, 1e8);
 
     stats.clear();
     for (int i = 0; i < iterations; ++i)
-        TRY(stats.add(LB35::random(rng).as_double()));
+        TRY(stats(LB35::random(rng).as_double()));
     TEST_COMPARE(stats.min(), >=, 0);
     TEST_COMPARE(stats.max(), <=, 0x7ffffffff_u64);
     TEST_NEAR_EPSILON(stats.mean(), 1.72e10, 2e8);
-    TEST_NEAR_EPSILON(stats.stdevs(), 9.92e9, 1e8);
+    TEST_NEAR_EPSILON(stats.sd_bc(), 9.92e9, 1e8);
 
     stats.clear();
     for (int i = 0; i < iterations; ++i)
-        TRY(stats.add(LB100::random(rng).as_double()));
+        TRY(stats(LB100::random(rng).as_double()));
     TEST_COMPARE(stats.min(), >=, 0);
     TEST_COMPARE(stats.max(), <=, 1.267650600e30);
     TEST_NEAR_EPSILON(stats.mean(), 6.34e29, 1e28);
-    TEST_NEAR_EPSILON(stats.stdevs(), 3.66e29, 5e27);
+    TEST_NEAR_EPSILON(stats.sd_bc(), 3.66e29, 5e27);
 
     stats.clear();
     SB35 sb1 = SB35::from_double(1e9);
     SB35 sb2 = SB35::from_double(2e9);
     for (int i = 0; i < iterations; ++i)
-        TRY(stats.add(SB35::random(rng, sb1, sb2).as_double()));
+        TRY(stats(SB35::random(rng, sb1, sb2).as_double()));
     TEST_COMPARE(stats.min(), >=, 1e9);
     TEST_COMPARE(stats.max(), <=, 2e9);
     TEST_NEAR_EPSILON(stats.mean(), 1.5e9, 1e7);
-    TEST_NEAR_EPSILON(stats.stdevs(), 2.89e8, 2e6);
+    TEST_NEAR_EPSILON(stats.sd_bc(), 2.89e8, 2e6);
 
     stats.clear();
     LB35 lb1 = LB35::from_double(1e9);
     LB35 lb2 = LB35::from_double(2e9);
     for (int i = 0; i < iterations; ++i)
-        TRY(stats.add(LB35::random(rng, lb1, lb2).as_double()));
+        TRY(stats(LB35::random(rng, lb1, lb2).as_double()));
     TEST_COMPARE(stats.min(), >=, 1e9);
     TEST_COMPARE(stats.max(), <=, 2e9);
     TEST_NEAR_EPSILON(stats.mean(), 1.5e9, 1e7);
-    TEST_NEAR_EPSILON(stats.stdevs(), 2.89e8, 2e6);
+    TEST_NEAR_EPSILON(stats.sd_bc(), 2.89e8, 2e6);
 
 }
 

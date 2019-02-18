@@ -369,7 +369,8 @@ extern void test_core_serial_persistent_storage();
 extern void test_core_signal_channel();
 extern void test_core_signal_name();
 extern void test_core_stack_class();
-extern void test_core_statistics_class();
+extern void test_core_statistics_basic_parameters();
+extern void test_core_statistics_frequency_weighting();
 extern void test_core_string_literals();
 extern void test_core_string_case_conversion();
 extern void test_core_string_character();
@@ -791,7 +792,8 @@ int main() {
         { "core/signal/channel", test_core_signal_channel },
         { "core/signal/name", test_core_signal_name },
         { "core/stack/class", test_core_stack_class },
-        { "core/statistics/class", test_core_statistics_class },
+        { "core/statistics/basic-parameters", test_core_statistics_basic_parameters },
+        { "core/statistics/frequency-weighting", test_core_statistics_frequency_weighting },
         { "core/string/literals", test_core_string_literals },
         { "core/string/case-conversion", test_core_string_case_conversion },
         { "core/string/character", test_core_string_character },

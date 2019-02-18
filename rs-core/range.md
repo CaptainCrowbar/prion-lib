@@ -555,11 +555,12 @@ True if the range is sorted according to the comparison predicate.
 Return the maximum and minimum values in the range, according to the
 comparison predicate.
 
-* `Range r >>` **`statistics`** `-> Statistics`
+* `Range r >>` **`statistics`** `-> Statistics<T>`
 
-Compiles statistics on the range, whose value type must be either an
-arithmetic type or a pair of arithmetic types. The `Statistics` type is
-defined in [`rs-core/statistics`](statistics.html).
+Compiles statistics on the range, whose value type must be a valid argument to
+`Statistics::operator()`. The data type in `Statistics<T>` is deduced from the
+range value type, and defaults to `double` if that type is an integer. The
+`Statistics` template is defined in [`rs-core/statistics`](statistics.html).
 
 ### Selection algorithms ###
 

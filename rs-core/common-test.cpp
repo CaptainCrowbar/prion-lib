@@ -819,7 +819,7 @@ void test_core_common_generic_algorithms() {
     Ustring::const_iterator it;
     std::vector<int> v1, v2, v3, v4;
     int n = 0;
-    char c = 0;
+    char ch = 0;
     char array[] {'H','e','l','l','o'};
     const char* cp = array;
 
@@ -850,16 +850,38 @@ void test_core_common_generic_algorithms() {
     TEST_EQUAL(std::get<3>(u), 9);
     TEST_EQUAL(std::get<4>(u), 10);
 
+    std::pair<int, int> p = {86,99};
+
+    auto c = tuple_to_array(t);
+    auto d = tuple_to_array(u);
+    auto e = tuple_to_array(p);
+
+    TEST_EQUAL(c.size(), 5);
+    TEST_EQUAL(d.size(), 5);
+    TEST_EQUAL(e.size(), 2);
+    TEST_EQUAL(c[0], 1);
+    TEST_EQUAL(c[1], 2);
+    TEST_EQUAL(c[2], 3);
+    TEST_EQUAL(c[3], 4);
+    TEST_EQUAL(c[4], 5);
+    TEST_EQUAL(d[0], 6);
+    TEST_EQUAL(d[1], 7);
+    TEST_EQUAL(d[2], 8);
+    TEST_EQUAL(d[3], 9);
+    TEST_EQUAL(d[4], 10);
+    TEST_EQUAL(e[0], 86);
+    TEST_EQUAL(e[1], 99);
+
     s = "Hello";
 
-    TRY(c = at_index(s, 0));          TEST_EQUAL(c, 'H');
-    TRY(c = at_index(s, 4));          TEST_EQUAL(c, 'o');
-    TRY(c = at_index(s, 5));          TEST_EQUAL(c, '\0');
-    TRY(c = at_index(s, npos));       TEST_EQUAL(c, '\0');
-    TRY(c = at_index(s, 0, '*'));     TEST_EQUAL(c, 'H');
-    TRY(c = at_index(s, 4, '*'));     TEST_EQUAL(c, 'o');
-    TRY(c = at_index(s, 5, '*'));     TEST_EQUAL(c, '*');
-    TRY(c = at_index(s, npos, '*'));  TEST_EQUAL(c, '*');
+    TRY(ch = at_index(s, 0));          TEST_EQUAL(ch, 'H');
+    TRY(ch = at_index(s, 4));          TEST_EQUAL(ch, 'o');
+    TRY(ch = at_index(s, 5));          TEST_EQUAL(ch, '\0');
+    TRY(ch = at_index(s, npos));       TEST_EQUAL(ch, '\0');
+    TRY(ch = at_index(s, 0, '*'));     TEST_EQUAL(ch, 'H');
+    TRY(ch = at_index(s, 4, '*'));     TEST_EQUAL(ch, 'o');
+    TRY(ch = at_index(s, 5, '*'));     TEST_EQUAL(ch, '*');
+    TRY(ch = at_index(s, npos, '*'));  TEST_EQUAL(ch, '*');
 
     const auto is_alpha = [] (char c) { return isalpha(c); };
     const auto same_case = [] (char a, char b) { return islower(a) == islower(b) && isupper(a) == isupper(b); };
@@ -1002,7 +1024,7 @@ void test_core_common_generic_algorithms() {
 
     std::vector<int> iv0, iv5 = {1,2,3,4,5};
     const std::vector<int>& civ5(iv5);
-    double d = 0;
+    double x = 0;
     double da5[] = {10,20,30,40,50};
 
     TRY(n = sum_of(iv0));       TEST_EQUAL(n, 0);
@@ -1011,8 +1033,8 @@ void test_core_common_generic_algorithms() {
     TRY(n = product_of(iv0));   TEST_EQUAL(n, 1);
     TRY(n = product_of(iv5));   TEST_EQUAL(n, 120);
     TRY(n = product_of(civ5));  TEST_EQUAL(n, 120);
-    TRY(d = sum_of(da5));       TEST_EQUAL(d, 150);
-    TRY(d = product_of(da5));   TEST_EQUAL(d, 1.2e7);
+    TRY(x = sum_of(da5));       TEST_EQUAL(x, 150);
+    TRY(x = product_of(da5));   TEST_EQUAL(x, 1.2e7);
 
 }
 

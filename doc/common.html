@@ -754,9 +754,14 @@ do not have a suitable <code>insert()</code> method.</p>
 <ul>
 <li><code>template &lt;typename T, size_t N&gt; constexpr std::tuple&lt;T,...&gt;</code> <strong><code>array_to_tuple</code></strong><code>(const T (&amp;array)[N])</code></li>
 <li><code>template &lt;typename T, size_t N&gt; constexpr std::tuple&lt;T,...&gt;</code> <strong><code>array_to_tuple</code></strong><code>(const std::array&lt;T, N&gt; &amp;array)</code></li>
+<li><code>template &lt;typename... TS&gt; std::array&lt;CT, N&gt;</code> <strong><code>tuple_to_array</code></strong><code>(const std::tuple&lt;TS...&gt;&amp; t)</code></li>
+<li><code>template &lt;typename T1, typename T2&gt; std::array&lt;CT, 2&gt;</code> <strong><code>tuple_to_array</code></strong><code>(const std::pair&lt;T1, T2&gt;&amp; t)</code></li>
 </ul>
-<p>Convert a C-style array or a <code>std::array</code> to a tuple containing the same
-values.</p>
+<p>The <code>array_to_tuple()</code> functions convert a C-style array or a <code>std::array</code> to
+a tuple containing the same values. The <code>tuple_to_array()</code> functions convert a
+tuple or pair to an array containing the same values. The element type of the
+resulting array is the common type of the tuple elements; <code>tuple_to_array()</code>
+will fail to compile if this type does not exist.</p>
 </div>
 <div class="defns">
 <ul>

@@ -86,6 +86,13 @@ namespace RS {
             return std::make_tuple(array[Sequence]...);
         }
 
+        template <size_t I, typename T, size_t N, typename... TS>
+        void tuple_to_array_helper(const std::tuple<TS...>& t, std::array<T, N>& a) {
+            a[I] = static_cast<T>(std::get<I>(t));
+            if constexpr (I + 1 < N)
+                tuple_to_array_helper<I + 1>(t, a);
+        }
+
     }
 
     template <typename T, size_t N>
@@ -96,6 +103,19 @@ namespace RS {
     template <typename T, size_t N>
     constexpr auto array_to_tuple(const std::array<T, N> &array) {
         return RS_Detail::array_to_tuple_helper(array, std::make_index_sequence<N>{});
+    }
+
+    template <typename... TS>
+    auto tuple_to_array(const std::tuple<TS...>& t) {
+        std::array<std::common_type_t<TS...>, sizeof...(TS)> a;
+        RS_Detail::tuple_to_array_helper<0>(t, a);
+        return a;
+    }
+
+    template <typename T1, typename T2>
+    std::array<std::common_type_t<T1, T2>, 2> tuple_to_array(const std::pair<T1, T2>& t) {
+        using CT = std::common_type_t<T1, T2>;
+        return {{static_cast<CT>(t.first), static_cast<CT>(t.second)}};
     }
 
     namespace RS_Detail {

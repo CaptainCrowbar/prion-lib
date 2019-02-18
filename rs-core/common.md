@@ -552,9 +552,14 @@ Returns `irange(ptr,ptr+len)`.
 
 * `template <typename T, size_t N> constexpr std::tuple<T,...>` **`array_to_tuple`**`(const T (&array)[N])`
 * `template <typename T, size_t N> constexpr std::tuple<T,...>` **`array_to_tuple`**`(const std::array<T, N> &array)`
+* `template <typename... TS> std::array<CT, N>` **`tuple_to_array`**`(const std::tuple<TS...>& t)`
+* `template <typename T1, typename T2> std::array<CT, 2>` **`tuple_to_array`**`(const std::pair<T1, T2>& t)`
 
-Convert a C-style array or a `std::array` to a tuple containing the same
-values.
+The `array_to_tuple()` functions convert a C-style array or a `std::array` to
+a tuple containing the same values. The `tuple_to_array()` functions convert a
+tuple or pair to an array containing the same values. The element type of the
+resulting array is the common type of the tuple elements; `tuple_to_array()`
+will fail to compile if this type does not exist.
 
 * `template <typename Range> [value type]` **`at_index`**`(const Range& r, size_t index)`
 * `template <typename Range, typename T> [value type]` **`at_index`**`(const Range& r, size_t index, const T& def)`

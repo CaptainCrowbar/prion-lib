@@ -614,7 +614,7 @@ namespace RS::Meta {
 
         template <template <typename...> typename Archetype, typename T1, typename T2>
         constexpr bool is_detected_non_void() noexcept {
-            if constexpr (std::is_same_v<std::remove_cv_t<T1>, void*>)
+            if constexpr (std::is_pointer_v<T1> && std::is_void_v<std::remove_pointer_t<T1>>)
                 return false;
             else
                 return IsDetected<Archetype, T1, T2>::value;

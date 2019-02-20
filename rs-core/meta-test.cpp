@@ -1311,6 +1311,46 @@ void test_core_meta_operator_detection() {
     TEST((! has_right_shift_assign_operator<void*, int>));  // x>>=y
     TEST((! has_index_operator<void*, size_t>));            // x>>=y
 
+    TEST((! has_pre_increment_operator<const void*>));            // ++x
+    TEST((! has_pre_decrement_operator<const void*>));            // --x
+    TEST((! has_post_increment_operator<const void*>));           // x++
+    TEST((! has_post_decrement_operator<const void*>));           // x--
+    TEST((has_unary_plus_operator<const void*>));                 // +x
+    TEST((! has_unary_minus_operator<const void*>));              // -x
+    TEST((! has_dereference_operator<const void*>));              // *x
+    TEST((has_logical_not_operator<const void*>));                // !x
+    TEST((! has_bitwise_not_operator<const void*>));              // ~x
+    TEST((! has_plus_operator<const void*>));                     // x+y
+    TEST((! has_minus_operator<const void*>));                    // x-y
+    TEST((! has_multiply_operator<const void*>));                 // x*y
+    TEST((! has_divide_operator<const void*>));                   // x/y
+    TEST((! has_remainder_operator<const void*>));                // x%y
+    TEST((! has_bitwise_and_operator<const void*>));              // x&y
+    TEST((! has_bitwise_or_operator<const void*>));               // x|y
+    TEST((! has_bitwise_xor_operator<const void*>));              // x^y
+    TEST((! has_left_shift_operator<const void*, int>));          // x<<y
+    TEST((! has_right_shift_operator<const void*, int>));         // x>>y
+    TEST((has_equal_operator<const void*>));                      // x==y
+    TEST((has_not_equal_operator<const void*>));                  // x!=y
+    TEST((has_less_than_operator<const void*>));                  // x<y
+    TEST((has_greater_than_operator<const void*>));               // x>y
+    TEST((has_less_or_equal_operator<const void*>));              // x<=y
+    TEST((has_greater_or_equal_operator<const void*>));           // x>=y
+    TEST((has_logical_and_operator<const void*>));                // x&&y
+    TEST((has_logical_or_operator<const void*>));                 // x||y
+    TEST((has_assign_operator<const void*>));                     // x=y
+    TEST((! has_plus_assign_operator<const void*>));              // x+=y
+    TEST((! has_minus_assign_operator<const void*>));             // x-=y
+    TEST((! has_multiply_assign_operator<const void*>));          // x*=y
+    TEST((! has_divide_assign_operator<const void*>));            // x/=y
+    TEST((! has_remainder_assign_operator<const void*>));         // x%=y
+    TEST((! has_bitwise_and_assign_operator<const void*>));       // x&=y
+    TEST((! has_bitwise_or_assign_operator<const void*>));        // x|=y
+    TEST((! has_bitwise_xor_assign_operator<const void*>));       // x^=y
+    TEST((! has_left_shift_assign_operator<const void*, int>));   // x<<=y
+    TEST((! has_right_shift_assign_operator<const void*, int>));  // x>>=y
+    TEST((! has_index_operator<const void*, size_t>));            // x>>=y
+
 }
 
 void test_core_meta_function_detection() {

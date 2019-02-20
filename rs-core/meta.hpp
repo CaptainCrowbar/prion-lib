@@ -577,7 +577,6 @@ namespace RS::Meta {
     RS_DETECT_POSTFIX_OPERATOR_REF  (--,   PostDecrement,     post_decrement);
     RS_DETECT_PREFIX_OPERATOR       (+,    UnaryPlus,         unary_plus);
     RS_DETECT_PREFIX_OPERATOR       (-,    UnaryMinus,        unary_minus);
-    RS_DETECT_PREFIX_OPERATOR       (*,    Dereference,       dereference);
     RS_DETECT_PREFIX_OPERATOR       (!,    LogicalNot,        logical_not);
     RS_DETECT_PREFIX_OPERATOR       (~,    BitwiseNot,        bitwise_not);
     RS_DETECT_BINARY_OPERATOR       (+,    Plus,              plus);
@@ -608,19 +607,23 @@ namespace RS::Meta {
     RS_DETECT_BINARY_OPERATOR_REF   (<<=,  LeftShiftAssign,   left_shift_assign);
     RS_DETECT_BINARY_OPERATOR_REF   (>>=,  RightShiftAssign,  right_shift_assign);
 
-    // We need special cases for some of the arithmetic operators on void pointers
+    // We need special cases for some of the operators on void pointers
 
     namespace MetaDetail {
 
-        template <template <typename...> typename Archetype, typename T1, typename T2>
+        template <template <typename...> typename Archetype, typename T, typename... TS>
         constexpr bool is_detected_non_void() noexcept {
-            if constexpr (std::is_pointer_v<T1> && std::is_void_v<std::remove_pointer_t<T1>>)
+            if constexpr (std::is_pointer_v<T> && std::is_void_v<std::remove_pointer_t<T>>)
                 return false;
             else
-                return IsDetected<Archetype, T1, T2>::value;
+                return IsDetected<Archetype, T, TS...>::value;
         }
 
     }
+
+    template <typename T> using HasDereferenceOperatorArchetype = decltype(*std::declval<T>());
+    template <typename T> struct HasDereferenceOperator: std::bool_constant<::RS::Meta::MetaDetail::is_detected_non_void<HasDereferenceOperatorArchetype, T>()> {};
+    template <typename T> constexpr bool has_dereference_operator = HasDereferenceOperator<T>::value;
 
     template <typename T, typename T2 = T> using HasMinusOperatorArchetype = decltype(std::declval<T>() - std::declval<T2>());
     template <typename T, typename T2 = T> struct HasMinusOperator: std::bool_constant<::RS::Meta::MetaDetail::is_detected_non_void<HasMinusOperatorArchetype, T, T2>()> {};

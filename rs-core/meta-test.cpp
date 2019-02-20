@@ -1244,13 +1244,14 @@ void test_core_meta_operator_detection() {
     TEST((! has_right_shift_assign_operator<char*, int>));  // x>>=y
     TEST((! has_left_shift_assign_operator<char*, int>));   // x<<=y
 
-    TEST((has_assign_operator<double, int>));
-    TEST((has_assign_operator<std::string, const char*>));
-    TEST((! has_assign_operator<int, std::string>));
-    TEST((! has_assign_operator<const char*, std::string>));
+    TEST((has_assign_operator<double, int>));                 // x=y
+    TEST((has_assign_operator<std::string, const char*>));    // x=y
+    TEST((! has_assign_operator<int, std::string>));          // x=y
+    TEST((! has_assign_operator<const char*, std::string>));  // x=y
 
-    TEST((has_index_operator<std::map<int, std::string>, int>));
-    TEST((has_index_operator<std::map<std::string, int>, std::string>));
+    TEST((has_index_operator<std::vector<std::string>, int>));            // x[y]
+    TEST((has_index_operator<std::map<int, std::string>, int>));          // x[y]
+    TEST((has_index_operator<std::map<std::string, int>, std::string>));  // x[y]
 
     TEST((has_increment_operators<int>));           // ++x x++
     TEST((has_step_operators<int>));                // ++x x++ --x x--
@@ -1269,6 +1270,46 @@ void test_core_meta_operator_detection() {
     TEST((! has_bitwise_operators<std::string>));             // ~x x&y x&=y x|y x|=y x^y x^=y x<<y x<<=y x>>y x>>=y
     TEST((has_equality_operators<std::string>));              // x==y x!=y
     TEST((has_comparison_operators<std::string>));            // x==y x!=y x<y x<=y x>y x>=y
+
+    TEST((! has_pre_increment_operator<void*>));            // ++x
+    TEST((! has_pre_decrement_operator<void*>));            // --x
+    TEST((! has_post_increment_operator<void*>));           // x++
+    TEST((! has_post_decrement_operator<void*>));           // x--
+    TEST((has_unary_plus_operator<void*>));                 // +x
+    TEST((! has_unary_minus_operator<void*>));              // -x
+    TEST((! has_dereference_operator<void*>));              // *x
+    TEST((has_logical_not_operator<void*>));                // !x
+    TEST((! has_bitwise_not_operator<void*>));              // ~x
+    TEST((! has_plus_operator<void*>));                     // x+y
+    TEST((! has_minus_operator<void*>));                    // x-y
+    TEST((! has_multiply_operator<void*>));                 // x*y
+    TEST((! has_divide_operator<void*>));                   // x/y
+    TEST((! has_remainder_operator<void*>));                // x%y
+    TEST((! has_bitwise_and_operator<void*>));              // x&y
+    TEST((! has_bitwise_or_operator<void*>));               // x|y
+    TEST((! has_bitwise_xor_operator<void*>));              // x^y
+    TEST((! has_left_shift_operator<void*, int>));          // x<<y
+    TEST((! has_right_shift_operator<void*, int>));         // x>>y
+    TEST((has_equal_operator<void*>));                      // x==y
+    TEST((has_not_equal_operator<void*>));                  // x!=y
+    TEST((has_less_than_operator<void*>));                  // x<y
+    TEST((has_greater_than_operator<void*>));               // x>y
+    TEST((has_less_or_equal_operator<void*>));              // x<=y
+    TEST((has_greater_or_equal_operator<void*>));           // x>=y
+    TEST((has_logical_and_operator<void*>));                // x&&y
+    TEST((has_logical_or_operator<void*>));                 // x||y
+    TEST((has_assign_operator<void*>));                     // x=y
+    TEST((! has_plus_assign_operator<void*>));              // x+=y
+    TEST((! has_minus_assign_operator<void*>));             // x-=y
+    TEST((! has_multiply_assign_operator<void*>));          // x*=y
+    TEST((! has_divide_assign_operator<void*>));            // x/=y
+    TEST((! has_remainder_assign_operator<void*>));         // x%=y
+    TEST((! has_bitwise_and_assign_operator<void*>));       // x&=y
+    TEST((! has_bitwise_or_assign_operator<void*>));        // x|=y
+    TEST((! has_bitwise_xor_assign_operator<void*>));       // x^=y
+    TEST((! has_left_shift_assign_operator<void*, int>));   // x<<=y
+    TEST((! has_right_shift_assign_operator<void*, int>));  // x>>=y
+    TEST((! has_index_operator<void*, size_t>));            // x>>=y
 
 }
 

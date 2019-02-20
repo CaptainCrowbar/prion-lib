@@ -1204,6 +1204,82 @@ void test_core_random_normal_distribution_properties() {
 
 }
 
+void test_core_random_uniform_choice_distribution() {
+
+    static constexpr size_t iterations = 100'000;
+    static const std::vector<int> v = {1,2,3,4,5,6,7,8,9,10};
+
+    std::mt19937 rng(42);
+    RandomChoice<int> choice;
+
+    {
+        auto gen = [&] { return choice(rng); };
+        for (int i = 1; i <= 10; ++i)
+            TRY(choice.add(i));
+        CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661);
+        TRY(choice.clear());
+        TRY(std::copy(v.begin(), v.end(), append(choice)));
+        CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661);
+        TRY(choice.clear());
+        TRY(choice.append(v));
+        CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661);
+        TRY(choice.clear());
+        TRY(choice.append({1,2,3,4,5,6,7,8,9,10}));
+        CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661);
+    }
+
+    { auto gen = [&] { return random_choice(v)(rng); };                            CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
+    { auto gen = [&] { return random_choice(v.begin(), v.end())(rng); };           CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
+    { auto gen = [&] { return random_choice({1,2,3,4,5,6,7,8,9,10})(rng); };       CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
+    { auto gen = [&] { return random_choice_from(v, rng); };                       CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
+    { auto gen = [&] { return random_choice_from(v.begin(), v.end(), rng); };      CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
+    { auto gen = [&] { return random_choice_from({1,2,3,4,5,6,7,8,9,10}, rng); };  CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
+
+}
+
+void test_core_random_weighted_choice_distribution() {
+
+    const int iterations = 1000000;
+    std::map<Ustring, int> census;
+    std::mt19937 rng(42);
+    auto freq = [&] (const Ustring& s) { return double(census[s]) / double(iterations); };
+
+    {
+        WeightedChoice<Ustring> choice;
+        TRY((choice = {
+            {"alpha", 0.4},
+            {"bravo", 0.3},
+            {"charlie", 0.2},
+            {"delta", 0.1},
+        }));
+        census.clear();
+        for (int i = 0; i < iterations; ++i)
+            TRY(++census[choice(rng)]);
+        TEST_NEAR_EPSILON(freq("alpha"), 0.4, 0.01);
+        TEST_NEAR_EPSILON(freq("bravo"), 0.3, 0.01);
+        TEST_NEAR_EPSILON(freq("charlie"), 0.2, 0.01);
+        TEST_NEAR_EPSILON(freq("delta"), 0.1, 0.01);
+    }
+
+    {
+        WeightedChoice<Ustring, int> choice;
+        TRY((choice = {
+            {"alpha", 40},
+            {"bravo", 30},
+            {"charlie", 20},
+            {"delta", 10},
+        }));
+        census.clear();
+        for (int i = 0; i < iterations; ++i)
+            TRY(++census[choice(rng)]);
+        TEST_NEAR_EPSILON(freq("alpha"), 0.4, 0.01);
+        TEST_NEAR_EPSILON(freq("bravo"), 0.3, 0.01);
+        TEST_NEAR_EPSILON(freq("charlie"), 0.2, 0.01);
+        TEST_NEAR_EPSILON(freq("delta"), 0.1, 0.01);
+    }
+
+}
+
 void test_core_random_vectors() {
 
     const int iterations = 1000000;
@@ -1370,64 +1446,6 @@ void test_core_random_unique_distribution() {
         for (int j = 1; j <= 5; ++j)
             TEST_EQUAL(census[j], 1);
         TRY(unique_int.clear());
-    }
-
-}
-
-void test_core_random_uniform_choice_distribution() {
-
-    static constexpr size_t iterations = 100'000;
-    static const std::vector<int> v = {1,2,3,4,5,6,7,8,9,10};
-    std::mt19937 rng(42);
-
-    { auto gen = [&] { return random_choice(v)(rng); };                            CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
-    { auto gen = [&] { return random_choice(v.begin(), v.end())(rng); };           CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
-    { auto gen = [&] { return random_choice({1,2,3,4,5,6,7,8,9,10})(rng); };       CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
-    { auto gen = [&] { return random_choice_from(v, rng); };                       CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
-    { auto gen = [&] { return random_choice_from(v.begin(), v.end(), rng); };      CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
-    { auto gen = [&] { return random_choice_from({1,2,3,4,5,6,7,8,9,10}, rng); };  CHECK_RANDOM_GENERATOR(gen, 1, 10, 5.5, 2.88661); }
-
-}
-
-void test_core_random_weighted_choice_distribution() {
-
-    const int iterations = 1000000;
-    std::map<Ustring, int> census;
-    std::mt19937 rng(42);
-    auto freq = [&] (const Ustring& s) { return double(census[s]) / double(iterations); };
-
-    {
-        WeightedChoice<Ustring> choice;
-        TRY((choice = {
-            {"alpha", 0.4},
-            {"bravo", 0.3},
-            {"charlie", 0.2},
-            {"delta", 0.1},
-        }));
-        census.clear();
-        for (int i = 0; i < iterations; ++i)
-            TRY(++census[choice(rng)]);
-        TEST_NEAR_EPSILON(freq("alpha"), 0.4, 0.01);
-        TEST_NEAR_EPSILON(freq("bravo"), 0.3, 0.01);
-        TEST_NEAR_EPSILON(freq("charlie"), 0.2, 0.01);
-        TEST_NEAR_EPSILON(freq("delta"), 0.1, 0.01);
-    }
-
-    {
-        WeightedChoice<Ustring, int> choice;
-        TRY((choice = {
-            {"alpha", 40},
-            {"bravo", 30},
-            {"charlie", 20},
-            {"delta", 10},
-        }));
-        census.clear();
-        for (int i = 0; i < iterations; ++i)
-            TRY(++census[choice(rng)]);
-        TEST_NEAR_EPSILON(freq("alpha"), 0.4, 0.01);
-        TEST_NEAR_EPSILON(freq("bravo"), 0.3, 0.01);
-        TEST_NEAR_EPSILON(freq("charlie"), 0.2, 0.01);
-        TEST_NEAR_EPSILON(freq("delta"), 0.1, 0.01);
     }
 
 }

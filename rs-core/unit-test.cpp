@@ -264,12 +264,12 @@ extern void test_core_random_binomial_distribution_properties();
 extern void test_core_random_dice_distribution_properties();
 extern void test_core_random_uniform_real_distribution_properties();
 extern void test_core_random_normal_distribution_properties();
+extern void test_core_random_uniform_choice_distribution();
+extern void test_core_random_weighted_choice_distribution();
 extern void test_core_random_vectors();
 extern void test_core_random_random_in_sphere();
 extern void test_core_random_random_on_sphere();
 extern void test_core_random_unique_distribution();
-extern void test_core_random_uniform_choice_distribution();
-extern void test_core_random_weighted_choice_distribution();
 extern void test_core_random_bytes();
 extern void test_core_random_shuffle();
 extern void test_core_random_seed_sequence();
@@ -687,12 +687,12 @@ int main() {
         { "core/random/dice-distribution-properties", test_core_random_dice_distribution_properties },
         { "core/random/uniform-real-distribution-properties", test_core_random_uniform_real_distribution_properties },
         { "core/random/normal-distribution-properties", test_core_random_normal_distribution_properties },
+        { "core/random/uniform-choice-distribution", test_core_random_uniform_choice_distribution },
+        { "core/random/weighted-choice-distribution", test_core_random_weighted_choice_distribution },
         { "core/random/vectors", test_core_random_vectors },
         { "core/random/random-in-sphere", test_core_random_random_in_sphere },
         { "core/random/random-on-sphere", test_core_random_random_on_sphere },
         { "core/random/unique-distribution", test_core_random_unique_distribution },
-        { "core/random/uniform-choice-distribution", test_core_random_uniform_choice_distribution },
-        { "core/random/weighted-choice-distribution", test_core_random_weighted_choice_distribution },
         { "core/random/bytes", test_core_random_bytes },
         { "core/random/shuffle", test_core_random_shuffle },
         { "core/random/seed-sequence", test_core_random_seed_sequence },

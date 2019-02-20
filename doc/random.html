@@ -25,10 +25,10 @@
 </li>
 <li><a href="#random-distributions">Random distributions</a><ul>
 <li><a href="#basic-random-distributions">Basic random distributions</a></li>
+<li><a href="#random-choice-distributions">Random choice distributions</a></li>
 <li><a href="#random-samples">Random samples</a></li>
 <li><a href="#spatial-distributions">Spatial distributions</a></li>
 <li><a href="#unique-distribution">Unique distribution</a></li>
-<li><a href="#random-choice-distributions">Random choice distributions</a></li>
 </ul>
 </li>
 <li><a href="#other-random-algorithms">Other random algorithms</a></li>
@@ -522,7 +522,68 @@ if <code>lambda&lt;=0</code>.</p>
 <p>Beta distribution. The default constructor sets <code>a=b=1</code>, which produces a
 uniform distribution. Behaviour is undefined if <code>a&lt;=0</code> or <code>b&lt;=0</code>.</p>
 </div>
+<h3 id="random-choice-distributions">Random choice distributions</h3>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>RandomChoice</code></strong><ul>
+<li><code>using RandomChoice::</code><strong><code>result_type</code></strong> <code>= T</code></li>
+<li><code>using RandomChoice::</code><strong><code>value_type</code></strong> <code>= T</code></li>
+<li><code>RandomChoice::</code><strong><code>RandomChoice</code></strong><code>() noexcept</code></li>
+<li><code>template &lt;typename InputIterator&gt; RandomChoice::</code><strong><code>RandomChoice</code></strong><code>(InputIterator i, InputIterator j)</code></li>
+<li><code>template &lt;typename InputRange&gt; explicit RandomChoice::</code><strong><code>RandomChoice</code></strong><code>(const InputRange&amp; list)</code></li>
+<li><code>RandomChoice::</code><strong><code>RandomChoice</code></strong><code>(std::initializer_list&lt;T&gt; list)</code></li>
+<li><code>template &lt;typename RNG&gt; const T&amp; RandomChoice::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
+<li><code>void RandomChoice::</code><strong><code>add</code></strong><code>(const T&amp; t)</code></li>
+<li><code>void RandomChoice::</code><strong><code>push_back</code></strong><code>(const T&amp; t)</code></li>
+<li><code>void RandomChoice::</code><strong><code>append</code></strong><code>(initializer_list&lt;T&gt; list)</code></li>
+<li><code>template &lt;typename InputRange&gt; void RandomChoice::</code><strong><code>append</code></strong><code>(const InputRange&amp; list)</code></li>
+<li><code>void RandomChoice::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
+<li><code>bool RandomChoice::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
+<li><code>size_t RandomChoice::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
+</ul>
+</li>
+<li><code>template &lt;typename InputIterator&gt; RandomChoice&lt;[value type]&gt;</code> <strong><code>random_choice</code></strong><code>(InputIterator i, InputIterator j)</code></li>
+<li><code>template &lt;typename InputRange&gt; RandomChoice&lt;[value type]&gt;</code> <strong><code>random_choice</code></strong><code>(const InputRange&amp; list)</code></li>
+<li><code>template &lt;typename T&gt; RandomChoice&lt;T&gt;</code> <strong><code>random_choice</code></strong><code>(std::initializer_list&lt;T&gt; list)</code></li>
+<li><code>template &lt;typename ForwardIterator, typename RNG&gt; const [value type]&amp;</code> <strong><code>random_choice_from</code></strong><code>(ForwardIterator i, ForwardIterator j, RNG&amp; rng)</code></li>
+<li><code>template &lt;typename ForwardRange, typename RNG&gt; const [value type]&amp;</code> <strong><code>random_choice_from</code></strong><code>(const ForwardRange&amp; list, RNG&amp; rng)</code></li>
+<li><code>template &lt;typename T, typename RNG&gt; const T&amp;</code> <strong><code>random_choice_from</code></strong><code>(std::initializer_list&lt;T&gt; list, RNG&amp; rng)</code></li>
+</ul>
+<p>Selects an element at random from the input list. The <code>add()</code> and
+<code>push_back()</code> functions are synonyms. The <code>random_choice_from()</code> functions are
+shortcuts that can be used to avoid the overhead of copying the list in
+one-time calls. Behaviour is undefined if the list is empty.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T, typename F = double&gt; class</code> <strong><code>WeightedChoice</code></strong><ul>
+<li><code>using WeightedChoice::</code><strong><code>frequency_type</code></strong> <code>= F</code></li>
+<li><code>using WeightedChoice::</code><strong><code>result_type</code></strong> <code>= T</code></li>
+<li><code>using WeightedChoice::</code><strong><code>value_type</code></strong> <code>= std::pair&lt;T, F&gt;</code></li>
+<li><code>WeightedChoice::</code><strong><code>WeightedChoice</code></strong><code>() noexcept</code></li>
+<li><code>WeightedChoice::</code><strong><code>WeightedChoice</code></strong><code>(initializer_list&lt;std::pair&lt;T, F&gt;&gt; pairs)</code></li>
+<li><code>template &lt;typename InputRange&gt; explicit WeightedChoice::</code><strong><code>WeightedChoice</code></strong><code>(const InputRange&amp; pairs)</code></li>
+<li><code>template &lt;typename RNG&gt; const T&amp; WeightedChoice::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
+<li><code>void WeightedChoice::</code><strong><code>add</code></strong><code>(const T&amp; t, F f)</code></li>
+<li><code>void WeightedChoice::</code><strong><code>add</code></strong><code>(const value_type&amp; pair)</code></li>
+<li><code>void WeightedChoice::</code><strong><code>push_back</code></strong><code>(const value_type&amp; pair)</code></li>
+<li><code>void WeightedChoice::</code><strong><code>append</code></strong><code>(initializer_list&lt;std::pair&lt;T, F&gt;&gt; pairs)</code></li>
+<li><code>template &lt;typename InputRange&gt; void WeightedChoice::</code><strong><code>append</code></strong><code>(const InputRange&amp; pairs)</code></li>
+<li><code>void WeightedChoice::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
+<li><code>bool WeightedChoice::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
+</ul>
+</li>
+</ul>
+<p>Selects items at random from a weighted list. The frequency type (<code>F</code>) must be
+an arithmetic type; it can be an integer or floating point type. The default
+constructor creates an empty list; the other constructors copy a list of
+<code>(value,frequency)</code> pairs. The <code>add()</code> and <code>append()</code> functions can be used to
+add <code>(value,frequency)</code> pairs, one at a time or in bulk (<code>push_back()</code> is a
+synonym for <code>add()</code>). Entries with a frequency less than or equal to zero are
+ignored. Behaviour is undefined if the function call operator is called on an
+empty set.</p>
 <h3 id="random-samples">Random samples</h3>
+</div>
 <div class="defns">
 <ul>
 <li><code>template &lt;typename ForwardRange, typename RNG&gt; vector&lt;[value type]&gt;</code> <strong><code>random_sample_from</code></strong><code>(const ForwardRange&amp; range, size_t k, RNG&amp; rng)</code></li>
@@ -622,55 +683,6 @@ distribution, which is expected to remain valid. Behaviour is undefined if the
 underlying distribution is destroyed while a <code>UniqueDistribution</code> object still
 has a reference to it, or if <code>UniqueDistribution::operator()</code> is called when
 the cache already contains every possible value of the result type.</p>
-</div>
-<h3 id="random-choice-distributions">Random choice distributions</h3>
-<div class="defns">
-<ul>
-<li><code>template &lt;typename T&gt; class</code> <strong><code>RandomChoice</code></strong><ul>
-<li><code>using RandomChoice::</code><strong><code>result_type</code></strong> <code>= T</code></li>
-<li><code>RandomChoice::</code><strong><code>RandomChoice</code></strong><code>() noexcept</code></li>
-<li><code>template &lt;typename InputIterator&gt; RandomChoice::</code><strong><code>RandomChoice</code></strong><code>(InputIterator i, InputIterator j)</code></li>
-<li><code>template &lt;typename InputRange&gt; explicit RandomChoice::</code><strong><code>RandomChoice</code></strong><code>(const InputRange&amp; list)</code></li>
-<li><code>RandomChoice::</code><strong><code>RandomChoice</code></strong><code>(std::initializer_list&lt;T&gt; list)</code></li>
-<li><code>template &lt;typename RNG&gt; const T&amp; RandomChoice::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
-<li><code>bool RandomChoice::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
-<li><code>size_t RandomChoice::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
-</ul>
-</li>
-<li><code>template &lt;typename InputIterator&gt; RandomChoice&lt;[value type]&gt;</code> <strong><code>random_choice</code></strong><code>(InputIterator i, InputIterator j)</code></li>
-<li><code>template &lt;typename InputRange&gt; RandomChoice&lt;[value type]&gt;</code> <strong><code>random_choice</code></strong><code>(const InputRange&amp; list)</code></li>
-<li><code>template &lt;typename T&gt; RandomChoice&lt;T&gt;</code> <strong><code>random_choice</code></strong><code>(std::initializer_list&lt;T&gt; list)</code></li>
-<li><code>template &lt;typename ForwardIterator, typename RNG&gt; const [value type]&amp;</code> <strong><code>random_choice_from</code></strong><code>(ForwardIterator i, ForwardIterator j, RNG&amp; rng)</code></li>
-<li><code>template &lt;typename ForwardRange, typename RNG&gt; const [value type]&amp;</code> <strong><code>random_choice_from</code></strong><code>(const ForwardRange&amp; list, RNG&amp; rng)</code></li>
-<li><code>template &lt;typename T, typename RNG&gt; const T&amp;</code> <strong><code>random_choice_from</code></strong><code>(std::initializer_list&lt;T&gt; list, RNG&amp; rng)</code></li>
-</ul>
-<p>Selects an element at random from the input list. The <code>random_choice_from()</code>
-functions are shortcuts that can be used to avoid the overhead of copying the
-list in one-time calls. Behaviour is undefined if the list is empty.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>template &lt;typename T, typename F = double&gt; class</code> <strong><code>WeightedChoice</code></strong><ul>
-<li><code>using WeightedChoice::</code><strong><code>frequency_type</code></strong> <code>= F</code></li>
-<li><code>using WeightedChoice::</code><strong><code>result_type</code></strong> <code>= T</code></li>
-<li><code>WeightedChoice::</code><strong><code>WeightedChoice</code></strong><code>() noexcept</code></li>
-<li><code>WeightedChoice::</code><strong><code>WeightedChoice</code></strong><code>(initializer_list&lt;pair&lt;T, F&gt;&gt; pairs)</code></li>
-<li><code>template &lt;typename InputRange&gt; explicit WeightedChoice::</code><strong><code>WeightedChoice</code></strong><code>(const InputRange&amp; pairs)</code></li>
-<li><code>template &lt;typename RNG&gt; const T&amp; WeightedChoice::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
-<li><code>void WeightedChoice::</code><strong><code>add</code></strong><code>(const T&amp; t, F f)</code></li>
-<li><code>void WeightedChoice::</code><strong><code>append</code></strong><code>(initializer_list&lt;pair&lt;T, F&gt;&gt; pairs)</code></li>
-<li><code>template &lt;typename InputRange&gt; void WeightedChoice::</code><strong><code>append</code></strong><code>(const InputRange&amp; pairs)</code></li>
-<li><code>bool WeightedChoice::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
-</ul>
-</li>
-</ul>
-<p>Selects items at random from a weighted list. The frequency type (<code>F</code>) must be
-an arithmetic type; it can be an integer or floating point type. The default
-constructor creates an empty list; the other constructors copy a list of
-<code>(value,frequency)</code> pairs. The <code>add()</code> and <code>append()</code> functions can be used to
-add <code>(value,frequency)</code> pairs, one at a time or in bulk. Entries with a
-frequency less than or equal to zero are ignored. Behaviour is undefined if
-the function call operator is called on an empty set.</p>
 </div>
 <h2 id="other-random-algorithms">Other random algorithms</h2>
 <div class="defns">

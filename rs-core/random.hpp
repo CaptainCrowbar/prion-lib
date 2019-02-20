@@ -1054,6 +1054,141 @@ namespace RS {
             return std::exp(a * std::log(x) + b * std::log(1 - x) - std::log(cf) - log_a - log_cbeta_ab_);
         }
 
+    // Random choice distributions
+
+    template <typename T>
+    class RandomChoice {
+    public:
+        using result_type = T;
+        using value_type = T;
+        RandomChoice() = default;
+        template <typename InputIterator> RandomChoice(InputIterator i, InputIterator j): list_(i, j) {}
+        template <typename InputRange> explicit RandomChoice(const InputRange& list);
+        RandomChoice(std::initializer_list<T> list): list_(list) {}
+        template <typename RNG> const T& operator()(RNG& rng) const { return list_[random_integer(list_.size())(rng)]; }
+        void add(const T& t) { list_.push_back(t); }
+        void push_back(const T& t) { list_.push_back(t); }
+        void append(std::initializer_list<T> list) { list_.insert(list_.end(), list); }
+        template <typename InputRange> void append(const InputRange& list);
+        void clear() noexcept { list_.clear(); }
+        bool empty() const noexcept { return list_.empty(); }
+        size_t size() const noexcept { return list_.size(); }
+    private:
+        std::vector<T> list_;
+    };
+
+        template <typename T>
+        template <typename InputRange>
+        RandomChoice<T>::RandomChoice(const InputRange& list) {
+            using std::begin;
+            using std::end;
+            list_.assign(begin(list), end(list));
+        }
+
+        template <typename T>
+        template <typename InputRange>
+        void RandomChoice<T>::append(const InputRange& list) {
+            using std::begin;
+            using std::end;
+            list_.insert(list_.end(), begin(list), end(list));
+        }
+
+        template <typename InputIterator> RandomChoice<Meta::IteratorValue<InputIterator>> random_choice(InputIterator i, InputIterator j) {
+            using RC = RandomChoice<Meta::IteratorValue<InputIterator>>;
+            return RC(i, j);
+        }
+
+        template <typename InputRange> RandomChoice<Meta::RangeValue<InputRange>> random_choice(const InputRange& list) {
+            using RC = RandomChoice<Meta::RangeValue<InputRange>>;
+            return RC(list);
+        }
+
+        template <typename T> RandomChoice<T> random_choice(std::initializer_list<T> list) {
+            using RC = RandomChoice<T>;
+            return RC(list);
+        }
+
+        template <typename ForwardIterator, typename RNG> const auto& random_choice_from(ForwardIterator i, ForwardIterator j, RNG& rng) {
+            auto n = std::distance(i, j);
+            auto x = random_integer(n)(rng);
+            std::advance(i, x);
+            return *i;
+        }
+
+        template <typename ForwardRange, typename RNG> const auto& random_choice_from(const ForwardRange& list, RNG& rng) {
+            using std::begin;
+            using std::end;
+            return random_choice_from(begin(list), end(list), rng);
+        }
+
+        template <typename T, typename RNG> const T& random_choice_from(std::initializer_list<T> list, RNG& rng) {
+            return list.begin()[random_integer(list.size())(rng)];
+        }
+
+    template <typename T, typename F = double>
+    class WeightedChoice {
+    public:
+        using frequency_type = F;
+        using result_type = T;
+        using value_type = std::pair<T, F>;
+        WeightedChoice() = default;
+        WeightedChoice(std::initializer_list<std::pair<T, F>> pairs) { append(pairs); }
+        template <typename InputRange> explicit WeightedChoice(const InputRange& pairs) { append(pairs); }
+        template <typename RNG> const T& operator()(RNG& rng) const;
+        void add(const T& t, F f);
+        void add(const value_type& pair) { add(pair.first, pair.second); }
+        void push_back(const value_type& pair) { add(pair); }
+        void append(std::initializer_list<std::pair<T, F>> pairs);
+        template <typename InputRange> void append(const InputRange& pairs);
+        void clear() noexcept { table_.clear(); }
+        bool empty() const noexcept { return total() <= F(0); }
+    private:
+        static_assert(std::is_arithmetic<F>::value);
+        std::map<F, T> table_;
+        F total() const { return table_.empty() ? 0 : std::prev(table_.end())->first; }
+    };
+
+        template <typename T, typename F>
+        template <typename RNG>
+        const T& WeightedChoice<T, F>::operator()(RNG& rng) const {
+            F x;
+            if constexpr (std::is_integral_v<F>)
+                x = random_integer(total())(rng);
+            else
+                x = random_real(total())(rng);
+            return table_.upper_bound(x)->second;
+        }
+
+        template <typename T, typename F>
+        void WeightedChoice<T, F>::add(const T& t, F f) {
+            if (f > F(0))
+                table_.insert(table_.end(), {total() + f, t});
+        }
+
+        template <typename T, typename F>
+        void WeightedChoice<T, F>::append(std::initializer_list<std::pair<T, F>> pairs) {
+            std::vector<std::pair<T, F>> vfs{pairs};
+            auto sum = total();
+            for (auto& vf: vfs) {
+                if (vf.second > F(0)) {
+                    sum += vf.second;
+                    table_.insert(table_.end(), {sum, vf.first});
+                }
+            }
+        }
+
+        template <typename T, typename F>
+        template <typename InputRange>
+        void WeightedChoice<T, F>::append(const InputRange& pairs) {
+            auto sum = total();
+            for (auto& p: pairs) {
+                if (p.second > F(0)) {
+                    sum += p.second;
+                    table_.insert(table_.end(), {sum, p.first});
+                }
+            }
+        }
+
     // Random samples
 
     template <typename ForwardRange, typename RNG>
@@ -1240,119 +1375,6 @@ namespace RS {
         }
 
     template <typename T> inline UniqueDistribution<T> unique_distribution(T& t) { return UniqueDistribution<T>(t); }
-
-    // Random choice distributions
-
-    template <typename T>
-    class RandomChoice {
-    public:
-        using result_type = T;
-        RandomChoice() = default;
-        template <typename InputIterator> RandomChoice(InputIterator i, InputIterator j): list_(i, j) {}
-        template <typename InputRange> explicit RandomChoice(const InputRange& list) {
-            using std::begin;
-            using std::end;
-            list_.assign(begin(list), end(list));
-        }
-        RandomChoice(std::initializer_list<T> list): list_(list) {}
-        template <typename RNG> const T& operator()(RNG& rng) const { return list_[random_integer(list_.size())(rng)]; }
-        bool empty() const noexcept { return list_.empty(); }
-        size_t size() const noexcept { return list_.size(); }
-    private:
-        std::vector<T> list_;
-    };
-
-        template <typename InputIterator> RandomChoice<Meta::IteratorValue<InputIterator>> random_choice(InputIterator i, InputIterator j) {
-            using RC = RandomChoice<Meta::IteratorValue<InputIterator>>;
-            return RC(i, j);
-        }
-
-        template <typename InputRange> RandomChoice<Meta::RangeValue<InputRange>> random_choice(const InputRange& list) {
-            using RC = RandomChoice<Meta::RangeValue<InputRange>>;
-            return RC(list);
-        }
-
-        template <typename T> RandomChoice<T> random_choice(std::initializer_list<T> list) {
-            using RC = RandomChoice<T>;
-            return RC(list);
-        }
-
-        template <typename ForwardIterator, typename RNG> const auto& random_choice_from(ForwardIterator i, ForwardIterator j, RNG& rng) {
-            auto n = std::distance(i, j);
-            auto x = random_integer(n)(rng);
-            std::advance(i, x);
-            return *i;
-        }
-
-        template <typename ForwardRange, typename RNG> const auto& random_choice_from(const ForwardRange& list, RNG& rng) {
-            using std::begin;
-            using std::end;
-            return random_choice_from(begin(list), end(list), rng);
-        }
-
-        template <typename T, typename RNG> const T& random_choice_from(std::initializer_list<T> list, RNG& rng) {
-            return list.begin()[random_integer(list.size())(rng)];
-        }
-
-    template <typename T, typename F = double>
-    class WeightedChoice {
-    public:
-        using frequency_type = F;
-        using result_type = T;
-        WeightedChoice() = default;
-        WeightedChoice(std::initializer_list<std::pair<T, F>> pairs) { append(pairs); }
-        template <typename InputRange> explicit WeightedChoice(const InputRange& pairs) { append(pairs); }
-        template <typename RNG> const T& operator()(RNG& rng) const;
-        void add(const T& t, F f);
-        void append(std::initializer_list<std::pair<T, F>> pairs);
-        template <typename InputRange> void append(const InputRange& pairs);
-        bool empty() const noexcept { return total() <= F(0); }
-    private:
-        static_assert(std::is_arithmetic<F>::value);
-        std::map<F, T> table;
-        F total() const { return table.empty() ? 0 : std::prev(table.end())->first; }
-    };
-
-        template <typename T, typename F>
-        template <typename RNG>
-        const T& WeightedChoice<T, F>::operator()(RNG& rng) const {
-            F x;
-            if constexpr (std::is_integral_v<F>)
-                x = random_integer(total())(rng);
-            else
-                x = random_real(total())(rng);
-            return table.upper_bound(x)->second;
-        }
-
-        template <typename T, typename F>
-        void WeightedChoice<T, F>::add(const T& t, F f) {
-            if (f > F(0))
-                table.insert(table.end(), {total() + f, t});
-        }
-
-        template <typename T, typename F>
-        void WeightedChoice<T, F>::append(std::initializer_list<std::pair<T, F>> pairs) {
-            std::vector<std::pair<T, F>> vfs{pairs};
-            auto sum = total();
-            for (auto& vf: vfs) {
-                if (vf.second > F(0)) {
-                    sum += vf.second;
-                    table.insert(table.end(), {sum, vf.first});
-                }
-            }
-        }
-
-        template <typename T, typename F>
-        template <typename InputRange>
-        void WeightedChoice<T, F>::append(const InputRange& pairs) {
-            auto sum = total();
-            for (auto& p: pairs) {
-                if (p.second > F(0)) {
-                    sum += p.second;
-                    table.insert(table.end(), {sum, p.first});
-                }
-            }
-        }
 
     // Other random algorithms
 

@@ -369,6 +369,61 @@ if `lambda<=0`.
 Beta distribution. The default constructor sets `a=b=1`, which produces a
 uniform distribution. Behaviour is undefined if `a<=0` or `b<=0`.
 
+### Random choice distributions ###
+
+* `template <typename T> class` **`RandomChoice`**
+    * `using RandomChoice::`**`result_type`** `= T`
+    * `using RandomChoice::`**`value_type`** `= T`
+    * `RandomChoice::`**`RandomChoice`**`() noexcept`
+    * `template <typename InputIterator> RandomChoice::`**`RandomChoice`**`(InputIterator i, InputIterator j)`
+    * `template <typename InputRange> explicit RandomChoice::`**`RandomChoice`**`(const InputRange& list)`
+    * `RandomChoice::`**`RandomChoice`**`(std::initializer_list<T> list)`
+    * `template <typename RNG> const T& RandomChoice::`**`operator()`**`(RNG& rng) const`
+    * `void RandomChoice::`**`add`**`(const T& t)`
+    * `void RandomChoice::`**`push_back`**`(const T& t)`
+    * `void RandomChoice::`**`append`**`(initializer_list<T> list)`
+    * `template <typename InputRange> void RandomChoice::`**`append`**`(const InputRange& list)`
+    * `void RandomChoice::`**`clear`**`() noexcept`
+    * `bool RandomChoice::`**`empty`**`() const noexcept`
+    * `size_t RandomChoice::`**`size`**`() const noexcept`
+* `template <typename InputIterator> RandomChoice<[value type]>` **`random_choice`**`(InputIterator i, InputIterator j)`
+* `template <typename InputRange> RandomChoice<[value type]>` **`random_choice`**`(const InputRange& list)`
+* `template <typename T> RandomChoice<T>` **`random_choice`**`(std::initializer_list<T> list)`
+* `template <typename ForwardIterator, typename RNG> const [value type]&` **`random_choice_from`**`(ForwardIterator i, ForwardIterator j, RNG& rng)`
+* `template <typename ForwardRange, typename RNG> const [value type]&` **`random_choice_from`**`(const ForwardRange& list, RNG& rng)`
+* `template <typename T, typename RNG> const T&` **`random_choice_from`**`(std::initializer_list<T> list, RNG& rng)`
+
+Selects an element at random from the input list. The `add()` and
+`push_back()` functions are synonyms. The `random_choice_from()` functions are
+shortcuts that can be used to avoid the overhead of copying the list in
+one-time calls. Behaviour is undefined if the list is empty.
+
+* `template <typename T, typename F = double> class` **`WeightedChoice`**
+    * `using WeightedChoice::`**`frequency_type`** `= F`
+    * `using WeightedChoice::`**`result_type`** `= T`
+    * `using WeightedChoice::`**`value_type`** `= std::pair<T, F>`
+    * `WeightedChoice::`**`WeightedChoice`**`() noexcept`
+    * `WeightedChoice::`**`WeightedChoice`**`(initializer_list<std::pair<T, F>> pairs)`
+    * `template <typename InputRange> explicit WeightedChoice::`**`WeightedChoice`**`(const InputRange& pairs)`
+    * `template <typename RNG> const T& WeightedChoice::`**`operator()`**`(RNG& rng) const`
+    * `void WeightedChoice::`**`add`**`(const T& t, F f)`
+    * `void WeightedChoice::`**`add`**`(const value_type& pair)`
+    * `void WeightedChoice::`**`push_back`**`(const value_type& pair)`
+    * `void WeightedChoice::`**`append`**`(initializer_list<std::pair<T, F>> pairs)`
+    * `template <typename InputRange> void WeightedChoice::`**`append`**`(const InputRange& pairs)`
+    * `void WeightedChoice::`**`clear`**`() noexcept`
+    * `bool WeightedChoice::`**`empty`**`() const noexcept`
+
+Selects items at random from a weighted list. The frequency type (`F`) must be
+an arithmetic type; it can be an integer or floating point type. The default
+constructor creates an empty list; the other constructors copy a list of
+`(value,frequency)` pairs. The `add()` and `append()` functions can be used to
+add `(value,frequency)` pairs, one at a time or in bulk (`push_back()` is a
+synonym for `add()`). Entries with a frequency less than or equal to zero are
+ignored. Behaviour is undefined if the function call operator is called on an
+empty set.
+
+
 ### Random samples ###
 
 * `template <typename ForwardRange, typename RNG> vector<[value type]>` **`random_sample_from`**`(const ForwardRange& range, size_t k, RNG& rng)`
@@ -456,48 +511,6 @@ distribution, which is expected to remain valid. Behaviour is undefined if the
 underlying distribution is destroyed while a `UniqueDistribution` object still
 has a reference to it, or if `UniqueDistribution::operator()` is called when
 the cache already contains every possible value of the result type.
-
-### Random choice distributions ###
-
-* `template <typename T> class` **`RandomChoice`**
-    * `using RandomChoice::`**`result_type`** `= T`
-    * `RandomChoice::`**`RandomChoice`**`() noexcept`
-    * `template <typename InputIterator> RandomChoice::`**`RandomChoice`**`(InputIterator i, InputIterator j)`
-    * `template <typename InputRange> explicit RandomChoice::`**`RandomChoice`**`(const InputRange& list)`
-    * `RandomChoice::`**`RandomChoice`**`(std::initializer_list<T> list)`
-    * `template <typename RNG> const T& RandomChoice::`**`operator()`**`(RNG& rng) const`
-    * `bool RandomChoice::`**`empty`**`() const noexcept`
-    * `size_t RandomChoice::`**`size`**`() const noexcept`
-* `template <typename InputIterator> RandomChoice<[value type]>` **`random_choice`**`(InputIterator i, InputIterator j)`
-* `template <typename InputRange> RandomChoice<[value type]>` **`random_choice`**`(const InputRange& list)`
-* `template <typename T> RandomChoice<T>` **`random_choice`**`(std::initializer_list<T> list)`
-* `template <typename ForwardIterator, typename RNG> const [value type]&` **`random_choice_from`**`(ForwardIterator i, ForwardIterator j, RNG& rng)`
-* `template <typename ForwardRange, typename RNG> const [value type]&` **`random_choice_from`**`(const ForwardRange& list, RNG& rng)`
-* `template <typename T, typename RNG> const T&` **`random_choice_from`**`(std::initializer_list<T> list, RNG& rng)`
-
-Selects an element at random from the input list. The `random_choice_from()`
-functions are shortcuts that can be used to avoid the overhead of copying the
-list in one-time calls. Behaviour is undefined if the list is empty.
-
-* `template <typename T, typename F = double> class` **`WeightedChoice`**
-    * `using WeightedChoice::`**`frequency_type`** `= F`
-    * `using WeightedChoice::`**`result_type`** `= T`
-    * `WeightedChoice::`**`WeightedChoice`**`() noexcept`
-    * `WeightedChoice::`**`WeightedChoice`**`(initializer_list<pair<T, F>> pairs)`
-    * `template <typename InputRange> explicit WeightedChoice::`**`WeightedChoice`**`(const InputRange& pairs)`
-    * `template <typename RNG> const T& WeightedChoice::`**`operator()`**`(RNG& rng) const`
-    * `void WeightedChoice::`**`add`**`(const T& t, F f)`
-    * `void WeightedChoice::`**`append`**`(initializer_list<pair<T, F>> pairs)`
-    * `template <typename InputRange> void WeightedChoice::`**`append`**`(const InputRange& pairs)`
-    * `bool WeightedChoice::`**`empty`**`() const noexcept`
-
-Selects items at random from a weighted list. The frequency type (`F`) must be
-an arithmetic type; it can be an integer or floating point type. The default
-constructor creates an empty list; the other constructors copy a list of
-`(value,frequency)` pairs. The `add()` and `append()` functions can be used to
-add `(value,frequency)` pairs, one at a time or in bulk. Entries with a
-frequency less than or equal to zero are ignored. Behaviour is undefined if
-the function call operator is called on an empty set.
 
 ## Other random algorithms ##
 

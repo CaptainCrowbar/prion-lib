@@ -51,6 +51,19 @@ Specializations of `to_json()` and `from_json()` are provided for:
 
 ## Serialization helper functions ##
 
+* `#define` **`RS_SERIALIZE_ENUM_AS_INTEGER`**`(EnumType)`
+* `#define` **`RS_SERIALIZE_ENUM_AS_STRING`**`(EnumType)`
+
+These macros define serialization functions (`to_json()` and `from_json()`)
+for an enumeration type. The first macro stores the value as a number, and
+will work with any `enum` or `enum class` type. The second stores the value as
+a string containing the unqualified name of the value; this only works with
+types defined using `RS_ENUM()` or `RS_ENUM_CLASS()`, and ensures that a value
+with a given name will be restored to the same named value even if the mapping
+from enumeration names to integer values has changed between serialization and
+deserialization, provided the same name still exists. In all cases, the macro
+must be invoked in the same namespace as the enumeration type.
+
 * `template <typename T, typename FieldPtr, typename... Args> void` **`struct_to_json`**`(json& j, const T& t, const Ustring& name, FieldPtr T::*field_ptr, const Ustring& field_name, Args... more_fields)`
 * `template <typename T, typename FieldPtr, typename... Args> void` **`json_to_struct`**`(const json& j, T& t, const Ustring& name, FieldPtr T::*field_ptr, const Ustring& field_name, Args... more_fields)`
 

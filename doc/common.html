@@ -155,22 +155,19 @@ value names. They will also define the following functions:</p>
 <ul>
 <li><code>constexpr bool</code> <strong><code>enum_is_valid</code></strong><code>(EnumType t) noexcept</code></li>
 <li><code>std::vector&lt;EnumType&gt;</code> <strong><code>enum_values&lt;EnumType&gt;</code></strong><code>()</code></li>
-<li><code>std::vector&lt;EnumType&gt;</code> <strong><code>enum_nonzero_values&lt;EnumType&gt;</code></strong><code>()</code></li>
 <li><code>bool</code> <strong><code>str_to_enum</code></strong><code>(std::string_view s, EnumType&amp; t) noexcept</code></li>
 <li><code>std::string</code> <strong><code>to_str</code></strong><code>(EnumType t)</code></li>
 <li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, EnumType t)</code></li>
 </ul>
 <p>The <code>enum_is_valid()</code> function reports whether or not the argument is a named
-value of the enumeration. The <code>enum_values&lt;T&gt;()</code> function returns a vector
-containing a list of the enumeration's values; <code>enum_nonzero_values&lt;T&gt;()</code>
-leaves out the zero value (if there is one), since that is often used as a
-null placeholder. The <code>str_to_enum()</code> function converts the name of an
-enumeration value (case sensitive; possibly qualified with the class name) to
-the corresponding value; if the string does not match any value, it leaves the
-reference argument unchanged and returns false. The <code>to_str()</code> function and
-the output operator print the name of an enumeration constant (qualified with
-the class name if this is an <code>enum class</code>), or the integer value if the
-argument is not a named value.</p>
+value of the enumeration. The <code>enum_values&lt;T&gt;()</code> function returns a vector The
+<code>str_to_enum()</code> function converts the name of an enumeration value (case
+sensitive; possibly qualified with the class name) to the corresponding value;
+if the string does not match any value, it leaves the reference argument
+unchanged and returns false. The <code>to_str()</code> function and the output operator
+print the name of an enumeration constant (qualified with the class name if
+this is an <code>enum class</code>), or the integer value if the argument is not a named
+value.</p>
 <p>Example:</p>
 <pre><code>RS_ENUM(Foo, 1, alpha, bravo, charlie)
 RS_ENUM_CLASS(Bar, 1, delta, echo, foxtrot)

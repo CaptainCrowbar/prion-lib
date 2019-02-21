@@ -71,6 +71,21 @@ introduce rounding errors.</p>
 <h2 id="serialization-helper-functions">Serialization helper functions</h2>
 <div class="defns">
 <ul>
+<li><code>#define</code> <strong><code>RS_SERIALIZE_ENUM_AS_INTEGER</code></strong><code>(EnumType)</code></li>
+<li><code>#define</code> <strong><code>RS_SERIALIZE_ENUM_AS_STRING</code></strong><code>(EnumType)</code></li>
+</ul>
+<p>These macros define serialization functions (<code>to_json()</code> and <code>from_json()</code>)
+for an enumeration type. The first macro stores the value as a number, and
+will work with any <code>enum</code> or <code>enum class</code> type. The second stores the value as
+a string containing the unqualified name of the value; this only works with
+types defined using <code>RS_ENUM()</code> or <code>RS_ENUM_CLASS()</code>, and ensures that a value
+with a given name will be restored to the same named value even if the mapping
+from enumeration names to integer values has changed between serialization and
+deserialization, provided the same name still exists. In all cases, the macro
+must be invoked in the same namespace as the enumeration type.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>template &lt;typename T, typename FieldPtr, typename... Args&gt; void</code> <strong><code>struct_to_json</code></strong><code>(json&amp; j, const T&amp; t, const Ustring&amp; name, FieldPtr T::*field_ptr, const Ustring&amp; field_name, Args... more_fields)</code></li>
 <li><code>template &lt;typename T, typename FieldPtr, typename... Args&gt; void</code> <strong><code>json_to_struct</code></strong><code>(const json&amp; j, T&amp; t, const Ustring&amp; name, FieldPtr T::*field_ptr, const Ustring&amp; field_name, Args... more_fields)</code></li>
 </ul>

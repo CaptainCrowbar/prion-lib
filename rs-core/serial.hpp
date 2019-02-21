@@ -110,6 +110,26 @@ namespace RS {
 
     // Serialization helper functions
 
+    #define RS_SERIALIZE_ENUM_AS_INTEGER(EnumType) \
+        inline RS_ATTR_UNUSED void from_json(const json& j, EnumType& t) { \
+            using U = std::underlying_type_t<EnumType>; \
+            t = static_cast<EnumType>(j.get<U>()); \
+        } \
+        inline RS_ATTR_UNUSED void to_json(json& j, EnumType t) { \
+            using U = std::underlying_type_t<EnumType>; \
+            j = static_cast<U>(t); \
+        }
+
+    #define RS_SERIALIZE_ENUM_AS_STRING(EnumType) \
+        inline RS_ATTR_UNUSED void from_json(const json& j, EnumType& t) { \
+            auto s = j.get<Ustring>(); \
+            if (! str_to_enum(s, t)) \
+                throw std::invalid_argument("Invalid enumeration value: " + quote(s)); \
+        } \
+        inline RS_ATTR_UNUSED void to_json(json& j, EnumType t) { \
+            j = unqualify(to_str(t)); \
+        }
+
     namespace RS_Detail {
 
         template <typename T, typename FieldPtr, typename... Args>

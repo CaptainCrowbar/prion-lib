@@ -265,6 +265,47 @@ void test_core_serial_version() {
 
 namespace {
 
+    enum Alpha { a_zero, a_one, a_two, a_three };
+    enum class Bravo { b_zero, b_one, b_two, b_three };
+    RS_ENUM(Charlie, uint32_t, 0, c_zero, c_one, c_two, c_three);
+    RS_ENUM_CLASS(Delta, uint32_t, 0, d_zero, d_one, d_two, d_three);
+    RS_ENUM(Echo, uint32_t, 0, e_zero, e_one, e_two, e_three);
+    RS_ENUM_CLASS(Foxtrot, uint32_t, 0, f_zero, f_one, f_two, f_three);
+    RS_ENUM_CLASS(Golf, uint32_t, 100, f_zero, f_one, f_two, f_three);
+
+    RS_SERIALIZE_ENUM_AS_INTEGER(Alpha);
+    RS_SERIALIZE_ENUM_AS_INTEGER(Bravo);
+    RS_SERIALIZE_ENUM_AS_INTEGER(Charlie);
+    RS_SERIALIZE_ENUM_AS_INTEGER(Delta);
+    RS_SERIALIZE_ENUM_AS_STRING(Echo);
+    RS_SERIALIZE_ENUM_AS_STRING(Foxtrot);
+    RS_SERIALIZE_ENUM_AS_STRING(Golf);
+
+}
+
+void test_core_serial_enum_helper_functions() {
+
+    Alpha a1 = {}, a2 = {};
+    Bravo b1 = {}, b2 = {};
+    Charlie c1 = {}, c2 = {};
+    Delta d1 = {}, d2 = {};
+    Echo e1 = {}, e2 = {};
+    Foxtrot f1 = {}, f2 = {};
+    Golf g = {};
+    json j;
+
+    a1 = Alpha::a_three;    TRY(j = a1);  TEST_EQUAL(j.dump(), "3");            TRY(a2 = j.get<Alpha>());    TEST(a2 == Alpha::a_three);
+    b1 = Bravo::b_three;    TRY(j = b1);  TEST_EQUAL(j.dump(), "3");            TRY(b2 = j.get<Bravo>());    TEST(b2 == Bravo::b_three);
+    c1 = Charlie::c_three;  TRY(j = c1);  TEST_EQUAL(j.dump(), "3");            TRY(c2 = j.get<Charlie>());  TEST_EQUAL(c2, Charlie::c_three);
+    d1 = Delta::d_three;    TRY(j = d1);  TEST_EQUAL(j.dump(), "3");            TRY(d2 = j.get<Delta>());    TEST_EQUAL(d2, Delta::d_three);
+    e1 = Echo::e_three;     TRY(j = e1);  TEST_EQUAL(j.dump(), "\"e_three\"");  TRY(e2 = j.get<Echo>());     TEST_EQUAL(e2, Echo::e_three);
+    f1 = Foxtrot::f_three;  TRY(j = f1);  TEST_EQUAL(j.dump(), "\"f_three\"");  TRY(f2 = j.get<Foxtrot>());  TEST_EQUAL(f2, Foxtrot::f_three);
+    f1 = Foxtrot::f_three;  TRY(j = f1);  TEST_EQUAL(j.dump(), "\"f_three\"");  TRY(g = j.get<Golf>());      TEST_EQUAL(g, Golf::f_three);
+
+}
+
+namespace {
+
     struct Thing {
         std::string a, b;
         int c = 0, d = 0;
@@ -272,11 +313,10 @@ namespace {
 
 }
 
-void test_core_serial_helper_functions() {
+void test_core_serial_struct_helper_functions() {
 
     Thing t;
     json j;
-    Ustring s;
 
     t = {"hello", "world", 86, 99};
     TRY(struct_to_json(j, t, "*",
@@ -286,8 +326,7 @@ void test_core_serial_helper_functions() {
         &Thing::d, "d"
     ));
 
-    TRY(s = j.dump());
-    TEST_EQUAL(s, "{\"_type\":\"Thing\",\"a\":\"hello\",\"b\":\"world\",\"c\":86,\"d\":99}");
+    TEST_EQUAL(j.dump(), "{\"_type\":\"Thing\",\"a\":\"hello\",\"b\":\"world\",\"c\":86,\"d\":99}");
 
     t = {};
     TRY(json_to_struct(j, t, "*",

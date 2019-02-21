@@ -67,22 +67,19 @@ value names. They will also define the following functions:
 
 * `constexpr bool` **`enum_is_valid`**`(EnumType t) noexcept`
 * `std::vector<EnumType>` **`enum_values<EnumType>`**`()`
-* `std::vector<EnumType>` **`enum_nonzero_values<EnumType>`**`()`
 * `bool` **`str_to_enum`**`(std::string_view s, EnumType& t) noexcept`
 * `std::string` **`to_str`**`(EnumType t)`
 * `std::ostream&` **`operator<<`**`(std::ostream& out, EnumType t)`
 
 The `enum_is_valid()` function reports whether or not the argument is a named
-value of the enumeration. The `enum_values<T>()` function returns a vector
-containing a list of the enumeration's values; `enum_nonzero_values<T>()`
-leaves out the zero value (if there is one), since that is often used as a
-null placeholder. The `str_to_enum()` function converts the name of an
-enumeration value (case sensitive; possibly qualified with the class name) to
-the corresponding value; if the string does not match any value, it leaves the
-reference argument unchanged and returns false. The `to_str()` function and
-the output operator print the name of an enumeration constant (qualified with
-the class name if this is an `enum class`), or the integer value if the
-argument is not a named value.
+value of the enumeration. The `enum_values<T>()` function returns a vector The
+`str_to_enum()` function converts the name of an enumeration value (case
+sensitive; possibly qualified with the class name) to the corresponding value;
+if the string does not match any value, it leaves the reference argument
+unchanged and returns false. The `to_str()` function and the output operator
+print the name of an enumeration constant (qualified with the class name if
+this is an `enum class`), or the integer value if the argument is not a named
+value.
 
 Example:
 

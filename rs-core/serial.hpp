@@ -1,13 +1,19 @@
 #pragma once
 
+#include "rs-core/array-map.hpp"
+#include "rs-core/auto-array.hpp"
 #include "rs-core/blob.hpp"
 #include "rs-core/channel.hpp"
 #include "rs-core/common.hpp"
+#include "rs-core/grid.hpp"
 #include "rs-core/ipc.hpp"
+#include "rs-core/mirror-map.hpp"
 #include "rs-core/mp-integer.hpp"
 #include "rs-core/optional.hpp"
+#include "rs-core/ordered-map.hpp"
 #include "rs-core/rational.hpp"
 #include "rs-core/string.hpp"
+#include "rs-core/terminal.hpp"
 #include "rs-core/time.hpp"
 #include "rs-core/uuid.hpp"
 #include "rs-core/vector.hpp"
@@ -31,10 +37,7 @@ namespace RS {
 
     using nlohmann::json;
 
-    // Serialization for core library types
-
-    void to_json(json& j, const Blob& x);
-    void from_json(const json& j, Blob& x);
+    // Serialization for core library numeric types
 
     template <typename T, ByteOrder B> void to_json(json& j, const Endian<T, B>& x) { j = x.get(); }
     template <typename T, ByteOrder B> void from_json(const json& j, Endian<T, B>& x) { x = j.get<T>(); }
@@ -58,9 +61,6 @@ namespace RS {
 
     inline void to_json(json& j, const Nat& x) { j = x.str(); }
     inline void from_json(const json& j, Nat& x) { x = Nat(j.get<Ustring>()); }
-
-    template <typename T> void to_json(json& j, const Optional<T>& x) { j = x ? json(*x) : json(); }
-    template <typename T> void from_json(const json& j, Optional<T>& x) { x = j.is_null() ? Optional<T>() : j.get<T>(); }
 
     template <typename T>
     void to_json(json& j, const Quaternion<T>& x) {
@@ -90,9 +90,6 @@ namespace RS {
         }
     }
 
-    inline void to_json(json& j, const Uuid& x) { j = x.str(); }
-    inline void from_json(const json& j, Uuid& x) { x = Uuid(j.get<Ustring>()); }
-
     template <typename T, size_t N>
     void to_json(json& j, const Vector<T, N>& x) {
         j = std::vector<T>(x.begin(), x.end());
@@ -105,8 +102,113 @@ namespace RS {
         std::copy(v.begin(), v.end(), x.begin());
     }
 
+    // Serialization for core library container types
+
+    void to_json(json& j, const Blob& x);
+    void from_json(const json& j, Blob& x);
+
+    template <typename K, typename T>
+    void to_json(json& j, const ArrayMap<K, T>& x) {
+        j = json::array();
+        for (auto& [k,t]: x)
+            j.push_back({k, t});
+    }
+
+    template <typename K, typename T>
+    void from_json(const json& j, ArrayMap<K, T>& x) {
+        x.clear();
+        std::pair<K, T> v;
+        for (auto& row: j) {
+            v.first = row[0].get<K>();
+            v.second = row[1].get<T>();
+            x.insert(v);
+        }
+    }
+
+    template <typename T>
+    void to_json(json& j, const AutoDeque<T>& x) {
+        j["offset"] = x.min_index();
+        auto& d = j["data"];
+        d = json::array();
+        for (auto& t: x)
+            d.push_back(t);
+    }
+
+    template <typename T>
+    void from_json(const json& j, AutoDeque<T>& x) {
+        x.clear();
+        size_t i = j["offset"].get<size_t>();
+        for (auto& row: j["data"])
+            x[i++] = row.get<T>();
+    }
+
+    template <typename T, size_t N>
+    void to_json(json& j, const Grid<T, N>& x) {
+        j["shape"] = x.shape();
+        auto& d = j["data"];
+        d = json::array();
+        for (auto& t: x)
+            d.push_back(t);
+    }
+
+    template <typename T, size_t N>
+    void from_json(const json& j, Grid<T, N>& x) {
+        using V = Vector<size_t, N>;
+        V shape = j["shape"].get<V>();
+        x.reset(shape);
+        auto& d = j["data"];
+        auto a = d.begin(), a_end = d.end();
+        auto b = x.begin(), b_end = x.end();
+        while (a != a_end && b != b_end)
+            *b++ = a++->get<T>();
+    }
+
+    template <typename K1, typename K2, typename C1, typename C2>
+    void to_json(json& j, const MirrorMap<K1, K2, C1, C2>& x) {
+        j = json::array();
+        for (auto& t: x.left())
+            j.push_back({t.first, t.second});
+    }
+
+    template <typename K1, typename K2, typename C1, typename C2>
+    void from_json(const json& j, MirrorMap<K1, K2, C1, C2>& x) {
+        x.clear();
+        std::pair<K1, K2> v;
+        for (auto& row: j) {
+            v.first = row[0].get<K1>();
+            v.second = row[1].get<K2>();
+            x.insert(v);
+        }
+    }
+
+    template <typename K, typename T>
+    void to_json(json& j, const OrderedMap<K, T>& x) {
+        j = json::array();
+        for (auto& t: x)
+            j.push_back({t.first, t.second});
+    }
+
+    template <typename K, typename T>
+    void from_json(const json& j, OrderedMap<K, T>& x) {
+        x.clear();
+        std::pair<K, T> v;
+        for (auto& row: j) {
+            v.first = row[0].get<K>();
+            v.second = row[1].get<T>();
+            x.insert(v);
+        }
+    }
+
+    // Serialization for other core library types
+
+    template <typename T> void to_json(json& j, const Optional<T>& x) { j = x ? json(*x) : json(); }
+    template <typename T> void from_json(const json& j, Optional<T>& x) { x = j.is_null() ? Optional<T>() : j.get<T>(); }
+    inline void to_json(json& j, const Uuid& x) { j = x.str(); }
+    inline void from_json(const json& j, Uuid& x) { x = Uuid(j.get<Ustring>()); }
     inline void to_json(json& j, const Version& x) { j = x.str(); }
     inline void from_json(const json& j, Version& x) { x = Version(j.get<Ustring>()); }
+    inline void to_json(json& j, const Xcolour& x) { j = x.str(); }
+    inline void from_json(const json& j, Xcolour& x) { x = Xcolour::from_str(j.get<Ustring>()); }
 
     // Serialization helper functions
 

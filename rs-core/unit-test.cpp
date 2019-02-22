@@ -355,15 +355,22 @@ extern void test_core_ring_buffer_accounting_with_move();
 extern void test_core_scale_map_class();
 extern void test_core_serial_standard_types();
 extern void test_core_serial_std_chrono();
+extern void test_core_serial_array_map();
+extern void test_core_serial_auto_array();
 extern void test_core_serial_blob();
+extern void test_core_serial_bounded_array();
 extern void test_core_serial_compact_array();
+extern void test_core_serial_grid();
+extern void test_core_serial_mirror_map();
+extern void test_core_serial_ordered_map();
+extern void test_core_serial_vector_matrix_quaternion();
 extern void test_core_serial_endian();
 extern void test_core_serial_multiprecision_integers();
 extern void test_core_serial_optional();
 extern void test_core_serial_rational();
 extern void test_core_serial_uuid();
-extern void test_core_serial_vector_matrix_quaternion();
 extern void test_core_serial_version();
+extern void test_core_serial_xcolour();
 extern void test_core_serial_enum_helper_functions();
 extern void test_core_serial_struct_helper_functions();
 extern void test_core_serial_persistent_storage();
@@ -779,15 +786,22 @@ int main() {
         { "core/scale-map/class", test_core_scale_map_class },
         { "core/serial/standard-types", test_core_serial_standard_types },
         { "core/serial/std-chrono", test_core_serial_std_chrono },
+        { "core/serial/array-map", test_core_serial_array_map },
+        { "core/serial/auto-array", test_core_serial_auto_array },
         { "core/serial/blob", test_core_serial_blob },
+        { "core/serial/bounded-array", test_core_serial_bounded_array },
         { "core/serial/compact-array", test_core_serial_compact_array },
+        { "core/serial/grid", test_core_serial_grid },
+        { "core/serial/mirror-map", test_core_serial_mirror_map },
+        { "core/serial/ordered-map", test_core_serial_ordered_map },
+        { "core/serial/vector-matrix-quaternion", test_core_serial_vector_matrix_quaternion },
         { "core/serial/endian", test_core_serial_endian },
         { "core/serial/multiprecision-integers", test_core_serial_multiprecision_integers },
         { "core/serial/optional", test_core_serial_optional },
         { "core/serial/rational", test_core_serial_rational },
         { "core/serial/uuid", test_core_serial_uuid },
-        { "core/serial/vector-matrix-quaternion", test_core_serial_vector_matrix_quaternion },
         { "core/serial/version", test_core_serial_version },
+        { "core/serial/xcolour", test_core_serial_xcolour },
         { "core/serial/enum-helper-functions", test_core_serial_enum_helper_functions },
         { "core/serial/struct-helper-functions", test_core_serial_struct_helper_functions },
         { "core/serial/persistent-storage", test_core_serial_persistent_storage },

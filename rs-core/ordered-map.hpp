@@ -36,9 +36,9 @@ namespace RS {
         const_iterator find(const K& k) const;
         bool has(const K& k) const { return keys.count(k) != 0; }
         std::pair<iterator, bool> insert(const K& k, const T& t);
-        std::pair<iterator, bool> insert(const value_type& v) { insert(v.first, v.second); }
+        std::pair<iterator, bool> insert(const value_type& v) { return insert(v.first, v.second); }
         iterator set(const K& k, const T& t);
-        iterator set(const value_type& v) { set(v.first, v.second); }
+        iterator set(const value_type& v) { return set(v.first, v.second); }
         size_t size() const noexcept { return pairs.size(); }
         void swap(OrderedMap& om) noexcept { keys.swap(om.keys); pairs.swap(om.pairs); }
         friend void swap(OrderedMap& om1, OrderedMap& om2) noexcept { om1.swap(om2); }

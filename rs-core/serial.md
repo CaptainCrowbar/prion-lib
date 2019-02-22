@@ -36,18 +36,33 @@ introduce rounding errors.
 
 Specializations of `to_json()` and `from_json()` are provided for:
 
-* [`Blob`](blob.html)
-* [`CompactArray<T,N>`](compact-array.html)
-* [`Endian<T,B>`](common.html)
-* [`Int`](mp-integer.html)
-* [`Matrix<T,N,L>`](vector.html)
-* [`Nat`](mp-integer.html)
-* [`Optional<T>`](optional.html)
-* [`Quaternion<T>`](vector.html)
-* [`Rational<T>`](rational.html)
-* [`Uuid`](uuid.html)
-* [`Vector<T,N>`](vector.html)
-* [`Version`](common.html)
+* Containers
+    * [`ArrayMap<K,T>`](array-map.html)
+    * [`AutoVector<T>`](auto-array.html)
+    * [`AutoDeque<T>`](auto-array.html)
+    * [`Blob`](blob.html)
+    * [`BoundedArray<T,N>`](bounded-array.html)
+    * [`CompactArray<T,N>`](compact-array.html)
+    * [`Grid<T,N>`](grid.html)
+    * [`MirrorMap<K1,K2,C1,C2>`](mirror-map.html)
+    * [`OrderedMap<K,T>`](ordered-map.html)
+* Numeric types
+    * [`Endian<T,B>`](common.html)
+    * [`Int`](mp-integer.html)
+    * [`Matrix<T,N,L>`](vector.html)
+    * [`Nat`](mp-integer.html)
+    * [`Quaternion<T>`](vector.html)
+    * [`Rational<T>`](rational.html)
+    * [`Vector<T,N>`](vector.html)
+* Other classes
+    * [`Optional<T>`](optional.html)
+    * [`Uuid`](uuid.html)
+    * [`Version`](common.html)
+    * [`Xcolour`](terminal.html)
+
+The serialization functions do not preserve template parameters such as the
+size of a `Vector` or the comparison predicates in a `MirrorMap`; it is up to
+the caller to ensure that the deserializing code uses a compatible type.
 
 ## Serialization helper functions ##
 

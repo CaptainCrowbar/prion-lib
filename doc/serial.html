@@ -54,19 +54,39 @@ introduce rounding errors.</p>
 
 <p>Specializations of <code>to_json()</code> and <code>from_json()</code> are provided for:</p>
 <ul>
+<li>Containers<ul>
+<li><a href="array-map.html"><code>ArrayMap&lt;K,T&gt;</code></a></li>
+<li><a href="auto-array.html"><code>AutoVector&lt;T&gt;</code></a></li>
+<li><a href="auto-array.html"><code>AutoDeque&lt;T&gt;</code></a></li>
 <li><a href="blob.html"><code>Blob</code></a></li>
+<li><a href="bounded-array.html"><code>BoundedArray&lt;T,N&gt;</code></a></li>
 <li><a href="compact-array.html"><code>CompactArray&lt;T,N&gt;</code></a></li>
+<li><a href="grid.html"><code>Grid&lt;T,N&gt;</code></a></li>
+<li><a href="mirror-map.html"><code>MirrorMap&lt;K1,K2,C1,C2&gt;</code></a></li>
+<li><a href="ordered-map.html"><code>OrderedMap&lt;K,T&gt;</code></a></li>
+</ul>
+</li>
+<li>Numeric types<ul>
 <li><a href="common.html"><code>Endian&lt;T,B&gt;</code></a></li>
 <li><a href="mp-integer.html"><code>Int</code></a></li>
 <li><a href="vector.html"><code>Matrix&lt;T,N,L&gt;</code></a></li>
 <li><a href="mp-integer.html"><code>Nat</code></a></li>
-<li><a href="optional.html"><code>Optional&lt;T&gt;</code></a></li>
 <li><a href="vector.html"><code>Quaternion&lt;T&gt;</code></a></li>
 <li><a href="rational.html"><code>Rational&lt;T&gt;</code></a></li>
-<li><a href="uuid.html"><code>Uuid</code></a></li>
 <li><a href="vector.html"><code>Vector&lt;T,N&gt;</code></a></li>
-<li><a href="common.html"><code>Version</code></a></li>
 </ul>
+</li>
+<li>Other classes<ul>
+<li><a href="optional.html"><code>Optional&lt;T&gt;</code></a></li>
+<li><a href="uuid.html"><code>Uuid</code></a></li>
+<li><a href="common.html"><code>Version</code></a></li>
+<li><a href="terminal.html"><code>Xcolour</code></a></li>
+</ul>
+</li>
+</ul>
+<p>The serialization functions do not preserve template parameters such as the
+size of a <code>Vector</code> or the comparison predicates in a <code>MirrorMap</code>; it is up to
+the caller to ensure that the deserializing code uses a compatible type.</p>
 </div>
 <h2 id="serialization-helper-functions">Serialization helper functions</h2>
 <div class="defns">

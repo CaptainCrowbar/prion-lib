@@ -1,11 +1,18 @@
 #include "rs-core/serial.hpp"
+#include "rs-core/array-map.hpp"
+#include "rs-core/auto-array.hpp"
 #include "rs-core/blob.hpp"
+#include "rs-core/bounded-array.hpp"
 #include "rs-core/compact-array.hpp"
 #include "rs-core/file-system.hpp"
+#include "rs-core/grid.hpp"
+#include "rs-core/mirror-map.hpp"
 #include "rs-core/mp-integer.hpp"
 #include "rs-core/optional.hpp"
+#include "rs-core/ordered-map.hpp"
 #include "rs-core/rational.hpp"
 #include "rs-core/string.hpp"
+#include "rs-core/terminal.hpp"
 #include "rs-core/unit-test.hpp"
 #include "rs-core/uuid.hpp"
 #include "rs-core/vector.hpp"
@@ -102,108 +109,153 @@ void test_core_serial_std_chrono() {
 
 }
 
+void test_core_serial_array_map() {
+
+    using T = ArrayMap<int, Ustring>;
+
+    static const T y = {};
+    static const T z = {
+        { 1, "Alpha" },
+        { 2, "Bravo" },
+        { 3, "Charlie" },
+        { 4, "Delta" },
+        { 5, "Echo" },
+    };
+
+    json j;
+    T x;
+
+    TRY(j = y);  TRY(x = j.get<T>());  TEST(x == y);  TEST_EQUAL(to_str(x), "{}");
+    TRY(j = z);  TRY(x = j.get<T>());  TEST(x == z);  TEST_EQUAL(to_str(x), "{1:Alpha,2:Bravo,3:Charlie,4:Delta,5:Echo}");
+
+}
+
+void test_core_serial_auto_array() {
+
+    using Q = AutoDeque<Ustring>;
+    using V = AutoVector<Ustring>;
+
+    json j;
+    Q p, q, r;
+    V u, v, w;
+
+    r[-2] = "Alpha";
+    r[-1] = "Bravo";
+    r[0] = "Charlie";
+    r[1] = "Delta";
+    r[2] = "Echo";
+    r[3] = "Foxtrot";
+    w = {"Alpha", "Bravo", "Charlie", "Delta", "Echo"};
+
+    TRY(j = q);  TRY(p = j.get<Q>());  TEST(p == q);  TEST_EQUAL(to_str(p), "[]");
+    TRY(j = r);  TRY(p = j.get<Q>());  TEST(p == r);  TEST_EQUAL(to_str(p), "[Alpha,Bravo,Charlie,Delta,Echo,Foxtrot]");
+    TEST_EQUAL(p.min_index(), -2);
+    TEST_EQUAL(p.max_index(), 3);
+    TRY(j = v);  TRY(u = j.get<V>());  TEST(u == v);  TEST_EQUAL(to_str(u), "[]");
+    TRY(j = w);  TRY(u = j.get<V>());  TEST(u == w);  TEST_EQUAL(to_str(u), "[Alpha,Bravo,Charlie,Delta,Echo]");
+
+}
+
 void test_core_serial_blob() {
 
     json j;
-    Blob b, b1, b2;
+    Blob x, y, z;
 
-    b2.reset(10);
-    for (size_t i = 0; i < b2.size(); ++i)
-        b2.c_data()[i] = char('a' + i);
+    z.reset(10);
+    for (size_t i = 0; i < z.size(); ++i)
+        z.c_data()[i] = char('a' + i);
 
-    TRY(j = b1);  TRY(b = j.get<Blob>());  TEST(b == b1);  TEST_EQUAL(b.str(), "");
-    TRY(j = b2);  TRY(b = j.get<Blob>());  TEST(b == b2);  TEST_EQUAL(b.str(), "abcdefghij");
+    TRY(j = y);  TRY(x = j.get<Blob>());  TEST(x == y);  TEST_EQUAL(x.str(), "");
+    TRY(j = z);  TRY(x = j.get<Blob>());  TEST(x == z);  TEST_EQUAL(x.str(), "abcdefghij");
+
+}
+
+void test_core_serial_bounded_array() {
+
+    using T = BoundedArray<Ustring, 5>;
+
+    static const T y = {};
+    static const T z = {"Alpha", "Bravo", "Charlie", "Delta", "Echo"};
+
+    json j;
+    T x;
+
+    TRY(j = y);  TRY(x = j.get<T>());  TEST(x == y);  TEST_EQUAL(to_str(x), "[]");
+    TRY(j = z);  TRY(x = j.get<T>());  TEST(x == z);  TEST_EQUAL(to_str(x), "[Alpha,Bravo,Charlie,Delta,Echo]");
 
 }
 
 void test_core_serial_compact_array() {
 
-    using CA = CompactArray<Ustring, 2>;
+    using T = CompactArray<Ustring, 2>;
 
-    static const CA ca1 = {};
-    static const CA ca2 = {"Alpha", "Bravo", "Charlie", "Delta", "Echo"};
+    static const T y = {};
+    static const T z = {"Alpha", "Bravo", "Charlie", "Delta", "Echo"};
 
     json j;
-    CA ca;
+    T x;
 
-    TRY(j = ca1);  TRY(ca = j.get<CA>());  TEST(ca == ca1);  TEST_EQUAL(to_str(ca), "[]");
-    TRY(j = ca2);  TRY(ca = j.get<CA>());  TEST(ca == ca2);  TEST_EQUAL(to_str(ca), "[Alpha,Bravo,Charlie,Delta,Echo]");
+    TRY(j = y);  TRY(x = j.get<T>());  TEST(x == y);  TEST_EQUAL(to_str(x), "[]");
+    TRY(j = z);  TRY(x = j.get<T>());  TEST(x == z);  TEST_EQUAL(to_str(x), "[Alpha,Bravo,Charlie,Delta,Echo]");
 
 }
 
-void test_core_serial_endian() {
+void test_core_serial_grid() {
 
-    static const BigEndian<uint32_t> cbe32 = 32;
-    static const BigEndian<uint64_t> cbe64 = 64;
-    static const LittleEndian<uint32_t> cle32 = 33;
-    static const LittleEndian<uint64_t> cle64 = 65;
+    using T = Grid<int, 3>;
 
     json j;
-    BigEndian<uint32_t> be32 = 0;
-    BigEndian<uint64_t> be64 = 0;
-    LittleEndian<uint32_t> le32 = 0;
-    LittleEndian<uint64_t> le64 = 0;
+    T t, u, v;
 
-    TRY(j = cbe32);  TRY(be32 = j);  TEST_EQUAL(be32, cbe32);
-    TRY(j = cbe64);  TRY(be64 = j);  TEST_EQUAL(be64, cbe64);
-    TRY(j = cle32);  TRY(le32 = j);  TEST_EQUAL(le32, cle32);
-    TRY(j = cle64);  TRY(le64 = j);  TEST_EQUAL(le64, cle64);
+    v.reset({3,4,5});
+    for (int x = 0; x < 3; ++x)
+        for (int y = 0; y < 4; ++y)
+            for (int z = 0; z < 5; ++z)
+                v(x,y,z) = 1000 + 100 * x + 10 * y + z;
+
+    TRY(j = u);  TRY(t = j.get<T>());  TEST(t == u);  TEST_EQUAL(t.size(), 0);
+    TRY(j = v);  TRY(t = j.get<T>());  TEST(t == v);  TEST_EQUAL(t.size(), 60);
+
+    for (int x = 0; x < 3; ++x)
+        for (int y = 0; y < 4; ++y)
+            for (int z = 0; z < 5; ++z)
+                TEST_EQUAL(t(x,y,z), 1000 + 100 * x + 10 * y + z);
 
 }
 
-void test_core_serial_multiprecision_integers() {
+void test_core_serial_mirror_map() {
 
-    static const Nat cn = Nat("123456789123456789123456789123456789123456789");
-    static const Int ci = Int("-987654321987654321987654321987654321987654321");
+    using T = MirrorMap<int, Ustring>;
 
     json j;
-    Nat n;
-    Int i;
+    T x, y, z;
 
-    TRY(j = cn);  TRY(n = j.get<Nat>());  TEST_EQUAL(n, cn);  TEST_EQUAL(n.str(), "123456789123456789123456789123456789123456789");
-    TRY(j = ci);  TRY(i = j.get<Int>());  TEST_EQUAL(i, ci);  TEST_EQUAL(i.str(), "-987654321987654321987654321987654321987654321");
+    z.insert({1, "Alpha"});
+    z.insert({2, "Bravo"});
+    z.insert({3, "Charlie"});
+    z.insert({4, "Delta"});
+    z.insert({5, "Echo"});
+
+    TRY(j = y);  TRY(x = j.get<T>());  TEST_EQUAL(x.size(), 0);  TEST_EQUAL(to_str(x.left()), "{}");
+    TRY(j = z);  TRY(x = j.get<T>());  TEST_EQUAL(x.size(), 5);  TEST_EQUAL(to_str(x.left()), "{1:Alpha,2:Bravo,3:Charlie,4:Delta,5:Echo}");
 
 }
 
-void test_core_serial_optional() {
+void test_core_serial_ordered_map() {
 
-    using OS = Optional<Ustring>;
-
-    static const OS cos1 = {};
-    static const OS cos2 = "Hello world"s;
+    using T = OrderedMap<int, Ustring>;
 
     json j;
-    OS os;
+    T x, y, z;
 
-    TRY(j = cos1);  TRY(os = j.get<OS>());  TEST_EQUAL(os, cos1);  TEST(! os.has_value());  TEST_EQUAL(os.value_or("None"), "None");
-    TRY(j = cos2);  TRY(os = j.get<OS>());  TEST_EQUAL(os, cos2);  TEST(os.has_value());    TEST_EQUAL(os.value_or("None"), "Hello world");
+    z.insert({5, "Echo"});
+    z.insert({4, "Delta"});
+    z.insert({3, "Charlie"});
+    z.insert({2, "Bravo"});
+    z.insert({1, "Alpha"});
 
-}
-
-void test_core_serial_rational() {
-
-    static const Rat cr1 = {};
-    static const Rat cr2 = {16, 10};
-
-    json j;
-    Rat r;
-
-    TRY(j = cr1);  TRY(r = j.get<Rat>());  TEST_EQUAL(r, cr1);  TEST_EQUAL(r.num(), 0);   TEST_EQUAL(r.den(), 1);
-    TRY(j = cr2);  TRY(r = j.get<Rat>());  TEST_EQUAL(r, cr2);  TEST_EQUAL(r.num(), 8);   TEST_EQUAL(r.den(), 5);
-    TRY(j = 42);   TRY(r = j.get<Rat>());  TEST_EQUAL(r, 42);   TEST_EQUAL(r.num(), 42);  TEST_EQUAL(r.den(), 1);
-
-}
-
-void test_core_serial_uuid() {
-
-    static const Uuid cu1 = {};
-    static const Uuid cu2 = Uuid("a3fe3c0b-d4fe-fa0e-acd0-b5c5d1ace7d3");
-
-    json j;
-    Uuid u;
-
-    TRY(j = cu1);  TRY(u = j.get<Uuid>());  TEST_EQUAL(u, cu1);  TEST_EQUAL(u.str(), "00000000-0000-0000-0000-000000000000");
-    TRY(j = cu2);  TRY(u = j.get<Uuid>());  TEST_EQUAL(u, cu2);  TEST_EQUAL(u.str(), "a3fe3c0b-d4fe-fa0e-acd0-b5c5d1ace7d3");
+    TRY(j = y);  TRY(x = j.get<T>());  TEST_EQUAL(x.size(), 0);  TEST_EQUAL(to_str(x), "{}");
+    TRY(j = z);  TRY(x = j.get<T>());  TEST_EQUAL(x.size(), 5);  TEST_EQUAL(to_str(x), "{5:Echo,4:Delta,3:Charlie,2:Bravo,1:Alpha}");
 
 }
 
@@ -248,18 +300,109 @@ void test_core_serial_vector_matrix_quaternion() {
 
 }
 
-void test_core_serial_version() {
+void test_core_serial_endian() {
 
-    static const Version cv1 = {};
-    static const Version cv2 = {1, 2, 3};
-    static const Version cv3 = {1, 2, 3, "alpha"};
+    static const BigEndian<uint32_t> cbe32 = 32;
+    static const BigEndian<uint64_t> cbe64 = 64;
+    static const LittleEndian<uint32_t> cle32 = 33;
+    static const LittleEndian<uint64_t> cle64 = 65;
 
     json j;
-    Version v;
+    BigEndian<uint32_t> be32 = 0;
+    BigEndian<uint64_t> be64 = 0;
+    LittleEndian<uint32_t> le32 = 0;
+    LittleEndian<uint64_t> le64 = 0;
 
-    TRY(j = cv1);  TRY(v = j.get<Version>());  TEST_EQUAL(v, cv1);  TEST_EQUAL(v.str(), "0.0");
-    TRY(j = cv2);  TRY(v = j.get<Version>());  TEST_EQUAL(v, cv2);  TEST_EQUAL(v.str(), "1.2.3");
-    TRY(j = cv3);  TRY(v = j.get<Version>());  TEST_EQUAL(v, cv3);  TEST_EQUAL(v.str(), "1.2.3alpha");
+    TRY(j = cbe32);  TRY(be32 = j);  TEST_EQUAL(be32, cbe32);
+    TRY(j = cbe64);  TRY(be64 = j);  TEST_EQUAL(be64, cbe64);
+    TRY(j = cle32);  TRY(le32 = j);  TEST_EQUAL(le32, cle32);
+    TRY(j = cle64);  TRY(le64 = j);  TEST_EQUAL(le64, cle64);
+
+}
+
+void test_core_serial_multiprecision_integers() {
+
+    static const Nat cn = Nat("123456789123456789123456789123456789123456789");
+    static const Int ci = Int("-987654321987654321987654321987654321987654321");
+
+    json j;
+    Nat n;
+    Int i;
+
+    TRY(j = cn);  TRY(n = j.get<Nat>());  TEST_EQUAL(n, cn);  TEST_EQUAL(n.str(), "123456789123456789123456789123456789123456789");
+    TRY(j = ci);  TRY(i = j.get<Int>());  TEST_EQUAL(i, ci);  TEST_EQUAL(i.str(), "-987654321987654321987654321987654321987654321");
+
+}
+
+void test_core_serial_optional() {
+
+    using T = Optional<Ustring>;
+
+    static const T y = {};
+    static const T z = "Hello world"s;
+
+    json j;
+    T x;
+
+    TRY(j = y);  TRY(x = j.get<T>());  TEST_EQUAL(x, y);  TEST(! x.has_value());  TEST_EQUAL(x.value_or("None"), "None");
+    TRY(j = z);  TRY(x = j.get<T>());  TEST_EQUAL(x, z);  TEST(x.has_value());    TEST_EQUAL(x.value_or("None"), "Hello world");
+
+}
+
+void test_core_serial_rational() {
+
+    static const Rat y = {};
+    static const Rat z = {16, 10};
+
+    json j;
+    Rat x;
+
+    TRY(j = y);   TRY(x = j.get<Rat>());  TEST_EQUAL(x, y);   TEST_EQUAL(x.num(), 0);   TEST_EQUAL(x.den(), 1);
+    TRY(j = z);   TRY(x = j.get<Rat>());  TEST_EQUAL(x, z);   TEST_EQUAL(x.num(), 8);   TEST_EQUAL(x.den(), 5);
+    TRY(j = 42);  TRY(x = j.get<Rat>());  TEST_EQUAL(x, 42);  TEST_EQUAL(x.num(), 42);  TEST_EQUAL(x.den(), 1);
+
+}
+
+void test_core_serial_uuid() {
+
+    static const Uuid y = {};
+    static const Uuid z = Uuid("a3fe3c0b-d4fe-fa0e-acd0-b5c5d1ace7d3");
+
+    json j;
+    Uuid x;
+
+    TRY(j = y);  TRY(x = j.get<Uuid>());  TEST_EQUAL(x, y);  TEST_EQUAL(x.str(), "00000000-0000-0000-0000-000000000000");
+    TRY(j = z);  TRY(x = j.get<Uuid>());  TEST_EQUAL(x, z);  TEST_EQUAL(x.str(), "a3fe3c0b-d4fe-fa0e-acd0-b5c5d1ace7d3");
+
+}
+
+void test_core_serial_version() {
+
+    static const Version u = {};
+    static const Version v = {1, 2, 3};
+    static const Version w = {1, 2, 3, "alpha"};
+
+    json j;
+    Version x;
+
+    TRY(j = u);  TRY(x = j.get<Version>());  TEST_EQUAL(x, u);  TEST_EQUAL(x.str(), "0.0");
+    TRY(j = v);  TRY(x = j.get<Version>());  TEST_EQUAL(x, v);  TEST_EQUAL(x.str(), "1.2.3");
+    TRY(j = w);  TRY(x = j.get<Version>());  TEST_EQUAL(x, w);  TEST_EQUAL(x.str(), "1.2.3alpha");
+
+}
+
+void test_core_serial_xcolour() {
+
+    static const Xcolour u{};
+    static const Xcolour v{12};
+    static const Xcolour w{1,2,3};
+
+    json j;
+    Xcolour x;
+
+    TRY(j = u);  TRY(x = j.get<Xcolour>());  TEST_EQUAL(x, u);  TEST_EQUAL(x.str(), "");
+    TRY(j = v);  TRY(x = j.get<Xcolour>());  TEST_EQUAL(x, v);  TEST_EQUAL(x.str(), "[12]");
+    TRY(j = w);  TRY(x = j.get<Xcolour>());  TEST_EQUAL(x, w);  TEST_EQUAL(x.str(), "[1,2,3]");
 
 }
 

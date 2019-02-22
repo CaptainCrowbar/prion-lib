@@ -8,7 +8,7 @@ By Ross Smith
 
 [TOC]
 
-## Class ArrayMap ##
+## AutoVector and AutoDeque classes ##
 
 * `template <typename T> class` **`AutoVector`**
 * `template <typename T> class` **`AutoDeque`**

@@ -24,6 +24,25 @@ namespace RS {
         std::memcpy(x.data(), dec.data(), dec.size());
     }
 
+    void to_json(json& j, const Xcolour& x) {
+        j = json::array();
+        if (x.is_grey()) {
+            j.push_back(x.grey());
+        } else if (x.is_rgb()) {
+            j.push_back(x.r());
+            j.push_back(x.g());
+            j.push_back(x.b());
+        }
+    }
+
+    void from_json(const json& j, Xcolour& x) {
+        switch (j.size()) {
+            case 1:   x = Xcolour(j[0].get<int>()); break;
+            case 3:   x = Xcolour(j[0].get<int>(), j[1].get<int>(), j[2].get<int>()); break;
+            default:  x = Xcolour(); break;
+        }
+    }
+
     // Class PersistState
 
     PersistState::PersistState(const Ustring& id) {

@@ -207,8 +207,8 @@ namespace RS {
     inline void from_json(const json& j, Uuid& x) { x = Uuid(j.get<Ustring>()); }
     inline void to_json(json& j, const Version& x) { j = x.str(); }
     inline void from_json(const json& j, Version& x) { x = Version(j.get<Ustring>()); }
-    inline void to_json(json& j, const Xcolour& x) { j = x.str(); }
-    inline void from_json(const json& j, Xcolour& x) { x = Xcolour::from_str(j.get<Ustring>()); }
+    void to_json(json& j, const Xcolour& x);
+    void from_json(const json& j, Xcolour& x);
 
     // Serialization helper functions
 

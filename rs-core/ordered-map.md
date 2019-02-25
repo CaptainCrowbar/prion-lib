@@ -16,6 +16,12 @@ By Ross Smith
     * `using OrderedMap::`**`key_type`** `= K`
     * `using OrderedMap::`**`mapped_type`** `= T`
     * `using OrderedMap::`**`value_type`** `= std::pair<const K, T>`
+    * `OrderedMap::`**`OrderedMap`**`()`
+    * `OrderedMap::`**`OrderedMap`**`(const OrderedMap& map)`
+    * `OrderedMap::`**`OrderedMap`**`(OrderedMap&& map) noexcept`
+    * `OrderedMap::`**`~OrderedMap`**`() noexcept`
+    * `OrderedMap& OrderedMap::`**`operator=`**`(const OrderedMap& map)`
+    * `OrderedMap& OrderedMap::`**`operator=`**`(OrderedMap&& map) noexcept`
     * `T& OrderedMap::`**`operator[]`**`(const K& k)`
     * `iterator OrderedMap::`**`begin`**`()`
     * `const_iterator OrderedMap::`**`begin`**`() const`
@@ -35,8 +41,14 @@ By Ross Smith
     * `iterator OrderedMap::`**`set`**`(const K& k, const T& t)`
     * `iterator OrderedMap::`**`set`**`(const value_type& v)`
     * `size_t OrderedMap::`**`size`**`() const noexcept`
-    * `void OrderedMap::`**`swap`**`(OrderedMap& om) noexcept`
-    * `void` **`swap`**`(OrderedMap& om1, OrderedMap& om2) noexcept`
+    * `void OrderedMap::`**`swap`**`(OrderedMap& rhs) noexcept`
+* `void` **`swap`**`(OrderedMap& lhs, OrderedMap& rhs) noexcept`
+* `bool` **`operator==`**`(OrderedMap& lhs, OrderedMap& rhs) noexcept`
+* `bool` **`operator!=`**`(OrderedMap& lhs, OrderedMap& rhs) noexcept`
+* `bool` **`operator<`**`(OrderedMap& lhs, OrderedMap& rhs) noexcept`
+* `bool` **`operator>`**`(OrderedMap& lhs, OrderedMap& rhs) noexcept`
+* `bool` **`operator<=`**`(OrderedMap& lhs, OrderedMap& rhs) noexcept`
+* `bool` **`operator>=`**`(OrderedMap& lhs, OrderedMap& rhs) noexcept`
 
 An `OrderedMap` behaves the same as a `std::map` in most respects, except that
 iteration over the map returns the elements in insertion order instead of the

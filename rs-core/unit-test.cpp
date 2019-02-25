@@ -214,7 +214,8 @@ extern void test_core_optional_object_accounting();
 extern void test_core_optional_comparison_operators();
 extern void test_core_optional_coalescing_operators();
 extern void test_core_optional_function_calls();
-extern void test_core_ordered_map_class();
+extern void test_core_ordered_map_insertion();
+extern void test_core_ordered_map_comparison();
 extern void test_core_prime_iterator_basic_int();
 extern void test_core_prime_iterator_fixed_binary();
 extern void test_core_prime_iterator_int128();
@@ -645,7 +646,8 @@ int main() {
         { "core/optional/comparison-operators", test_core_optional_comparison_operators },
         { "core/optional/coalescing-operators", test_core_optional_coalescing_operators },
         { "core/optional/function-calls", test_core_optional_function_calls },
-        { "core/ordered-map/class", test_core_ordered_map_class },
+        { "core/ordered-map/insertion", test_core_ordered_map_insertion },
+        { "core/ordered-map/comparison", test_core_ordered_map_comparison },
         { "core/prime/iterator-basic-int", test_core_prime_iterator_basic_int },
         { "core/prime/iterator-fixed-binary", test_core_prime_iterator_fixed_binary },
         { "core/prime/iterator-int128", test_core_prime_iterator_int128 },

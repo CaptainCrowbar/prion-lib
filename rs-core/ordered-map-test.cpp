@@ -1,19 +1,19 @@
 #include "rs-core/ordered-map.hpp"
 #include "rs-core/unit-test.hpp"
-#include <string>
 #include <tuple>
+#include <utility>
 
 using namespace RS;
 
-void test_core_ordered_map_class() {
+void test_core_ordered_map_insertion() {
 
-    using OM = OrderedMap<int, std::string>;
+    using OM = OrderedMap<int, Ustring>;
 
     OM om;
     const OM& com = om;
     OM::iterator i;
     OM::const_iterator ci;
-    std::string s;
+    Ustring s;
     bool b = false;
 
     TEST(com.empty());
@@ -85,5 +85,55 @@ void test_core_ordered_map_class() {
     TEST_EQUAL(com.size(), 0);
     TRY(s = to_str(com));
     TEST_EQUAL(s, "{}");
+
+}
+
+void test_core_ordered_map_comparison() {
+
+    using OM = OrderedMap<int, Ustring>;
+
+    OM om1;
+    TRY(om1.insert(1, "alpha"));
+    TRY(om1.insert(2, "bravo"));
+    TRY(om1.insert(3, "charlie"));
+
+    OM om2(om1);
+
+    OM om3;
+    TRY(om3 = om1);
+    TRY(om3[3] = "CHARLIE");
+
+    OM om4x(om1);
+    OM om4(std::move(om4x));
+    TRY(om4.insert(4, "delta"));
+
+    OM om5x(om1);
+    OM om5;
+    TRY(om5 = std::move(om5x));
+    TRY(om5.clear());
+    TRY(om5.insert(3, "charlie"));
+    TRY(om5.insert(2, "bravo"));
+    TRY(om5.insert(1, "alpha"));
+
+    Ustring s;
+
+    TRY(s = to_str(om1));  TEST_EQUAL(s, "{1:alpha,2:bravo,3:charlie}");
+    TRY(s = to_str(om2));  TEST_EQUAL(s, "{1:alpha,2:bravo,3:charlie}");
+    TRY(s = to_str(om3));  TEST_EQUAL(s, "{1:alpha,2:bravo,3:CHARLIE}");
+    TRY(s = to_str(om4));  TEST_EQUAL(s, "{1:alpha,2:bravo,3:charlie,4:delta}");
+    TRY(s = to_str(om5));  TEST_EQUAL(s, "{3:charlie,2:bravo,1:alpha}");
+
+    TEST(om1 == om2);  TEST(om2 == om1);
+    TEST(om1 <= om2);  TEST(om2 <= om1);
+    TEST(om1 >= om2);  TEST(om2 >= om1);
+    TEST(om1 != om3);  TEST(om3 != om1);
+    TEST(om1 > om3);   TEST(om3 < om1);
+    TEST(om1 >= om3);  TEST(om3 <= om1);
+    TEST(om1 != om4);  TEST(om4 != om1);
+    TEST(om1 < om4);   TEST(om4 > om1);
+    TEST(om1 <= om4);  TEST(om4 >= om1);
+    TEST(om1 != om5);  TEST(om5 != om1);
+    TEST(om1 < om5);   TEST(om5 > om1);
+    TEST(om1 <= om5);  TEST(om5 >= om1);
 
 }

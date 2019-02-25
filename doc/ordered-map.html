@@ -30,6 +30,12 @@
 <li><code>using OrderedMap::</code><strong><code>key_type</code></strong> <code>= K</code></li>
 <li><code>using OrderedMap::</code><strong><code>mapped_type</code></strong> <code>= T</code></li>
 <li><code>using OrderedMap::</code><strong><code>value_type</code></strong> <code>= std::pair&lt;const K, T&gt;</code></li>
+<li><code>OrderedMap::</code><strong><code>OrderedMap</code></strong><code>()</code></li>
+<li><code>OrderedMap::</code><strong><code>OrderedMap</code></strong><code>(const OrderedMap&amp; map)</code></li>
+<li><code>OrderedMap::</code><strong><code>OrderedMap</code></strong><code>(OrderedMap&amp;&amp; map) noexcept</code></li>
+<li><code>OrderedMap::</code><strong><code>~OrderedMap</code></strong><code>() noexcept</code></li>
+<li><code>OrderedMap&amp; OrderedMap::</code><strong><code>operator=</code></strong><code>(const OrderedMap&amp; map)</code></li>
+<li><code>OrderedMap&amp; OrderedMap::</code><strong><code>operator=</code></strong><code>(OrderedMap&amp;&amp; map) noexcept</code></li>
 <li><code>T&amp; OrderedMap::</code><strong><code>operator[]</code></strong><code>(const K&amp; k)</code></li>
 <li><code>iterator OrderedMap::</code><strong><code>begin</code></strong><code>()</code></li>
 <li><code>const_iterator OrderedMap::</code><strong><code>begin</code></strong><code>() const</code></li>
@@ -49,10 +55,16 @@
 <li><code>iterator OrderedMap::</code><strong><code>set</code></strong><code>(const K&amp; k, const T&amp; t)</code></li>
 <li><code>iterator OrderedMap::</code><strong><code>set</code></strong><code>(const value_type&amp; v)</code></li>
 <li><code>size_t OrderedMap::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
-<li><code>void OrderedMap::</code><strong><code>swap</code></strong><code>(OrderedMap&amp; om) noexcept</code></li>
-<li><code>void</code> <strong><code>swap</code></strong><code>(OrderedMap&amp; om1, OrderedMap&amp; om2) noexcept</code></li>
+<li><code>void OrderedMap::</code><strong><code>swap</code></strong><code>(OrderedMap&amp; rhs) noexcept</code></li>
 </ul>
 </li>
+<li><code>void</code> <strong><code>swap</code></strong><code>(OrderedMap&amp; lhs, OrderedMap&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator==</code></strong><code>(OrderedMap&amp; lhs, OrderedMap&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator!=</code></strong><code>(OrderedMap&amp; lhs, OrderedMap&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&lt;</code></strong><code>(OrderedMap&amp; lhs, OrderedMap&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&gt;</code></strong><code>(OrderedMap&amp; lhs, OrderedMap&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&lt;=</code></strong><code>(OrderedMap&amp; lhs, OrderedMap&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&gt;=</code></strong><code>(OrderedMap&amp; lhs, OrderedMap&amp; rhs) noexcept</code></li>
 </ul>
 <p>An <code>OrderedMap</code> behaves the same as a <code>std::map</code> in most respects, except that
 iteration over the map returns the elements in insertion order instead of the

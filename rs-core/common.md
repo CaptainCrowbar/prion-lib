@@ -767,7 +767,7 @@ value of the same size (the argument is returned unchanged if `T` already had
 the desired signedness). Behaviour is undefined if `T` is not an integer or
 enumeration type.
 
-* `template <typename T> T` **`binomial`**`(T a, T b) noexcept`
+* `template <typename T> constexpr T` **`binomial`**`(T a, T b) noexcept`
 * `double` **`xbinomial`**`(int a, int b) noexcept`
 
 These return the binomial coefficient (`a!/b!(a-b)!` if `0<=b<=a`, otherwise
@@ -798,13 +798,14 @@ correct answer is not representable.
 `[unicorn]` Returns `floor(log2(t))+1`, equal to the number of significant
 bits in `t`, or zero if `t` is zero.
 
-* `template <typename T> T` **`int_power`**`(T x, T y) noexcept`
+* `template <typename T1, typename T2> constexpr T1` **`int_power`**`(T1 x, T2 y) noexcept`
 
-Calculates <code>x<sup>y</sup></code> for integer types.
-<code>0<sup>0</sup></code> will return 1. Behaviour is undefined if `y` is
-negative, or if `T` is signed and the true result would be out of range.
+Calculates <code>x<sup>y</sup></code> for integer types
+(<code>0<sup>0</sup></code> will return 1). Behaviour is undefined if `y` is
+negative, if the true result would be out of range for `T1`, or if either type
+is not an integer.
 
-* `template <typename T> T` **`int_sqrt`**`(T t) noexcept`
+* `template <typename T> constexpr T` **`int_sqrt`**`(T t) noexcept`
 
 Returns the integer square root of the argument (the true square root
 truncated to an integer). Behaviour is undefined if the argument is negative.

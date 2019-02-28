@@ -1043,7 +1043,7 @@ namespace RS {
     double xbinomial(int a, int b) noexcept;
 
     template <typename T>
-    T binomial(T a, T b) noexcept {
+    constexpr T binomial(T a, T b) noexcept {
         if (b < T(0) || b > a)
             return T(0);
         if (b == T(0) || b == a)
@@ -1070,38 +1070,34 @@ namespace RS {
         return a == T(0) || b == T(0) ? T(0) : global_abs((a / gcd(a, b)) * b);
     }
 
-    template <typename T>
-    T int_power(T x, T y) noexcept {
-        T z = T(1);
+    template <typename T1, typename T2>
+    constexpr T1 int_power(T1 x, T2 y) noexcept {
+        T1 z = T1(1);
         while (y) {
-            if (y & T(1))
+            if (y % T2(2) == T2(1))
                 z *= x;
             x *= x;
-            y >>= 1;
+            y /= T2(2);
         }
         return z;
     }
 
     template <typename T>
-    T int_sqrt(T t) noexcept {
-        if constexpr (std::numeric_limits<T>::digits < std::numeric_limits<double>::digits) {
-            return T(std::floor(std::sqrt(double(t))));
-        } else {
-            auto u = as_unsigned(t);
-            using U = decltype(u);
-            U result = 0, test = U(1) << (8 * sizeof(U) - 2);
-            while (test > u)
-                test >>= 2;
-            while (test) {
-                if (u >= result + test) {
-                    u -= result + test;
-                    result += test * 2;
-                }
-                result >>= 1;
-                test >>= 2;
+    constexpr T int_sqrt(T t) noexcept {
+        auto u = as_unsigned(t);
+        using U = decltype(u);
+        U result = 0, test = U(1) << (8 * sizeof(U) - 2);
+        while (test > u)
+            test >>= 2;
+        while (test) {
+            if (u >= result + test) {
+                u -= result + test;
+                result += test * 2;
             }
-            return T(result);
+            result >>= 1;
+            test >>= 2;
         }
+        return T(result);
     }
 
     // [Functional utilities]

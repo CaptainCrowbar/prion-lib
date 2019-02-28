@@ -1017,7 +1017,7 @@ enumeration type.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; T</code> <strong><code>binomial</code></strong><code>(T a, T b) noexcept</code></li>
+<li><code>template &lt;typename T&gt; constexpr T</code> <strong><code>binomial</code></strong><code>(T a, T b) noexcept</code></li>
 <li><code>double</code> <strong><code>xbinomial</code></strong><code>(int a, int b) noexcept</code></li>
 </ul>
 <p>These return the binomial coefficient (<code>a!/b!(a-b)!</code> if <code>0&lt;=b&lt;=a</code>, otherwise
@@ -1058,15 +1058,16 @@ bits in <code>t</code>, or zero if <code>t</code> is zero.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; T</code> <strong><code>int_power</code></strong><code>(T x, T y) noexcept</code></li>
+<li><code>template &lt;typename T1, typename T2&gt; constexpr T1</code> <strong><code>int_power</code></strong><code>(T1 x, T2 y) noexcept</code></li>
 </ul>
-<p>Calculates <code>x<sup>y</sup></code> for integer types.
-<code>0<sup>0</sup></code> will return 1. Behaviour is undefined if <code>y</code> is
-negative, or if <code>T</code> is signed and the true result would be out of range.</p>
+<p>Calculates <code>x<sup>y</sup></code> for integer types
+(<code>0<sup>0</sup></code> will return 1). Behaviour is undefined if <code>y</code> is
+negative, if the true result would be out of range for <code>T1</code>, or if either type
+is not an integer.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; T</code> <strong><code>int_sqrt</code></strong><code>(T t) noexcept</code></li>
+<li><code>template &lt;typename T&gt; constexpr T</code> <strong><code>int_sqrt</code></strong><code>(T t) noexcept</code></li>
 </ul>
 <p>Returns the integer square root of the argument (the true square root
 truncated to an integer). Behaviour is undefined if the argument is negative.</p>

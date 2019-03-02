@@ -16,30 +16,6 @@ header are documented again here, marked with `[unicorn]`.
 
 ## Preprocessor macros ##
 
-### Compilation control macros ###
-
-* `#define` **`RS_LDLIB`**`([tag:] lib ...)`
-
-This instructs the makefile to link with one or more static libraries. Specify
-library names without the `-l` prefix (e.g. `RS_LDLIB(foo)` will link with
-`-lfoo`). If link order is important for a particular set of libraries, supply
-them in a space delimited list in a single `RS_LDLIB()` line.
-
-Libraries that are needed only on specific targets can be prefixed with one of
-the target identifiers listed below (e.g. `RS_LDLIB(apple:foo)` will link
-with `-lfoo` for Apple targets only). Only one target can be specified per
-invocation; if the same libraries are needed on multiple targets, but not on
-all targets, you will need a separate `RS_LDLIB()` line for each target.
-
-<!-- TEXT -->
-* `apple:`
-* `cygwin:`
-* `linux:`
-* `msvc:`
-
-`RS_LDLIB()` lines are picked up at the `"make dep"` stage; if you change a
-link library, the change will not be detected until dependencies are rebuilt.
-
 ### Compilation environment properties ###
 
 * `#define` **`RS_NATIVE_WCHAR`** `1` _- defined if the system API uses wide characters_
@@ -54,16 +30,16 @@ are not supported.
 
 * `#define` **`RS_BITMASK_OPERATORS`**`(EnumType)`
 
-Defines bit manipulation and related operators for an `enum class` (unary `!`,
-`~`; binary `&`, `&=`, `|`, `|=`, `^`, `^=`). The type can be defined the
-conventional way or through the `RS_ENUM_CLASS()` macro.
+`[unicorn]` Defines bit manipulation and related operators for an `enum class`
+(unary `!`, `~`; binary `&`, `&=`, `|`, `|=`, `^`, `^=`). The type can be
+defined the conventional way or through the `RS_ENUM_CLASS()` macro.
 
 * `#define` **`RS_ENUM`**`(EnumType, IntType, first_value, first_name, ...)`
 * `#define` **`RS_ENUM_CLASS`**`(EnumType, IntType, first_value, first_name, ...)`
 
-These define an enumeration, given the name of the enumeration type, the
-underlying integer type, the integer value of the first entry, and a list of
-value names. They will also define the following functions:
+`[unicorn]` These define an enumeration, given the name of the enumeration
+type, the underlying integer type, the integer value of the first entry, and a
+list of value names. They will also define the following functions:
 
 * `constexpr bool` **`enum_is_valid`**`(EnumType t) noexcept`
 * `std::vector<EnumType>` **`enum_values<EnumType>`**`()`
@@ -120,14 +96,15 @@ single function template in `namespace RS`.
     * `T& operator=(const T&) = delete;`
     * `T& operator=(T&&) = delete;`
 
-Convenience macros for defaulted or deleted life cycle operations.
+`[unicorn]` Convenience macros for defaulted or deleted life cycle operations.
 
 * `#define` **`RS_OVERLOAD`**`(f) [] (auto&&... args) { return f(std::forward<decltype(args)>(args)...); }`
 
-Creates a function object wrapping a set of overloaded functions, that can be
-passed to a context expecting a function (such as an STL algorithm) without
-having to explicitly resolve the overload at the call site. (From an idea by
-Arthur O'Dwyer on the C++ standard proposals mailing list, 14 Sep 2015.)
+`[unicorn]` Creates a function object wrapping a set of overloaded functions,
+that can be passed to a context expecting a function (such as an STL
+algorithm) without having to explicitly resolve the overload at the call site.
+(From an idea by Arthur O'Dwyer on the C++ standard proposals mailing list, 14
+Sep 2015.)
 
 ## Types ##
 

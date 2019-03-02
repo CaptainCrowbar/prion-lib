@@ -18,7 +18,6 @@
 <li><a href="#contents">Contents</a></li>
 <li><a href="#introduction">Introduction</a></li>
 <li><a href="#preprocessor-macros">Preprocessor macros</a><ul>
-<li><a href="#compilation-control-macros">Compilation control macros</a></li>
 <li><a href="#compilation-environment-properties">Compilation environment properties</a></li>
 <li><a href="#type-generation-macros">Type generation macros</a></li>
 </ul>
@@ -99,31 +98,6 @@
 this header. For convenient reference, all of the relevant contents of that
 header are documented again here, marked with <code><span class="unicorn">[unicorn]</span></code>.</p>
 <h2 id="preprocessor-macros">Preprocessor macros</h2>
-<h3 id="compilation-control-macros">Compilation control macros</h3>
-<div class="defns">
-<ul>
-<li><code>#define</code> <strong><code>RS_LDLIB</code></strong><code>([tag:] lib ...)</code></li>
-</ul>
-<p>This instructs the makefile to link with one or more static libraries. Specify
-library names without the <code>-l</code> prefix (e.g. <code>RS_LDLIB(foo)</code> will link with
-<code>-lfoo</code>). If link order is important for a particular set of libraries, supply
-them in a space delimited list in a single <code>RS_LDLIB()</code> line.</p>
-<p>Libraries that are needed only on specific targets can be prefixed with one of
-the target identifiers listed below (e.g. <code>RS_LDLIB(apple:foo)</code> will link
-with <code>-lfoo</code> for Apple targets only). Only one target can be specified per
-invocation; if the same libraries are needed on multiple targets, but not on
-all targets, you will need a separate <code>RS_LDLIB()</code> line for each target.</p>
-<!-- TEXT -->
-
-<ul>
-<li><code>apple:</code></li>
-<li><code>cygwin:</code></li>
-<li><code>linux:</code></li>
-<li><code>msvc:</code></li>
-</ul>
-<p><code>RS_LDLIB()</code> lines are picked up at the <code>"make dep"</code> stage; if you change a
-link library, the change will not be detected until dependencies are rebuilt.</p>
-</div>
 <h3 id="compilation-environment-properties">Compilation environment properties</h3>
 <div class="defns">
 <ul>
@@ -140,18 +114,18 @@ are not supported.</p>
 <ul>
 <li><code>#define</code> <strong><code>RS_BITMASK_OPERATORS</code></strong><code>(EnumType)</code></li>
 </ul>
-<p>Defines bit manipulation and related operators for an <code>enum class</code> (unary <code>!</code>,
-<code>~</code>; binary <code>&amp;</code>, <code>&amp;=</code>, <code>|</code>, <code>|=</code>, <code>^</code>, <code>^=</code>). The type can be defined the
-conventional way or through the <code>RS_ENUM_CLASS()</code> macro.</p>
+<p><code><span class="unicorn">[unicorn]</span></code> Defines bit manipulation and related operators for an <code>enum class</code>
+(unary <code>!</code>, <code>~</code>; binary <code>&amp;</code>, <code>&amp;=</code>, <code>|</code>, <code>|=</code>, <code>^</code>, <code>^=</code>). The type can be
+defined the conventional way or through the <code>RS_ENUM_CLASS()</code> macro.</p>
 </div>
 <div class="defns">
 <ul>
 <li><code>#define</code> <strong><code>RS_ENUM</code></strong><code>(EnumType, IntType, first_value, first_name, ...)</code></li>
 <li><code>#define</code> <strong><code>RS_ENUM_CLASS</code></strong><code>(EnumType, IntType, first_value, first_name, ...)</code></li>
 </ul>
-<p>These define an enumeration, given the name of the enumeration type, the
-underlying integer type, the integer value of the first entry, and a list of
-value names. They will also define the following functions:</p>
+<p><code><span class="unicorn">[unicorn]</span></code> These define an enumeration, given the name of the enumeration
+type, the underlying integer type, the integer value of the first entry, and a
+list of value names. They will also define the following functions:</p>
 <ul>
 <li><code>constexpr bool</code> <strong><code>enum_is_valid</code></strong><code>(EnumType t) noexcept</code></li>
 <li><code>std::vector&lt;EnumType&gt;</code> <strong><code>enum_values&lt;EnumType&gt;</code></strong><code>()</code></li>
@@ -213,16 +187,17 @@ single function template in <code>namespace RS</code>.</p>
 </ul>
 </li>
 </ul>
-<p>Convenience macros for defaulted or deleted life cycle operations.</p>
+<p><code><span class="unicorn">[unicorn]</span></code> Convenience macros for defaulted or deleted life cycle operations.</p>
 </div>
 <div class="defns">
 <ul>
 <li><code>#define</code> <strong><code>RS_OVERLOAD</code></strong><code>(f) [] (auto&amp;&amp;... args) { return f(std::forward&lt;decltype(args)&gt;(args)...); }</code></li>
 </ul>
-<p>Creates a function object wrapping a set of overloaded functions, that can be
-passed to a context expecting a function (such as an STL algorithm) without
-having to explicitly resolve the overload at the call site. (From an idea by
-Arthur O'Dwyer on the C++ standard proposals mailing list, 14 Sep 2015.)</p>
+<p><code><span class="unicorn">[unicorn]</span></code> Creates a function object wrapping a set of overloaded functions,
+that can be passed to a context expecting a function (such as an STL
+algorithm) without having to explicitly resolve the overload at the call site.
+(From an idea by Arthur O'Dwyer on the C++ standard proposals mailing list, 14
+Sep 2015.)</p>
 </div>
 <h2 id="types">Types</h2>
 <h3 id="basic-types">Basic types</h3>

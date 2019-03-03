@@ -152,6 +152,29 @@ namespace RS {
     inline Ustring tf(bool b) { return b ? "true" : "false"; }
     inline Ustring yn(bool b) { return b ? "yes" : "no"; }
 
+    template <typename T>
+    Ustring expand_integer(T t, char delim = '\'') {
+        Ustring s = dec(t);
+        size_t a = size_t(s[0] == '-'), b = s.size();
+        while (b - a > 3) {
+            b -= 3;
+            s.insert(b, 1, delim);
+        }
+        return s;
+    }
+
+    template <typename T>
+    Ustring expand_hex(T t, char delim = '\'') {
+        Ustring s = hex(t);
+        size_t a = size_t(s[0] == '-'), b = s.size();
+        while (b - a > 4) {
+            b -= 4;
+            s.insert(b, 1, delim);
+        }
+        s.insert(a, "0x");
+        return s;
+    }
+
     template <typename Range>
     Strings to_strings(const Range& r) {
         Strings s;

@@ -245,6 +245,15 @@ copied into the output.</p>
 <h2 id="string-formatting-functions">String formatting functions</h2>
 <div class="defns">
 <ul>
+<li><code>template &lt;typename T&gt; Ustring</code> <strong><code>expand_integer</code></strong><code>(T t, char delim = '\'')</code></li>
+<li><code>template &lt;typename T&gt; Ustring</code> <strong><code>expand_hex</code></strong><code>(T t, char delim = '\'')</code></li>
+</ul>
+<p>Write a integer with delimiters between groups of 3 decimal or 4 hex digits.
+The hex version will pad with leading zeros to match the native size of the
+integer, and insert a <code>"0x"</code> prefix.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>template &lt;typename... Args&gt; Ustring</code> <strong><code>fmt</code></strong><code>(Uview pattern, const Args&amp;... args)</code></li>
 </ul>
 <p>This performs string interpolation, inserting the variadic arguments

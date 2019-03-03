@@ -192,6 +192,13 @@ Trim unwanted bytes from the ends of a string.
 
 ## String formatting functions ##
 
+* `template <typename T> Ustring` **`expand_integer`**`(T t, char delim = '\'')`
+* `template <typename T> Ustring` **`expand_hex`**`(T t, char delim = '\'')`
+
+Write a integer with delimiters between groups of 3 decimal or 4 hex digits.
+The hex version will pad with leading zeros to match the native size of the
+integer, and insert a `"0x"` prefix.
+
 * `template <typename... Args> Ustring` **`fmt`**`(Uview pattern, const Args&... args)`
 
 This performs string interpolation, inserting the variadic arguments

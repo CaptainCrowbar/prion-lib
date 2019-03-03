@@ -468,6 +468,47 @@ void test_core_string_formatting() {
     Strings svec;
     std::vector<int> ivec;
 
+    TEST_EQUAL(expand_integer(0), "0");
+    TEST_EQUAL(expand_integer(1), "1");
+    TEST_EQUAL(expand_integer(12), "12");
+    TEST_EQUAL(expand_integer(123), "123");
+    TEST_EQUAL(expand_integer(1234), "1'234");
+    TEST_EQUAL(expand_integer(12345), "12'345");
+    TEST_EQUAL(expand_integer(123456), "123'456");
+    TEST_EQUAL(expand_integer(1234567), "1'234'567");
+    TEST_EQUAL(expand_integer(12345678), "12'345'678");
+    TEST_EQUAL(expand_integer(123456789), "123'456'789");
+    TEST_EQUAL(expand_integer(1234567891ll), "1'234'567'891");
+    TEST_EQUAL(expand_integer(12345678912ll), "12'345'678'912");
+    TEST_EQUAL(expand_integer(123456789123ll), "123'456'789'123");
+    TEST_EQUAL(expand_integer(1234567891234ll), "1'234'567'891'234");
+    TEST_EQUAL(expand_integer(12345678912345ll), "12'345'678'912'345");
+    TEST_EQUAL(expand_integer(123456789123456ll), "123'456'789'123'456");
+    TEST_EQUAL(expand_integer(1234567891234567ll), "1'234'567'891'234'567");
+    TEST_EQUAL(expand_integer(12345678912345678ll), "12'345'678'912'345'678");
+    TEST_EQUAL(expand_integer(123456789123456789ll), "123'456'789'123'456'789");
+    TEST_EQUAL(expand_integer(-1), "-1");
+    TEST_EQUAL(expand_integer(-12), "-12");
+    TEST_EQUAL(expand_integer(-123), "-123");
+    TEST_EQUAL(expand_integer(-1234), "-1'234");
+    TEST_EQUAL(expand_integer(-12345), "-12'345");
+    TEST_EQUAL(expand_integer(-123456), "-123'456");
+    TEST_EQUAL(expand_integer(-1234567), "-1'234'567");
+
+    TEST_EQUAL(expand_hex(uint32_t(0)), "0x0000'0000");
+    TEST_EQUAL(expand_hex(uint32_t(1)), "0x0000'0001");
+    TEST_EQUAL(expand_hex(uint32_t(0x12)), "0x0000'0012");
+    TEST_EQUAL(expand_hex(uint32_t(0x123)), "0x0000'0123");
+    TEST_EQUAL(expand_hex(uint32_t(0x1234)), "0x0000'1234");
+    TEST_EQUAL(expand_hex(uint32_t(0x12345)), "0x0001'2345");
+    TEST_EQUAL(expand_hex(uint32_t(0x123456)), "0x0012'3456");
+    TEST_EQUAL(expand_hex(uint32_t(0x1234567)), "0x0123'4567");
+    TEST_EQUAL(expand_hex(uint32_t(0x12345678)), "0x1234'5678");
+    TEST_EQUAL(expand_hex(int64_t(0x123456789abcdef0)), "0x1234'5678'9abc'def0");
+    TEST_EQUAL(expand_hex(int32_t(-1)), "-0x0000'0001");
+    TEST_EQUAL(expand_hex(int32_t(-0x12345678)), "-0x1234'5678");
+    TEST_EQUAL(expand_hex(int64_t(-0x123456789abcdef0)), "-0x1234'5678'9abc'def0");
+
     TEST_EQUAL(hex(a4), "0a141e28");
     TEST_EQUAL(hex(a8), "0a141e28323c4650");
 

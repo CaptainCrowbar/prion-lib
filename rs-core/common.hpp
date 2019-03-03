@@ -629,7 +629,7 @@ namespace RS {
 
     template <typename M, typename K>
     const typename M::mapped_type& find_in_map(const M& map, const K& key) {
-        static const typename M::mapped_type def;
+        static const typename M::mapped_type def = {};
         return find_in_map(map, key, def);
     }
 

@@ -242,15 +242,6 @@ copied into the output.</p>
 </ul>
 <p>Trim unwanted bytes from the ends of a string.</p>
 </div>
-<div class="defns">
-<ul>
-<li><code>std::string</code> <strong><code>unqualify</code></strong><code>(std::string_view str, std::string_view delims = ".:")</code></li>
-</ul>
-<p>Strips off any prefix ending in one of the delimiter characters (e.g.
-<code>unqualify("foo::bar::zap()")</code> returns <code>"zap()"</code>). This will return the
-original string unchanged if the delimiter string is empty or none of its
-characters are found.</p>
-</div>
 <h2 id="string-formatting-functions">String formatting functions</h2>
 <div class="defns">
 <ul>

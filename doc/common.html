@@ -1580,7 +1580,7 @@ version of <code>strlen()</code>). This will return zero if the pointer is null.
 <ul>
 <li><code>Ustring</code> <strong><code>dent</code></strong><code>(size_t depth)</code></li>
 </ul>
-<p>Returns a string containing <code>4*depth</code> spaces, for indentation.</p>
+<p><code><span class="unicorn">[unicorn]</span></code> Returns a string containing <code>4*depth</code> spaces, for indentation.</p>
 </div>
 <div class="defns">
 <ul>
@@ -1599,6 +1599,15 @@ checked and clamped to the actual size of the string.</p>
 <p><code><span class="unicorn">[unicorn]</span></code> Return a quoted string; internal quotes, backslashes, and control
 characters are escaped. The <code>quote()</code> function passes non-ASCII bytes through
 unchanged, while <code>bquote()</code> escapes them.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Ustring</code> <strong><code>unqualify</code></strong><code>(Uview str, Uview delims = ".:")</code></li>
+</ul>
+<p><code><span class="unicorn">[unicorn]</span></code> Strips off any prefix ending in one of the delimiter characters
+(e.g. <code>unqualify("foo::bar::zap()")</code> returns <code>"zap()"</code>). This will return the
+original string unchanged if the delimiter string is empty or none of its
+characters are found.</p>
 </div>
 <h3 id="case-conversion-functions">Case conversion functions</h3>
 <div class="defns">

@@ -457,15 +457,6 @@ void test_core_string_manipulation() {
     TEST_EQUAL(trim_right("<<<Hello>>>", "<>"), "<<<Hello");
     TEST_EQUAL(trim_right("<<<Hello>>> <<<world>>>", "<>"), "<<<Hello>>> <<<world");
 
-    TEST_EQUAL(unqualify(""), "");
-    TEST_EQUAL(unqualify("alpha"), "alpha");
-    TEST_EQUAL(unqualify("alpha.bravo"), "bravo");
-    TEST_EQUAL(unqualify("alpha.bravo.charlie"), "charlie");
-    TEST_EQUAL(unqualify("alpha::bravo"), "bravo");
-    TEST_EQUAL(unqualify("alpha::bravo::charlie"), "charlie");
-    TEST_EQUAL(unqualify("alpha-bravo"), "alpha-bravo");
-    TEST_EQUAL(unqualify("alpha-bravo-charlie"), "alpha-bravo-charlie");
-
 }
 
 void test_core_string_formatting() {

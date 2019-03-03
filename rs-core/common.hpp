@@ -1463,12 +1463,6 @@ namespace RS {
         void close() noexcept { try { if (joinable()) join(); } catch (...) {} }
     };
 
-    // [String functions]
-
-    // General string functions
-
-    inline Ustring dent(size_t depth) { return Ustring(4 * depth, ' '); }
-
 }
 
 namespace std {

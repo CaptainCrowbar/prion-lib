@@ -1196,7 +1196,7 @@ version of `strlen()`). This will return zero if the pointer is null.
 
 * `Ustring` **`dent`**`(size_t depth)`
 
-Returns a string containing `4*depth` spaces, for indentation.
+`[unicorn]` Returns a string containing `4*depth` spaces, for indentation.
 
 * `template <typename S> [string view]` **`make_view`**`(const S& s, size_t pos = 0, size_t len = npos) noexcept`
 
@@ -1211,6 +1211,13 @@ checked and clamped to the actual size of the string.
 `[unicorn]` Return a quoted string; internal quotes, backslashes, and control
 characters are escaped. The `quote()` function passes non-ASCII bytes through
 unchanged, while `bquote()` escapes them.
+
+* `Ustring` **`unqualify`**`(Uview str, Uview delims = ".:")`
+
+`[unicorn]` Strips off any prefix ending in one of the delimiter characters
+(e.g. `unqualify("foo::bar::zap()")` returns `"zap()"`). This will return the
+original string unchanged if the delimiter string is empty or none of its
+characters are found.
 
 ### Case conversion functions ###
 

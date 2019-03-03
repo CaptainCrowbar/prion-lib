@@ -86,7 +86,6 @@ namespace RS {
     std::string trim(std::string_view str, std::string_view chars = ascii_whitespace);
     std::string trim_left(std::string_view str, std::string_view chars = ascii_whitespace);
     std::string trim_right(std::string_view str, std::string_view chars = ascii_whitespace);
-    std::string unqualify(std::string_view str, std::string_view delims = ".:");
 
     template <typename... Args>
     std::string catstr(const Args&... args) {

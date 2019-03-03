@@ -302,16 +302,6 @@ namespace RS {
         return std::string(str.substr(0, str.find_last_not_of(chars) + 1));
     }
 
-    std::string unqualify(std::string_view str, std::string_view delims) {
-        if (delims.empty())
-            return std::string(str);
-        size_t pos = str.find_last_of(delims);
-        if (pos == npos)
-            return std::string(str);
-        else
-            return std::string(str.substr(pos + 1, npos));
-    }
-
     // String formatting functions
 
     Ustring hexdump(const void* ptr, size_t n, size_t block) {

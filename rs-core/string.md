@@ -190,13 +190,6 @@ copied into the output.
 
 Trim unwanted bytes from the ends of a string.
 
-* `std::string` **`unqualify`**`(std::string_view str, std::string_view delims = ".:")`
-
-Strips off any prefix ending in one of the delimiter characters (e.g.
-`unqualify("foo::bar::zap()")` returns `"zap()"`). This will return the
-original string unchanged if the delimiter string is empty or none of its
-characters are found.
-
 ## String formatting functions ##
 
 * `template <typename... Args> Ustring` **`fmt`**`(Uview pattern, const Args&... args)`

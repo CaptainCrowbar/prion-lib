@@ -3,6 +3,7 @@
 #include "rs-core/common.hpp"
 #include "rs-core/meta.hpp"
 #include "rs-core/serial.hpp"
+#include <functional>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -265,5 +266,17 @@ namespace RS {
             *m = j.get<T>();
         }
     }
+
+}
+
+namespace std {
+
+    template <typename T, typename I, RS::Mark F, typename C>
+    struct hash<RS::Marked<T,I,F,C>> {
+        using value_type = std::conditional_t<RS::Meta::is_hashable<T>, RS::Marked<T,I,F,C>, RS::Detail::NoObject<__LINE__>>;
+        size_t operator()(const value_type& m) const {
+            return std::hash<T>()(*m);
+        }
+    };
 
 }

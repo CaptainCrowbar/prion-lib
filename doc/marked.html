@@ -93,13 +93,15 @@
 <li><code>[ Marked</code> <strong><code>from_str</code></strong><code>(std::string_view s) ]</code></li>
 <li><code>[ void</code> <strong><code>to_json</code></strong><code>(json&amp; j, const Marked&amp; m) ]</code></li>
 <li><code>[ void</code> <strong><code>from_json</code></strong><code>(const json&amp; j, Marked&amp; m) ]</code></li>
+<li><code>[ class</code> <strong><code>std::hash&lt;Marked&gt;</code></strong> <code>]</code></li>
 </ul>
 <p>Functions in brackets are optionally defined, as described below.</p>
 <p>The <code>Marked</code> template is an approximation to a "strong type alias", a concept
 that can't yet be fully emulated in C++. It associates a tag type (<code>ID</code>) with
 an underlying value type (<code>T</code>). The <code>ID</code> type is used only for type checking
 and plays no direct part in operations on the <code>Marked</code> type; normally <code>ID</code>
-will be an empty class.</p>
+will be an empty class. The <code>ID</code> type must be complete but does not need to be
+instantiable.</p>
 <p>The third template argument, <code>Flags</code>, is a bitwise-or combination of flags
 from the <code>Mark</code> enumeration. These control the semantics of the <code>Marked</code>
 class, and have the following meanings:</p>
@@ -286,7 +288,8 @@ need not be <code>noexcept</code> qualified):</p>
         <td><code>to_str()</code><br>
             <code>from_str()</code><br>
             <code>to_json()</code><br>
-            <code>from_json()</code></td>
+            <code>from_json()</code><br>
+            <code>std::hash</code></td>
         <td>Defined if the corresponding function is defined for <code>T</code></td>
     </tr>
 </table></body>

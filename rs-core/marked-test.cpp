@@ -6,6 +6,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <unordered_set>
 #include <utility>
 
 using namespace RS;
@@ -13,7 +14,7 @@ using namespace std::literals;
 
 void test_source_marked_value_access() {
 
-    struct Foo {};
+    class Foo { RS_NO_INSTANCE(Foo); };
 
     using FooStr = Marked<std::string, Foo>;
 
@@ -37,9 +38,9 @@ void test_source_marked_value_access() {
 
 void test_source_marked_conversion_operators() {
 
-    struct Foo {};
-    struct Bar {};
-    struct Zap {};
+    class Foo {};
+    class Bar {};
+    class Zap {};
 
     using FooStr = Marked<std::string, Foo>;
     using BarStr = Marked<std::string, Bar, Mark::implicit_in>;
@@ -66,9 +67,9 @@ void test_source_marked_conversion_operators() {
 
 void test_source_marked_copying_and_moving() {
 
-    struct Foo {};
-    struct Bar {};
-    struct Zap {};
+    class Foo {};
+    class Bar {};
+    class Zap {};
 
     using FooInt = Marked<int, Foo, Mark::no_copy>;
     using BarInt = Marked<int, Bar, Mark::no_move>;
@@ -90,8 +91,8 @@ void test_source_marked_copying_and_moving() {
 
 void test_source_marked_string_conversion() {
 
-    struct Foo {};
-    struct Bar {};
+    class Foo {};
+    class Bar {};
 
     using FooInt = Marked<int, Foo>;
     using BarInt = Marked<int, Bar, Mark::string_tag>;
@@ -110,8 +111,8 @@ void test_source_marked_string_conversion() {
 
 void test_source_marked_json_conversion() {
 
-    struct Foo {};
-    struct Bar {};
+    class Foo {};
+    class Bar {};
 
     using FooInt = Marked<int, Foo>;
     using BarInt = Marked<int, Bar, Mark::json_tag>;
@@ -131,8 +132,8 @@ void test_source_marked_json_conversion() {
 
 void test_source_marked_boolean_conversion() {
 
-    struct Foo {};
-    struct Bar {};
+    class Foo {};
+    class Bar {};
 
     using FooInt = Marked<int, Foo>;
     using BarPtr = Marked<std::unique_ptr<int>, Bar>;
@@ -160,8 +161,8 @@ void test_source_marked_boolean_conversion() {
 
 void test_source_marked_comparison_operators() {
 
-    struct Foo {};
-    struct Bar {};
+    class Foo {};
+    class Bar {};
 
     using FooInt = Marked<int, Foo>;
     using BarCmp = Marked<std::complex<double>, Bar>;
@@ -194,8 +195,8 @@ void test_source_marked_comparison_operators() {
 
 void test_source_marked_arithmetic_operators() {
 
-    struct Foo {};
-    struct Bar {};
+    class Foo {};
+    class Bar {};
 
     using FooInt = Marked<int, Foo, Mark::arithmetic>;
     using BarInt = Marked<int, Bar>;
@@ -278,8 +279,8 @@ void test_source_marked_function_call_operators() {
         int operator()(int a, int b) { value += a + b; return value; }
     };
 
-    struct Foo {};
-    struct Bar {};
+    class Foo {};
+    class Bar {};
 
     using FooFun = Marked<ConstFunction, Foo, Mark::function>;
     using BarFun = Marked<MutableFunction, Bar, Mark::function>;
@@ -297,9 +298,9 @@ void test_source_marked_function_call_operators() {
 
 void test_source_marked_subscript_operators() {
 
-    struct Foo {};
-    struct Bar {};
-    struct Zap {};
+    class Foo {};
+    class Bar {};
+    class Zap {};
 
     using FooStr = Marked<std::string, Foo, Mark::subscript>;
     using BarStr = Marked<std::string, Bar>;
@@ -315,6 +316,23 @@ void test_source_marked_subscript_operators() {
     TEST_EQUAL(foo[0], 'H');
     TRY(foo[0] = 'Y');
     TEST_EQUAL(*foo, "Yello");
+
+}
+
+void test_source_marked_hash_functions() {
+
+    class Foo {};
+
+    using FooInt = Marked<int, Foo>;
+
+    std::unordered_set<FooInt> set;
+
+    for (int i = 1; i <= 10; ++i)
+        for (int j = 1; j <= i; ++j)
+            set.insert(FooInt(i));
+    TEST_EQUAL(set.size(), 10);
+    for (int i = 1; i <= 10; ++i)
+        TEST_EQUAL(set.count(FooInt(i)), 1);
 
 }
 
@@ -335,9 +353,9 @@ void test_source_marked_checked_values() {
         }
     };
 
-    struct Foo {};
-    struct Bar {};
-    struct Zap {};
+    class Foo {};
+    class Bar {};
+    class Zap {};
 
     using FooStr = Marked<std::string, Foo, Mark::implicit_in>;
     using BarStr = Marked<std::string, Bar, Mark::implicit_in, to_lower>;

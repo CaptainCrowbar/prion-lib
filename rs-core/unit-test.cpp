@@ -144,6 +144,7 @@ extern void test_source_marked_comparison_operators();
 extern void test_source_marked_arithmetic_operators();
 extern void test_source_marked_function_call_operators();
 extern void test_source_marked_subscript_operators();
+extern void test_source_marked_hash_functions();
 extern void test_source_marked_checked_values();
 extern void test_core_meta_logic();
 extern void test_core_meta_append();
@@ -587,6 +588,7 @@ int main() {
         { "source/marked/arithmetic-operators", test_source_marked_arithmetic_operators },
         { "source/marked/function-call-operators", test_source_marked_function_call_operators },
         { "source/marked/subscript-operators", test_source_marked_subscript_operators },
+        { "source/marked/hash-functions", test_source_marked_hash_functions },
         { "source/marked/checked-values", test_source_marked_checked_values },
         { "core/meta/logic", test_core_meta_logic },
         { "core/meta/append", test_core_meta_append },

@@ -77,6 +77,7 @@ By Ross Smith
 * `[ Marked` **`from_str`**`(std::string_view s) ]`
 * `[ void` **`to_json`**`(json& j, const Marked& m) ]`
 * `[ void` **`from_json`**`(const json& j, Marked& m) ]`
+* `[ class` **`std::hash<Marked>`** `]`
 
 Functions in brackets are optionally defined, as described below.
 
@@ -84,7 +85,8 @@ The `Marked` template is an approximation to a "strong type alias", a concept
 that can't yet be fully emulated in C++. It associates a tag type (`ID`) with
 an underlying value type (`T`). The `ID` type is used only for type checking
 and plays no direct part in operations on the `Marked` type; normally `ID`
-will be an empty class.
+will be an empty class. The `ID` type must be complete but does not need to be
+instantiable.
 
 The third template argument, `Flags`, is a bitwise-or combination of flags
 from the `Mark` enumeration. These control the semantics of the `Marked`
@@ -239,7 +241,8 @@ In the table of conditionally defined functions below:
         <td><code>to_str()</code><br>
             <code>from_str()</code><br>
             <code>to_json()</code><br>
-            <code>from_json()</code></td>
+            <code>from_json()</code><br>
+            <code>std::hash</code></td>
         <td>Defined if the corresponding function is defined for <code>T</code></td>
     </tr>
 </table>

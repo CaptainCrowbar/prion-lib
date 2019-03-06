@@ -134,6 +134,17 @@ extern void test_core_io_print_formatting();
 extern void test_core_io_anonymous_temporary_file();
 extern void test_core_io_named_temporary_file();
 extern void test_core_ipc_named_mutex();
+extern void test_source_marked_value_access();
+extern void test_source_marked_conversion_operators();
+extern void test_source_marked_copying_and_moving();
+extern void test_source_marked_string_conversion();
+extern void test_source_marked_json_conversion();
+extern void test_source_marked_boolean_conversion();
+extern void test_source_marked_comparison_operators();
+extern void test_source_marked_arithmetic_operators();
+extern void test_source_marked_function_call_operators();
+extern void test_source_marked_subscript_operators();
+extern void test_source_marked_checked_values();
 extern void test_core_meta_logic();
 extern void test_core_meta_append();
 extern void test_core_meta_concat();
@@ -566,6 +577,17 @@ int main() {
         { "core/io/anonymous-temporary-file", test_core_io_anonymous_temporary_file },
         { "core/io/named-temporary-file", test_core_io_named_temporary_file },
         { "core/ipc/named-mutex", test_core_ipc_named_mutex },
+        { "source/marked/value-access", test_source_marked_value_access },
+        { "source/marked/conversion-operators", test_source_marked_conversion_operators },
+        { "source/marked/copying-and-moving", test_source_marked_copying_and_moving },
+        { "source/marked/string-conversion", test_source_marked_string_conversion },
+        { "source/marked/json-conversion", test_source_marked_json_conversion },
+        { "source/marked/boolean-conversion", test_source_marked_boolean_conversion },
+        { "source/marked/comparison-operators", test_source_marked_comparison_operators },
+        { "source/marked/arithmetic-operators", test_source_marked_arithmetic_operators },
+        { "source/marked/function-call-operators", test_source_marked_function_call_operators },
+        { "source/marked/subscript-operators", test_source_marked_subscript_operators },
+        { "source/marked/checked-values", test_source_marked_checked_values },
         { "core/meta/logic", test_core_meta_logic },
         { "core/meta/append", test_core_meta_append },
         { "core/meta/concat", test_core_meta_concat },

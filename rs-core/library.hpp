@@ -22,6 +22,7 @@
 #include "rs-core/int128.hpp"
 #include "rs-core/io.hpp"
 #include "rs-core/ipc.hpp"
+#include "rs-core/marked.hpp"
 #include "rs-core/meta.hpp"
 #include "rs-core/mirror-map.hpp"
 #include "rs-core/mp-integer.hpp"

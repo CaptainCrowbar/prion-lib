@@ -4,6 +4,7 @@
 
 * _General utilities_
     * [`"rs-core/common.hpp"`](common.html) - Common utilities
+    * [`"rs-core/marked.hpp"`](marked.html) - Tagged type
     * [`"rs-core/meta.hpp"`](meta.html) - Template metaprogramming
     * [`"rs-core/optional.hpp"`](optional.html) - Optional type
     * [`"rs-core/variant.hpp"`](variant.html) - Variant type

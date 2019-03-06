@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Tagged Type</title>
+<link type="text/css" rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<h1 id="tagged-type">Tagged Type</h1>
+<p>By Ross Smith</p>
+<ul>
+<li><code>#include "rs-core/marked.hpp"</code></li>
+</ul>
+<h2 id="contents">Contents</h2>
+<div class="toc">
+<ul>
+<li><a href="#tagged-type">Tagged Type</a><ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#marked-class-template">Marked class template</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="marked-class-template">Marked class template</h2>
+<div class="defns">
+<ul>
+<li><code>enum class</code> <strong><code>Mark</code></strong><code>: uint32_t</code></li>
+<li><code>template &lt;typename T, typename ID, Mark Flags = Mark::none, typename Check = void&gt; class</code> <strong><code>Marked</code></strong><ul>
+<li><code>using Marked::</code><strong><code>value_type</code></strong> <code>= T</code></li>
+<li><code>using Marked::</code><strong><code>id_type</code></strong> <code>= ID</code></li>
+<li><code>using Marked::</code><strong><code>check_type</code></strong> <code>= Check</code></li>
+<li><code>static constexpr Mark Marked::</code><strong><code>flags</code></strong> <code>= Flags</code></li>
+<li><code>[ Marked::</code><strong><code>Marked</code></strong><code>() ]</code></li>
+<li><code>[ Marked::</code><strong><code>Marked</code></strong><code>(const Marked&amp; m) ]</code></li>
+<li><code>[ Marked::</code><strong><code>Marked</code></strong><code>(Marked&amp;&amp; m) noexcept ]</code></li>
+<li><code>[ [explicit] Marked::</code><strong><code>Marked</code></strong><code>(const T&amp; t) ]</code></li>
+<li><code>[ [explicit] Marked::</code><strong><code>Marked</code></strong><code>(T&amp;&amp; t) noexcept ]</code></li>
+<li><code>Marked::</code><strong><code>~Marked</code></strong><code>() noexcept</code></li>
+<li><code>[ Marked&amp; Marked::</code><strong><code>operator=</code></strong><code>(const Marked&amp; m) ]</code></li>
+<li><code>[ Marked&amp; Marked::</code><strong><code>operator=</code></strong><code>(Marked&amp;&amp; m) noexcept ]</code></li>
+<li><code>[ Marked&amp; Marked::</code><strong><code>operator=</code></strong><code>(const T&amp; t) ]</code></li>
+<li><code>[ Marked&amp; Marked::</code><strong><code>operator=</code></strong><code>(T&amp;&amp; t) noexcept ]</code></li>
+<li><code>const T&amp; Marked::</code><strong><code>get</code></strong><code>() const noexcept</code></li>
+<li><code>[ void Marked::</code><strong><code>set</code></strong><code>(const T&amp; t) ]</code></li>
+<li><code>[ void Marked::</code><strong><code>set</code></strong><code>(T&amp;&amp; t) noexcept ]</code></li>
+<li><code>[explicit] Marked::</code><strong><code>operator const T&amp;</code></strong><code>() const noexcept</code></li>
+<li><code>[ explicit Marked::</code><strong><code>operator bool</code></strong><code>() const ]</code></li>
+<li><code>[ T&amp; Marked::</code><strong><code>operator*</code></strong><code>() noexcept ]</code></li>
+<li><code>const T&amp; Marked::</code><strong><code>operator*</code></strong><code>() const noexcept</code></li>
+<li><code>[ T2* Marked::</code><strong><code>operator-&gt;</code></strong><code>() noexcept ]</code></li>
+<li><code>const T* Marked::</code><strong><code>operator-&gt;</code></strong><code>() const noexcept</code></li>
+<li><code>[ template &lt;typename... Args&gt; [result type] Marked:;</code><strong><code>operator()</code></strong><code>(Args&amp;&amp;... args) ]</code></li>
+<li><code>[ template &lt;typename... Args&gt; [result type] Marked:;</code><strong><code>operator()</code></strong><code>(Args&amp;&amp;... args) const ]</code></li>
+<li><code>[ template &lt;typename I&gt; [element type]&amp; Marked::</code><strong><code>operator[]</code></strong><code>(I i) ]</code></li>
+<li><code>[ template &lt;typename I&gt; const [element type]&amp; Marked::</code><strong><code>operator[]</code></strong><code>(I i) const ]</code></li>
+<li><code>static const std::string&amp; Marked::</code><strong><code>id_name</code></strong><code>()</code></li>
+</ul>
+</li>
+<li><code>[ bool</code> <strong><code>operator==</code></strong><code>(const Marked&amp; a, const Marked&amp; b) noexcept ]</code></li>
+<li><code>[ bool</code> <strong><code>operator!=</code></strong><code>(const Marked&amp; a, const Marked&amp; b) noexcept ]</code></li>
+<li><code>[ bool</code> <strong><code>operator&lt;</code></strong><code>(const Marked&amp; a, const Marked&amp; b) noexcept ]</code></li>
+<li><code>[ bool</code> <strong><code>operator&gt;</code></strong><code>(const Marked&amp; a, const Marked&amp; b) noexcept ]</code></li>
+<li><code>[ bool</code> <strong><code>operator&lt;=</code></strong><code>(const Marked&amp; a, const Marked&amp; b) noexcept ]</code></li>
+<li><code>[ bool</code> <strong><code>operator&gt;=</code></strong><code>(const Marked&amp; a, const Marked&amp; b) noexcept ]</code></li>
+<li><code>[ Marked</code> <strong><code>operator+</code></strong><code>(const Marked&amp; m) ]</code></li>
+<li><code>[ Marked</code> <strong><code>operator-</code></strong><code>(const Marked&amp; m) ]</code></li>
+<li><code>[ Marked&amp;</code> <strong><code>operator++</code></strong><code>(Marked&amp; m) ]</code></li>
+<li><code>[ Marked</code> <strong><code>operator++</code></strong><code>(Marked&amp; m, int) ]</code></li>
+<li><code>[ Marked&amp;</code> <strong><code>operator--</code></strong><code>(Marked&amp; m) ]</code></li>
+<li><code>[ Marked</code> <strong><code>operator--</code></strong><code>(Marked&amp; m, int) ]</code></li>
+<li><code>[ Marked</code> <strong><code>operator+</code></strong><code>(const Marked&amp; a, const Marked&amp; b) ]</code></li>
+<li><code>[ Marked</code> <strong><code>operator-</code></strong><code>(const Marked&amp; a, const Marked&amp; b) ]</code></li>
+<li><code>[ Marked</code> <strong><code>operator*</code></strong><code>(const Marked&amp; a, const Marked&amp; b) ]</code></li>
+<li><code>[ Marked</code> <strong><code>operator/</code></strong><code>(const Marked&amp; a, const Marked&amp; b) ]</code></li>
+<li><code>[ Marked</code> <strong><code>operator%</code></strong><code>(const Marked&amp; a, const Marked&amp; b) ]</code></li>
+<li><code>[ Marked</code> <strong><code>operator&amp;</code></strong><code>(const Marked&amp; a, const Marked&amp; b) ]</code></li>
+<li><code>[ Marked</code> <strong><code>operator|</code></strong><code>(const Marked&amp; a, const Marked&amp; b) ]</code></li>
+<li><code>[ Marked</code> <strong><code>operator^</code></strong><code>(const Marked&amp; a, const Marked&amp; b) ]</code></li>
+<li><code>[ Marked</code> <strong><code>operator&lt;&lt;</code></strong><code>(const Marked&amp; a, const Marked&amp; b) ]</code></li>
+<li><code>[ Marked</code> <strong><code>operator&gt;&gt;</code></strong><code>(const Marked&amp; a, const Marked&amp; b) ]</code></li>
+<li><code>[ Marked&amp;</code> <strong><code>operator+=</code></strong><code>(Marked&amp; a, const Marked&amp; b) ]</code></li>
+<li><code>[ Marked&amp;</code> <strong><code>operator-=</code></strong><code>(Marked&amp; a, const Marked&amp; b) ]</code></li>
+<li><code>[ Marked&amp;</code> <strong><code>operator*=</code></strong><code>(Marked&amp; a, const Marked&amp; b) ]</code></li>
+<li><code>[ Marked&amp;</code> <strong><code>operator/=</code></strong><code>(Marked&amp; a, const Marked&amp; b) ]</code></li>
+<li><code>[ Marked&amp;</code> <strong><code>operator%=</code></strong><code>(Marked&amp; a, const Marked&amp; b) ]</code></li>
+<li><code>[ Marked&amp;</code> <strong><code>operator&amp;=</code></strong><code>(Marked&amp; a, const Marked&amp; b) ]</code></li>
+<li><code>[ Marked&amp;</code> <strong><code>operator|=</code></strong><code>(Marked&amp; a, const Marked&amp; b) ]</code></li>
+<li><code>[ Marked&amp;</code> <strong><code>operator^=</code></strong><code>(Marked&amp; a, const Marked&amp; b) ]</code></li>
+<li><code>[ Marked&amp;</code> <strong><code>operator&lt;&lt;=</code></strong><code>(Marked&amp; a, const Marked&amp; b) ]</code></li>
+<li><code>[ Marked&amp;</code> <strong><code>operator&gt;&gt;=</code></strong><code>(Marked&amp; a, const Marked&amp; b) ]</code></li>
+<li><code>[ std::string</code> <strong><code>to_str</code></strong><code>(const Marked&amp; m) ]</code></li>
+<li><code>[ bool</code> <strong><code>from_str</code></strong><code>(std::string_view s, Marked&amp; m) ]</code></li>
+<li><code>[ Marked</code> <strong><code>from_str</code></strong><code>(std::string_view s) ]</code></li>
+<li><code>[ void</code> <strong><code>to_json</code></strong><code>(json&amp; j, const Marked&amp; m) ]</code></li>
+<li><code>[ void</code> <strong><code>from_json</code></strong><code>(const json&amp; j, Marked&amp; m) ]</code></li>
+</ul>
+<p>Functions in brackets are optionally defined, as described below.</p>
+<p>The <code>Marked</code> template is an approximation to a "strong type alias", a concept
+that can't yet be fully emulated in C++. It associates a tag type (<code>ID</code>) with
+an underlying value type (<code>T</code>). The <code>ID</code> type is used only for type checking
+and plays no direct part in operations on the <code>Marked</code> type; normally <code>ID</code>
+will be an empty class.</p>
+<p>The third template argument, <code>Flags</code>, is a bitwise-or combination of flags
+from the <code>Mark</code> enumeration. These control the semantics of the <code>Marked</code>
+class, and have the following meanings:</p>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Mark::</code><strong><code>none</code></strong></td>
+<td>Empty bitmask</td>
+</tr>
+<tr>
+<td><code>Mark::</code><strong><code>implicit_in</code></strong></td>
+<td>Define an implicit conversion from <code>T</code> to <code>Marked</code></td>
+</tr>
+<tr>
+<td><code>Mark::</code><strong><code>implicit_out</code></strong></td>
+<td>Define an implicit conversion from <code>Marked</code> to <code>T</code></td>
+</tr>
+<tr>
+<td><code>Mark::</code><strong><code>no_copy</code></strong></td>
+<td>The <code>Marked</code> type is not copyable</td>
+</tr>
+<tr>
+<td><code>Mark::</code><strong><code>no_move</code></strong></td>
+<td>The <code>Marked</code> type is not copyable or movable (implies <code>no_copy</code>)</td>
+</tr>
+<tr>
+<td><code>Mark::</code><strong><code>reset_on_move</code></strong></td>
+<td>Moving resets the contained <code>T</code> to its default (implies <code>no_copy</code>)</td>
+</tr>
+<tr>
+<td><code>Mark::</code><strong><code>arithmetic</code></strong></td>
+<td>Arithmetic operators are defined for <code>Marked</code></td>
+</tr>
+<tr>
+<td><code>Mark::</code><strong><code>subscript</code></strong></td>
+<td>A subscript operator is defined for <code>Marked</code></td>
+</tr>
+<tr>
+<td><code>Mark::</code><strong><code>string_tag</code></strong></td>
+<td>The string format is tagged with the name of the ID type</td>
+</tr>
+<tr>
+<td><code>Mark::</code><strong><code>json_tag</code></strong></td>
+<td>The JSON format is tagged with the name of the ID type</td>
+</tr>
+</tbody>
+</table>
+<p>The fourth template argument, <code>Check</code>, is an optional type that performs a
+value check on any value of <code>T</code> supplied to a <code>Marked</code> object (through the
+constructor, assignment operator, or the <code>set()</code> function). If <code>Check</code> is not
+<code>void</code>, the input value will be passed through <code>Check()(t)</code>, and the return
+value saved as the new value. <code>Check</code>'s function call operator can check the
+validity of the input value (throwing an exception if it fails), modify the
+value (returning the modified value), or both. If it only checks without
+modifying, it may simply return the <code>const T&amp;</code> it was passed.</p>
+<p>If <code>Check</code> is used, some operations are disabled: operations that accept a
+<code>T&amp;&amp;</code> and move from it are disabled (because a check failure could lead to the
+value being thrown away), as are any functions that would give direct access
+to a mutable reference to the embedded <code>T</code> value inside the <code>Marked</code> object
+(such as the mutable versions of <code>operator*()</code> and <code>operator-&gt;()</code>).</p>
+<p>The <code>id_name()</code> function returns the name of the <code>ID</code> type (demangled and with
+all qualifications removed).</p>
+<p>These conditions on <code>T</code> will be checked by <code>static_assert</code>:</p>
+<ul>
+<li><code>T</code> must be a concrete type</li>
+<li><code>T</code> must not be a reference type</li>
+<li><code>T</code> must not be <code>const</code> or <code>volatile</code> qualified</li>
+<li><code>T</code> must have consistent construction and assignment:
+    <code>is_copy_constructible</code> and <code>is_copy_assignable</code> must match,
+    as must <code>is_move_constructible</code> and <code>is_move_assignable</code></li>
+<li>If <code>reset_on_move</code> is set, <code>T</code> must be default constructible</li>
+<li>If <code>Check</code> is not <code>void</code>, <code>T</code> must be copyable</li>
+</ul>
+<p>Behaviour is undefined if any of the following are true (these are not checked
+because a non-throwing requirement only applies at runtime; the operations
+need not be <code>noexcept</code> qualified):</p>
+<ul>
+<li><code>T</code>'s move constructor or move assignment operator throws</li>
+<li>The <code>reset_on_move</code> flag is set and <code>T</code>'s default constructor throws</li>
+</ul>
+<p>In the table of conditionally defined functions below:</p>
+<ul>
+<li>The <code>Marked</code> type is <strong>copyable</strong> if <code>T</code> is copyable and none of <code>no_copy</code>, <code>no_move</code>, or <code>reset_on_move</code> are set</li>
+<li>The <code>Marked</code> type is <strong>movable</strong> if <code>T</code> is movable and <code>no_move</code> is not set</li>
+<li>The <code>Marked</code> type is <strong>checked</strong> if <code>Check</code> is not <code>void</code></li>
+</ul>
+<table>
+    <tr>
+        <th>Function</th>
+        <th>Conditionally defined</th>
+    </tr>
+    <tr>
+        <td>Default constructor</td>
+        <td>Defined if <code>T</code> is default constructible</td>
+    </tr>
+    <tr>
+        <td>Copy constructor</td>
+        <td>Defined if <code>Marked</code> is copyable</td>
+    </tr>
+    <tr>
+        <td>Move constructor</td>
+        <td>Defined if <code>Marked</code> is movable</td>
+    </tr>
+    <tr>
+        <td>Constructor from <code>T</code></td>
+        <td>Copy version is defined if <code>Marked</code> is copyable<br>
+            Move version is defined if <code>Marked</code> is movable and the value is unchecked<br>
+            Both versions are implicit if <code>implicit_in</code> is set, otherwise explicit</td>
+    </tr>
+    <tr>
+        <td>Destructor</td>
+        <td>Always defined</td>
+    </tr>
+    <tr>
+        <td>Copy assignment operator</td>
+        <td>Defined if <code>Marked</code> is copyable</td>
+    </tr>
+    <tr>
+        <td>Move assignment operator</td>
+        <td>Defined if <code>Marked</code> is movable</td>
+    </tr>
+    <tr>
+        <td>Assignment from <code>T</code></td>
+        <td>Copy version is defined if <code>Marked</code> is copyable and <code>implicit_in</code> is set<br>
+            Move version is defined if <code>Marked</code> is movable, the value is unchecked, and <code>implicit_in</code> is set</td>
+    </tr>
+    <tr>
+        <td><code>get()</code></td>
+        <td>Always defined</td>
+    </tr>
+    <tr>
+        <td><code>set()</code></td>
+        <td>Copy version is defined if <code>T</code> is copyable<br>
+            Move version is defined if <code>T</code> is movable andd the value is unchecked</td>
+    </tr>
+    <tr>
+        <td>Conversion to <code>T</code></td>
+        <td>Always defined<br>
+            Implicit if <code>implicit_out</code> is set, otherwise explicit</td>
+    </tr>
+    <tr>
+        <td>Conversion to <code>bool</code></td>
+        <td>Defined if <code>T</code> is convertible to <code>bool</code><br>
+            Always explicit</td>
+    </tr>
+    <tr>
+        <td>Dereference operators</td>
+        <td>Mutable versions are defined if the value is unchecked<br>
+            Constant versions are always defined</td>
+    </tr>
+    <tr>
+        <td>Function call operator</td>
+        <td>Defined if the corresponding operator is defined for `T`</td>
+    </tr>
+    <tr>
+        <td>Subscript operator</td>
+        <td>Mutable version is defined if the <code>subscript</code> flag is set and the value is unchecked<br>
+            Constant version is defined if the <code>subscript</code> flag is set</td>
+    </tr>
+    <tr>
+        <td><code>id_name()</code></td>
+        <td>Always defined</td>
+    </tr>
+    <tr>
+        <td><code>== != &lt; &gt; &lt;= &gt;=</code></td>
+        <td>Defined if the corresponding operator is defined for <code>T</code></td>
+    </tr>
+    <tr>
+        <td>Unary <code>+ - ! ~</code><br>
+            Prefix <code>++ --</code><br>
+            Postfix <code>++ --</code><br>
+            Binary <code>+ - * / % &amp; | ^ &lt;&lt; &gt;&gt;</code><br>
+            Binary <code>+= -= *= /= %= &amp;= |= ^= &lt;&lt;= &gt;&gt;=</code></td>
+        <td>Defined if the corresponding operator is defined for <code>T</code>
+            and the <code>arithmetic</code> flag is set</td>
+    </tr>
+    <tr>
+        <td><code>to_str()</code><br>
+            <code>from_str()</code><br>
+            <code>to_json()</code><br>
+            <code>from_json()</code></td>
+        <td>Defined if the corresponding function is defined for <code>T</code></td>
+    </tr>
+</table></body>
+</html>

@@ -260,7 +260,7 @@ void test_core_net_dns_query() {
 
     TRY(addr = Dns::host_to_ip(good_name));
     TEST(addr);
-    TEST_EQUAL(addr.family(), AF_INET);
+    TEST(addr.family() == AF_INET || addr.family() == AF_INET6);
 
     TRY(addrs = Dns::host_to_ips(good_name));
     TEST(! addrs.empty());

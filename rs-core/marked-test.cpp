@@ -8,6 +8,7 @@
 #include <string>
 #include <unordered_set>
 #include <utility>
+#include <vector>
 
 using namespace RS;
 using namespace std::literals;
@@ -30,7 +31,8 @@ void test_source_marked_value_access() {
     TEST_EQUAL(*foo, "Don't panic");
 
     TEST_EQUAL((Marked<int, void>::id_name()), "void");
-    TEST_EQUAL((Marked<int, std::string>::id_name()), "basic_string");
+    TEST_MATCH((Marked<int, std::string>::id_name()), "^(basic_)?string$");
+    TEST_EQUAL((Marked<int, std::vector<std::string>>::id_name()), "vector");
     TEST_EQUAL((Marked<int, RS::Version>::id_name()), "Version");
     TEST_EQUAL((Marked<int, RS::Meta::Nil>::id_name()), "Typelist");
 

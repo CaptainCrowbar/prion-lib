@@ -23,7 +23,7 @@ namespace RS::Range {
     template <typename Range, typename BinaryFunction>
     class AdjacentDifferenceIterator:
     public ForwardIterator<AdjacentDifferenceIterator<Range, BinaryFunction>,
-        InvokeResult<BinaryFunction, Meta::RangeValue<Range>, Meta::RangeValue<Range>>> {
+        const InvokeResult<BinaryFunction, Meta::RangeValue<Range>, Meta::RangeValue<Range>>> {
     public:
         using underlying_iterator = Meta::RangeIterator<const Range>;
         using value_type = InvokeResult<BinaryFunction, Meta::RangeValue<Range>, Meta::RangeValue<Range>>;
@@ -73,7 +73,7 @@ namespace RS::Range {
 
     template <typename Range, typename EqualityPredicate>
     class CensusIterator:
-    public ForwardIterator<CensusIterator<Range, EqualityPredicate>, std::pair<Meta::RangeValue<Range>, size_t>> {
+    public ForwardIterator<CensusIterator<Range, EqualityPredicate>, const std::pair<Meta::RangeValue<Range>, size_t>> {
     public:
         using underlying_iterator = Meta::RangeIterator<const Range>;
         using value_type = std::pair<Meta::RangeValue<Range>, size_t>;
@@ -131,7 +131,7 @@ namespace RS::Range {
 
     template <typename Range, typename EqualityPredicate>
     class GroupIterator:
-    public ForwardIterator<GroupIterator<Range, EqualityPredicate>, Irange<Meta::RangeIterator<const Range>>> {
+    public ForwardIterator<GroupIterator<Range, EqualityPredicate>, const Irange<Meta::RangeIterator<const Range>>> {
     public:
         using underlying_iterator = Meta::RangeIterator<const Range>;
         using value_type = Irange<underlying_iterator>;
@@ -176,7 +176,7 @@ namespace RS::Range {
 
     template <typename Range, typename UnaryFunction>
     class GroupByIterator:
-    public ForwardIterator<GroupByIterator<Range, UnaryFunction>, Irange<Meta::RangeIterator<const Range>>> {
+    public ForwardIterator<GroupByIterator<Range, UnaryFunction>, const Irange<Meta::RangeIterator<const Range>>> {
     public:
         using underlying_iterator = Meta::RangeIterator<const Range>;
         using value_type = Irange<underlying_iterator>;
@@ -234,7 +234,7 @@ namespace RS::Range {
 
     template <typename Range>
     class GroupNIterator:
-    public ForwardIterator<GroupNIterator<Range>, Irange<Meta::RangeIterator<const Range>>> {
+    public ForwardIterator<GroupNIterator<Range>, const Irange<Meta::RangeIterator<const Range>>> {
     public:
         using underlying_iterator = Meta::RangeIterator<const Range>;
         using value_type = Irange<underlying_iterator>;
@@ -281,7 +281,7 @@ namespace RS::Range {
     template <typename Range, typename BinaryFunction>
     class PartialSumIterator:
     public ForwardIterator<PartialSumIterator<Range, BinaryFunction>,
-        InvokeResult<BinaryFunction, Meta::RangeValue<Range>, Meta::RangeValue<Range>>> {
+        const InvokeResult<BinaryFunction, Meta::RangeValue<Range>, Meta::RangeValue<Range>>> {
     public:
         using underlying_iterator = Meta::RangeIterator<const Range>;
         using value_type = InvokeResult<BinaryFunction, Meta::RangeValue<Range>, Meta::RangeValue<Range>>;

@@ -131,7 +131,7 @@ namespace RS::Range {
 
     template <typename Range, typename EqualityPredicate>
     class GroupIterator:
-    public ForwardIterator<GroupIterator<Range, EqualityPredicate>, std::pair<Meta::RangeValue<Range>, size_t>> {
+    public ForwardIterator<GroupIterator<Range, EqualityPredicate>, Irange<Meta::RangeIterator<const Range>>> {
     public:
         using underlying_iterator = Meta::RangeIterator<const Range>;
         using value_type = Irange<underlying_iterator>;
@@ -176,7 +176,7 @@ namespace RS::Range {
 
     template <typename Range, typename UnaryFunction>
     class GroupByIterator:
-    public ForwardIterator<GroupByIterator<Range, UnaryFunction>, std::pair<Meta::RangeValue<Range>, size_t>> {
+    public ForwardIterator<GroupByIterator<Range, UnaryFunction>, Irange<Meta::RangeIterator<const Range>>> {
     public:
         using underlying_iterator = Meta::RangeIterator<const Range>;
         using value_type = Irange<underlying_iterator>;
@@ -234,7 +234,7 @@ namespace RS::Range {
 
     template <typename Range>
     class GroupNIterator:
-    public ForwardIterator<GroupNIterator<Range>, std::pair<Meta::RangeValue<Range>, size_t>> {
+    public ForwardIterator<GroupNIterator<Range>, Irange<Meta::RangeIterator<const Range>>> {
     public:
         using underlying_iterator = Meta::RangeIterator<const Range>;
         using value_type = Irange<underlying_iterator>;

@@ -118,6 +118,92 @@ namespace RS::Range {
 
     constexpr CensusObject<std::equal_to<>> census = {};
 
+    // collect_groups, collect_groups_by
+
+    template <typename BinaryPredicate, typename BinaryFunction>
+    struct CollectGroupsObject:
+    AlgorithmBase<CollectGroupsObject<BinaryPredicate, BinaryFunction>> {
+        BinaryPredicate pred;
+        BinaryFunction func;
+        CollectGroupsObject() = default;
+        CollectGroupsObject(const BinaryPredicate& bp, const BinaryFunction& bf): pred(bp), func(bf) {}
+    };
+
+    template <typename Range, typename BinaryPredicate, typename BinaryFunction>
+    class CollectGroupsIterator:
+    public ForwardIterator<CollectGroupsIterator<Range, BinaryPredicate, BinaryFunction>, const Meta::RangeValue<Range>> {
+    public:
+        using underlying_iterator = Meta::RangeIterator<const Range>;
+        using value_type = Meta::RangeValue<Range>;
+        using predicate_type = std::function<bool(const value_type&, const value_type&)>;
+        using function_type = std::function<value_type(const value_type&, const value_type&)>;
+        CollectGroupsIterator() = default;
+        CollectGroupsIterator(underlying_iterator b, underlying_iterator e, BinaryPredicate bp, BinaryFunction bf):
+            pred(bp), func(bf), iter(b), next(b), end(e) { advance(); }
+        const value_type& operator*() const noexcept { return value; }
+        CollectGroupsIterator& operator++() { advance(); return *this; }
+        bool operator==(const CollectGroupsIterator& rhs) const noexcept { return iter == rhs.iter; }
+    private:
+        predicate_type pred;
+        function_type func;
+        value_type value;
+        underlying_iterator iter;
+        underlying_iterator next;
+        underlying_iterator end;
+        void advance() {
+            iter = next;
+            if (iter == end)
+                return;
+            value = *iter;
+            for (;;) {
+                ++next;
+                if (next == end || ! pred(value, *next))
+                    break;
+                value = func(value, *next);
+            }
+        }
+    };
+
+    template <typename Range, typename BinaryPredicate, typename BinaryFunction>
+    Irange<CollectGroupsIterator<Range, BinaryPredicate, BinaryFunction>>
+    operator>>(const Range& lhs, CollectGroupsObject<BinaryPredicate, BinaryFunction> rhs) {
+        using std::begin;
+        using std::end;
+        auto b = begin(lhs), e = end(lhs);
+        return {{b, e, rhs.pred, rhs.func}, {e, e, rhs.pred, rhs.func}};
+    }
+
+    template <typename Container, typename BinaryPredicate, typename BinaryFunction>
+    Container& operator<<(Container& lhs, CollectGroupsObject<BinaryPredicate, BinaryFunction> rhs) {
+        using std::swap;
+        Container result;
+        lhs >> rhs >> append(result);
+        swap(lhs, result);
+        return lhs;
+    }
+
+    template <typename BinaryPredicate>
+    inline CollectGroupsObject<BinaryPredicate, std::plus<>> collect_groups(BinaryPredicate bp) {
+        return {bp, {}};
+    }
+
+    template <typename BinaryPredicate, typename BinaryFunction>
+    inline CollectGroupsObject<BinaryPredicate, BinaryFunction> collect_groups(BinaryPredicate bp, BinaryFunction bf) {
+        return {bp, bf};
+    }
+
+    template <typename UnaryFunction>
+    inline auto collect_groups_by(UnaryFunction uf) {
+        auto bp = [uf] (auto& a, auto& b) { return uf(a) == uf(b); };
+        return collect_groups(bp);
+    }
+
+    template <typename UnaryFunction, typename BinaryFunction>
+    inline auto collect_groups_by(UnaryFunction uf, BinaryFunction bf) {
+        auto bp = [uf] (auto& a, auto& b) { return uf(a) == uf(b); };
+        return collect_groups(bp, bf);
+    }
+
     // group
 
     template <typename EqualityPredicate>

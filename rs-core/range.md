@@ -140,6 +140,8 @@ reflex forms.
 |                 | `R >>` **`passthrough`** `-> R`                            | `R& <<` **`passthrough`**                           |
 | Aggregation     | `R >>` **`adjacent_difference`**`[(BF)] -> CFR`            | `C& <<` **`adjacent_difference`**`[(BF)]`           |
 |                 | `R >>` **`census`**`[(EP)] -> CFPR`                        |                                                     |
+|                 | `FR >>` **`collect_groups`**`(BP[,BF]) -> FR`              | `C& <<` **`collect_groups`**`(BP[,BF])`             |
+|                 | `FR >>` **`collect_groups_by`**`(UF[,BF]) -> FR`           | `C& <<` **`collect_groups_by`**`(UF[,BF])`          |
 |                 | `FR >>` **`group`**`[(EP)] -> FNR`                         |                                                     |
 |                 | `FR >>` **`group_by`**`(UF) -> FNR`                        |                                                     |
 |                 | `FR >>` **`group_k`**`(N) -> FNR`                          |                                                     |
@@ -291,6 +293,18 @@ will be empty if the input contains less than two elements.
 
 Return a `(value,count)` pair for each subsequence of adjacent equal values in
 the input range.
+
+* `ForwardRange r >>` **`collect_groups`**`(BinaryPredicate bp, BinaryFunction bf = std::plus) -> ForwardRange`
+* `ForwardRange r >>` **`collect_groups_by`**`(UnaryFunction uf, BinaryFunction bf = std::plus) -> ForwardRange`
+* `Container& c <<` **`collect_groups`**`(BinaryPredicate bp, BinaryFunction bf = std::plus)`
+* `Container& c <<` **`collect_groups_by`**`(UnaryFunction uf, BinaryFunction bf = std::plus)`
+
+Replace each group of elements in the range with an aggregate value (the sum
+by default). The `collect_groups()` function matches values using the binary
+predicate, while `collect_groups_by()` matches values for with the unary
+function gives the same result. When two elements are combined, the combined
+value (not the second of the two original values) is used as the LHS when
+matching against the following element.
 
 * `ForwardRange r >>` **`group`**`(EqualityPredicate p = std::equal_to) -> ForwardNestedRange`
 * `ForwardRange r >>` **`group_by`**`(UnaryFunction f) -> ForwardNestedRange`

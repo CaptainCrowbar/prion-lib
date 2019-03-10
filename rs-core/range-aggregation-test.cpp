@@ -72,6 +72,32 @@ void test_core_range_aggregation_census() {
 
 }
 
+void test_core_range_aggregation_collect_groups() {
+
+    std::vector<int> u, v;
+
+    u = {1,2,2,3,3,3,4,4,4,4,5,5,5,5,5};
+    TRY(u >> collect_groups(std::equal_to<>()) >> overwrite(v));
+    TEST_EQUAL(to_str(v), "[1,4,6,3,8,8,10,10,5]");
+    TRY(u << collect_groups(std::equal_to<>()));
+    TEST_EQUAL(to_str(u), "[1,4,6,3,8,8,10,10,5]");
+
+    u = {2,3,5,4,6,8,7,9,10};
+    auto same_parity = [] (int a, int b) { return (a & 1) == (b & 1); };
+    TRY(u >> collect_groups(same_parity, std::multiplies<>()) >> overwrite(v));
+    TEST_EQUAL(to_str(v), "[2,15,192,63,10]");
+    TRY(u << collect_groups(same_parity, std::multiplies<>()));
+    TEST_EQUAL(to_str(u), "[2,15,192,63,10]");
+
+    u = {2,3,5,4,6,8,7,9,10};
+    auto parity = [] (int a) { return a & 1; };
+    TRY(u >> collect_groups_by(parity, std::multiplies<>()) >> overwrite(v));
+    TEST_EQUAL(to_str(v), "[2,15,192,63,10]");
+    TRY(u << collect_groups_by(parity, std::multiplies<>()));
+    TEST_EQUAL(to_str(u), "[2,15,192,63,10]");
+
+}
+
 void test_core_range_aggregation_group() {
 
     Ustring s1, s2;

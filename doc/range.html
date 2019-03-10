@@ -217,6 +217,16 @@ reflex forms.</p>
 </tr>
 <tr>
 <td></td>
+<td><code>FR &gt;&gt;</code> <strong><code>collect_groups</code></strong><code>(BP[,BF]) -&gt; FR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>collect_groups</code></strong><code>(BP[,BF])</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>FR &gt;&gt;</code> <strong><code>collect_groups_by</code></strong><code>(UF[,BF]) -&gt; FR</code></td>
+<td><code>C&amp; &lt;&lt;</code> <strong><code>collect_groups_by</code></strong><code>(UF[,BF])</code></td>
+</tr>
+<tr>
+<td></td>
 <td><code>FR &gt;&gt;</code> <strong><code>group</code></strong><code>[(EP)] -&gt; FNR</code></td>
 <td></td>
 </tr>
@@ -764,6 +774,20 @@ will be empty if the input contains less than two elements.</p>
 </ul>
 <p>Return a <code>(value,count)</code> pair for each subsequence of adjacent equal values in
 the input range.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>ForwardRange r &gt;&gt;</code> <strong><code>collect_groups</code></strong><code>(BinaryPredicate bp, BinaryFunction bf = std::plus) -&gt; ForwardRange</code></li>
+<li><code>ForwardRange r &gt;&gt;</code> <strong><code>collect_groups_by</code></strong><code>(UnaryFunction uf, BinaryFunction bf = std::plus) -&gt; ForwardRange</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>collect_groups</code></strong><code>(BinaryPredicate bp, BinaryFunction bf = std::plus)</code></li>
+<li><code>Container&amp; c &lt;&lt;</code> <strong><code>collect_groups_by</code></strong><code>(UnaryFunction uf, BinaryFunction bf = std::plus)</code></li>
+</ul>
+<p>Replace each group of elements in the range with an aggregate value (the sum
+by default). The <code>collect_groups()</code> function matches values using the binary
+predicate, while <code>collect_groups_by()</code> matches values for with the unary
+function gives the same result. When two elements are combined, the combined
+value (not the second of the two original values) is used as the LHS when
+matching against the following element.</p>
 </div>
 <div class="defns">
 <ul>

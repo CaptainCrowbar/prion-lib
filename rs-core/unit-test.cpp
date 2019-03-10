@@ -289,6 +289,7 @@ extern void test_core_random_seed_sequence();
 extern void test_core_random_text_generators();
 extern void test_core_range_aggregation_adjacent_difference();
 extern void test_core_range_aggregation_census();
+extern void test_core_range_aggregation_collect_groups();
 extern void test_core_range_aggregation_group();
 extern void test_core_range_aggregation_partial_sum();
 extern void test_core_range_combination_compare();
@@ -733,6 +734,7 @@ int main() {
         { "core/random/text-generators", test_core_random_text_generators },
         { "core/range-aggregation/adjacent-difference", test_core_range_aggregation_adjacent_difference },
         { "core/range-aggregation/census", test_core_range_aggregation_census },
+        { "core/range-aggregation/collect-groups", test_core_range_aggregation_collect_groups },
         { "core/range-aggregation/group", test_core_range_aggregation_group },
         { "core/range-aggregation/partial-sum", test_core_range_aggregation_partial_sum },
         { "core/range-combination/compare", test_core_range_combination_compare },

@@ -1756,5 +1756,33 @@ argument and returns true on success; otherwise, it returns false and leaves
 the referenced object unchanged. The second version calls the first version,
 throwing <code>invalid_argument</code> on failure, and returning the converted object on
 success; for this version, <code>T</code> must be default constructible.</p>
-<p>Refer to the Unicorn documentation for full details of the conversion rules.</p></body>
+<p>The <code>from_str()</code> functions follow these rules, using the first conversion rule
+that matches the type:</p>
+<ul>
+<li><code>static_cast</code> from <code>std::string_view</code> to <code>T</code></li>
+<li><code>static_cast</code> from <code>std::string</code> to <code>T</code></li>
+<li><code>static_cast</code> from <code>const char*</code> to <code>T</code></li>
+<li>Read a <code>T</code> from a <code>std::istringstream</code> using <code>operator&gt;&gt;</code></li>
+<li>Otherwise fail</li>
+</ul>
+<p>The <code>to_str()</code> functions follow these rules, using the first conversion rule
+that matches the type:</p>
+<ul>
+<li>If <code>T</code> is <code>bool</code>, return <code>"true"</code> or <code>"false"</code></li>
+<li>If <code>T</code> is <code>char</code>, return a one-character string</li>
+<li>If <code>T</code> is <code>std::string</code> or <code>std::string_view</code>, simply copy the string</li>
+<li>If <code>T</code> is <code>[const] char*</code>, copy the string, or return an empty string if the pointer is null</li>
+<li>If <code>T</code> is <code>std::array&lt;uint8_t,N&gt;</code> or <code>std::vector&lt;uint8_t&gt;</code>, format each byte in hexadecimal</li>
+<li>If <code>T</code> is an integer type, call <code>std::to_string(t)</code></li>
+<li>If <code>T</code> is a floating point type, call <code>fp_format(t)</code></li>
+<li>Call <code>t.str()</code>, <code>to_string(t)</code>, or <code>std::to_string(t)</code></li>
+<li><code>static_cast</code> from <code>T</code> to <code>std::string</code>, <code>std::string_view</code>, or <code>const char*</code></li>
+<li>If <code>T</code> is derived from <code>std::exception</code>, call <code>t.what()</code></li>
+<li>If <code>T</code> is a <code>std::optional</code>, <code>std::shared_ptr</code>, or <code>std::unique_ptr</code>, return <code>to_str(*t)</code> or <code>"null"</code></li>
+<li>If <code>T</code> is a <code>std::pair</code> or <code>std::tuple</code>, call <code>to_str()</code> on each element and return <code>"(e1,e2,...)"</code></li>
+<li>If <code>T</code> is a range whose elements are pairs, call <code>to_str()</code> on each member of each pair and return <code>"{k1:v1,k2:v2,...}"</code></li>
+<li>If <code>T</code> is a range whose elements are not pairs, call <code>to_str()</code> on each element and return <code>"[e1,e2,...]"</code></li>
+<li>Write a <code>T</code> into a <code>std::ostringstream</code> using <code>operator&lt;&lt;</code></li>
+<li>If all else fails, just return the demangled type name</li>
+</ul></body>
 </html>

@@ -93,9 +93,9 @@ namespace RS {
         static void divide(SmallBinary x, SmallBinary y, SmallBinary& q, SmallBinary& r) noexcept { q = x / y; r = x % y; }
         static SmallBinary from_double(double x) noexcept { return SmallBinary(uint64_t(x)); }
         static SmallBinary max() noexcept { return SmallBinary(mask); }
-        template <typename RNG> static SmallBinary random(RNG& rng) { return SmallBinary(RandomInteger<uint64_t>(0, mask)(rng)); }
-        template <typename RNG> static SmallBinary random(RNG& rng, SmallBinary x) { return SmallBinary(x.value > 1 ? RandomInteger<uint64_t>(0, x.value - 1)(rng) : 0); }
-        template <typename RNG> static SmallBinary random(RNG& rng, SmallBinary x, SmallBinary y) { return SmallBinary(RandomInteger<uint64_t>(x.value, y.value)(rng)); }
+        template <typename RNG> static SmallBinary random(RNG& rng) { return SmallBinary(UniformInteger<uint64_t>(0, mask)(rng)); }
+        template <typename RNG> static SmallBinary random(RNG& rng, SmallBinary x) { return SmallBinary(x.value > 1 ? UniformInteger<uint64_t>(0, x.value - 1)(rng) : 0); }
+        template <typename RNG> static SmallBinary random(RNG& rng, SmallBinary x, SmallBinary y) { return SmallBinary(UniformInteger<uint64_t>(x.value, y.value)(rng)); }
         friend SmallBinary rotl(SmallBinary x, int y) noexcept { y %= int(N); return (x << y) | (x >> (int(N) - y)); }
         friend SmallBinary rotr(SmallBinary x, int y) noexcept { y %= int(N); return (x >> y) | (x << (int(N) - y)); }
         friend SmallBinary operator+(SmallBinary x, SmallBinary y) noexcept { auto z = x; z += y; return z; }

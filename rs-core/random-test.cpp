@@ -679,12 +679,12 @@ void test_core_random_poisson_distribution() {
 
     static constexpr int iterations = 1'000'000;
 
-    RandomPoisson<int> poi;
+    Poisson<int> poi;
     Statistics<double> stats;
     std::mt19937 rng(42);
     int x = 0;
 
-    TRY(poi = RandomPoisson<int>(4));
+    TRY(poi = Poisson<int>(4));
     TEST_EQUAL(poi.lambda(), 4);
     TEST_EQUAL(poi.mean(), 4);
     TEST_EQUAL(poi.variance(), 4);
@@ -715,7 +715,7 @@ void test_core_random_poisson_distribution() {
     TEST_NEAR_EPSILON(stats.mean(), poi.mean(), 0.001);
     TEST_NEAR_EPSILON(stats.sd_bc(), poi.sd(), 0.001);
 
-    TRY(poi = RandomPoisson<int>(100));
+    TRY(poi = Poisson<int>(100));
     TEST_EQUAL(poi.lambda(), 100);
     TEST_EQUAL(poi.mean(), 100);
     TEST_EQUAL(poi.variance(), 100);
@@ -769,12 +769,12 @@ void test_core_random_beta_distribution() {
 
     static constexpr int iterations = 100'000;
 
-    RandomBeta<double> beta;
+    Beta<double> beta;
     Statistics<double> stats;
     std::mt19937 rng(42);
     double x = 0, p = 0;
 
-    TRY(beta = RandomBeta<double>(0.5, 0.5));
+    TRY(beta = Beta<double>(0.5, 0.5));
     TEST_EQUAL(beta.alpha(), 0.5);
     TEST_EQUAL(beta.beta(), 0.5);
     TEST_EQUAL(beta.mean(), 0.5);
@@ -813,7 +813,7 @@ void test_core_random_beta_distribution() {
     TEST_NEAR_EPSILON(stats.mean(), beta.mean(), 0.005);
     TEST_NEAR_EPSILON(stats.sd_bc(), beta.sd(), 0.005);
 
-    TRY(beta = RandomBeta<double>(1, 3));
+    TRY(beta = Beta<double>(1, 3));
     TEST_EQUAL(beta.alpha(), 1);
     TEST_EQUAL(beta.beta(), 3);
     TEST_EQUAL(beta.mean(), 0.25);
@@ -852,7 +852,7 @@ void test_core_random_beta_distribution() {
     TEST_NEAR_EPSILON(stats.mean(), beta.mean(), 0.005);
     TEST_NEAR_EPSILON(stats.sd_bc(), beta.sd(), 0.005);
 
-    TRY(beta = RandomBeta<double>(2, 5));
+    TRY(beta = Beta<double>(2, 5));
     TEST_EQUAL(beta.alpha(), 2);
     TEST_EQUAL(beta.beta(), 5);
     TEST_NEAR(beta.mean(), 0.285714);
@@ -1009,7 +1009,7 @@ void test_core_random_binomial_distribution_properties() {
 
 void test_core_random_dice_distribution_properties() {
 
-    RandomDice<int> dice;
+    Dice<int> dice;
 
     TEST_EQUAL(dice.mean(), Rat(7,2));
     TEST_EQUAL(dice.variance(), Rat(35,12));
@@ -1186,7 +1186,7 @@ void test_core_random_normal_distribution_properties() {
         { 5.00,   0.000001486720,  0.999999713348 },
     };
 
-    RandomNormal<double> norm;
+    Normal<double> norm;
 
     TEST_EQUAL(norm.mean(), 0);
     TEST_NEAR(norm.variance(), 1);
@@ -1210,7 +1210,7 @@ void test_core_random_uniform_choice_distribution() {
     static const std::vector<int> v = {1,2,3,4,5,6,7,8,9,10};
 
     std::mt19937 rng(42);
-    RandomChoice<int> choice;
+    Choice<int> choice;
 
     {
         auto gen = [&] { return choice(rng); };

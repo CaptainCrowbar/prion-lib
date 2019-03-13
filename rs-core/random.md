@@ -179,136 +179,136 @@ defined for continuous distributions, and are the inverse of `cdf()` and
 quantile functions is less than 0 or greater than 1; it may or may not be
 defined for exactly 0 or 1, depending on how the distribution is bounded.
 
-* `template <typename T> class` **`RandomInteger`**
-    * `using RandomInteger::`**`result_type`** `= T`
-    * `RandomInteger::`**`RandomInteger`**`() noexcept`
-    * `RandomInteger::`**`RandomInteger`**`(T a, T b) noexcept`
-    * `template <typename RNG> T RandomInteger::`**`operator()`**`(RNG& rng) const`
-    * `T RandomInteger::`**`min`**`() const noexcept`
-    * `T RandomInteger::`**`max`**`() const noexcept`
-    * `Rational<T> RandomInteger::`**`mean`**`() const noexcept`
-    * `Rational<T> RandomInteger::`**`variance`**`() const noexcept`
-    * `double RandomInteger::`**`sd`**`() const noexcept`
-    * `double RandomInteger::`**`pdf`**`(T x) const noexcept`
-    * `double RandomInteger::`**`cdf`**`(T x) const noexcept`
-    * `double RandomInteger::`**`ccdf`**`(T x) const noexcept`
-* `template <typename T> RandomInteger<T>` **`random_integer`**`(T t)`
-* `template <typename T> RandomInteger<T>` **`random_integer`**`(T a, T b)`
+* `template <typename T> class` **`UniformInteger`**
+    * `using UniformInteger::`**`result_type`** `= T`
+    * `UniformInteger::`**`UniformInteger`**`() noexcept`
+    * `UniformInteger::`**`UniformInteger`**`(T a, T b) noexcept`
+    * `template <typename RNG> T UniformInteger::`**`operator()`**`(RNG& rng) const`
+    * `T UniformInteger::`**`min`**`() const noexcept`
+    * `T UniformInteger::`**`max`**`() const noexcept`
+    * `Rational<T> UniformInteger::`**`mean`**`() const noexcept`
+    * `Rational<T> UniformInteger::`**`variance`**`() const noexcept`
+    * `double UniformInteger::`**`sd`**`() const noexcept`
+    * `double UniformInteger::`**`pdf`**`(T x) const noexcept`
+    * `double UniformInteger::`**`cdf`**`(T x) const noexcept`
+    * `double UniformInteger::`**`ccdf`**`(T x) const noexcept`
+* `template <typename T> UniformInteger<T>` **`random_integer`**`(T t)`
+* `template <typename T> UniformInteger<T>` **`random_integer`**`(T a, T b)`
 
 Uniform random integer distribution. This returns an integer from `a` to `b`
 inclusive; the bounds can be supplied in either order. If a single argument is
 supplied, it returns an integer from 0 to `t-1` inclusive (always 0 if `t<2`).
 A default constructed distribution always returns zero.
 
-* `class` **`RandomBoolean`**
-    * `using RandomBoolean::`**`result_type`** `= bool`
-    * `RandomBoolean::`**`RandomBoolean`**`() noexcept`
-    * `explicit RandomBoolean::`**`RandomBoolean`**`(Rat p) noexcept`
-    * `template <typename RNG> bool RandomBoolean::`**`operator()`**`(RNG& rng) const`
-    * `Rat RandomBoolean::`**`prob`**`() const noexcept`
-* `RandomBoolean` **`random_boolean`**`()`
-* `RandomBoolean` **`random_boolean`**`(Rat p)`
-* `RandomBoolean` **`random_boolean`**`(int a, int b)`
-* `RandomBoolean` **`random_boolean`**`(double p)`
+* `class` **`Bernoulli`**
+    * `using Bernoulli::`**`result_type`** `= bool`
+    * `Bernoulli::`**`Bernoulli`**`() noexcept`
+    * `explicit Bernoulli::`**`Bernoulli`**`(Rat p) noexcept`
+    * `template <typename RNG> bool Bernoulli::`**`operator()`**`(RNG& rng) const`
+    * `Rat Bernoulli::`**`prob`**`() const noexcept`
+* `Bernoulli` **`random_boolean`**`()`
+* `Bernoulli` **`random_boolean`**`(Rat p)`
+* `Bernoulli` **`random_boolean`**`(int a, int b)`
+* `Bernoulli` **`random_boolean`**`(double p)`
 
 Random boolean (Bernoulli) distribution. The probability of success defaults
 to 1/2; it can be supplied as a rational, a pair of integers (representing a
 ratio), or a floating point number. Probabilities outside the 0-1 range are
 clamped to the nearest end of the range.
 
-* `template <typename T> class` **`RandomBinomial`**
-    * `using RandomBinomial::`**`result_type`** `= T`
-    * `RandomBinomial::`**`RandomBinomial`**`() noexcept`
-    * `RandomBinomial::`**`RandomBinomial`**`(const Rational<T>& p, T n) noexcept`
-    * `template <typename RNG> bool RandomBinomial::`**`operator()`**`(RNG& rng) const`
-    * `Rational<T> RandomBinomial::`**`prob`**`() const noexcept`
-    * `T RandomBinomial::`**`number`**`() const noexcept`
-    * `T RandomBinomial::`**`min`**`() const  noexcept`
-    * `T RandomBinomial::`**`max`**`() const  noexcept`
-    * `Rational<T> RandomBinomial::`**`mean`**`() const noexcept`
-    * `Rational<T> RandomBinomial::`**`variance`**`() const noexcept`
-    * `double RandomBinomial::`**`sd`**`() const  noexcept`
-    * `double RandomBinomial::`**`pdf`**`(T x) const noexcept`
-    * `double RandomBinomial::`**`cdf`**`(T x) const noexcept`
-    * `double RandomBinomial::`**`ccdf`**`(T x) const noexcept`
-* `template <typename T> RandomBinomial` **`random_boolean`**`(const Rational<T>& p, T n) noexcept`
+* `template <typename T> class` **`Binomial`**
+    * `using Binomial::`**`result_type`** `= T`
+    * `Binomial::`**`Binomial`**`() noexcept`
+    * `Binomial::`**`Binomial`**`(const Rational<T>& p, T n) noexcept`
+    * `template <typename RNG> bool Binomial::`**`operator()`**`(RNG& rng) const`
+    * `Rational<T> Binomial::`**`prob`**`() const noexcept`
+    * `T Binomial::`**`number`**`() const noexcept`
+    * `T Binomial::`**`min`**`() const  noexcept`
+    * `T Binomial::`**`max`**`() const  noexcept`
+    * `Rational<T> Binomial::`**`mean`**`() const noexcept`
+    * `Rational<T> Binomial::`**`variance`**`() const noexcept`
+    * `double Binomial::`**`sd`**`() const  noexcept`
+    * `double Binomial::`**`pdf`**`(T x) const noexcept`
+    * `double Binomial::`**`cdf`**`(T x) const noexcept`
+    * `double Binomial::`**`ccdf`**`(T x) const noexcept`
+* `template <typename T> Binomial` **`random_boolean`**`(const Rational<T>& p, T n) noexcept`
 
 Binomial distribution, reporting the number of successes after `n` tests each
 with probability `p`. The argument `p` is clamped to the 0-1 range; the result
 is always zero if `n<1`.
 
-* `template <typename T> class` **`RandomDice`**
-    * `using RandomDice::`**`result_type`** `= T`
-    * `RandomDice::`**`RandomDice`**`() noexcept`
-    * `RandomDice::`**`RandomDice`**`(T n, T faces) noexcept`
-    * `template <typename RNG> T RandomDice::`**`operator()`**`(RNG& rng) const`
-    * `T RandomDice::`**`number`**`() const noexcept`
-    * `T RandomDice::`**`faces`**`() const noexcept`
-    * `T RandomDice::`**`min`**`() const noexcept`
-    * `T RandomDice::`**`max`**`() const noexcept`
-    * `Rational<T> RandomDice::`**`mean`**`() const noexcept`
-    * `Rational<T> RandomDice::`**`variance`**`() const noexcept`
-    * `double RandomDice::`**`sd`**`() const noexcept`
-    * `double RandomDice::`**`pdf`**`(T x) const noexcept`
-    * `double RandomDice::`**`cdf`**`(T x) const noexcept`
-    * `double RandomDice::`**`ccdf`**`(T x) const noexcept`
-* `template <typename T> RandomDice<T>` **`random_dice`**`(T n = 1, T faces = 6)`
+* `template <typename T> class` **`Dice`**
+    * `using Dice::`**`result_type`** `= T`
+    * `Dice::`**`Dice`**`() noexcept`
+    * `Dice::`**`Dice`**`(T n, T faces) noexcept`
+    * `template <typename RNG> T Dice::`**`operator()`**`(RNG& rng) const`
+    * `T Dice::`**`number`**`() const noexcept`
+    * `T Dice::`**`faces`**`() const noexcept`
+    * `T Dice::`**`min`**`() const noexcept`
+    * `T Dice::`**`max`**`() const noexcept`
+    * `Rational<T> Dice::`**`mean`**`() const noexcept`
+    * `Rational<T> Dice::`**`variance`**`() const noexcept`
+    * `double Dice::`**`sd`**`() const noexcept`
+    * `double Dice::`**`pdf`**`(T x) const noexcept`
+    * `double Dice::`**`cdf`**`(T x) const noexcept`
+    * `double Dice::`**`ccdf`**`(T x) const noexcept`
+* `template <typename T> Dice<T>` **`random_dice`**`(T n = 1, T faces = 6)`
 
 This generates the result of rolling `n` dice, each numbered from `1` to
 `faces`. The default constructor sets `n=1` and `faces=6`. This will always
 return zero if either argument is less than 1.
 
-* `template <typename T> class` **`RandomTriangleInteger`**
-    * `using RandomTriangleInteger::`**`result_type`** `= T`
-    * `RandomTriangleInteger::`**`RandomTriangleInteger`**`() noexcept`
-    * `RandomTriangleInteger::`**`RandomTriangleInteger`**`(T hi, T lo) noexcept`
-    * `template <typename RNG> T RandomTriangleInteger::`**`operator()`**`(RNG& rng) const`
-    * `T RandomTriangleInteger::`**`high_end`**`() const noexcept`
-    * `T RandomTriangleInteger::`**`low_end`**`() const noexcept`
-* `template <typename T> RandomTriangleInteger<T>` **`random_triangle_integer`**`(T hi, T lo)`
+* `template <typename T> class` **`TriangleInteger`**
+    * `using TriangleInteger::`**`result_type`** `= T`
+    * `TriangleInteger::`**`TriangleInteger`**`() noexcept`
+    * `TriangleInteger::`**`TriangleInteger`**`(T hi, T lo) noexcept`
+    * `template <typename RNG> T TriangleInteger::`**`operator()`**`(RNG& rng) const`
+    * `T TriangleInteger::`**`high_end`**`() const noexcept`
+    * `T TriangleInteger::`**`low_end`**`() const noexcept`
+* `template <typename T> TriangleInteger<T>` **`random_triangle_integer`**`(T hi, T lo)`
 
 This returns an integer with a triangular distribution, with the highest
 probability at `hi` and the lowest at `lo`.
 
-* `template <typename T> class` **`RandomReal`**
-    * `using RandomReal::`**`result_type`** `= T`
-    * `RandomReal::`**`RandomReal`**`() noexcept`
-    * `RandomReal::`**`RandomReal`**`(T a, T b) noexcept`
-    * `template <typename RNG> T RandomReal::`**`operator()`**`(RNG& rng) const`
-    * `T RandomReal::`**`min`**`() const noexcept`
-    * `T RandomReal::`**`max`**`() const noexcept`
-    * `T RandomReal::`**`mean`**`() const noexcept`
-    * `T RandomReal::`**`sd`**`() const noexcept`
-    * `T RandomReal::`**`variance`**`() const noexcept`
-    * `T RandomReal::`**`pdf`**`(T x) const noexcept`
-    * `T RandomReal::`**`cdf`**`(T x) const noexcept`
-    * `T RandomReal::`**`ccdf`**`(T x) const noexcept`
-    * `T RandomReal::`**`quantile`**`(T p) const noexcept`
-    * `T RandomReal::`**`cquantile`**`(T q) const noexcept`
-* `template <typename T> RandomReal<T>` **`random_real`**`()`
-* `template <typename T> RandomReal<T>` **`random_real`**`(T max)`
-* `template <typename T> RandomReal<T>` **`random_real`**`(T a, T b)`
+* `template <typename T> class` **`UniformReal`**
+    * `using UniformReal::`**`result_type`** `= T`
+    * `UniformReal::`**`UniformReal`**`() noexcept`
+    * `UniformReal::`**`UniformReal`**`(T a, T b) noexcept`
+    * `template <typename RNG> T UniformReal::`**`operator()`**`(RNG& rng) const`
+    * `T UniformReal::`**`min`**`() const noexcept`
+    * `T UniformReal::`**`max`**`() const noexcept`
+    * `T UniformReal::`**`mean`**`() const noexcept`
+    * `T UniformReal::`**`sd`**`() const noexcept`
+    * `T UniformReal::`**`variance`**`() const noexcept`
+    * `T UniformReal::`**`pdf`**`(T x) const noexcept`
+    * `T UniformReal::`**`cdf`**`(T x) const noexcept`
+    * `T UniformReal::`**`ccdf`**`(T x) const noexcept`
+    * `T UniformReal::`**`quantile`**`(T p) const noexcept`
+    * `T UniformReal::`**`cquantile`**`(T q) const noexcept`
+* `template <typename T> UniformReal<T>` **`random_real`**`()`
+* `template <typename T> UniformReal<T>` **`random_real`**`(T max)`
+* `template <typename T> UniformReal<T>` **`random_real`**`(T a, T b)`
 
 Uniform random floating point distribution. This returns a number from `a` to
 `b`; the bounds can be supplied in either order. If a single argument is
 supplied, it returns a number from 0 to `t` ('t' may be negative). A default
 constructed distribution return a value in the unit range.
 
-* `template <typename T> class` **`RandomNormal`**
-    * `using RandomNormal::`**`result_type`** `= T`
-    * `RandomNormal::`**`RandomNormal`**`() noexcept`
-    * `RandomNormal::`**`RandomNormal`**`(T mean, T sd) noexcept`
-    * `template <typename RNG> T RandomNormal::`**`operator()`**`(RNG& rng) const`
-    * `T RandomNormal::`**`mean`**`() const noexcept`
-    * `T RandomNormal::`**`sd`**`() const noexcept`
-    * `T RandomNormal::`**`variance`**`() const noexcept`
-    * `T RandomNormal::`**`pdf`**`(T x) const noexcept`
-    * `T RandomNormal::`**`cdf`**`(T x) const noexcept`
-    * `T RandomNormal::`**`ccdf`**`(T x) const noexcept`
-    * `T RandomNormal::`**`quantile`**`(T p) const noexcept`
-    * `T RandomNormal::`**`cquantile`**`(T q) const noexcept`
-* `template <typename T> RandomNormal<T>` **`random_normal`**`()`
-* `template <typename T> RandomNormal<T>` **`random_normal`**`(T mean, T sd)`
+* `template <typename T> class` **`Normal`**
+    * `using Normal::`**`result_type`** `= T`
+    * `Normal::`**`Normal`**`() noexcept`
+    * `Normal::`**`Normal`**`(T mean, T sd) noexcept`
+    * `template <typename RNG> T Normal::`**`operator()`**`(RNG& rng) const`
+    * `T Normal::`**`mean`**`() const noexcept`
+    * `T Normal::`**`sd`**`() const noexcept`
+    * `T Normal::`**`variance`**`() const noexcept`
+    * `T Normal::`**`pdf`**`(T x) const noexcept`
+    * `T Normal::`**`cdf`**`(T x) const noexcept`
+    * `T Normal::`**`ccdf`**`(T x) const noexcept`
+    * `T Normal::`**`quantile`**`(T p) const noexcept`
+    * `T Normal::`**`cquantile`**`(T q) const noexcept`
+* `template <typename T> Normal<T>` **`random_normal`**`()`
+* `template <typename T> Normal<T>` **`random_normal`**`(T mean, T sd)`
 
 Normal (Gaussian) distribution, with the given mean and standard deviation.
 The absolute value of the standard deviation is used. The default constructor
@@ -319,76 +319,76 @@ error is less than `2.5e-7`; for `|z|<7.5`, absolute error is less than
 distribution property functions are called when the standard deviation is
 zero.
 
-* `template <typename T> class` **`RandomDiscreteNormal`**
-    * `using RandomDiscreteNormal::`**`result_type`** `= T`
-    * `RandomDiscreteNormal::`**`RandomDiscreteNormal`**`()`
-    * `RandomDiscreteNormal::`**`RandomDiscreteNormal`**`(const Rational<T>& mean, const Rational<T>& sd)`
-    * `template <typename RNG> T RandomDiscreteNormal::`**`operator()`**`(RNG& rng) const`
-    * `Rational<T> RandomDiscreteNormal::`**`mean`**`() const noexcept`
-    * `Rational<T> RandomDiscreteNormal::`**`sd`**`() const noexcept`
-* `template <typename T> RandomDiscreteNormal<T>` **`random_discrete_normal`**`(const Rational<T>& mean, const Rational<T>& sd)`
+* `template <typename T> class` **`DiscreteNormal`**
+    * `using DiscreteNormal::`**`result_type`** `= T`
+    * `DiscreteNormal::`**`DiscreteNormal`**`()`
+    * `DiscreteNormal::`**`DiscreteNormal`**`(const Rational<T>& mean, const Rational<T>& sd)`
+    * `template <typename RNG> T DiscreteNormal::`**`operator()`**`(RNG& rng) const`
+    * `Rational<T> DiscreteNormal::`**`mean`**`() const noexcept`
+    * `Rational<T> DiscreteNormal::`**`sd`**`() const noexcept`
+* `template <typename T> DiscreteNormal<T>` **`random_discrete_normal`**`(const Rational<T>& mean, const Rational<T>& sd)`
 
 Generates an integer that follows a good deterministic approximation to the
 result of generating a normally distributed real value and then rounding it to
 an integer.
 
-* `template <typename T, typename S = double> class` **`RandomPoisson`**
-    * `using RandomPoisson::`**`result_type`** `= T`
-    * `using RandomPoisson::`**`scalar_type`** `= S`
-    * `RandomPoisson::`**`RandomPoisson`**`()`
-    * `explicit RandomPoisson::`**`RandomPoisson`**`(S lambda) noexcept`
-    * `template <typename RNG> T RandomPoisson::`**`operator()`**`(RNG& rng) const`
-    * `S RandomPoisson::`**`lambda`**`() const noexcept`
-    * `S RandomPoisson::`**`mean`**`() const noexcept`
-    * `S RandomPoisson::`**`variance`**`() const noexcept`
-    * `S RandomPoisson::`**`sd`**`() const noexcept`
-    * `S RandomPoisson::`**`pdf`**`(T x) const noexcept`
-    * `S RandomPoisson::`**`cdf`**`(T x) const noexcept`
-    * `S RandomPoisson::`**`ccdf`**`(T x) const noexcept`
+* `template <typename T, typename S = double> class` **`Poisson`**
+    * `using Poisson::`**`result_type`** `= T`
+    * `using Poisson::`**`scalar_type`** `= S`
+    * `Poisson::`**`Poisson`**`()`
+    * `explicit Poisson::`**`Poisson`**`(S lambda) noexcept`
+    * `template <typename RNG> T Poisson::`**`operator()`**`(RNG& rng) const`
+    * `S Poisson::`**`lambda`**`() const noexcept`
+    * `S Poisson::`**`mean`**`() const noexcept`
+    * `S Poisson::`**`variance`**`() const noexcept`
+    * `S Poisson::`**`sd`**`() const noexcept`
+    * `S Poisson::`**`pdf`**`(T x) const noexcept`
+    * `S Poisson::`**`cdf`**`(T x) const noexcept`
+    * `S Poisson::`**`ccdf`**`(T x) const noexcept`
 
 Poisson distribution. `T` and `S` must be integer and floating point types
 respectively. The default constructor sets `lambda=1`. Behaviour is undefined
 if `lambda<=0`.
 
-* `template <typename T> class` **`RandomBeta`**
-    * `using RandomBeta::`**`result_type`** `= T`
-    * `RandomBeta::`**`RandomBeta`**`() noexcept`
-    * `RandomBeta::`**`RandomBeta`**`(T a, T b) noexcept`
-    * `template <typename RNG> T RandomBeta::`**`operator()`**`(RNG& rng) const`
-    * `T RandomBeta::`**`alpha`**`() const noexcept`
-    * `T RandomBeta::`**`beta`**`() const noexcept`
-    * `T RandomBeta::`**`mean`**`() const noexcept`
-    * `T RandomBeta::`**`variance`**`() const noexcept`
-    * `T RandomBeta::`**`sd`**`() const noexcept`
-    * `T RandomBeta::`**`pdf`**`(T x) const noexcept`
-    * `T RandomBeta::`**`cdf`**`(T x) const noexcept`
-    * `T RandomBeta::`**`ccdf`**`(T x) const noexcept`
-    * `T RandomBeta::`**`quantile`**`(T p) const noexcept`
-    * `T RandomBeta::`**`cquantile`**`(T q) const noexcept`
+* `template <typename T> class` **`Beta`**
+    * `using Beta::`**`result_type`** `= T`
+    * `Beta::`**`Beta`**`() noexcept`
+    * `Beta::`**`Beta`**`(T a, T b) noexcept`
+    * `template <typename RNG> T Beta::`**`operator()`**`(RNG& rng) const`
+    * `T Beta::`**`alpha`**`() const noexcept`
+    * `T Beta::`**`beta`**`() const noexcept`
+    * `T Beta::`**`mean`**`() const noexcept`
+    * `T Beta::`**`variance`**`() const noexcept`
+    * `T Beta::`**`sd`**`() const noexcept`
+    * `T Beta::`**`pdf`**`(T x) const noexcept`
+    * `T Beta::`**`cdf`**`(T x) const noexcept`
+    * `T Beta::`**`ccdf`**`(T x) const noexcept`
+    * `T Beta::`**`quantile`**`(T p) const noexcept`
+    * `T Beta::`**`cquantile`**`(T q) const noexcept`
 
 Beta distribution. The default constructor sets `a=b=1`, which produces a
 uniform distribution. Behaviour is undefined if `a<=0` or `b<=0`.
 
 ### Random choice distributions ###
 
-* `template <typename T> class` **`RandomChoice`**
-    * `using RandomChoice::`**`result_type`** `= T`
-    * `using RandomChoice::`**`value_type`** `= T`
-    * `RandomChoice::`**`RandomChoice`**`() noexcept`
-    * `template <typename InputIterator> RandomChoice::`**`RandomChoice`**`(InputIterator i, InputIterator j)`
-    * `template <typename InputRange> explicit RandomChoice::`**`RandomChoice`**`(const InputRange& list)`
-    * `RandomChoice::`**`RandomChoice`**`(std::initializer_list<T> list)`
-    * `template <typename RNG> const T& RandomChoice::`**`operator()`**`(RNG& rng) const`
-    * `void RandomChoice::`**`add`**`(const T& t)`
-    * `void RandomChoice::`**`push_back`**`(const T& t)`
-    * `void RandomChoice::`**`append`**`(initializer_list<T> list)`
-    * `template <typename InputRange> void RandomChoice::`**`append`**`(const InputRange& list)`
-    * `void RandomChoice::`**`clear`**`() noexcept`
-    * `bool RandomChoice::`**`empty`**`() const noexcept`
-    * `size_t RandomChoice::`**`size`**`() const noexcept`
-* `template <typename InputIterator> RandomChoice<[value type]>` **`random_choice`**`(InputIterator i, InputIterator j)`
-* `template <typename InputRange> RandomChoice<[value type]>` **`random_choice`**`(const InputRange& list)`
-* `template <typename T> RandomChoice<T>` **`random_choice`**`(std::initializer_list<T> list)`
+* `template <typename T> class` **`Choice`**
+    * `using Choice::`**`result_type`** `= T`
+    * `using Choice::`**`value_type`** `= T`
+    * `Choice::`**`Choice`**`() noexcept`
+    * `template <typename InputIterator> Choice::`**`Choice`**`(InputIterator i, InputIterator j)`
+    * `template <typename InputRange> explicit Choice::`**`Choice`**`(const InputRange& list)`
+    * `Choice::`**`Choice`**`(std::initializer_list<T> list)`
+    * `template <typename RNG> const T& Choice::`**`operator()`**`(RNG& rng) const`
+    * `void Choice::`**`add`**`(const T& t)`
+    * `void Choice::`**`push_back`**`(const T& t)`
+    * `void Choice::`**`append`**`(initializer_list<T> list)`
+    * `template <typename InputRange> void Choice::`**`append`**`(const InputRange& list)`
+    * `void Choice::`**`clear`**`() noexcept`
+    * `bool Choice::`**`empty`**`() const noexcept`
+    * `size_t Choice::`**`size`**`() const noexcept`
+* `template <typename InputIterator> Choice<[value type]>` **`random_choice`**`(InputIterator i, InputIterator j)`
+* `template <typename InputRange> Choice<[value type]>` **`random_choice`**`(const InputRange& list)`
+* `template <typename T> Choice<T>` **`random_choice`**`(std::initializer_list<T> list)`
 * `template <typename ForwardIterator, typename RNG> const [value type]&` **`random_choice_from`**`(ForwardIterator i, ForwardIterator j, RNG& rng)`
 * `template <typename ForwardRange, typename RNG> const [value type]&` **`random_choice_from`**`(const ForwardRange& list, RNG& rng)`
 * `template <typename T, typename RNG> const T&` **`random_choice_from`**`(std::initializer_list<T> list, RNG& rng)`
@@ -484,17 +484,17 @@ limitations of floating point arithmetic, the point generated by
 
 ### Unique distribution ###
 
-* `template <typename T> struct` **`UniqueDistribution`**
-    * `using UniqueDistribution::`**`distribution_type`** `= T`
-    * `using UniqueDistribution::`**`result_type`** `= [result type of T]`
-    * `explicit UniqueDistribution::`**`UniqueDistribution`**`(T& t)`
-    * `template <typename RNG> result_type UniqueDistribution::`**`operator()`**`(RNG& rng)`
-    * `void UniqueDistribution::`**`clear`**`() noexcept`
-    * `bool UniqueDistribution::`**`empty`**`() const noexcept`
-    * `result_type UniqueDistribution::`**`min`**`() const`
-    * `result_type UniqueDistribution::`**`max`**`() const`
-    * `size_t UniqueDistribution::`**`size`**`() const noexcept`
-* `template <typename T> UniqueDistribution<T>` **`unique_distribution`**`(T& t)`
+* `template <typename T> struct` **`UniqueGenerator`**
+    * `using UniqueGenerator::`**`distribution_type`** `= T`
+    * `using UniqueGenerator::`**`result_type`** `= [result type of T]`
+    * `explicit UniqueGenerator::`**`UniqueGenerator`**`(T& t)`
+    * `template <typename RNG> result_type UniqueGenerator::`**`operator()`**`(RNG& rng)`
+    * `void UniqueGenerator::`**`clear`**`() noexcept`
+    * `bool UniqueGenerator::`**`empty`**`() const noexcept`
+    * `result_type UniqueGenerator::`**`min`**`() const`
+    * `result_type UniqueGenerator::`**`max`**`() const`
+    * `size_t UniqueGenerator::`**`size`**`() const noexcept`
+* `template <typename T> UniqueGenerator<T>` **`unique_distribution`**`(T& t)`
 
 This is a wrapper for another random distribution. It keeps an internal cache
 of all values generated to date, and will repeatedly call the underlying
@@ -506,11 +506,11 @@ can take a reference to a random number engine, unless the `min()` or `max()`
 functions are called, which require the corresponding functions on the
 underlying distribution.
 
-The `UniqueDistribution` object contains a reference to the underlying
+The `UniqueGenerator` object contains a reference to the underlying
 distribution, which is expected to remain valid. Behaviour is undefined if the
-underlying distribution is destroyed while a `UniqueDistribution` object still
-has a reference to it, or if `UniqueDistribution::operator()` is called when
-the cache already contains every possible value of the result type.
+underlying distribution is destroyed while a `UniqueGenerator` object still
+has a reference to it, or if `UniqueGenerator::operator()` is called when the
+cache already contains every possible value of the result type.
 
 ## Other random algorithms ##
 

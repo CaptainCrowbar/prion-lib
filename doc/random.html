@@ -294,23 +294,23 @@ quantile functions is less than 0 or greater than 1; it may or may not be
 defined for exactly 0 or 1, depending on how the distribution is bounded.</p>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; class</code> <strong><code>RandomInteger</code></strong><ul>
-<li><code>using RandomInteger::</code><strong><code>result_type</code></strong> <code>= T</code></li>
-<li><code>RandomInteger::</code><strong><code>RandomInteger</code></strong><code>() noexcept</code></li>
-<li><code>RandomInteger::</code><strong><code>RandomInteger</code></strong><code>(T a, T b) noexcept</code></li>
-<li><code>template &lt;typename RNG&gt; T RandomInteger::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
-<li><code>T RandomInteger::</code><strong><code>min</code></strong><code>() const noexcept</code></li>
-<li><code>T RandomInteger::</code><strong><code>max</code></strong><code>() const noexcept</code></li>
-<li><code>Rational&lt;T&gt; RandomInteger::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
-<li><code>Rational&lt;T&gt; RandomInteger::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
-<li><code>double RandomInteger::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
-<li><code>double RandomInteger::</code><strong><code>pdf</code></strong><code>(T x) const noexcept</code></li>
-<li><code>double RandomInteger::</code><strong><code>cdf</code></strong><code>(T x) const noexcept</code></li>
-<li><code>double RandomInteger::</code><strong><code>ccdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>UniformInteger</code></strong><ul>
+<li><code>using UniformInteger::</code><strong><code>result_type</code></strong> <code>= T</code></li>
+<li><code>UniformInteger::</code><strong><code>UniformInteger</code></strong><code>() noexcept</code></li>
+<li><code>UniformInteger::</code><strong><code>UniformInteger</code></strong><code>(T a, T b) noexcept</code></li>
+<li><code>template &lt;typename RNG&gt; T UniformInteger::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
+<li><code>T UniformInteger::</code><strong><code>min</code></strong><code>() const noexcept</code></li>
+<li><code>T UniformInteger::</code><strong><code>max</code></strong><code>() const noexcept</code></li>
+<li><code>Rational&lt;T&gt; UniformInteger::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
+<li><code>Rational&lt;T&gt; UniformInteger::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
+<li><code>double UniformInteger::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
+<li><code>double UniformInteger::</code><strong><code>pdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>double UniformInteger::</code><strong><code>cdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>double UniformInteger::</code><strong><code>ccdf</code></strong><code>(T x) const noexcept</code></li>
 </ul>
 </li>
-<li><code>template &lt;typename T&gt; RandomInteger&lt;T&gt;</code> <strong><code>random_integer</code></strong><code>(T t)</code></li>
-<li><code>template &lt;typename T&gt; RandomInteger&lt;T&gt;</code> <strong><code>random_integer</code></strong><code>(T a, T b)</code></li>
+<li><code>template &lt;typename T&gt; UniformInteger&lt;T&gt;</code> <strong><code>random_integer</code></strong><code>(T t)</code></li>
+<li><code>template &lt;typename T&gt; UniformInteger&lt;T&gt;</code> <strong><code>random_integer</code></strong><code>(T a, T b)</code></li>
 </ul>
 <p>Uniform random integer distribution. This returns an integer from <code>a</code> to <code>b</code>
 inclusive; the bounds can be supplied in either order. If a single argument is
@@ -319,18 +319,18 @@ A default constructed distribution always returns zero.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>class</code> <strong><code>RandomBoolean</code></strong><ul>
-<li><code>using RandomBoolean::</code><strong><code>result_type</code></strong> <code>= bool</code></li>
-<li><code>RandomBoolean::</code><strong><code>RandomBoolean</code></strong><code>() noexcept</code></li>
-<li><code>explicit RandomBoolean::</code><strong><code>RandomBoolean</code></strong><code>(Rat p) noexcept</code></li>
-<li><code>template &lt;typename RNG&gt; bool RandomBoolean::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
-<li><code>Rat RandomBoolean::</code><strong><code>prob</code></strong><code>() const noexcept</code></li>
+<li><code>class</code> <strong><code>Bernoulli</code></strong><ul>
+<li><code>using Bernoulli::</code><strong><code>result_type</code></strong> <code>= bool</code></li>
+<li><code>Bernoulli::</code><strong><code>Bernoulli</code></strong><code>() noexcept</code></li>
+<li><code>explicit Bernoulli::</code><strong><code>Bernoulli</code></strong><code>(Rat p) noexcept</code></li>
+<li><code>template &lt;typename RNG&gt; bool Bernoulli::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
+<li><code>Rat Bernoulli::</code><strong><code>prob</code></strong><code>() const noexcept</code></li>
 </ul>
 </li>
-<li><code>RandomBoolean</code> <strong><code>random_boolean</code></strong><code>()</code></li>
-<li><code>RandomBoolean</code> <strong><code>random_boolean</code></strong><code>(Rat p)</code></li>
-<li><code>RandomBoolean</code> <strong><code>random_boolean</code></strong><code>(int a, int b)</code></li>
-<li><code>RandomBoolean</code> <strong><code>random_boolean</code></strong><code>(double p)</code></li>
+<li><code>Bernoulli</code> <strong><code>random_boolean</code></strong><code>()</code></li>
+<li><code>Bernoulli</code> <strong><code>random_boolean</code></strong><code>(Rat p)</code></li>
+<li><code>Bernoulli</code> <strong><code>random_boolean</code></strong><code>(int a, int b)</code></li>
+<li><code>Bernoulli</code> <strong><code>random_boolean</code></strong><code>(double p)</code></li>
 </ul>
 <p>Random boolean (Bernoulli) distribution. The probability of success defaults
 to 1/2; it can be supplied as a rational, a pair of integers (representing a
@@ -339,24 +339,24 @@ clamped to the nearest end of the range.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; class</code> <strong><code>RandomBinomial</code></strong><ul>
-<li><code>using RandomBinomial::</code><strong><code>result_type</code></strong> <code>= T</code></li>
-<li><code>RandomBinomial::</code><strong><code>RandomBinomial</code></strong><code>() noexcept</code></li>
-<li><code>RandomBinomial::</code><strong><code>RandomBinomial</code></strong><code>(const Rational&lt;T&gt;&amp; p, T n) noexcept</code></li>
-<li><code>template &lt;typename RNG&gt; bool RandomBinomial::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
-<li><code>Rational&lt;T&gt; RandomBinomial::</code><strong><code>prob</code></strong><code>() const noexcept</code></li>
-<li><code>T RandomBinomial::</code><strong><code>number</code></strong><code>() const noexcept</code></li>
-<li><code>T RandomBinomial::</code><strong><code>min</code></strong><code>() const  noexcept</code></li>
-<li><code>T RandomBinomial::</code><strong><code>max</code></strong><code>() const  noexcept</code></li>
-<li><code>Rational&lt;T&gt; RandomBinomial::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
-<li><code>Rational&lt;T&gt; RandomBinomial::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
-<li><code>double RandomBinomial::</code><strong><code>sd</code></strong><code>() const  noexcept</code></li>
-<li><code>double RandomBinomial::</code><strong><code>pdf</code></strong><code>(T x) const noexcept</code></li>
-<li><code>double RandomBinomial::</code><strong><code>cdf</code></strong><code>(T x) const noexcept</code></li>
-<li><code>double RandomBinomial::</code><strong><code>ccdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>Binomial</code></strong><ul>
+<li><code>using Binomial::</code><strong><code>result_type</code></strong> <code>= T</code></li>
+<li><code>Binomial::</code><strong><code>Binomial</code></strong><code>() noexcept</code></li>
+<li><code>Binomial::</code><strong><code>Binomial</code></strong><code>(const Rational&lt;T&gt;&amp; p, T n) noexcept</code></li>
+<li><code>template &lt;typename RNG&gt; bool Binomial::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
+<li><code>Rational&lt;T&gt; Binomial::</code><strong><code>prob</code></strong><code>() const noexcept</code></li>
+<li><code>T Binomial::</code><strong><code>number</code></strong><code>() const noexcept</code></li>
+<li><code>T Binomial::</code><strong><code>min</code></strong><code>() const  noexcept</code></li>
+<li><code>T Binomial::</code><strong><code>max</code></strong><code>() const  noexcept</code></li>
+<li><code>Rational&lt;T&gt; Binomial::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
+<li><code>Rational&lt;T&gt; Binomial::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
+<li><code>double Binomial::</code><strong><code>sd</code></strong><code>() const  noexcept</code></li>
+<li><code>double Binomial::</code><strong><code>pdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>double Binomial::</code><strong><code>cdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>double Binomial::</code><strong><code>ccdf</code></strong><code>(T x) const noexcept</code></li>
 </ul>
 </li>
-<li><code>template &lt;typename T&gt; RandomBinomial</code> <strong><code>random_boolean</code></strong><code>(const Rational&lt;T&gt;&amp; p, T n) noexcept</code></li>
+<li><code>template &lt;typename T&gt; Binomial</code> <strong><code>random_boolean</code></strong><code>(const Rational&lt;T&gt;&amp; p, T n) noexcept</code></li>
 </ul>
 <p>Binomial distribution, reporting the number of successes after <code>n</code> tests each
 with probability <code>p</code>. The argument <code>p</code> is clamped to the 0-1 range; the result
@@ -364,24 +364,24 @@ is always zero if <code>n&lt;1</code>.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; class</code> <strong><code>RandomDice</code></strong><ul>
-<li><code>using RandomDice::</code><strong><code>result_type</code></strong> <code>= T</code></li>
-<li><code>RandomDice::</code><strong><code>RandomDice</code></strong><code>() noexcept</code></li>
-<li><code>RandomDice::</code><strong><code>RandomDice</code></strong><code>(T n, T faces) noexcept</code></li>
-<li><code>template &lt;typename RNG&gt; T RandomDice::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
-<li><code>T RandomDice::</code><strong><code>number</code></strong><code>() const noexcept</code></li>
-<li><code>T RandomDice::</code><strong><code>faces</code></strong><code>() const noexcept</code></li>
-<li><code>T RandomDice::</code><strong><code>min</code></strong><code>() const noexcept</code></li>
-<li><code>T RandomDice::</code><strong><code>max</code></strong><code>() const noexcept</code></li>
-<li><code>Rational&lt;T&gt; RandomDice::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
-<li><code>Rational&lt;T&gt; RandomDice::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
-<li><code>double RandomDice::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
-<li><code>double RandomDice::</code><strong><code>pdf</code></strong><code>(T x) const noexcept</code></li>
-<li><code>double RandomDice::</code><strong><code>cdf</code></strong><code>(T x) const noexcept</code></li>
-<li><code>double RandomDice::</code><strong><code>ccdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>Dice</code></strong><ul>
+<li><code>using Dice::</code><strong><code>result_type</code></strong> <code>= T</code></li>
+<li><code>Dice::</code><strong><code>Dice</code></strong><code>() noexcept</code></li>
+<li><code>Dice::</code><strong><code>Dice</code></strong><code>(T n, T faces) noexcept</code></li>
+<li><code>template &lt;typename RNG&gt; T Dice::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
+<li><code>T Dice::</code><strong><code>number</code></strong><code>() const noexcept</code></li>
+<li><code>T Dice::</code><strong><code>faces</code></strong><code>() const noexcept</code></li>
+<li><code>T Dice::</code><strong><code>min</code></strong><code>() const noexcept</code></li>
+<li><code>T Dice::</code><strong><code>max</code></strong><code>() const noexcept</code></li>
+<li><code>Rational&lt;T&gt; Dice::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
+<li><code>Rational&lt;T&gt; Dice::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
+<li><code>double Dice::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
+<li><code>double Dice::</code><strong><code>pdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>double Dice::</code><strong><code>cdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>double Dice::</code><strong><code>ccdf</code></strong><code>(T x) const noexcept</code></li>
 </ul>
 </li>
-<li><code>template &lt;typename T&gt; RandomDice&lt;T&gt;</code> <strong><code>random_dice</code></strong><code>(T n = 1, T faces = 6)</code></li>
+<li><code>template &lt;typename T&gt; Dice&lt;T&gt;</code> <strong><code>random_dice</code></strong><code>(T n = 1, T faces = 6)</code></li>
 </ul>
 <p>This generates the result of rolling <code>n</code> dice, each numbered from <code>1</code> to
 <code>faces</code>. The default constructor sets <code>n=1</code> and <code>faces=6</code>. This will always
@@ -389,42 +389,42 @@ return zero if either argument is less than 1.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; class</code> <strong><code>RandomTriangleInteger</code></strong><ul>
-<li><code>using RandomTriangleInteger::</code><strong><code>result_type</code></strong> <code>= T</code></li>
-<li><code>RandomTriangleInteger::</code><strong><code>RandomTriangleInteger</code></strong><code>() noexcept</code></li>
-<li><code>RandomTriangleInteger::</code><strong><code>RandomTriangleInteger</code></strong><code>(T hi, T lo) noexcept</code></li>
-<li><code>template &lt;typename RNG&gt; T RandomTriangleInteger::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
-<li><code>T RandomTriangleInteger::</code><strong><code>high_end</code></strong><code>() const noexcept</code></li>
-<li><code>T RandomTriangleInteger::</code><strong><code>low_end</code></strong><code>() const noexcept</code></li>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>TriangleInteger</code></strong><ul>
+<li><code>using TriangleInteger::</code><strong><code>result_type</code></strong> <code>= T</code></li>
+<li><code>TriangleInteger::</code><strong><code>TriangleInteger</code></strong><code>() noexcept</code></li>
+<li><code>TriangleInteger::</code><strong><code>TriangleInteger</code></strong><code>(T hi, T lo) noexcept</code></li>
+<li><code>template &lt;typename RNG&gt; T TriangleInteger::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
+<li><code>T TriangleInteger::</code><strong><code>high_end</code></strong><code>() const noexcept</code></li>
+<li><code>T TriangleInteger::</code><strong><code>low_end</code></strong><code>() const noexcept</code></li>
 </ul>
 </li>
-<li><code>template &lt;typename T&gt; RandomTriangleInteger&lt;T&gt;</code> <strong><code>random_triangle_integer</code></strong><code>(T hi, T lo)</code></li>
+<li><code>template &lt;typename T&gt; TriangleInteger&lt;T&gt;</code> <strong><code>random_triangle_integer</code></strong><code>(T hi, T lo)</code></li>
 </ul>
 <p>This returns an integer with a triangular distribution, with the highest
 probability at <code>hi</code> and the lowest at <code>lo</code>.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; class</code> <strong><code>RandomReal</code></strong><ul>
-<li><code>using RandomReal::</code><strong><code>result_type</code></strong> <code>= T</code></li>
-<li><code>RandomReal::</code><strong><code>RandomReal</code></strong><code>() noexcept</code></li>
-<li><code>RandomReal::</code><strong><code>RandomReal</code></strong><code>(T a, T b) noexcept</code></li>
-<li><code>template &lt;typename RNG&gt; T RandomReal::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
-<li><code>T RandomReal::</code><strong><code>min</code></strong><code>() const noexcept</code></li>
-<li><code>T RandomReal::</code><strong><code>max</code></strong><code>() const noexcept</code></li>
-<li><code>T RandomReal::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
-<li><code>T RandomReal::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
-<li><code>T RandomReal::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
-<li><code>T RandomReal::</code><strong><code>pdf</code></strong><code>(T x) const noexcept</code></li>
-<li><code>T RandomReal::</code><strong><code>cdf</code></strong><code>(T x) const noexcept</code></li>
-<li><code>T RandomReal::</code><strong><code>ccdf</code></strong><code>(T x) const noexcept</code></li>
-<li><code>T RandomReal::</code><strong><code>quantile</code></strong><code>(T p) const noexcept</code></li>
-<li><code>T RandomReal::</code><strong><code>cquantile</code></strong><code>(T q) const noexcept</code></li>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>UniformReal</code></strong><ul>
+<li><code>using UniformReal::</code><strong><code>result_type</code></strong> <code>= T</code></li>
+<li><code>UniformReal::</code><strong><code>UniformReal</code></strong><code>() noexcept</code></li>
+<li><code>UniformReal::</code><strong><code>UniformReal</code></strong><code>(T a, T b) noexcept</code></li>
+<li><code>template &lt;typename RNG&gt; T UniformReal::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
+<li><code>T UniformReal::</code><strong><code>min</code></strong><code>() const noexcept</code></li>
+<li><code>T UniformReal::</code><strong><code>max</code></strong><code>() const noexcept</code></li>
+<li><code>T UniformReal::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
+<li><code>T UniformReal::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
+<li><code>T UniformReal::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
+<li><code>T UniformReal::</code><strong><code>pdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>T UniformReal::</code><strong><code>cdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>T UniformReal::</code><strong><code>ccdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>T UniformReal::</code><strong><code>quantile</code></strong><code>(T p) const noexcept</code></li>
+<li><code>T UniformReal::</code><strong><code>cquantile</code></strong><code>(T q) const noexcept</code></li>
 </ul>
 </li>
-<li><code>template &lt;typename T&gt; RandomReal&lt;T&gt;</code> <strong><code>random_real</code></strong><code>()</code></li>
-<li><code>template &lt;typename T&gt; RandomReal&lt;T&gt;</code> <strong><code>random_real</code></strong><code>(T max)</code></li>
-<li><code>template &lt;typename T&gt; RandomReal&lt;T&gt;</code> <strong><code>random_real</code></strong><code>(T a, T b)</code></li>
+<li><code>template &lt;typename T&gt; UniformReal&lt;T&gt;</code> <strong><code>random_real</code></strong><code>()</code></li>
+<li><code>template &lt;typename T&gt; UniformReal&lt;T&gt;</code> <strong><code>random_real</code></strong><code>(T max)</code></li>
+<li><code>template &lt;typename T&gt; UniformReal&lt;T&gt;</code> <strong><code>random_real</code></strong><code>(T a, T b)</code></li>
 </ul>
 <p>Uniform random floating point distribution. This returns a number from <code>a</code> to
 <code>b</code>; the bounds can be supplied in either order. If a single argument is
@@ -433,23 +433,23 @@ constructed distribution return a value in the unit range.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; class</code> <strong><code>RandomNormal</code></strong><ul>
-<li><code>using RandomNormal::</code><strong><code>result_type</code></strong> <code>= T</code></li>
-<li><code>RandomNormal::</code><strong><code>RandomNormal</code></strong><code>() noexcept</code></li>
-<li><code>RandomNormal::</code><strong><code>RandomNormal</code></strong><code>(T mean, T sd) noexcept</code></li>
-<li><code>template &lt;typename RNG&gt; T RandomNormal::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
-<li><code>T RandomNormal::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
-<li><code>T RandomNormal::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
-<li><code>T RandomNormal::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
-<li><code>T RandomNormal::</code><strong><code>pdf</code></strong><code>(T x) const noexcept</code></li>
-<li><code>T RandomNormal::</code><strong><code>cdf</code></strong><code>(T x) const noexcept</code></li>
-<li><code>T RandomNormal::</code><strong><code>ccdf</code></strong><code>(T x) const noexcept</code></li>
-<li><code>T RandomNormal::</code><strong><code>quantile</code></strong><code>(T p) const noexcept</code></li>
-<li><code>T RandomNormal::</code><strong><code>cquantile</code></strong><code>(T q) const noexcept</code></li>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>Normal</code></strong><ul>
+<li><code>using Normal::</code><strong><code>result_type</code></strong> <code>= T</code></li>
+<li><code>Normal::</code><strong><code>Normal</code></strong><code>() noexcept</code></li>
+<li><code>Normal::</code><strong><code>Normal</code></strong><code>(T mean, T sd) noexcept</code></li>
+<li><code>template &lt;typename RNG&gt; T Normal::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
+<li><code>T Normal::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
+<li><code>T Normal::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
+<li><code>T Normal::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
+<li><code>T Normal::</code><strong><code>pdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>T Normal::</code><strong><code>cdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>T Normal::</code><strong><code>ccdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>T Normal::</code><strong><code>quantile</code></strong><code>(T p) const noexcept</code></li>
+<li><code>T Normal::</code><strong><code>cquantile</code></strong><code>(T q) const noexcept</code></li>
 </ul>
 </li>
-<li><code>template &lt;typename T&gt; RandomNormal&lt;T&gt;</code> <strong><code>random_normal</code></strong><code>()</code></li>
-<li><code>template &lt;typename T&gt; RandomNormal&lt;T&gt;</code> <strong><code>random_normal</code></strong><code>(T mean, T sd)</code></li>
+<li><code>template &lt;typename T&gt; Normal&lt;T&gt;</code> <strong><code>random_normal</code></strong><code>()</code></li>
+<li><code>template &lt;typename T&gt; Normal&lt;T&gt;</code> <strong><code>random_normal</code></strong><code>(T mean, T sd)</code></li>
 </ul>
 <p>Normal (Gaussian) distribution, with the given mean and standard deviation.
 The absolute value of the standard deviation is used. The default constructor
@@ -462,16 +462,16 @@ zero.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; class</code> <strong><code>RandomDiscreteNormal</code></strong><ul>
-<li><code>using RandomDiscreteNormal::</code><strong><code>result_type</code></strong> <code>= T</code></li>
-<li><code>RandomDiscreteNormal::</code><strong><code>RandomDiscreteNormal</code></strong><code>()</code></li>
-<li><code>RandomDiscreteNormal::</code><strong><code>RandomDiscreteNormal</code></strong><code>(const Rational&lt;T&gt;&amp; mean, const Rational&lt;T&gt;&amp; sd)</code></li>
-<li><code>template &lt;typename RNG&gt; T RandomDiscreteNormal::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
-<li><code>Rational&lt;T&gt; RandomDiscreteNormal::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
-<li><code>Rational&lt;T&gt; RandomDiscreteNormal::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>DiscreteNormal</code></strong><ul>
+<li><code>using DiscreteNormal::</code><strong><code>result_type</code></strong> <code>= T</code></li>
+<li><code>DiscreteNormal::</code><strong><code>DiscreteNormal</code></strong><code>()</code></li>
+<li><code>DiscreteNormal::</code><strong><code>DiscreteNormal</code></strong><code>(const Rational&lt;T&gt;&amp; mean, const Rational&lt;T&gt;&amp; sd)</code></li>
+<li><code>template &lt;typename RNG&gt; T DiscreteNormal::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
+<li><code>Rational&lt;T&gt; DiscreteNormal::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
+<li><code>Rational&lt;T&gt; DiscreteNormal::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
 </ul>
 </li>
-<li><code>template &lt;typename T&gt; RandomDiscreteNormal&lt;T&gt;</code> <strong><code>random_discrete_normal</code></strong><code>(const Rational&lt;T&gt;&amp; mean, const Rational&lt;T&gt;&amp; sd)</code></li>
+<li><code>template &lt;typename T&gt; DiscreteNormal&lt;T&gt;</code> <strong><code>random_discrete_normal</code></strong><code>(const Rational&lt;T&gt;&amp; mean, const Rational&lt;T&gt;&amp; sd)</code></li>
 </ul>
 <p>Generates an integer that follows a good deterministic approximation to the
 result of generating a normally distributed real value and then rounding it to
@@ -479,19 +479,19 @@ an integer.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T, typename S = double&gt; class</code> <strong><code>RandomPoisson</code></strong><ul>
-<li><code>using RandomPoisson::</code><strong><code>result_type</code></strong> <code>= T</code></li>
-<li><code>using RandomPoisson::</code><strong><code>scalar_type</code></strong> <code>= S</code></li>
-<li><code>RandomPoisson::</code><strong><code>RandomPoisson</code></strong><code>()</code></li>
-<li><code>explicit RandomPoisson::</code><strong><code>RandomPoisson</code></strong><code>(S lambda) noexcept</code></li>
-<li><code>template &lt;typename RNG&gt; T RandomPoisson::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
-<li><code>S RandomPoisson::</code><strong><code>lambda</code></strong><code>() const noexcept</code></li>
-<li><code>S RandomPoisson::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
-<li><code>S RandomPoisson::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
-<li><code>S RandomPoisson::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
-<li><code>S RandomPoisson::</code><strong><code>pdf</code></strong><code>(T x) const noexcept</code></li>
-<li><code>S RandomPoisson::</code><strong><code>cdf</code></strong><code>(T x) const noexcept</code></li>
-<li><code>S RandomPoisson::</code><strong><code>ccdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>template &lt;typename T, typename S = double&gt; class</code> <strong><code>Poisson</code></strong><ul>
+<li><code>using Poisson::</code><strong><code>result_type</code></strong> <code>= T</code></li>
+<li><code>using Poisson::</code><strong><code>scalar_type</code></strong> <code>= S</code></li>
+<li><code>Poisson::</code><strong><code>Poisson</code></strong><code>()</code></li>
+<li><code>explicit Poisson::</code><strong><code>Poisson</code></strong><code>(S lambda) noexcept</code></li>
+<li><code>template &lt;typename RNG&gt; T Poisson::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
+<li><code>S Poisson::</code><strong><code>lambda</code></strong><code>() const noexcept</code></li>
+<li><code>S Poisson::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
+<li><code>S Poisson::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
+<li><code>S Poisson::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
+<li><code>S Poisson::</code><strong><code>pdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>S Poisson::</code><strong><code>cdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>S Poisson::</code><strong><code>ccdf</code></strong><code>(T x) const noexcept</code></li>
 </ul>
 </li>
 </ul>
@@ -501,21 +501,21 @@ if <code>lambda&lt;=0</code>.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; class</code> <strong><code>RandomBeta</code></strong><ul>
-<li><code>using RandomBeta::</code><strong><code>result_type</code></strong> <code>= T</code></li>
-<li><code>RandomBeta::</code><strong><code>RandomBeta</code></strong><code>() noexcept</code></li>
-<li><code>RandomBeta::</code><strong><code>RandomBeta</code></strong><code>(T a, T b) noexcept</code></li>
-<li><code>template &lt;typename RNG&gt; T RandomBeta::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
-<li><code>T RandomBeta::</code><strong><code>alpha</code></strong><code>() const noexcept</code></li>
-<li><code>T RandomBeta::</code><strong><code>beta</code></strong><code>() const noexcept</code></li>
-<li><code>T RandomBeta::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
-<li><code>T RandomBeta::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
-<li><code>T RandomBeta::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
-<li><code>T RandomBeta::</code><strong><code>pdf</code></strong><code>(T x) const noexcept</code></li>
-<li><code>T RandomBeta::</code><strong><code>cdf</code></strong><code>(T x) const noexcept</code></li>
-<li><code>T RandomBeta::</code><strong><code>ccdf</code></strong><code>(T x) const noexcept</code></li>
-<li><code>T RandomBeta::</code><strong><code>quantile</code></strong><code>(T p) const noexcept</code></li>
-<li><code>T RandomBeta::</code><strong><code>cquantile</code></strong><code>(T q) const noexcept</code></li>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>Beta</code></strong><ul>
+<li><code>using Beta::</code><strong><code>result_type</code></strong> <code>= T</code></li>
+<li><code>Beta::</code><strong><code>Beta</code></strong><code>() noexcept</code></li>
+<li><code>Beta::</code><strong><code>Beta</code></strong><code>(T a, T b) noexcept</code></li>
+<li><code>template &lt;typename RNG&gt; T Beta::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
+<li><code>T Beta::</code><strong><code>alpha</code></strong><code>() const noexcept</code></li>
+<li><code>T Beta::</code><strong><code>beta</code></strong><code>() const noexcept</code></li>
+<li><code>T Beta::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
+<li><code>T Beta::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
+<li><code>T Beta::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
+<li><code>T Beta::</code><strong><code>pdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>T Beta::</code><strong><code>cdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>T Beta::</code><strong><code>ccdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>T Beta::</code><strong><code>quantile</code></strong><code>(T p) const noexcept</code></li>
+<li><code>T Beta::</code><strong><code>cquantile</code></strong><code>(T q) const noexcept</code></li>
 </ul>
 </li>
 </ul>
@@ -525,26 +525,26 @@ uniform distribution. Behaviour is undefined if <code>a&lt;=0</code> or <code>b&
 <h3 id="random-choice-distributions">Random choice distributions</h3>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; class</code> <strong><code>RandomChoice</code></strong><ul>
-<li><code>using RandomChoice::</code><strong><code>result_type</code></strong> <code>= T</code></li>
-<li><code>using RandomChoice::</code><strong><code>value_type</code></strong> <code>= T</code></li>
-<li><code>RandomChoice::</code><strong><code>RandomChoice</code></strong><code>() noexcept</code></li>
-<li><code>template &lt;typename InputIterator&gt; RandomChoice::</code><strong><code>RandomChoice</code></strong><code>(InputIterator i, InputIterator j)</code></li>
-<li><code>template &lt;typename InputRange&gt; explicit RandomChoice::</code><strong><code>RandomChoice</code></strong><code>(const InputRange&amp; list)</code></li>
-<li><code>RandomChoice::</code><strong><code>RandomChoice</code></strong><code>(std::initializer_list&lt;T&gt; list)</code></li>
-<li><code>template &lt;typename RNG&gt; const T&amp; RandomChoice::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
-<li><code>void RandomChoice::</code><strong><code>add</code></strong><code>(const T&amp; t)</code></li>
-<li><code>void RandomChoice::</code><strong><code>push_back</code></strong><code>(const T&amp; t)</code></li>
-<li><code>void RandomChoice::</code><strong><code>append</code></strong><code>(initializer_list&lt;T&gt; list)</code></li>
-<li><code>template &lt;typename InputRange&gt; void RandomChoice::</code><strong><code>append</code></strong><code>(const InputRange&amp; list)</code></li>
-<li><code>void RandomChoice::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
-<li><code>bool RandomChoice::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
-<li><code>size_t RandomChoice::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>Choice</code></strong><ul>
+<li><code>using Choice::</code><strong><code>result_type</code></strong> <code>= T</code></li>
+<li><code>using Choice::</code><strong><code>value_type</code></strong> <code>= T</code></li>
+<li><code>Choice::</code><strong><code>Choice</code></strong><code>() noexcept</code></li>
+<li><code>template &lt;typename InputIterator&gt; Choice::</code><strong><code>Choice</code></strong><code>(InputIterator i, InputIterator j)</code></li>
+<li><code>template &lt;typename InputRange&gt; explicit Choice::</code><strong><code>Choice</code></strong><code>(const InputRange&amp; list)</code></li>
+<li><code>Choice::</code><strong><code>Choice</code></strong><code>(std::initializer_list&lt;T&gt; list)</code></li>
+<li><code>template &lt;typename RNG&gt; const T&amp; Choice::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng) const</code></li>
+<li><code>void Choice::</code><strong><code>add</code></strong><code>(const T&amp; t)</code></li>
+<li><code>void Choice::</code><strong><code>push_back</code></strong><code>(const T&amp; t)</code></li>
+<li><code>void Choice::</code><strong><code>append</code></strong><code>(initializer_list&lt;T&gt; list)</code></li>
+<li><code>template &lt;typename InputRange&gt; void Choice::</code><strong><code>append</code></strong><code>(const InputRange&amp; list)</code></li>
+<li><code>void Choice::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
+<li><code>bool Choice::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
+<li><code>size_t Choice::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
 </ul>
 </li>
-<li><code>template &lt;typename InputIterator&gt; RandomChoice&lt;[value type]&gt;</code> <strong><code>random_choice</code></strong><code>(InputIterator i, InputIterator j)</code></li>
-<li><code>template &lt;typename InputRange&gt; RandomChoice&lt;[value type]&gt;</code> <strong><code>random_choice</code></strong><code>(const InputRange&amp; list)</code></li>
-<li><code>template &lt;typename T&gt; RandomChoice&lt;T&gt;</code> <strong><code>random_choice</code></strong><code>(std::initializer_list&lt;T&gt; list)</code></li>
+<li><code>template &lt;typename InputIterator&gt; Choice&lt;[value type]&gt;</code> <strong><code>random_choice</code></strong><code>(InputIterator i, InputIterator j)</code></li>
+<li><code>template &lt;typename InputRange&gt; Choice&lt;[value type]&gt;</code> <strong><code>random_choice</code></strong><code>(const InputRange&amp; list)</code></li>
+<li><code>template &lt;typename T&gt; Choice&lt;T&gt;</code> <strong><code>random_choice</code></strong><code>(std::initializer_list&lt;T&gt; list)</code></li>
 <li><code>template &lt;typename ForwardIterator, typename RNG&gt; const [value type]&amp;</code> <strong><code>random_choice_from</code></strong><code>(ForwardIterator i, ForwardIterator j, RNG&amp; rng)</code></li>
 <li><code>template &lt;typename ForwardRange, typename RNG&gt; const [value type]&amp;</code> <strong><code>random_choice_from</code></strong><code>(const ForwardRange&amp; list, RNG&amp; rng)</code></li>
 <li><code>template &lt;typename T, typename RNG&gt; const T&amp;</code> <strong><code>random_choice_from</code></strong><code>(std::initializer_list&lt;T&gt; list, RNG&amp; rng)</code></li>
@@ -656,19 +656,19 @@ limitations of floating point arithmetic, the point generated by
 <h3 id="unique-distribution">Unique distribution</h3>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; struct</code> <strong><code>UniqueDistribution</code></strong><ul>
-<li><code>using UniqueDistribution::</code><strong><code>distribution_type</code></strong> <code>= T</code></li>
-<li><code>using UniqueDistribution::</code><strong><code>result_type</code></strong> <code>= [result type of T]</code></li>
-<li><code>explicit UniqueDistribution::</code><strong><code>UniqueDistribution</code></strong><code>(T&amp; t)</code></li>
-<li><code>template &lt;typename RNG&gt; result_type UniqueDistribution::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng)</code></li>
-<li><code>void UniqueDistribution::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
-<li><code>bool UniqueDistribution::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
-<li><code>result_type UniqueDistribution::</code><strong><code>min</code></strong><code>() const</code></li>
-<li><code>result_type UniqueDistribution::</code><strong><code>max</code></strong><code>() const</code></li>
-<li><code>size_t UniqueDistribution::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
+<li><code>template &lt;typename T&gt; struct</code> <strong><code>UniqueGenerator</code></strong><ul>
+<li><code>using UniqueGenerator::</code><strong><code>distribution_type</code></strong> <code>= T</code></li>
+<li><code>using UniqueGenerator::</code><strong><code>result_type</code></strong> <code>= [result type of T]</code></li>
+<li><code>explicit UniqueGenerator::</code><strong><code>UniqueGenerator</code></strong><code>(T&amp; t)</code></li>
+<li><code>template &lt;typename RNG&gt; result_type UniqueGenerator::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng)</code></li>
+<li><code>void UniqueGenerator::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
+<li><code>bool UniqueGenerator::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
+<li><code>result_type UniqueGenerator::</code><strong><code>min</code></strong><code>() const</code></li>
+<li><code>result_type UniqueGenerator::</code><strong><code>max</code></strong><code>() const</code></li>
+<li><code>size_t UniqueGenerator::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
 </ul>
 </li>
-<li><code>template &lt;typename T&gt; UniqueDistribution&lt;T&gt;</code> <strong><code>unique_distribution</code></strong><code>(T&amp; t)</code></li>
+<li><code>template &lt;typename T&gt; UniqueGenerator&lt;T&gt;</code> <strong><code>unique_distribution</code></strong><code>(T&amp; t)</code></li>
 </ul>
 <p>This is a wrapper for another random distribution. It keeps an internal cache
 of all values generated to date, and will repeatedly call the underlying
@@ -678,11 +678,11 @@ cache.</p>
 can take a reference to a random number engine, unless the <code>min()</code> or <code>max()</code>
 functions are called, which require the corresponding functions on the
 underlying distribution.</p>
-<p>The <code>UniqueDistribution</code> object contains a reference to the underlying
+<p>The <code>UniqueGenerator</code> object contains a reference to the underlying
 distribution, which is expected to remain valid. Behaviour is undefined if the
-underlying distribution is destroyed while a <code>UniqueDistribution</code> object still
-has a reference to it, or if <code>UniqueDistribution::operator()</code> is called when
-the cache already contains every possible value of the result type.</p>
+underlying distribution is destroyed while a <code>UniqueGenerator</code> object still
+has a reference to it, or if <code>UniqueGenerator::operator()</code> is called when the
+cache already contains every possible value of the result type.</p>
 </div>
 <h2 id="other-random-algorithms">Other random algorithms</h2>
 <div class="defns">

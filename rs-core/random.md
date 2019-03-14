@@ -512,6 +512,30 @@ underlying distribution is destroyed while a `UniqueGenerator` object still
 has a reference to it, or if `UniqueGenerator::operator()` is called when the
 cache already contains every possible value of the result type.
 
+### Special distribution properties ###
+
+Distributions in this section are designed for use in statistical testing and
+do not contain generator functions.
+
+* `template <typename T> class` **`ChiSquared`**
+    * `ChiSquared::`**`ChiSquared`**`() noexcept`
+    * `explicit ChiSquared::`**`ChiSquared`**`(int k) noexcept`
+    * `int ChiSquared::`**`k`**`() const noexcept`
+    * `T ChiSquared::`**`mean`**`() const noexcept`
+    * `T ChiSquared::`**`sd`**`() const noexcept`
+    * `T ChiSquared::`**`variance`**`() const noexcept`
+    * `T ChiSquared::`**`pdf`**`(T x) const noexcept`
+    * `T ChiSquared::`**`cdf`**`(T x) const noexcept`
+    * `T ChiSquared::`**`ccdf`**`(T x) const noexcept`
+    * `T ChiSquared::`**`quantile`**`(T p) const noexcept`
+    * `T ChiSquared::`**`cquantile`**`(T q) const noexcept`
+
+Chi-squared distribution. The number of degrees of freedom (`k`) defaults to
+1. Behaviour is undefined if `k<1`. The cumulative distribution functions use
+the Abdel-Aty approximation, except for the special case `k=2` where a simple
+closed form exists. The quantile functions use numerical root finding and can
+be expected to be slow (apart from `k=2` again).
+
 ## Other random algorithms ##
 
 * `template <typename RNG> void` **`random_bytes`**`(RNG& rng, void* ptr, size_t n)`

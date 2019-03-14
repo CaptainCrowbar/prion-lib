@@ -18,6 +18,10 @@
 <li><a href="#statistics">Statistics</a><ul>
 <li><a href="#contents">Contents</a></li>
 <li><a href="#statistics-class">Statistics class</a></li>
+<li><a href="#statistical-tests">Statistical tests</a><ul>
+<li><a href="#fisher-cumulant-test">Fisher cumulant test</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -181,5 +185,36 @@ count.</p>
 <li><code>void Statistics::</code><strong><code>swap</code></strong><code>(Statistics&amp; s) noexcept</code></li>
 <li><code>void</code> <strong><code>swap</code></strong><code>(Statistics&amp; s1, Statistics&amp; s2) noexcept</code></li>
 </ul>
-<p>Swap two objects.</p></body>
+<p>Swap two objects.</p>
+</div>
+<h2 id="statistical-tests">Statistical tests</h2>
+<h3 id="fisher-cumulant-test">Fisher cumulant test</h3>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>FisherTest</code></strong><ul>
+<li><code>FisherTest::</code><strong><code>FisherTest</code></strong><code>() noexcept</code></li>
+<li><code>template &lt;typename Range&gt; explicit FisherTest::</code><strong><code>FisherTest</code></strong><code>(const Range&amp; r) noexcept</code></li>
+<li><code>template &lt;typename Iterator&gt; FisherTest::</code><strong><code>FisherTest</code></strong><code>(Iterator i, Iterator j) noexcept</code></li>
+<li><code>void FisherTest::</code><strong><code>add</code></strong><code>(T x, T f = 1) noexcept</code></li>
+<li><code>void FisherTest::</code><strong><code>operator&lt;&lt;</code></strong><code>(T x) noexcept</code></li>
+<li><code>T FisherTest::</code><strong><code>u1</code></strong><code>() const noexcept</code></li>
+<li><code>T FisherTest::</code><strong><code>u2</code></strong><code>() const noexcept</code></li>
+<li><code>T FisherTest::</code><strong><code>chi2</code></strong><code>() const noexcept</code></li>
+<li><code>T FisherTest::</code><strong><code>p_chi2</code></strong><code>() const noexcept</code></li>
+<li><code>T FisherTest::</code><strong><code>z_chi2</code></strong><code>() const noexcept</code></li>
+</ul>
+</li>
+</ul>
+<p>This class implements the Fisher cumulant test for fit to a normal
+distribution. Weighted or unweighted data points can be supplied through the
+<code>add()</code> function; unweighted data points can also be supplied through the
+constructors or the insertion operator (a synonym for <code>add()</code> with <code>f=1</code>).</p>
+<p>The test statistics reported are:</p>
+<ul>
+<li><code>u1()</code> = Skewness test statistic, expected to follow the standardized normal distribution</li>
+<li><code>u2()</code> = Kurtosis test statistic, expected to follow the standardized normal distribution</li>
+<li><code>chi2()</code> = Combined test statistic, expected to follow a chi-squared distribution with 2 degrees of freedom</li>
+<li><code>p_chi2()</code> = Single tailed P value corresponding to the &chi;<sup>2</sup> statistic</li>
+<li><code>z_chi2()</code> = Standardized normal Z value corresponding to <code>p_chi2()</code></li>
+</ul></body>
 </html>

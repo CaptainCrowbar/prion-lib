@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rs-core/common.hpp"
+#include "rs-core/random.hpp"
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -11,6 +12,8 @@
 #include <vector>
 
 namespace RS {
+
+    // Statistics class
 
     template <typename T>
     class Statistics {
@@ -197,5 +200,63 @@ namespace RS {
         std::swap(wsum2_, s.wsum2_);
         std::swap(count_, s.count_);
     }
+
+    // Fisher cumulant test
+
+    template <typename T>
+    class FisherTest {
+    public:
+        FisherTest() noexcept { std::fill(m_.begin(), m_.end(), T(0)); }
+        template <typename Range> explicit FisherTest(const Range& r) noexcept: FisherTest() { for (T x: r) add(x); }
+        template <typename Iterator> FisherTest(Iterator i, Iterator j) noexcept: FisherTest(irange(i, j)) {}
+        void add(T x, T f = 1) noexcept;
+        void operator<<(T x) noexcept { add(x); }
+        T u1() const noexcept { collect(); return u1_; }      // Skewness test (normal)
+        T u2() const noexcept { collect(); return u2_; }      // Kurtosis test (normal)
+        T chi2() const noexcept { collect(); return chi2_; }  // Combined test (chi^2 with 2 dof)
+        T p_chi2() const noexcept { collect(); return ChiSquared<T>(2).ccdf(chi2_); }
+        T z_chi2() const noexcept { collect(); return Normal<T>().cquantile(p_chi2()); }
+    private:
+        std::array<T, 5> m_;
+        mutable T u1_;
+        mutable T u2_;
+        mutable T chi2_;
+        mutable bool ready_;
+        void collect() const noexcept;
+    };
+
+        template <typename T>
+        void FisherTest<T>::add(T x, T f) noexcept {
+            T y = f;
+            for (T& m: m_) {
+                m += y;
+                y *= x;
+            }
+            ready_ = false;
+        }
+
+        template <typename T>
+        void FisherTest<T>::collect() const noexcept {
+            if (ready_)
+                return;
+            T n = m_[0];
+            T n2 = n * n;
+            T n3 = n2 * n;
+            T sn6 = std::sqrt(n / 6);
+            T d2 = n * (n - 1);
+            T d3 = d2 * (n - 2);
+            T d4 = d3 * (n - 3);
+            T m12 = m_[1] * m_[1];
+            T m13 = m12 * m_[1];
+            T m14 = m13 * m_[1];
+            T m22 = m_[2] * m_[2];
+            T k2 = (n * m_[2] - m12) / d2;
+            T k3 = (n2 * m_[3] - 3 * n * m_[2] * m_[1] + 2 * m13) / d3;
+            T k4 = ((n3 + n2) * m_[4] - 4 * (n2 + n) * m_[3] * m_[1] - 3 * (n2 - n) * m22 + 12 * m_[2] * m12 - 6 * m14) / d4;
+            u1_ = sn6 * k3 / std::pow(k2, T(1.5));
+            u2_ = sn6 * k4 / (2 * k2 * k2);
+            chi2_ = u1_ * u1_ + u2_ * u2_;
+            ready_ = true;
+        }
 
 }

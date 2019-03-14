@@ -29,6 +29,7 @@
 <li><a href="#random-samples">Random samples</a></li>
 <li><a href="#spatial-distributions">Spatial distributions</a></li>
 <li><a href="#unique-distribution">Unique distribution</a></li>
+<li><a href="#special-distribution-properties">Special distribution properties</a></li>
 </ul>
 </li>
 <li><a href="#other-random-algorithms">Other random algorithms</a></li>
@@ -683,6 +684,32 @@ distribution, which is expected to remain valid. Behaviour is undefined if the
 underlying distribution is destroyed while a <code>UniqueGenerator</code> object still
 has a reference to it, or if <code>UniqueGenerator::operator()</code> is called when the
 cache already contains every possible value of the result type.</p>
+</div>
+<h3 id="special-distribution-properties">Special distribution properties</h3>
+<p>Distributions in this section are designed for use in statistical testing and
+do not contain generator functions.</p>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>ChiSquared</code></strong><ul>
+<li><code>ChiSquared::</code><strong><code>ChiSquared</code></strong><code>() noexcept</code></li>
+<li><code>explicit ChiSquared::</code><strong><code>ChiSquared</code></strong><code>(int k) noexcept</code></li>
+<li><code>int ChiSquared::</code><strong><code>k</code></strong><code>() const noexcept</code></li>
+<li><code>T ChiSquared::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
+<li><code>T ChiSquared::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
+<li><code>T ChiSquared::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
+<li><code>T ChiSquared::</code><strong><code>pdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>T ChiSquared::</code><strong><code>cdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>T ChiSquared::</code><strong><code>ccdf</code></strong><code>(T x) const noexcept</code></li>
+<li><code>T ChiSquared::</code><strong><code>quantile</code></strong><code>(T p) const noexcept</code></li>
+<li><code>T ChiSquared::</code><strong><code>cquantile</code></strong><code>(T q) const noexcept</code></li>
+</ul>
+</li>
+</ul>
+<p>Chi-squared distribution. The number of degrees of freedom (<code>k</code>) defaults to
+1. Behaviour is undefined if <code>k&lt;1</code>. The cumulative distribution functions use
+the Abdel-Aty approximation, except for the special case <code>k=2</code> where a simple
+closed form exists. The quantile functions use numerical root finding and can
+be expected to be slow (apart from <code>k=2</code> again).</p>
 </div>
 <h2 id="other-random-algorithms">Other random algorithms</h2>
 <div class="defns">

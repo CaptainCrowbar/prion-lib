@@ -328,28 +328,28 @@ namespace RS {
     }
 
     template <typename T, size_t N>
-    Vector<T, N> clamp(Vector<T, N> x, Vector<T, N> min, Vector<T, N> max) noexcept {
+    Vector<T, N> clampv(Vector<T, N> x, Vector<T, N> min, Vector<T, N> max) noexcept {
         for (size_t i = 0; i < N; ++i)
             x[i] = std::clamp(x[i], min[i], max[i]);
         return x;
     }
 
     template <typename T, size_t N>
-    Vector<T, N> min(Vector<T, N> x, Vector<T, N> y) noexcept {
+    Vector<T, N> minv(Vector<T, N> x, Vector<T, N> y) noexcept {
         for (size_t i = 0; i < N; ++i)
             x[i] = std::min(x[i], y[i]);
         return x;
     }
 
     template <typename T, size_t N>
-    Vector<T, N> max(Vector<T, N> x, Vector<T, N> y) noexcept {
+    Vector<T, N> maxv(Vector<T, N> x, Vector<T, N> y) noexcept {
         for (size_t i = 0; i < N; ++i)
             x[i] = std::max(x[i], y[i]);
         return x;
     }
 
     template <typename T, size_t N>
-    std::pair<Vector<T, N>, Vector<T, N>> minmax(Vector<T, N> x, Vector<T, N> y) noexcept {
+    std::pair<Vector<T, N>, Vector<T, N>> minmaxv(Vector<T, N> x, Vector<T, N> y) noexcept {
         std::pair<Vector<T, N>, Vector<T, N>> pair;
         for (size_t i = 0; i < N; ++i)
             std::tie(pair.first[i], pair.second[i]) = std::minmax(x[i], y[i]);

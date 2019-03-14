@@ -162,16 +162,16 @@ void test_core_vector_integer() {
     TRY((v1 = {1,5,9}));
     TRY((v2 = {2,3,4}));
     TRY((v3 = {4,6,8}));
-    TRY(v1 = clamp(v1, v2, v3));
+    TRY(v1 = clampv(v1, v2, v3));
     TEST_EQUAL(v1.format(), "[2,5,8]");
 
     TRY((v1 = {1,3,5}));
     TRY((v2 = {2,3,4}));
-    TRY(v3 = min(v1, v2));
+    TRY(v3 = minv(v1, v2));
     TEST_EQUAL(v3.format(), "[1,3,4]");
-    TRY(v3 = max(v1, v2));
+    TRY(v3 = maxv(v1, v2));
     TEST_EQUAL(v3.format(), "[2,3,5]");
-    TRY(std::tie(v3, v4) = minmax(v1, v2));
+    TRY(std::tie(v3, v4) = minmaxv(v1, v2));
     TEST_EQUAL(v3.format(), "[1,3,4]");
     TEST_EQUAL(v4.format(), "[2,3,5]");
 
@@ -294,16 +294,16 @@ void test_core_vector_floating() {
     TRY((v1 = {1,5,9}));
     TRY((v2 = {2,3,4}));
     TRY((v3 = {4,6,8}));
-    TRY(v1 = clamp(v1, v2, v3));
+    TRY(v1 = clampv(v1, v2, v3));
     TEST_EQUAL(v1.format(), "[2,5,8]");
 
     TRY((v1 = {1,3,5}));
     TRY((v2 = {2,3,4}));
-    TRY(v3 = min(v1, v2));
+    TRY(v3 = minv(v1, v2));
     TEST_EQUAL(v3.format(), "[1,3,4]");
-    TRY(v3 = max(v1, v2));
+    TRY(v3 = maxv(v1, v2));
     TEST_EQUAL(v3.format(), "[2,3,5]");
-    TRY(std::tie(v3, v4) = minmax(v1, v2));
+    TRY(std::tie(v3, v4) = minmaxv(v1, v2));
     TEST_EQUAL(v3.format(), "[1,3,4]");
     TEST_EQUAL(v4.format(), "[2,3,5]");
 

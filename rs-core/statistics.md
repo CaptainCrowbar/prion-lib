@@ -139,3 +139,32 @@ count.
 * `void` **`swap`**`(Statistics& s1, Statistics& s2) noexcept`
 
 Swap two objects.
+
+## Statistical tests ##
+
+### Fisher cumulant test ###
+
+* `template <typename T> class` **`FisherTest`**
+    * `FisherTest::`**`FisherTest`**`() noexcept`
+    * `template <typename Range> explicit FisherTest::`**`FisherTest`**`(const Range& r) noexcept`
+    * `template <typename Iterator> FisherTest::`**`FisherTest`**`(Iterator i, Iterator j) noexcept`
+    * `void FisherTest::`**`add`**`(T x, T f = 1) noexcept`
+    * `void FisherTest::`**`operator<<`**`(T x) noexcept`
+    * `T FisherTest::`**`u1`**`() const noexcept`
+    * `T FisherTest::`**`u2`**`() const noexcept`
+    * `T FisherTest::`**`chi2`**`() const noexcept`
+    * `T FisherTest::`**`p_chi2`**`() const noexcept`
+    * `T FisherTest::`**`z_chi2`**`() const noexcept`
+
+This class implements the Fisher cumulant test for fit to a normal
+distribution. Weighted or unweighted data points can be supplied through the
+`add()` function; unweighted data points can also be supplied through the
+constructors or the insertion operator (a synonym for `add()` with `f=1`).
+
+The test statistics reported are:
+
+* `u1()` = Skewness test statistic, expected to follow the standardized normal distribution
+* `u2()` = Kurtosis test statistic, expected to follow the standardized normal distribution
+* `chi2()` = Combined test statistic, expected to follow a chi-squared distribution with 2 degrees of freedom
+* `p_chi2()` = Single tailed P value corresponding to the &chi;<sup>2</sup> statistic
+* `z_chi2()` = Standardized normal Z value corresponding to `p_chi2()`

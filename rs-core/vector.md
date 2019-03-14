@@ -197,10 +197,10 @@ index is out of range.
 
 Returns the zero vector (the same value as the default constructor).
 
-* `Vector` **`clamp`**`(Vector x, Vector min, Vector max) noexcept`
-* `Vector` **`min`**`(Vector x, Vector y) noexcept`
-* `Vector` **`max`**`(Vector x, Vector y) noexcept`
-* `std::pair<Vector, Vector>` **`minmax`**`(Vector x, Vector y) noexcept`
+* `Vector` **`clampv`**`(Vector x, Vector min, Vector max) noexcept`
+* `Vector` **`minv`**`(Vector x, Vector y) noexcept`
+* `Vector` **`maxv`**`(Vector x, Vector y) noexcept`
+* `std::pair<Vector, Vector>` **`minmaxv`**`(Vector x, Vector y) noexcept`
 
 Vector algorithms. These apply the corresponding scalar operations to each
 member.

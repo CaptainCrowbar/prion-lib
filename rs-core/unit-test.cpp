@@ -283,6 +283,7 @@ extern void test_core_random_vectors();
 extern void test_core_random_random_in_sphere();
 extern void test_core_random_random_on_sphere();
 extern void test_core_random_unique_distribution();
+extern void test_core_random_chi_squared_distribution_properties();
 extern void test_core_random_bytes();
 extern void test_core_random_shuffle();
 extern void test_core_random_seed_sequence();
@@ -393,6 +394,7 @@ extern void test_core_signal_name();
 extern void test_core_stack_class();
 extern void test_core_statistics_basic_parameters();
 extern void test_core_statistics_frequency_weighting();
+extern void test_core_statistics_fisher_cumulant_test();
 extern void test_core_string_literals();
 extern void test_core_string_case_conversion();
 extern void test_core_string_character();
@@ -728,6 +730,7 @@ int main() {
         { "core/random/random-in-sphere", test_core_random_random_in_sphere },
         { "core/random/random-on-sphere", test_core_random_random_on_sphere },
         { "core/random/unique-distribution", test_core_random_unique_distribution },
+        { "core/random/chi-squared-distribution-properties", test_core_random_chi_squared_distribution_properties },
         { "core/random/bytes", test_core_random_bytes },
         { "core/random/shuffle", test_core_random_shuffle },
         { "core/random/seed-sequence", test_core_random_seed_sequence },
@@ -838,6 +841,7 @@ int main() {
         { "core/stack/class", test_core_stack_class },
         { "core/statistics/basic-parameters", test_core_statistics_basic_parameters },
         { "core/statistics/frequency-weighting", test_core_statistics_frequency_weighting },
+        { "core/statistics/fisher-cumulant-test", test_core_statistics_fisher_cumulant_test },
         { "core/string/literals", test_core_string_literals },
         { "core/string/case-conversion", test_core_string_case_conversion },
         { "core/string/character", test_core_string_character },

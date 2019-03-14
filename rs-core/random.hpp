@@ -1376,6 +1376,85 @@ namespace RS {
 
     template <typename T> inline UniqueGenerator<T> unique_distribution(T& t) { return UniqueGenerator<T>(t); }
 
+    // Special distribution properties
+
+    template <typename T>
+    class ChiSquared {
+    public:
+        ChiSquared() noexcept: ChiSquared(1) {}
+        explicit ChiSquared(int k) noexcept;
+        int k() const noexcept { return k_; }
+        T mean() const noexcept { return T(k_); }
+        T sd() const noexcept { return std::sqrt(variance()); }
+        T variance() const noexcept { return 2 * T(k_); }
+        T pdf(T x) const noexcept;
+        T cdf(T x) const noexcept;
+        T ccdf(T x) const noexcept;
+        T quantile(T p) const noexcept;
+        T cquantile(T q) const noexcept;
+    private:
+        int k_;
+        T k2_;
+        T lgk2_;
+    };
+
+        template <typename T>
+        ChiSquared<T>::ChiSquared(int k) noexcept:
+        k_(k), k2_(T(k) / 2), lgk2_(std::lgamma(k2_)) {}
+
+        template <typename T>
+        T ChiSquared<T>::pdf(T x) const noexcept {
+            if (x <= 0)
+                return 0;
+            T logp = std::log(x) * (k2_ - 1) - x / 2 - ln2_c<T> * k2_ - lgk2_;
+            return std::exp(logp);
+        }
+
+        template <typename T>
+        T ChiSquared<T>::cdf(T x) const noexcept {
+            if (k_ == 2) {
+                return 1 - ccdf(x);
+            } else {
+                // Abdel-Aty approximation
+                Normal<T> norm;
+                T a = std::pow(x / k_, 1 / T(3));
+                T b = 2 / (9 * T(k_));
+                T z = (a + b - 1) / std::sqrt(b);
+                T p = norm.cdf(z);
+                return p;
+            }
+        }
+
+        template <typename T>
+        T ChiSquared<T>::ccdf(T x) const noexcept {
+            if (k_ == 2)
+                return std::exp(- x / 2);
+            else
+                return 1 - cdf(x);
+        }
+
+        template <typename T>
+        T ChiSquared<T>::quantile(T p) const noexcept {
+            if (p <= 0)
+                return 0;
+            T b = 1;
+            while (cdf(b) < p)
+                b *= 2;
+            auto f = [this,p] (T t) { return cdf(t) - p; };
+            return Bisection<T>()(f, 0, b);
+        }
+
+        template <typename T>
+        T ChiSquared<T>::cquantile(T q) const noexcept {
+            if (q >= 1)
+                return 0;
+            T b = 1;
+            while (ccdf(b) > q)
+                b *= 2;
+            auto f = [this,q] (T t) { return ccdf(t) - q; };
+            return Bisection<T>()(f, 0, b);
+        }
+
     // Other random algorithms
 
     template <typename RNG>

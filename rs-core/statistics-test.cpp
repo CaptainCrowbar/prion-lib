@@ -1,4 +1,5 @@
 #include "rs-core/statistics.hpp"
+#include "rs-core/random.hpp"
 #include "rs-core/unit-test.hpp"
 #include <cmath>
 #include <cstdlib>
@@ -110,5 +111,25 @@ void test_core_statistics_frequency_weighting() {
     TEST_NEAR(stats1.linear(0,1).second, stats2.linear(0,1).second);
     TEST_NEAR(stats1.linear(1,0).first, stats2.linear(1,0).first);
     TEST_NEAR(stats1.linear(1,0).second, stats2.linear(1,0).second);
+
+}
+
+void test_core_statistics_fisher_cumulant_test() {
+
+    Xoshiro rng(42);
+    UniformReal<double> unit;
+    Normal<double> norm;
+    FisherTest<double> fish;
+
+    for (int i = 0; i < 1000; ++i) {
+        double f = unit(rng);
+        double x = norm(rng);
+        fish.add(x, f);
+    }
+
+    TEST_COMPARE(std::abs(fish.u1()), <, 3);
+    TEST_COMPARE(std::abs(fish.u2()), <, 3);
+    TEST_COMPARE(fish.p_chi2(), >, 0.001);
+    TEST_COMPARE(fish.z_chi2(), <, 3);
 
 }

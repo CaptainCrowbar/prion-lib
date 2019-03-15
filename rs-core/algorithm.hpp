@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
+#include <numeric>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -174,6 +175,28 @@ namespace RS {
         return find_optimum(range, f, std::less<>());
     }
 
+    // Order by index
+
+    template <typename RandomAccessRange1, typename RandomAccessRange2>
+    void order_by_index(RandomAccessRange1& range, RandomAccessRange2& index) {
+        using std::begin;
+        using std::end;
+        using T = std::decay_t<decltype(*begin(range))>;
+        using I = std::decay_t<decltype(*begin(index))>;
+        I len = I(end(range) - begin(range));
+        I i, j;
+        T t;
+        for (i = 0; i < len; ++i) {
+            if (i != index[i]) {
+                t = range[i];
+                for (j = i; index[j] != i; std::swap(j, index[j]))
+                    range[j] = range[index[j]];
+                range[j] = t;
+                index[j] = j;
+            }
+        }
+    }
+
     // Paired for each
 
     template <typename InputRange1, typename InputRange2, typename BinaryFunction>
@@ -191,25 +214,37 @@ namespace RS {
     namespace RS_Detail {
 
         template <bool Stable, typename RandomAccessRange1, typename RandomAccessRange2, typename Compare>
-        void paired_sort(RandomAccessRange1& range1, RandomAccessRange2& range2, Compare comp) {
+        void paired_sort(RandomAccessRange1& range1, RandomAccessRange2& range2, Compare cmp) {
             using std::begin;
-            using T1 = Meta::RangeValue<RandomAccessRange1>;
-            using T2 = Meta::RangeValue<RandomAccessRange2>;
-            auto p = begin(range1);
-            auto q = begin(range2);
-            size_t size = std::min(range_count(range1), range_count(range2));
-            std::vector<std::pair<T1, T2>> pairs;
-            pairs.reserve(size);
-            for (size_t i = 0; i < size; ++i)
-                pairs.push_back({p[i], q[i]});
-            auto pair_comp = [comp] (const auto& a, const auto& b) { return comp(a.first, b.first); };
+            using std::end;
+            auto beg1 = begin(range1), end1 = end(range1);
+            auto beg2 = begin(range2), end2 = end(range2);
+            using T1 = std::decay_t<decltype(*beg1)>;
+            using T2 = std::decay_t<decltype(*beg2)>;
+            ptrdiff_t len = std::min(end1 - beg1, end2 - beg2);
+            std::vector<ptrdiff_t> index(len);
+            std::iota(index.begin(), index.end(), ptrdiff_t(0));
+            auto cmp_index = [&] (ptrdiff_t i, ptrdiff_t j) { return cmp(beg1[i], beg1[j]); };
             if (Stable)
-                std::stable_sort(pairs.begin(), pairs.end(), pair_comp);
+                std::stable_sort(index.begin(), index.end(), cmp_index);
             else
-                std::sort(pairs.begin(), pairs.end(), pair_comp);
-            for (size_t i = 0; i < size; ++i) {
-                p[i] = pairs[i].first;
-                q[i] = pairs[i].second;
+                std::sort(index.begin(), index.end(), cmp_index);
+            ptrdiff_t i, j;
+            T1 t1;
+            T2 t2;
+            for (i = 0; i < len; ++i) {
+                if (i != index[i]) {
+                    t1 = range1[i];
+                    t2 = range2[i];
+                    j = i;
+                    for (j = i; index[j] != i; std::swap(j, index[j])) {
+                        range1[j] = range1[index[j]];
+                        range2[j] = range2[index[j]];
+                    }
+                    range1[j] = t1;
+                    range2[j] = t2;
+                    index[j] = j;
+                }
             }
         }
 
@@ -217,22 +252,26 @@ namespace RS {
 
     template <typename RandomAccessRange1, typename RandomAccessRange2>
     void paired_sort(RandomAccessRange1& range1, RandomAccessRange2& range2) {
-        RS_Detail::paired_sort<false>(range1, range2, std::less<>());
+        using std::begin;
+        using T1 = std::decay_t<decltype(*begin(range1))>;
+        RS_Detail::paired_sort<false>(range1, range2, std::less<T1>());
     }
 
     template <typename RandomAccessRange1, typename RandomAccessRange2, typename Compare>
-    void paired_sort(RandomAccessRange1& range1, RandomAccessRange2& range2, Compare comp) {
-        RS_Detail::paired_sort<false>(range1, range2, comp);
+    void paired_sort(RandomAccessRange1& range1, RandomAccessRange2& range2, Compare cmp) {
+        RS_Detail::paired_sort<false>(range1, range2, cmp);
     }
 
     template <typename RandomAccessRange1, typename RandomAccessRange2>
     void paired_stable_sort(RandomAccessRange1& range1, RandomAccessRange2& range2) {
-        RS_Detail::paired_sort<true>(range1, range2, std::less<>());
+        using std::begin;
+        using T1 = std::decay_t<decltype(*begin(range1))>;
+        RS_Detail::paired_sort<true>(range1, range2, std::less<T1>());
     }
 
     template <typename RandomAccessRange1, typename RandomAccessRange2, typename Compare>
-    void paired_stable_sort(RandomAccessRange1& range1, RandomAccessRange2& range2, Compare comp) {
-        RS_Detail::paired_sort<true>(range1, range2, comp);
+    void paired_stable_sort(RandomAccessRange1& range1, RandomAccessRange2& range2, Compare cmp) {
+        RS_Detail::paired_sort<true>(range1, range2, cmp);
     }
 
     // Paired transform

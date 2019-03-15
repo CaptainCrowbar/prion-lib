@@ -26,6 +26,7 @@ extern void test_core_common_thread_class();
 extern void test_core_algorithm_diff();
 extern void test_core_algorithm_edit_distance();
 extern void test_core_algorithm_find_optimum();
+extern void test_core_algorithm_order_by_index();
 extern void test_core_algorithm_paired_for_each();
 extern void test_core_algorithm_paired_sort();
 extern void test_core_algorithm_paired_transform();
@@ -473,6 +474,7 @@ int main() {
         { "core/algorithm/diff", test_core_algorithm_diff },
         { "core/algorithm/edit-distance", test_core_algorithm_edit_distance },
         { "core/algorithm/find-optimum", test_core_algorithm_find_optimum },
+        { "core/algorithm/order-by-index", test_core_algorithm_order_by_index },
         { "core/algorithm/paired-for-each", test_core_algorithm_paired_for_each },
         { "core/algorithm/paired-sort", test_core_algorithm_paired_sort },
         { "core/algorithm/paired-transform", test_core_algorithm_paired_transform },

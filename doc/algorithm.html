@@ -20,6 +20,7 @@
 <li><a href="#difference-algorithm">Difference algorithm</a></li>
 <li><a href="#edit-distance">Edit distance</a></li>
 <li><a href="#find-optimum">Find optimum</a></li>
+<li><a href="#order-by-index">Order by index</a></li>
 </ul>
 </li>
 <li><a href="#paired-range-operations">Paired range operations</a><ul>
@@ -84,6 +85,18 @@ instead of the minimum. If there is more than one optimum element, the first
 one will be returned. These will return an end iterator only if the range is
 empty.</p>
 <p>Complexity: Linear.</p>
+</div>
+<h3 id="order-by-index">Order by index</h3>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename RandomAccessRange1, typename RandomAccessRange2&gt; void</code> <strong><code>order_by_index</code></strong><code>(RandomAccessRange1&amp; range, RandomAccessRange2&amp; index)</code></li>
+</ul>
+<p>Rearrange the elements of the first range according to the list of index
+values in the second, simultaneously ordering the index range. The value type
+of the index range must be an integer type. Behaviour is undefined if the two
+ranges have different lengths, or if the contents of the index range are not a
+permutation of the integers from 0 to <code>n-1</code> (where <code>n</code> is the length of the
+first range).</p>
 </div>
 <h2 id="paired-range-operations">Paired range operations</h2>
 <p>For all of these algorithms, if the two ranges supplied have different

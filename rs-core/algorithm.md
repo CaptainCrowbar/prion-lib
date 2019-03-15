@@ -60,6 +60,17 @@ empty.
 
 Complexity: Linear.
 
+### Order by index ###
+
+* `template <typename RandomAccessRange1, typename RandomAccessRange2> void` **`order_by_index`**`(RandomAccessRange1& range, RandomAccessRange2& index)`
+
+Rearrange the elements of the first range according to the list of index
+values in the second, simultaneously ordering the index range. The value type
+of the index range must be an integer type. Behaviour is undefined if the two
+ranges have different lengths, or if the contents of the index range are not a
+permutation of the integers from 0 to `n-1` (where `n` is the length of the
+first range).
+
 ## Paired range operations ##
 
 For all of these algorithms, if the two ranges supplied have different

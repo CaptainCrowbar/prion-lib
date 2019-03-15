@@ -152,6 +152,31 @@ void test_core_algorithm_find_optimum() {
 
 }
 
+void test_core_algorithm_order_by_index() {
+
+    std::vector<int> iv;
+    Strings sv;
+
+    TRY(order_by_index(sv, iv));
+    TEST_EQUAL(to_str(sv), "[]");
+
+    iv = {0,1,2,3,4,5,6,7,8};
+    sv = {"alpha","bravo","charlie","delta","echo","foxtrot","golf","hotel","india"};
+    TRY(order_by_index(sv, iv));
+    TEST_EQUAL(to_str(sv), "[alpha,bravo,charlie,delta,echo,foxtrot,golf,hotel,india]");
+
+    iv = {8,7,6,5,4,3,2,1,0};
+    sv = {"alpha","bravo","charlie","delta","echo","foxtrot","golf","hotel","india"};
+    TRY(order_by_index(sv, iv));
+    TEST_EQUAL(to_str(sv), "[india,hotel,golf,foxtrot,echo,delta,charlie,bravo,alpha]");
+
+    iv = {4,5,3,6,2,7,1,8,0};
+    sv = {"alpha","bravo","charlie","delta","echo","foxtrot","golf","hotel","india"};
+    TRY(order_by_index(sv, iv));
+    TEST_EQUAL(to_str(sv), "[echo,foxtrot,delta,golf,charlie,hotel,bravo,india,alpha]");
+
+}
+
 void test_core_algorithm_paired_for_each() {
 
     std::vector<int> iv;
@@ -178,11 +203,29 @@ void test_core_algorithm_paired_sort() {
     TEST_EQUAL(to_str(iv), "[]");
     TEST_EQUAL(to_str(sv), "[]");
 
-    iv = {5, 6, 4, 7, 3, 8, 2, 9, 1};
-    sv = {"alpha", "bravo", "charlie", "delta", "echo", "foxtrot", "golf", "hotel", "india"};
+    iv = {1,2,3,4,5,6,7,8,9};
+    sv = {"alpha","bravo","charlie","delta","echo","foxtrot","golf","hotel","india"};
+    TRY(paired_sort(iv, sv));
+    TEST_EQUAL(to_str(iv), "[1,2,3,4,5,6,7,8,9]");
+    TEST_EQUAL(to_str(sv), "[alpha,bravo,charlie,delta,echo,foxtrot,golf,hotel,india]");
+
+    iv = {9,8,7,6,5,4,3,2,1};
+    sv = {"alpha","bravo","charlie","delta","echo","foxtrot","golf","hotel","india"};
+    TRY(paired_sort(iv, sv));
+    TEST_EQUAL(to_str(iv), "[1,2,3,4,5,6,7,8,9]");
+    TEST_EQUAL(to_str(sv), "[india,hotel,golf,foxtrot,echo,delta,charlie,bravo,alpha]");
+
+    iv = {5,6,4,7,3,8,2,9,1};
+    sv = {"alpha","bravo","charlie","delta","echo","foxtrot","golf","hotel","india"};
     TRY(paired_sort(iv, sv));
     TEST_EQUAL(to_str(iv), "[1,2,3,4,5,6,7,8,9]");
     TEST_EQUAL(to_str(sv), "[india,golf,echo,charlie,alpha,bravo,delta,foxtrot,hotel]");
+
+    iv = {5,6,4,7,3,8,2,9,1};
+    sv = {"alpha","bravo","charlie","delta","echo","foxtrot","golf","hotel","india"};
+    TRY(paired_sort(iv, sv, std::greater<int>()));
+    TEST_EQUAL(to_str(iv), "[9,8,7,6,5,4,3,2,1]");
+    TEST_EQUAL(to_str(sv), "[hotel,foxtrot,delta,bravo,alpha,charlie,echo,golf,india]");
 
 }
 

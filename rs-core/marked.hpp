@@ -4,6 +4,7 @@
 #include "rs-core/meta.hpp"
 #include "rs-core/serial.hpp"
 #include <functional>
+#include <initializer_list>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -88,6 +89,7 @@ namespace RS {
         using move_assign_type = std::conditional_t<is_movable, Marked, Detail::NoObject<__LINE__>>;
         using copy_set_type = std::conditional_t<t_is_copyable, T, Detail::NoObject<__LINE__>>;
         using move_set_type = std::conditional_t<t_is_movable && ! is_checked, T, Detail::NoObject<__LINE__>>;
+        using null_assign_type = std::conditional_t<t_is_defaulted, std::initializer_list<Detail::NoObject<__LINE__>>, Detail::NoObject<__LINE__>>;
         using implicit_out_type = std::conditional_t<has_implicit_out, T, Detail::NoObject<__LINE__>>;
         using explicit_out_type = std::conditional_t<has_implicit_out, Detail::NoObject<__LINE__>, T>;
         using operator_bool_type = std::conditional_t<std::is_constructible_v<bool, T>, bool, Detail::NoObject<__LINE__>>;
@@ -110,6 +112,7 @@ namespace RS {
             { if (&m != this) { value_ = std::move(m.value_); post_move(m.value_); } return *this; }
         Marked& operator=(const implicit_copy_in_type& t) { value_ = check_function_type()(t); return *this; }
         Marked& operator=(implicit_move_in_type&& t) noexcept { value_ = std::move(t); post_move(t); return *this; }
+        Marked& operator=(null_assign_type) noexcept { value_ = {}; return *this; }
         const T& get() const noexcept { return value_; }
         void set(const copy_set_type& t) { value_ = check_function_type()(t); }
         void set(move_set_type&& t) noexcept { value_ = std::move(t); post_move(t); }

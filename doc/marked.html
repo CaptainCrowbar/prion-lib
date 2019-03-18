@@ -40,6 +40,7 @@
 <li><code>[ Marked&amp; Marked::</code><strong><code>operator=</code></strong><code>(Marked&amp;&amp; m) noexcept ]</code></li>
 <li><code>[ Marked&amp; Marked::</code><strong><code>operator=</code></strong><code>(const T&amp; t) ]</code></li>
 <li><code>[ Marked&amp; Marked::</code><strong><code>operator=</code></strong><code>(T&amp;&amp; t) noexcept ]</code></li>
+<li><code>[ Marked&amp; Marked::</code><strong><code>operator=</code></strong><code>(std::initializer_list&lt;[uninstantiable type]&gt;) noexcept ]</code></li>
 <li><code>const T&amp; Marked::</code><strong><code>get</code></strong><code>() const noexcept</code></li>
 <li><code>[ void Marked::</code><strong><code>set</code></strong><code>(const T&amp; t) ]</code></li>
 <li><code>[ void Marked::</code><strong><code>set</code></strong><code>(T&amp;&amp; t) noexcept ]</code></li>
@@ -131,7 +132,7 @@ class, and have the following meanings:</p>
 </tr>
 <tr>
 <td><code>Mark::</code><strong><code>no_move</code></strong></td>
-<td>The <code>Marked</code> type is not copyable or movable (implies <code>no_copy</code>)</td>
+<td>The <code>Marked</code> type is not movable (implies <code>no_copy</code>)</td>
 </tr>
 <tr>
 <td><code>Mark::</code><strong><code>reset_on_move</code></strong></td>
@@ -155,6 +156,8 @@ class, and have the following meanings:</p>
 </tr>
 </tbody>
 </table>
+<p>Implicit conversion in both directions is not allowed; a <code>static_assert</code>
+checks that the <code>implicit_in</code> and <code>implicit_out</code> flags are not both present.</p>
 <p>The fourth template argument, <code>Check</code>, is an optional type that performs a
 value check on any value of <code>T</code> supplied to a <code>Marked</code> object (through the
 constructor, assignment operator, or the <code>set()</code> function). If <code>Check</code> is not
@@ -175,9 +178,11 @@ all qualifications removed).</p>
 <li><code>T</code> must be a concrete type</li>
 <li><code>T</code> must not be a reference type</li>
 <li><code>T</code> must not be <code>const</code> or <code>volatile</code> qualified</li>
-<li><code>T</code> must have consistent construction and assignment:
-    <code>is_copy_constructible</code> and <code>is_copy_assignable</code> must match,
-    as must <code>is_move_constructible</code> and <code>is_move_assignable</code></li>
+<li><code>T</code> must have consistent construction and assignment:<ul>
+<li><code>is_copy_constructible</code> and <code>is_copy_assignable</code> must match</li>
+<li><code>is_move_constructible</code> and <code>is_move_assignable</code> must match</li>
+</ul>
+</li>
 <li>If <code>reset_on_move</code> is set, <code>T</code> must be default constructible</li>
 <li>If <code>Check</code> is not <code>void</code>, <code>T</code> must be copyable</li>
 </ul>
@@ -235,13 +240,17 @@ need not be <code>noexcept</code> qualified):</p>
             Move version is defined if <code>Marked</code> is movable, the value is unchecked, and <code>implicit_in</code> is set</td>
     </tr>
     <tr>
+        <td>Assignment from an empty initializer list</td>
+        <td>Defined if <code>T</code> is default constructible</td>
+    </tr>
+    <tr>
         <td><code>get()</code></td>
         <td>Always defined</td>
     </tr>
     <tr>
         <td><code>set()</code></td>
         <td>Copy version is defined if <code>T</code> is copyable<br>
-            Move version is defined if <code>T</code> is movable andd the value is unchecked</td>
+            Move version is defined if <code>T</code> is movable and the value is unchecked</td>
     </tr>
     <tr>
         <td>Conversion to <code>T</code></td>
@@ -260,7 +269,7 @@ need not be <code>noexcept</code> qualified):</p>
     </tr>
     <tr>
         <td>Function call operator</td>
-        <td>Defined if the corresponding operator is defined for `T`</td>
+        <td>Defined if the corresponding operator is defined for <code>T</code></td>
     </tr>
     <tr>
         <td>Subscript operator</td>

@@ -29,6 +29,9 @@ void test_source_marked_value_access() {
     TRY(foo.set("Don't panic"));
     TEST_EQUAL(foo.get(), "Don't panic");
     TEST_EQUAL(*foo, "Don't panic");
+    TRY(foo = {});
+    TEST_EQUAL(foo.get(), "");
+    TEST_EQUAL(*foo, "");
 
     TEST_EQUAL((Marked<int, void>::id_name()), "void");
     TEST_MATCH((Marked<int, std::string>::id_name()), "^(basic_)?string$");

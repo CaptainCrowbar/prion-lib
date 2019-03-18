@@ -26,6 +26,7 @@ By Ross Smith
     * `[ Marked& Marked::`**`operator=`**`(Marked&& m) noexcept ]`
     * `[ Marked& Marked::`**`operator=`**`(const T& t) ]`
     * `[ Marked& Marked::`**`operator=`**`(T&& t) noexcept ]`
+    * `[ Marked& Marked::`**`operator=`**`(std::initializer_list<[uninstantiable type]>) noexcept ]`
     * `const T& Marked::`**`get`**`() const noexcept`
     * `[ void Marked::`**`set`**`(const T& t) ]`
     * `[ void Marked::`**`set`**`(T&& t) noexcept ]`
@@ -98,12 +99,15 @@ Constant                     | Description
 `Mark::`**`implicit_in`**    | Define an implicit conversion from `T` to `Marked`
 `Mark::`**`implicit_out`**   | Define an implicit conversion from `Marked` to `T`
 `Mark::`**`no_copy`**        | The `Marked` type is not copyable
-`Mark::`**`no_move`**        | The `Marked` type is not copyable or movable (implies `no_copy`)
+`Mark::`**`no_move`**        | The `Marked` type is not movable (implies `no_copy`)
 `Mark::`**`reset_on_move`**  | Moving resets the contained `T` to its default (implies `no_copy`)
 `Mark::`**`arithmetic`**     | Arithmetic operators are defined for `Marked`
 `Mark::`**`subscript`**      | A subscript operator is defined for `Marked`
 `Mark::`**`string_tag`**     | The string format is tagged with the name of the ID type
 `Mark::`**`json_tag`**       | The JSON format is tagged with the name of the ID type
+
+Implicit conversion in both directions is not allowed; a `static_assert`
+checks that the `implicit_in` and `implicit_out` flags are not both present.
 
 The fourth template argument, `Check`, is an optional type that performs a
 value check on any value of `T` supplied to a `Marked` object (through the
@@ -129,8 +133,8 @@ These conditions on `T` will be checked by `static_assert`:
 * `T` must not be a reference type
 * `T` must not be `const` or `volatile` qualified
 * `T` must have consistent construction and assignment:
-    `is_copy_constructible` and `is_copy_assignable` must match,
-    as must `is_move_constructible` and `is_move_assignable`
+    * `is_copy_constructible` and `is_copy_assignable` must match
+    * `is_move_constructible` and `is_move_assignable` must match
 * If `reset_on_move` is set, `T` must be default constructible
 * If `Check` is not `void`, `T` must be copyable
 
@@ -188,13 +192,17 @@ In the table of conditionally defined functions below:
             Move version is defined if <code>Marked</code> is movable, the value is unchecked, and <code>implicit_in</code> is set</td>
     </tr>
     <tr>
+        <td>Assignment from an empty initializer list</td>
+        <td>Defined if <code>T</code> is default constructible</td>
+    </tr>
+    <tr>
         <td><code>get()</code></td>
         <td>Always defined</td>
     </tr>
     <tr>
         <td><code>set()</code></td>
         <td>Copy version is defined if <code>T</code> is copyable<br>
-            Move version is defined if <code>T</code> is movable andd the value is unchecked</td>
+            Move version is defined if <code>T</code> is movable and the value is unchecked</td>
     </tr>
     <tr>
         <td>Conversion to <code>T</code></td>
@@ -213,7 +221,7 @@ In the table of conditionally defined functions below:
     </tr>
     <tr>
         <td>Function call operator</td>
-        <td>Defined if the corresponding operator is defined for `T`</td>
+        <td>Defined if the corresponding operator is defined for <code>T</code></td>
     </tr>
     <tr>
         <td>Subscript operator</td>

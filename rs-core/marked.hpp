@@ -15,7 +15,15 @@ namespace RS {
 
     namespace Detail {
 
-        template <auto> struct NoObject { RS_NO_INSTANCE(NoObject); };
+        template <auto>
+        struct NoObject {
+            NoObject() = delete;
+            NoObject(const NoObject&) = delete;
+            NoObject(NoObject&&) = delete;
+            // ~NoObject() = delete; // gcc 7/8 bug
+            NoObject& operator=(const NoObject&) = delete;
+            NoObject& operator=(NoObject&&) = delete;
+        };
 
         inline std::string_view unqualified_type(std::string_view name) {
             size_t depth = 0, i = 0, size = name.size(), start = 0, stop = npos;

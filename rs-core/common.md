@@ -136,6 +136,11 @@ operating system's native API.
 and `std::wstring`. Systems where wide strings are neither UTF-16 nor UTF-32
 are not supported.
 
+* `template <auto> class` **`DummyTemplate`**
+* `using` **`DummyType`** `= DummyTemplate<nullptr>`
+
+`[unicorn]` Incomplete dummy types used in metaprogramming.
+
 ### Integer types ###
 
 * `enum` **`ByteOrder`**

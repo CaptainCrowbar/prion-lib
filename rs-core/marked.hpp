@@ -77,20 +77,20 @@ namespace RS {
         static_assert(! is_checked || t_is_copyable, "Marked type that is value checked must be copyable");
         static_assert(! has_implicit_in || ! has_implicit_out, "Inconsistent flags on marked class");
         static_assert(is_movable || ! is_reset_on_move, "Inconsistent flags on marked class");
-        using implicit_copy_in_type = std::conditional_t<has_implicit_in && is_copyable, T, DummyTemplate<__LINE__>>;
-        using explicit_copy_in_type = std::conditional_t<! has_implicit_in && is_copyable, T, DummyTemplate<__LINE__>>;
-        using implicit_move_in_type = std::conditional_t<has_implicit_in && is_movable && ! is_checked, T, DummyTemplate<__LINE__>>;
-        using explicit_move_in_type = std::conditional_t<! has_implicit_in && is_movable && ! is_checked, T, DummyTemplate<__LINE__>>;
-        using copy_constructor_type = std::conditional_t<is_copyable, Marked, DummyTemplate<__LINE__>>;
-        using move_constructor_type = std::conditional_t<is_movable, Marked, DummyTemplate<__LINE__>>;
-        using copy_assign_type = std::conditional_t<is_copyable, Marked, DummyTemplate<__LINE__>>;
-        using move_assign_type = std::conditional_t<is_movable, Marked, DummyTemplate<__LINE__>>;
-        using copy_set_type = std::conditional_t<t_is_copyable, T, DummyTemplate<__LINE__>>;
-        using move_set_type = std::conditional_t<t_is_movable && ! is_checked, T, DummyTemplate<__LINE__>>;
-        using null_assign_type = std::conditional_t<t_is_defaulted, std::initializer_list<DummyTemplate<__LINE__>>, DummyTemplate<__LINE__>>;
-        using implicit_out_type = std::conditional_t<has_implicit_out, T, DummyTemplate<__LINE__>>;
-        using explicit_out_type = std::conditional_t<has_implicit_out, DummyTemplate<__LINE__>, T>;
-        using operator_bool_type = std::conditional_t<std::is_constructible_v<bool, T>, bool, DummyTemplate<__LINE__>>;
+        using implicit_copy_in_type = std::conditional_t<has_implicit_in && is_copyable, T, IncompleteTemplate<__LINE__>>;
+        using explicit_copy_in_type = std::conditional_t<! has_implicit_in && is_copyable, T, IncompleteTemplate<__LINE__>>;
+        using implicit_move_in_type = std::conditional_t<has_implicit_in && is_movable && ! is_checked, T, IncompleteTemplate<__LINE__>>;
+        using explicit_move_in_type = std::conditional_t<! has_implicit_in && is_movable && ! is_checked, T, IncompleteTemplate<__LINE__>>;
+        using copy_constructor_type = std::conditional_t<is_copyable, Marked, IncompleteTemplate<__LINE__>>;
+        using move_constructor_type = std::conditional_t<is_movable, Marked, IncompleteTemplate<__LINE__>>;
+        using copy_assign_type = std::conditional_t<is_copyable, Marked, IncompleteTemplate<__LINE__>>;
+        using move_assign_type = std::conditional_t<is_movable, Marked, IncompleteTemplate<__LINE__>>;
+        using copy_set_type = std::conditional_t<t_is_copyable, T, IncompleteTemplate<__LINE__>>;
+        using move_set_type = std::conditional_t<t_is_movable && ! is_checked, T, IncompleteTemplate<__LINE__>>;
+        using null_assign_type = std::conditional_t<t_is_defaulted, std::initializer_list<CompleteTemplate<__LINE__>>, IncompleteTemplate<__LINE__>>;
+        using implicit_out_type = std::conditional_t<has_implicit_out, T, IncompleteTemplate<__LINE__>>;
+        using explicit_out_type = std::conditional_t<has_implicit_out, IncompleteTemplate<__LINE__>, T>;
+        using operator_bool_type = std::conditional_t<std::is_constructible_v<bool, T>, bool, IncompleteTemplate<__LINE__>>;
         using check_function_type = std::conditional_t<is_checked, Check, Identity>;
     public:
         using value_type = T;
@@ -274,7 +274,7 @@ namespace std {
 
     template <typename T, typename I, RS::Mark F, typename C>
     struct hash<RS::Marked<T,I,F,C>> {
-        using value_type = std::conditional_t<RS::Meta::is_hashable<T>, RS::Marked<T,I,F,C>, RS::DummyTemplate<__LINE__>>;
+        using value_type = std::conditional_t<RS::Meta::is_hashable<T>, RS::Marked<T,I,F,C>, RS::IncompleteTemplate<__LINE__>>;
         size_t operator()(const value_type& m) const {
             return std::hash<T>()(*m);
         }

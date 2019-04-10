@@ -401,7 +401,7 @@ namespace RS {
 
     using Xoshiro = Xoshiro256ss;
 
-    // Basic random distributions
+    // Arbitrary range random integer
 
     template <typename T, typename RNG>
     T general_random_integer(RNG& rng, T min, T max) {
@@ -451,6 +451,28 @@ namespace RS {
         }
         return min + T(result);
     }
+
+    // Generic random number engine
+
+    template <typename T>
+    class GenericEngine {
+    public:
+        static_assert(std::is_unsigned_v<T>);
+        using result_type = T;
+        GenericEngine() = default;
+        template <typename RNG> GenericEngine(RNG& rng):
+            engine_([&rng] { return general_random_integer<T>(rng, min(), max()); }) {}
+        T operator()() { return engine_(); }
+        static constexpr T min() noexcept { return 0; }
+        static constexpr T max() noexcept { return ~ T(0); }
+    private:
+        std::function<T()> engine_;
+    };
+
+    using GenRng = GenericEngine<uint32_t>;
+    using GenRng64 = GenericEngine<uint64_t>;
+
+    // Basic random distributions
 
     template <typename T>
     class UniformInteger {

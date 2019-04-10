@@ -21,6 +21,7 @@
 <li><a href="#isaac-generators">ISAAC generators</a></li>
 <li><a href="#pcg-generators">PCG generators</a></li>
 <li><a href="#xoshiro-and-related-generators">Xoshiro and related generators</a></li>
+<li><a href="#generic-random-number-engines">Generic random number engines</a></li>
 </ul>
 </li>
 <li><a href="#random-distributions">Random distributions</a><ul>
@@ -265,6 +266,37 @@ from Pierre L'Ecuyer (1999),
 </tr>
 </tbody>
 </table>
+</div>
+<h3 id="generic-random-number-engines">Generic random number engines</h3>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>GenRng</code></strong><ul>
+<li><code>using GenRng::</code><strong><code>result_type</code></strong> <code>= uint32_t</code></li>
+<li><code>GenRng::</code><strong><code>GenRng</code></strong><code>() noexcept</code></li>
+<li><code>template &lt;typename RNG&gt; GenRng::</code><strong><code>GenRng</code></strong><code>(RNG&amp; rng)</code></li>
+<li><code>uint32_t GenRng::</code><strong><code>operator()</code></strong><code>()</code></li>
+<li><code>static constexpr uint32_t GenRng::</code><strong><code>min</code></strong><code>() noexcept</code> <em>(min = 0)</em></li>
+<li><code>static constexpr uint32_t GenRng::</code><strong><code>max</code></strong><code>() noexcept</code> <em>(max = 2<sup>32</sup>-1)</em></li>
+</ul>
+</li>
+<li><code>class</code> <strong><code>GenRng64</code></strong><ul>
+<li><code>using GenRng64::</code><strong><code>result_type</code></strong> <code>= uint64_t</code></li>
+<li><code>GenRng64::</code><strong><code>GenRng64</code></strong><code>() noexcept</code></li>
+<li><code>template &lt;typename RNG&gt; GenRng64::</code><strong><code>GenRng64</code></strong><code>(RNG&amp; rng)</code></li>
+<li><code>uint64_t GenRng64::</code><strong><code>operator()</code></strong><code>()</code></li>
+<li><code>static constexpr uint64_t GenRng64::</code><strong><code>min</code></strong><code>() noexcept</code> <em>(min = 0)</em></li>
+<li><code>static constexpr uint64_t GenRng64::</code><strong><code>max</code></strong><code>() noexcept</code> <em>(max = 2<sup>64</sup>-1)</em></li>
+</ul>
+</li>
+</ul>
+<p>Wrapper function objects that call an arbitrary random number engine and
+return a know distribution. A single call to <code>GenRng[64]::operator()</code> may call
+the underlying RNG more than once. Calling <code>operator()</code> on a default
+constructed <code>GenRng[64]</code> will throw <code>std::bad_funcyion_call</code>.</p>
+<p>The <code>GenRng[64]</code> object holds a reference to the generator that was passed to
+the constructor, which is expected to remain valid. Behaviour is undefined if
+the underlying generator is destroyed while a <code>GenRng[64]</code> object still has a
+reference to it.</p>
 </div>
 <h2 id="random-distributions">Random distributions</h2>
 <h3 id="basic-random-distributions">Basic random distributions</h3>
@@ -583,8 +615,8 @@ add <code>(value,frequency)</code> pairs, one at a time or in bulk (<code>push_b
 synonym for <code>add()</code>). Entries with a frequency less than or equal to zero are
 ignored. Behaviour is undefined if the function call operator is called on an
 empty set.</p>
-<h3 id="random-samples">Random samples</h3>
 </div>
+<h3 id="random-samples">Random samples</h3>
 <div class="defns">
 <ul>
 <li><code>template &lt;typename ForwardRange, typename RNG&gt; vector&lt;[value type]&gt;</code> <strong><code>random_sample_from</code></strong><code>(const ForwardRange&amp; range, size_t k, RNG&amp; rng)</code></li>

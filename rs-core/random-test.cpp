@@ -564,6 +564,23 @@ void test_core_random_xoshiro256ss() {
 
 }
 
+void test_core_random_generic_rng() {
+
+    static constexpr size_t iterations = 1'000'000;
+
+    std::ranlux24 lux24(42);
+    std::ranlux48 lux48(42);
+
+    GenRng gen32;
+    GenRng64 gen64;
+
+    TRY(gen32 = lux24);  CHECK_RANDOM_GENERATOR(gen32, 0, max32, mean32, sd32);
+    TRY(gen32 = lux48);  CHECK_RANDOM_GENERATOR(gen32, 0, max32, mean32, sd32);
+    TRY(gen64 = lux24);  CHECK_RANDOM_GENERATOR(gen64, 0, max64, mean64, sd64);
+    TRY(gen64 = lux48);  CHECK_RANDOM_GENERATOR(gen64, 0, max64, mean64, sd64);
+
+}
+
 void test_core_random_basic_distributions() {
 
     static constexpr size_t iterations = 100'000;

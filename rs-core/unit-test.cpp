@@ -267,6 +267,7 @@ extern void test_core_random_xoshiro128p();
 extern void test_core_random_xoshiro128ss();
 extern void test_core_random_xoshiro256p();
 extern void test_core_random_xoshiro256ss();
+extern void test_core_random_generic_rng();
 extern void test_core_random_basic_distributions();
 extern void test_core_random_discrete_normal_distribution();
 extern void test_core_random_triangular_distribution();
@@ -715,6 +716,7 @@ int main() {
         { "core/random/xoshiro128ss", test_core_random_xoshiro128ss },
         { "core/random/xoshiro256p", test_core_random_xoshiro256p },
         { "core/random/xoshiro256ss", test_core_random_xoshiro256ss },
+        { "core/random/generic-rng", test_core_random_generic_rng },
         { "core/random/basic-distributions", test_core_random_basic_distributions },
         { "core/random/discrete-normal-distribution", test_core_random_discrete_normal_distribution },
         { "core/random/triangular-distribution", test_core_random_triangular_distribution },

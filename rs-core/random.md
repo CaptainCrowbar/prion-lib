@@ -145,6 +145,33 @@ Algorithm         | Result      | State     | Seeds                  | Recommend
 `Xoshiro256ss`    | `uint64_t`  | 32 bytes  | 1, 2, or 4 `uint64_t`  | Best general purpose
 `Xoshiro`         | `uint64_t`  | 32 bytes  | 1, 2, or 4 `uint64_t`  | Synonym for `Xoshiro256ss`
 
+### Generic random number engines ###
+
+* `class` **`GenRng`**
+    * `using GenRng::`**`result_type`** `= uint32_t`
+    * `GenRng::`**`GenRng`**`() noexcept`
+    * `template <typename RNG> GenRng::`**`GenRng`**`(RNG& rng)`
+    * `uint32_t GenRng::`**`operator()`**`()`
+    * `static constexpr uint32_t GenRng::`**`min`**`() noexcept` _(min = 0)_
+    * `static constexpr uint32_t GenRng::`**`max`**`() noexcept` _(max = 2<sup>32</sup>-1)_
+* `class` **`GenRng64`**
+    * `using GenRng64::`**`result_type`** `= uint64_t`
+    * `GenRng64::`**`GenRng64`**`() noexcept`
+    * `template <typename RNG> GenRng64::`**`GenRng64`**`(RNG& rng)`
+    * `uint64_t GenRng64::`**`operator()`**`()`
+    * `static constexpr uint64_t GenRng64::`**`min`**`() noexcept` _(min = 0)_
+    * `static constexpr uint64_t GenRng64::`**`max`**`() noexcept` _(max = 2<sup>64</sup>-1)_
+
+Wrapper function objects that call an arbitrary random number engine and
+return a know distribution. A single call to `GenRng[64]::operator()` may call
+the underlying RNG more than once. Calling `operator()` on a default
+constructed `GenRng[64]` will throw `std::bad_funcyion_call`.
+
+The `GenRng[64]` object holds a reference to the generator that was passed to
+the constructor, which is expected to remain valid. Behaviour is undefined if
+the underlying generator is destroyed while a `GenRng[64]` object still has a
+reference to it.
+
 ## Random distributions ##
 
 ### Basic random distributions ###
@@ -422,7 +449,6 @@ add `(value,frequency)` pairs, one at a time or in bulk (`push_back()` is a
 synonym for `add()`). Entries with a frequency less than or equal to zero are
 ignored. Behaviour is undefined if the function call operator is called on an
 empty set.
-
 
 ### Random samples ###
 

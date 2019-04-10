@@ -11,12 +11,12 @@ namespace {
 
 void test_source_english_case_conversion() {
 
-    TEST_EQUAL(extended_title_case(""), "");
-    TEST_EQUAL(extended_title_case("hello world"), "Hello World");
-    TEST_EQUAL(extended_title_case("doctor who and the daleks"), "Doctor Who and the Daleks");
-    TEST_EQUAL(extended_title_case("the haunting of hill house"), "The Haunting of Hill House");
-    TEST_EQUAL(extended_title_case("a history of the future"), "A History of the Future");
-    TEST_EQUAL(extended_title_case("a dog in the manger"), "A Dog in the Manger");
+    TEST_EQUAL(extended_titlecase(""), "");
+    TEST_EQUAL(extended_titlecase("hello world"), "Hello World");
+    TEST_EQUAL(extended_titlecase("doctor who and the daleks"), "Doctor Who and the Daleks");
+    TEST_EQUAL(extended_titlecase("the haunting of hill house"), "The Haunting of Hill House");
+    TEST_EQUAL(extended_titlecase("a history of the future"), "A History of the Future");
+    TEST_EQUAL(extended_titlecase("a dog in the manger"), "A Dog in the Manger");
 
     TEST_EQUAL(format_enum(Thing::alpha_one), "alpha one");
     TEST_EQUAL(format_enum(Thing::bravo_two), "bravo two");

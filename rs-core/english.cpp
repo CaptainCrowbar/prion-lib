@@ -35,7 +35,7 @@ namespace RS {
             switch (casing) {
                 case 's':  str_initial_titlecase_in(s); break;
                 case 't':  str_titlecase_in(s); break;
-                case 'x':  extended_title_case_in(s); break;
+                case 'x':  extended_titlecase_in(s); break;
                 default:   break;
             }
             str_replace_in(s, " ", delim);
@@ -44,13 +44,13 @@ namespace RS {
 
     }
 
-    Ustring extended_title_case(Uview str) {
+    Ustring extended_titlecase(Uview str) {
         Ustring text(str);
-        extended_title_case_in(text);
+        extended_titlecase_in(text);
         return text;
     }
 
-    void extended_title_case_in(Ustring& str) {
+    void extended_titlecase_in(Ustring& str) {
         static const Regex stopwords("\\b(A|An|And|At|In|Of|Or|The)\\b", Regex::no_capture | Regex::optimize);
         if (str.empty())
             return;

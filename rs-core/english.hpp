@@ -13,8 +13,8 @@ namespace RS {
 
     }
 
-    Ustring extended_title_case(Uview str);
-    void extended_title_case_in(Ustring& str);
+    Ustring extended_titlecase(Uview str);
+    void extended_titlecase_in(Ustring& str);
 
     template <typename T>
     Ustring format_enum(T t, Uview flags = {}) {

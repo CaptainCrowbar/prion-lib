@@ -10,8 +10,8 @@ By Ross Smith
 
 ## Case conversion functions ##
 
-* `Ustring` **`extended_title_case`**`(Uview str)`
-* `void` **`extended_title_case_in`**`(Ustring& str)`
+* `Ustring` **`extended_titlecase`**`(Uview str)`
+* `void` **`extended_titlecase_in`**`(Ustring& str)`
 
 Convert a string to title case, checking for common short English words that
 are conventionally set in lower case.

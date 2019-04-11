@@ -148,9 +148,7 @@ void test_core_range_transformation_map() {
     TRY("Hello"s >> passthrough * map(ascii_toupper) * passthrough >> overwrite(s));    TEST_EQUAL(s, "HELLO");
     TRY("Hello"s >> passthrough * map(f) * passthrough >> overwrite(s));                TEST_EQUAL(s, "Ifmmp");
 
-    s = "Hello";
-    TRY(s << map(ascii_toupper));
-    TEST_EQUAL(s, "HELLO");
+    s = "Hello";  TRY(s << map(ascii_toupper));  TEST_EQUAL(s, "HELLO");
 
     std::map<int, Ustring> m = {{1, "alpha"}, {2, "bravo"}, {3, "charlie"}};
     Strings v;
@@ -158,6 +156,37 @@ void test_core_range_transformation_map() {
 
     TRY(m >> map_pairs(g) >> overwrite(v));
     TEST_EQUAL(to_str(v), "[alpha/1,bravo/2,charlie/3]");
+
+}
+
+void test_core_range_transformation_map_head_tail() {
+
+    Ustring s;
+
+    TRY("hello"s >> map_head_tail(ascii_toupper, ascii_tolower) >> overwrite(s));                                TEST_EQUAL(s, "Hello");
+    TRY("HELLO"s >> map_head_tail(ascii_toupper, ascii_tolower) >> overwrite(s));                                TEST_EQUAL(s, "Hello");
+    TRY("hello"s >> map_head_tail(ascii_toupper) >> overwrite(s));                                               TEST_EQUAL(s, "Hello");
+    TRY("HELLO"s >> map_head_tail(ascii_toupper) >> overwrite(s));                                               TEST_EQUAL(s, "HELLO");
+    TRY("hello"s >> map_head_tail(nullptr, ascii_tolower) >> overwrite(s));                                      TEST_EQUAL(s, "hello");
+    TRY("HELLO"s >> map_head_tail(nullptr, ascii_tolower) >> overwrite(s));                                      TEST_EQUAL(s, "Hello");
+    TRY("hello"s >> passthrough >> map_head_tail(ascii_toupper, ascii_tolower) >> passthrough >> overwrite(s));  TEST_EQUAL(s, "Hello");
+    TRY("HELLO"s >> passthrough >> map_head_tail(ascii_toupper, ascii_tolower) >> passthrough >> overwrite(s));  TEST_EQUAL(s, "Hello");
+
+    s = "hello";  TRY(s << map_head_tail(ascii_toupper, ascii_tolower));  TEST_EQUAL(s, "Hello");
+    s = "HELLO";  TRY(s << map_head_tail(ascii_toupper, ascii_tolower));  TEST_EQUAL(s, "Hello");
+
+}
+
+void test_core_range_transformation_map_if() {
+
+    Ustring s;
+    auto f = [] (char c) { return char(c + 1); };
+
+    TRY("Hello"s >> map_if(ascii_islower, f) >> overwrite(s));                                TEST_EQUAL(s, "Hfmmp");
+    TRY("Hello"s >> passthrough >> map_if(ascii_islower, f) >> passthrough >> overwrite(s));  TEST_EQUAL(s, "Hfmmp");
+    TRY("Hello"s >> passthrough * map_if(ascii_islower, f) * passthrough >> overwrite(s));    TEST_EQUAL(s, "Hfmmp");
+
+    s = "Hello";  TRY(s << map_if(ascii_islower, f));  TEST_EQUAL(s, "Hfmmp");
 
 }
 

@@ -583,6 +583,133 @@ namespace RS::Range {
         return f;
     }
 
+    // map_head_tail
+
+    template <typename UnaryFunction1, typename UnaryFunction2>
+    struct MapHeadTailObject:
+    AlgorithmBase<MapHeadTailObject<UnaryFunction1, UnaryFunction2>> {
+        UnaryFunction1 fun1;
+        UnaryFunction2 fun2;
+        MapHeadTailObject(const UnaryFunction1& f1, const UnaryFunction2& f2): fun1(f1), fun2(f2) {}
+    };
+
+    template <typename Range, typename UnaryFunction1, typename UnaryFunction2>
+    class MapHeadTailIterator:
+    public FlexibleRandomAccessIterator<MapHeadTailIterator<Range, UnaryFunction1, UnaryFunction2>,
+        std::common_type_t<InvokeResult<UnaryFunction1, Meta::RangeValue<Range>>, InvokeResult<UnaryFunction2, Meta::RangeValue<Range>>>> {
+    public:
+        using underlying_iterator = Meta::RangeIterator<const Range>;
+        using iterator_category = typename std::iterator_traits<underlying_iterator>::iterator_category;
+        using value_type = std::common_type_t<InvokeResult<UnaryFunction1, Meta::RangeValue<Range>>, InvokeResult<UnaryFunction2, Meta::RangeValue<Range>>>;
+        using predicate_type = std::function<bool(const value_type&)>;
+        using function_type = std::function<value_type(const Meta::RangeValue<Range>&)>;
+        MapHeadTailIterator() = default;
+        MapHeadTailIterator(underlying_iterator i, UnaryFunction1 f1, UnaryFunction2 f2): iter(i), fun1(f1), fun2(f2), value(), ok(false), tail(false) {}
+        const value_type& operator*() const { if (! ok) { if (tail) value = fun2(*iter); else value = fun1(*iter); tail = ok = true; } return value; }
+        MapHeadTailIterator& operator++() { ++iter; ok = false; return *this; }
+        MapHeadTailIterator& operator--() { --iter; ok = false; return *this; }
+        MapHeadTailIterator& operator+=(ptrdiff_t rhs) { iter += rhs; ok = false; return *this; }
+        ptrdiff_t operator-(const MapHeadTailIterator& rhs) const { return iter - rhs.iter; }
+        bool operator==(const MapHeadTailIterator& rhs) const noexcept { return iter == rhs.iter; }
+    private:
+        underlying_iterator iter;
+        function_type fun1;
+        function_type fun2;
+        mutable value_type value;
+        mutable bool ok;
+        mutable bool tail;
+    };
+
+    template <typename Range, typename UnaryFunction1, typename UnaryFunction2>
+    Irange<MapHeadTailIterator<Range, UnaryFunction1, UnaryFunction2>> operator>>(const Range& lhs, MapHeadTailObject<UnaryFunction1, UnaryFunction2> rhs) {
+        using std::begin;
+        using std::end;
+        return {{begin(lhs), rhs.fun1, rhs.fun2}, {end(lhs), rhs.fun1, rhs.fun2}};
+    }
+
+    template <typename ForwardRange, typename UnaryFunction1, typename UnaryFunction2>
+    ForwardRange& operator<<(ForwardRange& lhs, MapHeadTailObject<UnaryFunction1, UnaryFunction2> rhs) {
+        using std::begin;
+        using std::end;
+        auto i = begin(lhs), e = end(lhs);
+        if (i != e) {
+            *i = rhs.fun1(*i);
+            ++i;
+        }
+        std::transform(i, e, i, rhs.fun2);
+        return lhs;
+    }
+
+    template <typename UnaryFunction1>
+    inline MapHeadTailObject<UnaryFunction1, Identity> map_head_tail(UnaryFunction1 f1, std::nullptr_t = nullptr) {
+        return {f1, {}};
+    }
+
+    template <typename UnaryFunction2>
+    inline MapHeadTailObject<Identity, UnaryFunction2> map_head_tail(std::nullptr_t, UnaryFunction2 f2) {
+        return {{}, f2};
+    }
+
+    template <typename UnaryFunction1, typename UnaryFunction2>
+    inline MapHeadTailObject<UnaryFunction1, UnaryFunction2> map_head_tail(UnaryFunction1 f1, UnaryFunction2 f2) {
+        return {f1, f2};
+    }
+
+    // map_if
+
+    template <typename Predicate, typename UnaryFunction>
+    struct MapIfObject:
+    AlgorithmBase<MapIfObject<Predicate, UnaryFunction>> {
+        Predicate pred;
+        UnaryFunction fun;
+        MapIfObject(const Predicate& p, const UnaryFunction& f): pred(p), fun(f) {}
+    };
+
+    template <typename Range, typename Predicate, typename UnaryFunction>
+    class MapIfIterator:
+    public FlexibleRandomAccessIterator<MapIfIterator<Range, Predicate, UnaryFunction>, Meta::RangeValue<Range>> {
+    public:
+        using underlying_iterator = Meta::RangeIterator<const Range>;
+        using iterator_category = typename std::iterator_traits<underlying_iterator>::iterator_category;
+        using value_type = Meta::RangeValue<Range>;
+        using predicate_type = std::function<bool(const value_type&)>;
+        using function_type = std::function<value_type(const value_type&)>;
+        MapIfIterator() = default;
+        MapIfIterator(underlying_iterator i, Predicate p, UnaryFunction f): iter(i), pred(p), fun(f), value(), ok(false) {}
+        const value_type& operator*() const { if (! ok) { if (pred(*iter)) value = fun(*iter); else value = *iter; ok = true; } return value; }
+        MapIfIterator& operator++() { ++iter; ok = false; return *this; }
+        MapIfIterator& operator--() { --iter; ok = false; return *this; }
+        MapIfIterator& operator+=(ptrdiff_t rhs) { iter += rhs; ok = false; return *this; }
+        ptrdiff_t operator-(const MapIfIterator& rhs) const { return iter - rhs.iter; }
+        bool operator==(const MapIfIterator& rhs) const noexcept { return iter == rhs.iter; }
+    private:
+        underlying_iterator iter;
+        predicate_type pred;
+        function_type fun;
+        mutable value_type value;
+        mutable bool ok;
+    };
+
+    template <typename Range, typename Predicate, typename UnaryFunction>
+    Irange<MapIfIterator<Range, Predicate, UnaryFunction>> operator>>(const Range& lhs, MapIfObject<Predicate, UnaryFunction> rhs) {
+        using std::begin;
+        using std::end;
+        return {{begin(lhs), rhs.pred, rhs.fun}, {end(lhs), rhs.pred, rhs.fun}};
+    }
+
+    template <typename ForwardRange, typename Predicate, typename UnaryFunction>
+    ForwardRange& operator<<(ForwardRange& lhs, MapIfObject<Predicate, UnaryFunction> rhs) {
+        using std::begin;
+        using std::end;
+        std::for_each(begin(lhs), end(lhs), [&] (auto& x) { if (rhs.pred(x)) x = rhs.fun(x); });
+        return lhs;
+    }
+
+    template <typename Predicate, typename UnaryFunction>
+    inline MapIfObject<Predicate, UnaryFunction> map_if(Predicate p, UnaryFunction f) {
+        return {p, f};
+    }
+
     // replace, replace_if
 
     template <typename Predicate, typename T>

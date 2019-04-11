@@ -354,6 +354,8 @@ extern void test_core_range_transformation_indexed();
 extern void test_core_range_transformation_iterators();
 extern void test_core_range_transformation_keys_values();
 extern void test_core_range_transformation_map();
+extern void test_core_range_transformation_map_head_tail();
+extern void test_core_range_transformation_map_if();
 extern void test_core_range_transformation_replace();
 extern void test_core_range_transformation_stringify();
 extern void test_core_range_transformation_swap_pairs();
@@ -803,6 +805,8 @@ int main() {
         { "core/range-transformation/iterators", test_core_range_transformation_iterators },
         { "core/range-transformation/keys-values", test_core_range_transformation_keys_values },
         { "core/range-transformation/map", test_core_range_transformation_map },
+        { "core/range-transformation/map-head-tail", test_core_range_transformation_map_head_tail },
+        { "core/range-transformation/map-if", test_core_range_transformation_map_if },
         { "core/range-transformation/replace", test_core_range_transformation_replace },
         { "core/range-transformation/stringify", test_core_range_transformation_stringify },
         { "core/range-transformation/swap-pairs", test_core_range_transformation_swap_pairs },

@@ -51,13 +51,17 @@ RS_LDLIB(rs-core);
 
 // GNU brain damage
 
-#ifdef __GNUC__
-    #ifdef major
-        #undef major
-    #endif
-    #ifdef minor
-        #undef minor
-    #endif
+#ifdef major
+    #undef major
+#endif
+#ifdef minor
+    #undef minor
+#endif
+
+// Microsoft brain damage
+
+#ifdef pascal
+    #undef pascal
 #endif
 
 namespace RS {

@@ -275,7 +275,7 @@ namespace RS {
             else
                 t_name = name;
             if (j["_type"] != t_name)
-                throw std::invalid_argument("Invalid serialized " + t_name + ": Type is " + std::string(j["_type"]));
+                throw std::invalid_argument("Invalid serialized " + t_name + ": Type is " + j["_type"].dump());
         }
         RS_Detail::json_to_fields(j, t, field_ptr, field_name, more_fields...);
     }

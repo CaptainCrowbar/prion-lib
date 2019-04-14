@@ -27,13 +27,46 @@ namespace RS {
 
     // Case conversion functions
 
-    Strings name_breakdown(Uview name);
-    Ustring name_to_initials(Uview name);
-    Ustring name_to_lower_case(Uview name, char delim = '_');
-    Ustring name_to_upper_case(Uview name, char delim = '_');
-    Ustring name_to_title_case(Uview name, char delim = '\0');
-    Ustring name_to_camel_case(Uview name, char delim = '\0');
-    Ustring name_to_sentence_case(Uview name, char delim = ' ');
+    class CaseWords:
+    public LessThanComparable<CaseWords> {
+    public:
+        using iterator = Strings::const_iterator;
+        using value_type = Ustring;
+        CaseWords() = default;
+        CaseWords(Uview text);
+        CaseWords(const Ustring& text): CaseWords(Uview(text)) {}
+        CaseWords(const char* text): CaseWords(Uview(text)) {}
+        const Ustring& operator[](size_t i) const noexcept { return list_[i]; }
+        CaseWords& operator+=(const CaseWords& c);
+        iterator begin() const noexcept { return list_.begin(); }
+        iterator end() const noexcept { return list_.end(); }
+        bool empty() const noexcept { return list_.empty(); }
+        size_t hash() const noexcept { return hash_range(list_); }
+        void push_front(Uview text);
+        void push_back(Uview text);
+        size_t size() const noexcept { return list_.size(); }
+        Ustring str(Uview format = "f ") const;
+        Ustring camel_case() const { return str("c"); }
+        Ustring fold_case() const { return str("f "); }
+        Ustring initials() const { return str("i"); }
+        Ustring kebab_case() const { return str("l-"); }
+        Ustring lower_case() const { return str("l "); }
+        Ustring macro_case() const { return str("u_"); }
+        Ustring pascal_case() const { return str("t"); }
+        Ustring sentence_case() const { return str("s "); }
+        Ustring snake_case() const { return str("l_"); }
+        Ustring title_case() const { return str("t "); }
+        Ustring upper_case() const { return str("u "); }
+        void swap(CaseWords& c) noexcept { list_.swap(c.list_); }
+        friend bool operator==(const CaseWords& a, const CaseWords& b) noexcept { return a.list_ == b.list_; }
+        friend bool operator<(const CaseWords& a, const CaseWords& b) noexcept { return a.list_ < b.list_; }
+    private:
+        Strings list_;
+    };
+
+    inline CaseWords operator+(const CaseWords& a, const CaseWords& b) { auto c = a; c += b; return c; }
+    inline std::ostream& operator<<(std::ostream& out, const CaseWords& c) { return out << c.str(); }
+    inline void swap(CaseWords& a, CaseWords& b) noexcept { a.swap(b); }
 
     // Character functions
 
@@ -265,3 +298,5 @@ namespace RS {
     }
 
 }
+
+RS_DEFINE_STD_HASH(RS::CaseWords);

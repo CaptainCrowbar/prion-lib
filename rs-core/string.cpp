@@ -1,99 +1,68 @@
 #include "rs-core/string.hpp"
+#include "rs-core/range.hpp"
+#include "unicorn/regex.hpp"
+#include "unicorn/string.hpp"
 #include <algorithm>
 #include <cstring>
+#include <stdexcept>
+
+using namespace RS::Literals;
+using namespace RS::Range;
+using namespace RS::Unicorn;
+using namespace std::literals;
 
 namespace RS {
 
     // Case conversion functions
 
-    namespace {
+    CaseWords::CaseWords(Uview text) {
+        static const Regex pattern = [] {
+            Ustring digit = "\\p{N}";
+            Ustring mark = "(\\p{Lm}|\\p{M})*";
+            Ustring ll = "(\\p{Ll}" + mark + ")";
+            Ustring lo = "(\\p{Lo}" + mark + ")";
+            Ustring lt = "((\\p{Lt}|\\p{Lu})" + mark + ")";
+            Ustring lu = "(\\p{Lu}" + mark + ")";
+            Ustring expr =
+                lt + "?" + ll + "+"             // Words in lower or mixed case
+                + "|" + lu + "+(?!" + ll + ")"  // Words in upper case
+                + "|" + lo + "+"                // Words in uncased letters
+                + "|" + digit + "+";            // Numbers
+            return Regex(expr, Regex::extended | Regex::no_capture | Regex::optimize);
+        }();
+        pattern.grep(text) >> convert<Ustring>() >> map(str_casefold) >> append(list_);
+    }
 
-        char name_char_type(char c) noexcept {
-            return ascii_isdigit(c) ? 'd' :
-                ascii_islower(c) ? 'l' :
-                ascii_isupper(c) ? 'u' : 'x';
+    CaseWords& CaseWords::operator+=(const CaseWords& c) {
+        list_.insert(list_.end(), c.list_.begin(), c.list_.end());
+        return *this;
+    }
+
+    void CaseWords::push_front(Uview text) {
+        CaseWords c(text);
+        list_.insert(list_.begin(), c.list_.begin(), c.list_.end());
+    }
+
+    void CaseWords::push_back(Uview text) {
+        CaseWords c(text);
+        list_.insert(list_.end(), c.list_.begin(), c.list_.end());
+    }
+
+    Ustring CaseWords::str(Uview format) const {
+        char which = format.empty() ? 'f' : ascii_tolower(format[0]);
+        Ustring delim(format, 1, npos);
+        Ustring result;
+        switch (which) {
+            case 'c':  result = list_ >> map_head_tail(str_lowercase, str_titlecase) >> insert_between(delim) >> sum; break;
+            case 'f':  result = list_ >> insert_between(delim) >> sum; break;
+            case 'i':  result = list_ >> map(str_first_char<char>) >> map(str_char) >> map(str_uppercase) >> insert_after(delim) >> sum; break;
+            case 'l':  result = list_ >> map(str_lowercase) >> insert_between(delim) >> sum; break;
+            case 's':  result = list_ >> map_head_tail(str_titlecase, str_lowercase) >> insert_between(delim) >> sum; break;
+            case 't':  result = list_ >> map(str_titlecase) >> insert_between(delim) >> sum; break;
+            case 'u':  result = list_ >> map(str_uppercase) >> insert_between(delim) >> sum; break;
+            default:   throw std::invalid_argument("Unknown format: " + quote(format));
         }
-
-    }
-
-    Strings name_breakdown(Uview name) {
-        Strings vec;
-        auto i = name.begin(), end = name.end();
-        while (i != end) {
-            while (i != end && name_char_type(*i) == 'x')
-                ++i;
-            if (i == end)
-                break;
-            char ctype = name_char_type(*i);
-            auto j = i + 1;
-            if (ctype == 'u') {
-                while (j != end && name_char_type(*j) == 'u')
-                    ++j;
-                if (name_char_type(*j) == 'l') {
-                    if (j - i == 1) {
-                        ++j;
-                        while (j != end && name_char_type(*j) == 'l')
-                            ++j;
-                    } else {
-                        --j;
-                    }
-                }
-            } else {
-                while (j != end && name_char_type(*j) == ctype)
-                    ++j;
-            }
-            vec.push_back(Ustring(i, j));
-            i = j;
-        }
-        return vec;
-    }
-
-    Ustring name_to_initials(Uview name) {
-        Strings vec = name_breakdown(name);
-        Ustring initials;
-        std::transform(vec.begin(), vec.end(), append(initials), [] (Uview v) { return ascii_toupper(v[0]); });
-        return initials;
-    }
-
-    Ustring name_to_lower_case(Uview name, char delim) {
-        const char dchars[] = {delim, '\0'};
-        Strings vec = name_breakdown(name);
-        std::transform(vec.begin(), vec.end(), vec.begin(), ascii_lowercase);
-        return join(vec, dchars);
-    }
-
-    Ustring name_to_upper_case(Uview name, char delim) {
-        const char dchars[] = {delim, '\0'};
-        Strings vec = name_breakdown(name);
-        std::transform(vec.begin(), vec.end(), vec.begin(), ascii_uppercase);
-        return join(vec, dchars);
-    }
-
-    Ustring name_to_title_case(Uview name, char delim) {
-        const char dchars[] = {delim, '\0'};
-        Strings vec = name_breakdown(name);
-        std::transform(vec.begin(), vec.end(), vec.begin(), ascii_titlecase);
-        return join(vec, dchars);
-    }
-
-    Ustring name_to_camel_case(Uview name, char delim) {
-        const char dchars[] = {delim, '\0'};
-        Strings vec = name_breakdown(name);
-        if (! vec.empty()) {
-            vec[0] = ascii_lowercase(vec[0]);
-            std::transform(vec.begin() + 1, vec.end(), vec.begin() + 1, ascii_titlecase);
-        }
-        return join(vec, dchars);
-    }
-
-    Ustring name_to_sentence_case(Uview name, char delim) {
-        const char dchars[] = {delim, '\0'};
-        Strings vec = name_breakdown(name);
-        if (! vec.empty()) {
-            vec[0] = ascii_titlecase(vec[0]);
-            std::transform(vec.begin() + 1, vec.end(), vec.begin() + 1, ascii_lowercase);
-        }
-        return join(vec, dchars);
+        return result;
     }
 
     // String property functions

@@ -49,27 +49,121 @@ Result:
 
 ## Case conversion functions ##
 
-* `Strings` **`name_breakdown`**`(Uview name)`
+* `class` **`CaseWords`**
 
-Breaks down a name (such as a programming language variable name) into its
-component parts. Name elements are assumed to consist only of ASCII letters
-and digits; any other character is treated as a delimiter and discarded. Words
-can also be delimited by casing: names in title case or camel case will be
-broken down in the natural way; a subsequence of two or more capital letters
-will be assumed to be a single word, except that if it is followed by any
-lower case letters, the last capital letter is assumed to start a new word
-(this means that a mixed case name like `"HTTPResponse"` will be correctly
-parsed as `"HTTP Response"`). Numbers are parsed as separate name elements.
+This class breaks down a name (such as a programming language variable name)
+into its component parts. Name elements are assumed to consist of letters
+(Unicode general category `{Ll,Lo,Lt,Lu}`), possibly followed by marks
+(`{Lm,M}`), or entirely of digits (`{N}`); any other character (`{C,P,S,Z}`)
+is treated as a delimiter and discarded. Words can also be delimited by
+casing: names in mixed case will be broken down in the natural way; a
+subsequence of two or more capital letters will be assumed to be a single
+word, except that if it is followed by any lower case letters, the last
+capital letter is assumed to start a new word (this means that a mixed case
+name like `"HTTPResponse"` will be correctly parsed as `"HTTP Response"`).
+Numbers are parsed as separate name elements.
 
-* `Ustring` **`name_to_initials`**`(Uview name)` _- e.g. `"QBF"`_
-* `Ustring` **`name_to_lower_case`**`(Uview name, char delim = '_')` _- e.g. `"quick_brown_fox"`_
-* `Ustring` **`name_to_upper_case`**`(Uview name, char delim = '_')` _- e.g. `"QUICK_BROWN_FOX"`_
-* `Ustring` **`name_to_title_case`**`(Uview name, char delim = 0)` _- e.g. `"QuickBrownFox"`_
-* `Ustring` **`name_to_camel_case`**`(Uview name, char delim = 0)` _- e.g. `"quickBrownFox"`_
-* `Ustring` **`name_to_sentence_case`**`(Uview name, char delim = ' ')` _- e.g. `"Quick brown fox"`_
+* `using CaseWords::`**`iterator`** `= [random access const iterator]`
+* `using CaseWords::`**`value_type`** `= Ustring`
 
-These convert a name (parsed as described above) to various casing
-conventions.
+Member types.
+
+* `CaseWords::`**`CaseWords`**`()`
+* `CaseWords::`**`CaseWords`**`(Uview text)`
+* `CaseWords::`**`CaseWords`**`(const Ustring& text)`
+* `CaseWords::`**`CaseWords`**`(const char* text)`
+* `CaseWords::`**`CaseWords`**`(const CaseWords& c)`
+* `CaseWords::`**`CaseWords`**`(CaseWords&& c) noexcept`
+* `CaseWords::`**`~CaseWords`**`() noexcept`
+* `CaseWords& CaseWords::`**`operator=`**`(const CaseWords& c)`
+* `CaseWords& CaseWords::`**`operator=`**`(CaseWords&& c) noexcept`
+
+Life cycle functions. The constructors that take a string break it down as
+described above.
+
+* `const Ustring& CaseWords::`**`operator[]`**`(size_t i) const noexcept`
+
+Returns the word element (as described above) at the given index, in case
+folded form. Behaviour is undefined if `i>=size()`.
+
+* `CaseWords& CaseWords::`**`operator+=`**`(const CaseWords& c)`
+* `CaseWords` **`operator+`**`(const CaseWords& a, const CaseWords& b)`
+
+Concatenate two word lists.
+
+* `iterator CaseWords::`**`begin`**`() const noexcept`
+* `iterator CaseWords::`**`end`**`() const noexcept`
+
+Iterators over the internal list of words, in case folded form.
+
+* `bool CaseWords::`**`empty`**`() const noexcept`
+
+True if the word list is empty.
+
+* `size_t CaseWords::`**`hash`**`() const noexcept`
+* `class` **`std::hash<CaseWords>`**
+
+Hash function.
+
+* `void CaseWords::`**`push_front`**`(Uview text)`
+* `void CaseWords::`**`push_back`**`(Uview text)`
+
+Insert a new substring (broken down in the same way as the constructors) at
+the beginning or end of the list.
+
+* `size_t CaseWords::`**`size`**`() const noexcept`
+
+Returns the number of word elements in the list.
+
+* `Ustring CaseWords::`**`str`**`(Uview format = "f ") const`
+
+Returns the words converted to a specified casing pattern. The first letter of
+the format string selects the case conversion mode; the rest of the format
+string is used as a delimiter between word elements (in initials mode, the
+delimiter is also added after the last initial). The selector letters are
+(case insensitive):
+
+* `"c"` _= Camel case (first word in lower case, the rest in mixed case)_
+* `"f"` _= Fold case_
+* `"i"` _= Initials_
+* `"l"` _= Lower case_
+* `"s"` _= Sentence case_
+* `"t"` _= Title case_
+* `"u"` _= Upper case_
+
+* `Ustring CaseWords::`**`camel_case`**`() const { return str("c"); }` _- e.g. `"quickBrownFox"`_
+* `Ustring CaseWords::`**`fold_case`**`() const { return str("f "); }` _- e.g. `"quick brown fox"`_
+* `Ustring CaseWords::`**`initials`**`() const { return str("i"); }` _- e.g. `"QBF"`_
+* `Ustring CaseWords::`**`kebab_case`**`() const { return str("l-"); }` _- e.g. `"quick-brown-fox"`_
+* `Ustring CaseWords::`**`lower_case`**`() const { return str("l "); }` _- e.g. `"quick brown fox"`_
+* `Ustring CaseWords::`**`macro_case`**`() const { return str("u_"); }` _- e.g. `"QUICK_BROWN_FOX"`_
+* `Ustring CaseWords::`**`pascal_case`**`() const { return str("t"); }` _- e.g. `"QuickBrownFox"`_
+* `Ustring CaseWords::`**`sentence_case`**`() const { return str("s "); }` _- e.g. `"Quick brown fox"`_
+* `Ustring CaseWords::`**`snake_case`**`() const { return str("l_"); }` _- e.g. `"quick_brown_fox"`_
+* `Ustring CaseWords::`**`title_case`**`() const { return str("t "); }` _- e.g. `"Quick Brown Fox"`_
+* `Ustring CaseWords::`**`upper_case`**`() const { return str("u "); }` _- e.g. `"QUICK BROWN FOX"`_
+
+Common special cases.
+
+* `void CaseWords::`**`swap`**`(CaseWords& c) noexcept`
+* `void` **`swap`**`(CaseWords& a, CaseWords& b) noexcept`
+
+Swap two objects.
+
+* `bool` **`operator==`**`(const CaseWords& a, const CaseWords& b) noexcept`
+* `bool` **`operator!=`**`(const CaseWords& a, const CaseWords& b) noexcept`
+* `bool` **`operator<`**`(const CaseWords& a, const CaseWords& b) noexcept`
+* `bool` **`operator>`**`(const CaseWords& a, const CaseWords& b) noexcept`
+* `bool` **`operator<=`**`(const CaseWords& a, const CaseWords& b) noexcept`
+* `bool` **`operator>=`**`(const CaseWords& a, const CaseWords& b) noexcept`
+
+Comparison operators. These work on a word by word basis, comparing their case
+folded forms.
+
+* `std::ostream&` **`operator<<`**`(std::ostream& out, const CaseWords& c)`
+
+Write the words to the output stream, in the default format of `str()` or
+`fold_case()`.
 
 ## Character functions ##
 

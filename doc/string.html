@@ -68,29 +68,150 @@ or if its indentation contains a mixture of spaces and tabs.</p>
 <h2 id="case-conversion-functions">Case conversion functions</h2>
 <div class="defns">
 <ul>
-<li><code>Strings</code> <strong><code>name_breakdown</code></strong><code>(Uview name)</code></li>
+<li><code>class</code> <strong><code>CaseWords</code></strong></li>
 </ul>
-<p>Breaks down a name (such as a programming language variable name) into its
-component parts. Name elements are assumed to consist only of ASCII letters
-and digits; any other character is treated as a delimiter and discarded. Words
-can also be delimited by casing: names in title case or camel case will be
-broken down in the natural way; a subsequence of two or more capital letters
-will be assumed to be a single word, except that if it is followed by any
-lower case letters, the last capital letter is assumed to start a new word
-(this means that a mixed case name like <code>"HTTPResponse"</code> will be correctly
-parsed as <code>"HTTP Response"</code>). Numbers are parsed as separate name elements.</p>
+<p>This class breaks down a name (such as a programming language variable name)
+into its component parts. Name elements are assumed to consist of letters
+(Unicode general category <code>{Ll,Lo,Lt,Lu}</code>), possibly followed by marks
+(<code>{Lm,M}</code>), or entirely of digits (<code>{N}</code>); any other character (<code>{C,P,S,Z}</code>)
+is treated as a delimiter and discarded. Words can also be delimited by
+casing: names in mixed case will be broken down in the natural way; a
+subsequence of two or more capital letters will be assumed to be a single
+word, except that if it is followed by any lower case letters, the last
+capital letter is assumed to start a new word (this means that a mixed case
+name like <code>"HTTPResponse"</code> will be correctly parsed as <code>"HTTP Response"</code>).
+Numbers are parsed as separate name elements.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>Ustring</code> <strong><code>name_to_initials</code></strong><code>(Uview name)</code> <em>- e.g. <code>"QBF"</code></em></li>
-<li><code>Ustring</code> <strong><code>name_to_lower_case</code></strong><code>(Uview name, char delim = '_')</code> <em>- e.g. <code>"quick_brown_fox"</code></em></li>
-<li><code>Ustring</code> <strong><code>name_to_upper_case</code></strong><code>(Uview name, char delim = '_')</code> <em>- e.g. <code>"QUICK_BROWN_FOX"</code></em></li>
-<li><code>Ustring</code> <strong><code>name_to_title_case</code></strong><code>(Uview name, char delim = 0)</code> <em>- e.g. <code>"QuickBrownFox"</code></em></li>
-<li><code>Ustring</code> <strong><code>name_to_camel_case</code></strong><code>(Uview name, char delim = 0)</code> <em>- e.g. <code>"quickBrownFox"</code></em></li>
-<li><code>Ustring</code> <strong><code>name_to_sentence_case</code></strong><code>(Uview name, char delim = ' ')</code> <em>- e.g. <code>"Quick brown fox"</code></em></li>
+<li><code>using CaseWords::</code><strong><code>iterator</code></strong> <code>= [random access const iterator]</code></li>
+<li><code>using CaseWords::</code><strong><code>value_type</code></strong> <code>= Ustring</code></li>
 </ul>
-<p>These convert a name (parsed as described above) to various casing
-conventions.</p>
+<p>Member types.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>CaseWords::</code><strong><code>CaseWords</code></strong><code>()</code></li>
+<li><code>CaseWords::</code><strong><code>CaseWords</code></strong><code>(Uview text)</code></li>
+<li><code>CaseWords::</code><strong><code>CaseWords</code></strong><code>(const Ustring&amp; text)</code></li>
+<li><code>CaseWords::</code><strong><code>CaseWords</code></strong><code>(const char* text)</code></li>
+<li><code>CaseWords::</code><strong><code>CaseWords</code></strong><code>(const CaseWords&amp; c)</code></li>
+<li><code>CaseWords::</code><strong><code>CaseWords</code></strong><code>(CaseWords&amp;&amp; c) noexcept</code></li>
+<li><code>CaseWords::</code><strong><code>~CaseWords</code></strong><code>() noexcept</code></li>
+<li><code>CaseWords&amp; CaseWords::</code><strong><code>operator=</code></strong><code>(const CaseWords&amp; c)</code></li>
+<li><code>CaseWords&amp; CaseWords::</code><strong><code>operator=</code></strong><code>(CaseWords&amp;&amp; c) noexcept</code></li>
+</ul>
+<p>Life cycle functions. The constructors that take a string break it down as
+described above.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>const Ustring&amp; CaseWords::</code><strong><code>operator[]</code></strong><code>(size_t i) const noexcept</code></li>
+</ul>
+<p>Returns the word element (as described above) at the given index, in case
+folded form. Behaviour is undefined if <code>i&gt;=size()</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>CaseWords&amp; CaseWords::</code><strong><code>operator+=</code></strong><code>(const CaseWords&amp; c)</code></li>
+<li><code>CaseWords</code> <strong><code>operator+</code></strong><code>(const CaseWords&amp; a, const CaseWords&amp; b)</code></li>
+</ul>
+<p>Concatenate two word lists.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>iterator CaseWords::</code><strong><code>begin</code></strong><code>() const noexcept</code></li>
+<li><code>iterator CaseWords::</code><strong><code>end</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>Iterators over the internal list of words, in case folded form.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool CaseWords::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>True if the word list is empty.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>size_t CaseWords::</code><strong><code>hash</code></strong><code>() const noexcept</code></li>
+<li><code>class</code> <strong><code>std::hash&lt;CaseWords&gt;</code></strong></li>
+</ul>
+<p>Hash function.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void CaseWords::</code><strong><code>push_front</code></strong><code>(Uview text)</code></li>
+<li><code>void CaseWords::</code><strong><code>push_back</code></strong><code>(Uview text)</code></li>
+</ul>
+<p>Insert a new substring (broken down in the same way as the constructors) at
+the beginning or end of the list.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>size_t CaseWords::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>Returns the number of word elements in the list.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Ustring CaseWords::</code><strong><code>str</code></strong><code>(Uview format = "f ") const</code></li>
+</ul>
+<p>Returns the words converted to a specified casing pattern. The first letter of
+the format string selects the case conversion mode; the rest of the format
+string is used as a delimiter between word elements (in initials mode, the
+delimiter is also added after the last initial). The selector letters are
+(case insensitive):</p>
+<ul>
+<li><code>"c"</code> <em>= Camel case (first word in lower case, the rest in mixed case)</em></li>
+<li><code>"f"</code> <em>= Fold case</em></li>
+<li><code>"i"</code> <em>= Initials</em></li>
+<li><code>"l"</code> <em>= Lower case</em></li>
+<li><code>"s"</code> <em>= Sentence case</em></li>
+<li><code>"t"</code> <em>= Title case</em></li>
+<li><code>"u"</code> <em>= Upper case</em></li>
+</ul>
+</div>
+<div class="defns">
+<ul>
+<li><code>Ustring CaseWords::</code><strong><code>camel_case</code></strong><code>() const { return str("c"); }</code> <em>- e.g. <code>"quickBrownFox"</code></em></li>
+<li><code>Ustring CaseWords::</code><strong><code>fold_case</code></strong><code>() const { return str("f "); }</code> <em>- e.g. <code>"quick brown fox"</code></em></li>
+<li><code>Ustring CaseWords::</code><strong><code>initials</code></strong><code>() const { return str("i"); }</code> <em>- e.g. <code>"QBF"</code></em></li>
+<li><code>Ustring CaseWords::</code><strong><code>kebab_case</code></strong><code>() const { return str("l-"); }</code> <em>- e.g. <code>"quick-brown-fox"</code></em></li>
+<li><code>Ustring CaseWords::</code><strong><code>lower_case</code></strong><code>() const { return str("l "); }</code> <em>- e.g. <code>"quick brown fox"</code></em></li>
+<li><code>Ustring CaseWords::</code><strong><code>macro_case</code></strong><code>() const { return str("u_"); }</code> <em>- e.g. <code>"QUICK_BROWN_FOX"</code></em></li>
+<li><code>Ustring CaseWords::</code><strong><code>pascal_case</code></strong><code>() const { return str("t"); }</code> <em>- e.g. <code>"QuickBrownFox"</code></em></li>
+<li><code>Ustring CaseWords::</code><strong><code>sentence_case</code></strong><code>() const { return str("s "); }</code> <em>- e.g. <code>"Quick brown fox"</code></em></li>
+<li><code>Ustring CaseWords::</code><strong><code>snake_case</code></strong><code>() const { return str("l_"); }</code> <em>- e.g. <code>"quick_brown_fox"</code></em></li>
+<li><code>Ustring CaseWords::</code><strong><code>title_case</code></strong><code>() const { return str("t "); }</code> <em>- e.g. <code>"Quick Brown Fox"</code></em></li>
+<li><code>Ustring CaseWords::</code><strong><code>upper_case</code></strong><code>() const { return str("u "); }</code> <em>- e.g. <code>"QUICK BROWN FOX"</code></em></li>
+</ul>
+<p>Common special cases.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void CaseWords::</code><strong><code>swap</code></strong><code>(CaseWords&amp; c) noexcept</code></li>
+<li><code>void</code> <strong><code>swap</code></strong><code>(CaseWords&amp; a, CaseWords&amp; b) noexcept</code></li>
+</ul>
+<p>Swap two objects.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool</code> <strong><code>operator==</code></strong><code>(const CaseWords&amp; a, const CaseWords&amp; b) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator!=</code></strong><code>(const CaseWords&amp; a, const CaseWords&amp; b) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&lt;</code></strong><code>(const CaseWords&amp; a, const CaseWords&amp; b) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&gt;</code></strong><code>(const CaseWords&amp; a, const CaseWords&amp; b) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&lt;=</code></strong><code>(const CaseWords&amp; a, const CaseWords&amp; b) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&gt;=</code></strong><code>(const CaseWords&amp; a, const CaseWords&amp; b) noexcept</code></li>
+</ul>
+<p>Comparison operators. These work on a word by word basis, comparing their case
+folded forms.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const CaseWords&amp; c)</code></li>
+</ul>
+<p>Write the words to the output stream, in the default format of <code>str()</code> or
+<code>fold_case()</code>.</p>
 </div>
 <h2 id="character-functions">Character functions</h2>
 <div class="defns">

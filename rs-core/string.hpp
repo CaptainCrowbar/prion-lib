@@ -2,6 +2,7 @@
 
 #include "rs-core/common.hpp"
 #include "rs-core/meta.hpp"
+#include "unicorn/string.hpp"
 #include <array>
 #include <ostream>
 #include <string>

@@ -1,7 +1,6 @@
 #include "rs-core/string.hpp"
 #include "rs-core/range.hpp"
 #include "unicorn/regex.hpp"
-#include "unicorn/string.hpp"
 #include <algorithm>
 #include <cstring>
 #include <stdexcept>

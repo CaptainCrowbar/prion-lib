@@ -200,7 +200,6 @@ reflex forms.
 |                 | `R >>` **`none_of`**`(UP) -> bool`                         |                                                     |
 |                 | `R >>` **`product`**`[(T)] -> T`                           |                                                     |
 |                 | `R >>` **`reduce`**`(BF) -> T`                             |                                                     |
-|                 | `R >>` **`statistics`** `-> Statistics`                    |                                                     |
 |                 | `R >>` **`sum`**`[(T)] -> T`                               |                                                     |
 | Selection       | `R >>` **`after`**`(T) -> CFR`                             | `C& <<` **`after`**`(T)`                            |
 |                 | `R >>` **`after_if`**`(UP) -> CFR`                         | `C& <<` **`after_if`**`(UP)`                        |
@@ -239,7 +238,6 @@ reflex forms.
 |                 | `R >>` **`replace_if`**`(UP,T) -> R`                       | `FR& <<` **`replace_if`**`(UP,T)`                   |
 |                 | `R >>` **`static_ptr`**`<T>() -> R`                        | `FR& <<` **`static_ptr`**`<T>()`                    |
 |                 | `PR >>` **`swap_pairs`** `-> PR`                           | `PC& <<` **`swap_pairs`**                           |
-|                 | `R >>` **`stringify`** `-> R`                              |                                                     |
 |                 | `R >>` **`values`** `-> R`                                 |                                                     |
 
 ## Algorithm details ##
@@ -571,13 +569,6 @@ True if the range is sorted according to the comparison predicate.
 Return the maximum and minimum values in the range, according to the
 comparison predicate.
 
-* `Range r >>` **`statistics`** `-> Statistics<T>`
-
-Compiles statistics on the range, whose value type must be a valid argument to
-`Statistics::operator()`. The data type in `Statistics<T>` is deduced from the
-range value type, and defaults to `double` if that type is an integer. The
-`Statistics` template is defined in [`rs-core/statistics`](statistics.html).
-
 ### Selection algorithms ###
 
 _Selection algorithms return a subset of the input range_
@@ -632,8 +623,10 @@ The `sample_k()` algorithm selects a sample of `k` elements; behaviour is
 undefined if `k>n`. The `sample_p()` algorithm selects each element with
 probability `p`; behaviour is undefined if `p<0` or `p>1`. The
 `sample_replace()` algorithm selects a random element `k` times, with
-replacement. For the first two the elements in the output range are in the
-same order as they were in the input.
+replacement. For `sample_k()` and `sample_p()`, the elements in the output
+range are in the same order as they were in the input. None of these
+algorithms are guaranteed to produce identical output in different compilation
+environments.
 
 * `Range r >>` **`remove`**`(T t) -> ConditionalForwardRange`
 * `Container& c <<` **`remove`**`(T t)`
@@ -749,10 +742,6 @@ passed through unchanged.
 
 Input elements equal to `t1`, or matching the predicate, are replaced with
 `t2`; other input elements are passed through unchanged.
-
-* `Range r >>` **`stringify`** `-> Range2`
-
-Converts each element to a string (using `to_str()`).
 
 * `PairRange r >>` **`swap_pairs`** `-> PairRange2`
 * `PairContainer& c <<` **`swap_pairs`**

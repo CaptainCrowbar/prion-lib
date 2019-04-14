@@ -2,7 +2,6 @@
 
 #include "rs-core/range-core.hpp"
 #include "rs-core/range-permutation.hpp"
-#include "rs-core/statistics.hpp"
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -306,47 +305,6 @@ namespace RS::Range {
     inline ReduceObject<BinaryFunction> reduce(BinaryFunction f) {
         return {f};
     }
-
-    // statistics, pair_statistics
-
-    struct StatisticsObject:
-    AlgorithmBase<StatisticsObject> {};
-
-    template <typename T>
-    struct StatisticsType {
-        using base_type = std::decay_t<T>;
-        using data_type = std::conditional_t<std::is_integral_v<base_type>, double, base_type>;
-        using result_type = Statistics<data_type>;
-        static void tally(T x, result_type& s) noexcept { s(static_cast<data_type>(x)); }
-    };
-
-    template <typename T, size_t N>
-    struct StatisticsType<std::array<T, N>> {
-        using result_type = Statistics<T>;
-        static void tally(const std::array<T, N>& x, result_type& s) noexcept { s(x); }
-    };
-
-    template <typename T1, typename T2>
-    struct StatisticsType<std::pair<T1, T2>> {
-        using result_type = Statistics<std::common_type_t<T1, T2>>;
-        static void tally(const std::pair<T1, T2>& x, result_type& s) noexcept { s(x); }
-    };
-
-    template <typename... TS>
-    struct StatisticsType<std::tuple<TS...>> {
-        using result_type = Statistics<std::common_type_t<TS...>>;
-        static void tally(const std::tuple<TS...>& x, result_type& s) noexcept { s(x); }
-    };
-
-    template <typename Range>
-    typename StatisticsType<Meta::RangeValue<Range>>::result_type operator>>(const Range& lhs, StatisticsObject /*rhs*/) {
-        typename StatisticsType<Meta::RangeValue<Range>>::result_type s;
-        for (auto& x: lhs)
-            StatisticsType<Meta::RangeValue<Range>>::tally(x, s);
-        return s;
-    }
-
-    constexpr StatisticsObject statistics = {};
 
     // sum, product
 

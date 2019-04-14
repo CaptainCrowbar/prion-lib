@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rs-core/range-core.hpp"
-#include "rs-core/string.hpp"
 #include <algorithm>
 #include <functional>
 #include <iterator>
@@ -767,47 +766,6 @@ namespace RS::Range {
     inline auto replace(const T1& t1, const T2& t2) {
         return replace_if([t1] (auto& x ) { return x == t1; }, t2);
     }
-
-    // stringify
-
-    struct StringifyObject:
-    AlgorithmBase<StringifyObject> {};
-
-    template <typename Range>
-    class StringifyIterator:
-    public FlexibleRandomAccessIterator<StringifyIterator<Range>, const std::string> {
-    public:
-        using underlying_iterator = Meta::RangeIterator<const Range>;
-        using iterator_category = typename std::iterator_traits<underlying_iterator>::iterator_category;
-        StringifyIterator() = default;
-        StringifyIterator(underlying_iterator i): iter(i), value(), ok(false) {}
-        const std::string& operator*() const noexcept {
-            using RS::to_str;
-            if (! ok) {
-                value = to_str(*iter);
-                ok = true;
-            }
-            return value;
-        }
-        StringifyIterator& operator++() { ++iter; ok = false; return *this; }
-        StringifyIterator& operator--() { --iter; ok = false; return *this; }
-        StringifyIterator& operator+=(ptrdiff_t rhs) { iter += rhs; ok = false; return *this; }
-        ptrdiff_t operator-(const StringifyIterator& rhs) const { return iter - rhs.iter; }
-        bool operator==(const StringifyIterator& rhs) const noexcept { return iter == rhs.iter; }
-    private:
-        underlying_iterator iter;
-        mutable std::string value;
-        mutable bool ok;
-    };
-
-    template <typename Range>
-    Irange<StringifyIterator<Range>> operator>>(const Range& lhs, StringifyObject /*rhs*/) {
-        using std::begin;
-        using std::end;
-        return {{begin(lhs)}, {end(lhs)}};
-    }
-
-    constexpr StringifyObject stringify = {};
 
     // swap_pairs
 

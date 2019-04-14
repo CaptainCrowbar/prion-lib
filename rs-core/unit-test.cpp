@@ -336,7 +336,6 @@ extern void test_core_range_reduction_is_empty();
 extern void test_core_range_reduction_is_sorted();
 extern void test_core_range_reduction_min_max();
 extern void test_core_range_reduction_reduce();
-extern void test_core_range_reduction_statistics();
 extern void test_core_range_reduction_sum_product();
 extern void test_core_range_selection_before_etc();
 extern void test_core_range_selection_filter();
@@ -357,7 +356,6 @@ extern void test_core_range_transformation_map();
 extern void test_core_range_transformation_map_head_tail();
 extern void test_core_range_transformation_map_if();
 extern void test_core_range_transformation_replace();
-extern void test_core_range_transformation_stringify();
 extern void test_core_range_transformation_swap_pairs();
 extern void test_core_rational_basics();
 extern void test_core_rational_reduction();
@@ -787,7 +785,6 @@ int main() {
         { "core/range-reduction/is-sorted", test_core_range_reduction_is_sorted },
         { "core/range-reduction/min-max", test_core_range_reduction_min_max },
         { "core/range-reduction/reduce", test_core_range_reduction_reduce },
-        { "core/range-reduction/statistics", test_core_range_reduction_statistics },
         { "core/range-reduction/sum-product", test_core_range_reduction_sum_product },
         { "core/range-selection/before-etc", test_core_range_selection_before_etc },
         { "core/range-selection/filter", test_core_range_selection_filter },
@@ -808,7 +805,6 @@ int main() {
         { "core/range-transformation/map-head-tail", test_core_range_transformation_map_head_tail },
         { "core/range-transformation/map-if", test_core_range_transformation_map_if },
         { "core/range-transformation/replace", test_core_range_transformation_replace },
-        { "core/range-transformation/stringify", test_core_range_transformation_stringify },
         { "core/range-transformation/swap-pairs", test_core_range_transformation_swap_pairs },
         { "core/rational/basics", test_core_rational_basics },
         { "core/rational/reduction", test_core_rational_reduction },

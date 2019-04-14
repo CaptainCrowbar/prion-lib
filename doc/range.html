@@ -517,11 +517,6 @@ reflex forms.</p>
 </tr>
 <tr>
 <td></td>
-<td><code>R &gt;&gt;</code> <strong><code>statistics</code></strong> <code>-&gt; Statistics</code></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
 <td><code>R &gt;&gt;</code> <strong><code>sum</code></strong><code>[(T)] -&gt; T</code></td>
 <td></td>
 </tr>
@@ -709,11 +704,6 @@ reflex forms.</p>
 <td></td>
 <td><code>PR &gt;&gt;</code> <strong><code>swap_pairs</code></strong> <code>-&gt; PR</code></td>
 <td><code>PC&amp; &lt;&lt;</code> <strong><code>swap_pairs</code></strong></td>
-</tr>
-<tr>
-<td></td>
-<td><code>R &gt;&gt;</code> <strong><code>stringify</code></strong> <code>-&gt; R</code></td>
-<td></td>
 </tr>
 <tr>
 <td></td>
@@ -1118,15 +1108,6 @@ multiplication operators.</p>
 <p>Return the maximum and minimum values in the range, according to the
 comparison predicate.</p>
 </div>
-<div class="defns">
-<ul>
-<li><code>Range r &gt;&gt;</code> <strong><code>statistics</code></strong> <code>-&gt; Statistics&lt;T&gt;</code></li>
-</ul>
-<p>Compiles statistics on the range, whose value type must be a valid argument to
-<code>Statistics::operator()</code>. The data type in <code>Statistics&lt;T&gt;</code> is deduced from the
-range value type, and defaults to <code>double</code> if that type is an integer. The
-<code>Statistics</code> template is defined in <a href="statistics.html"><code>rs-core/statistics</code></a>.</p>
-</div>
 <h3 id="selection-algorithms">Selection algorithms</h3>
 <p><em>Selection algorithms return a subset of the input range</em></p>
 <div class="defns">
@@ -1187,8 +1168,10 @@ The <code>sample_k()</code> algorithm selects a sample of <code>k</code> element
 undefined if <code>k&gt;n</code>. The <code>sample_p()</code> algorithm selects each element with
 probability <code>p</code>; behaviour is undefined if <code>p&lt;0</code> or <code>p&gt;1</code>. The
 <code>sample_replace()</code> algorithm selects a random element <code>k</code> times, with
-replacement. For the first two the elements in the output range are in the
-same order as they were in the input.</p>
+replacement. For <code>sample_k()</code> and <code>sample_p()</code>, the elements in the output
+range are in the same order as they were in the input. None of these
+algorithms are guaranteed to produce identical output in different compilation
+environments.</p>
 </div>
 <div class="defns">
 <ul>
@@ -1332,12 +1315,6 @@ passed through unchanged.</p>
 </ul>
 <p>Input elements equal to <code>t1</code>, or matching the predicate, are replaced with
 <code>t2</code>; other input elements are passed through unchanged.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>Range r &gt;&gt;</code> <strong><code>stringify</code></strong> <code>-&gt; Range2</code></li>
-</ul>
-<p>Converts each element to a string (using <code>to_str()</code>).</p>
 </div>
 <div class="defns">
 <ul>

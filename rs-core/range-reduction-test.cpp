@@ -1,5 +1,4 @@
 #include "rs-core/range-reduction.hpp"
-#include "rs-core/statistics.hpp"
 #include "rs-core/string.hpp"
 #include "rs-core/unit-test.hpp"
 #include <functional>
@@ -132,65 +131,6 @@ void test_core_range_reduction_reduce() {
     TRY(n = v5 >> (passthrough * reduce(std::plus<>())));  TEST_EQUAL(n, 15);
     TRY(n = v5 >> passthrough >> reduce(f));               TEST_EQUAL(n, 57);
     TRY(n = v5 >> (passthrough * reduce(f)));              TEST_EQUAL(n, 57);
-
-}
-
-void test_core_range_reduction_statistics() {
-
-    Statistics<double> stat;
-    std::vector<int> v = {2,3,5,7,11,13,17,19,23,29};
-    TRY(stat = v >> statistics);
-    TEST_EQUAL(stat.count(), 10);
-    TEST_EQUAL(stat.min(), 2);
-    TEST_EQUAL(stat.max(), 29);
-    TEST_NEAR(stat.mean(), 12.9);
-    TEST_NEAR(stat.sd(), 8.560958);
-    TEST_NEAR(stat.sd_bc(), 9.024042);
-
-    TRY(stat = v >> (passthrough * statistics));
-    TEST_EQUAL(stat.count(), 10);
-    TEST_EQUAL(stat.min(), 2);
-    TEST_EQUAL(stat.max(), 29);
-    TEST_NEAR(stat.mean(), 12.9);
-    TEST_NEAR(stat.sd(), 8.560958);
-    TEST_NEAR(stat.sd_bc(), 9.024042);
-
-    std::map<double, double> m = {{1,2},{2,3},{3,5},{4,7},{5,11},{6,13},{7,17},{8,19},{9,23},{10,29}};
-    TRY(stat = m >> statistics);
-    TEST_EQUAL(stat.count(), 10);
-    TEST_EQUAL(stat.min(0), 1);
-    TEST_EQUAL(stat.max(0), 10);
-    TEST_EQUAL(stat.min(1), 2);
-    TEST_EQUAL(stat.max(1), 29);
-    TEST_EQUAL(stat.mean(0), 5.5);
-    TEST_NEAR(stat.mean(1), 12.9);
-    TEST_NEAR(stat.sd(0), 2.872281);
-    TEST_NEAR(stat.sd(1), 8.560958);
-    TEST_NEAR(stat.sd_bc(0), 3.027650);
-    TEST_NEAR(stat.sd_bc(1), 9.024042);
-    TEST_NEAR(stat.correlation(), 0.986194);
-    TEST_NEAR(stat.linear(0,1).first, 2.939394);
-    TEST_NEAR(stat.linear(0,1).second, -3.266667);
-    TEST_NEAR(stat.linear(1,0).first, 0.330877);
-    TEST_NEAR(stat.linear(1,0).second, 1.231682);
-
-    TRY(stat = m >> (passthrough * statistics));
-    TEST_EQUAL(stat.count(), 10);
-    TEST_EQUAL(stat.min(0), 1);
-    TEST_EQUAL(stat.max(0), 10);
-    TEST_EQUAL(stat.min(1), 2);
-    TEST_EQUAL(stat.max(1), 29);
-    TEST_EQUAL(stat.mean(0), 5.5);
-    TEST_NEAR(stat.mean(1), 12.9);
-    TEST_NEAR(stat.sd(0), 2.872281);
-    TEST_NEAR(stat.sd(1), 8.560958);
-    TEST_NEAR(stat.sd_bc(0), 3.027650);
-    TEST_NEAR(stat.sd_bc(1), 9.024042);
-    TEST_NEAR(stat.correlation(), 0.986194);
-    TEST_NEAR(stat.linear(0,1).first, 2.939394);
-    TEST_NEAR(stat.linear(0,1).second, -3.266667);
-    TEST_NEAR(stat.linear(1,0).first, 0.330877);
-    TEST_NEAR(stat.linear(1,0).second, 1.231682);
 
 }
 

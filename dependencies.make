@@ -4,7 +4,7 @@ $(BUILD)/array-map-test.o: rs-core/array-map-test.cpp rs-core/array-map.hpp rs-c
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/astronomy-test.o: rs-core/astronomy-test.cpp rs-core/astronomy.hpp rs-core/common.hpp rs-core/float.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp \
     /usr/local/include/unicorn/utility.hpp
-$(BUILD)/astronomy.o: rs-core/astronomy.cpp rs-core/astronomy.hpp rs-core/common.hpp rs-core/float.hpp rs-core/int128.hpp rs-core/meta.hpp rs-core/random.hpp rs-core/range-aggregation.hpp rs-core/range-combination.hpp rs-core/range-core.hpp rs-core/range-expansion.hpp rs-core/range-generation.hpp rs-core/range-permutation.hpp rs-core/range-reduction.hpp rs-core/range-selection.hpp rs-core/range-transformation.hpp rs-core/range.hpp rs-core/rational.hpp rs-core/statistics.hpp rs-core/string.hpp rs-core/vector.hpp \
+$(BUILD)/astronomy.o: rs-core/astronomy.cpp rs-core/astronomy.hpp rs-core/common.hpp rs-core/float.hpp rs-core/meta.hpp rs-core/range-aggregation.hpp rs-core/range-combination.hpp rs-core/range-core.hpp rs-core/range-expansion.hpp rs-core/range-generation.hpp rs-core/range-permutation.hpp rs-core/range-reduction.hpp rs-core/range-selection.hpp rs-core/range-transformation.hpp rs-core/range.hpp rs-core/string.hpp rs-core/vector.hpp \
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/regex.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/auto-array-test.o: rs-core/auto-array-test.cpp rs-core/auto-array.hpp rs-core/common.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
@@ -100,13 +100,13 @@ $(BUILD)/range-core-test.o: rs-core/range-core-test.cpp rs-core/common.hpp rs-co
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/range-expansion-test.o: rs-core/range-expansion-test.cpp rs-core/common.hpp rs-core/meta.hpp rs-core/range-core.hpp rs-core/range-expansion.hpp rs-core/string.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
-$(BUILD)/range-generation-test.o: rs-core/range-generation-test.cpp rs-core/common.hpp rs-core/float.hpp rs-core/int128.hpp rs-core/meta.hpp rs-core/random.hpp rs-core/range-core.hpp rs-core/range-generation.hpp rs-core/range-selection.hpp rs-core/rational.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp \
+$(BUILD)/range-generation-test.o: rs-core/range-generation-test.cpp rs-core/common.hpp rs-core/meta.hpp rs-core/range-core.hpp rs-core/range-generation.hpp rs-core/range-selection.hpp rs-core/string.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/range-permutation-test.o: rs-core/range-permutation-test.cpp rs-core/common.hpp rs-core/meta.hpp rs-core/range-core.hpp rs-core/range-permutation.hpp rs-core/string.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
-$(BUILD)/range-reduction-test.o: rs-core/range-reduction-test.cpp rs-core/common.hpp rs-core/float.hpp rs-core/int128.hpp rs-core/meta.hpp rs-core/random.hpp rs-core/range-core.hpp rs-core/range-permutation.hpp rs-core/range-reduction.hpp rs-core/rational.hpp rs-core/statistics.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp \
+$(BUILD)/range-reduction-test.o: rs-core/range-reduction-test.cpp rs-core/common.hpp rs-core/meta.hpp rs-core/range-core.hpp rs-core/range-permutation.hpp rs-core/range-reduction.hpp rs-core/string.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
-$(BUILD)/range-selection-test.o: rs-core/range-selection-test.cpp rs-core/common.hpp rs-core/float.hpp rs-core/int128.hpp rs-core/meta.hpp rs-core/random.hpp rs-core/range-core.hpp rs-core/range-selection.hpp rs-core/rational.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp \
+$(BUILD)/range-selection-test.o: rs-core/range-selection-test.cpp rs-core/common.hpp rs-core/meta.hpp rs-core/range-core.hpp rs-core/range-selection.hpp rs-core/string.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/range-transformation-test.o: rs-core/range-transformation-test.cpp rs-core/common.hpp rs-core/meta.hpp rs-core/range-core.hpp rs-core/range-transformation.hpp rs-core/string.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
@@ -132,8 +132,8 @@ $(BUILD)/statistics-test.o: rs-core/statistics-test.cpp rs-core/common.hpp rs-co
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/string-test.o: rs-core/string-test.cpp rs-core/common.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
-$(BUILD)/string.o: rs-core/string.cpp rs-core/common.hpp rs-core/meta.hpp rs-core/string.hpp \
-    /usr/local/include/unicorn/utility.hpp
+$(BUILD)/string.o: rs-core/string.cpp rs-core/common.hpp rs-core/meta.hpp rs-core/range-aggregation.hpp rs-core/range-combination.hpp rs-core/range-core.hpp rs-core/range-expansion.hpp rs-core/range-generation.hpp rs-core/range-permutation.hpp rs-core/range-reduction.hpp rs-core/range-selection.hpp rs-core/range-transformation.hpp rs-core/range.hpp rs-core/string.hpp \
+    /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/regex.hpp /usr/local/include/unicorn/segment.hpp /usr/local/include/unicorn/string.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/table-test.o: rs-core/table-test.cpp rs-core/common.hpp rs-core/table.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/table.o: rs-core/table.cpp rs-core/common.hpp rs-core/table.hpp \

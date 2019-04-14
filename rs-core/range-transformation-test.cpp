@@ -214,19 +214,6 @@ void test_core_range_transformation_replace() {
 
 }
 
-void test_core_range_transformation_stringify() {
-
-    Strings sv;
-    std::vector<int> iv(10);
-
-    std::iota(iv.begin(), iv.end(), 1);
-
-    TRY(iv >> stringify >> overwrite(sv));                                TEST_EQUAL(to_str(sv), "[1,2,3,4,5,6,7,8,9,10]");
-    TRY(iv >> passthrough >> stringify >> passthrough >> overwrite(sv));  TEST_EQUAL(to_str(sv), "[1,2,3,4,5,6,7,8,9,10]");
-    TRY(iv >> passthrough * stringify * passthrough >> overwrite(sv));    TEST_EQUAL(to_str(sv), "[1,2,3,4,5,6,7,8,9,10]");
-
-}
-
 void test_core_range_transformation_swap_pairs() {
 
     std::map<int, Ustring> ism = {{1, "alpha"}, {2, "bravo"}, {3, "charlie"}};

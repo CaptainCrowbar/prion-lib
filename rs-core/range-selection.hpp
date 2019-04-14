@@ -1,10 +1,10 @@
 #pragma once
 
-#include "rs-core/random.hpp"
 #include "rs-core/range-core.hpp"
 #include <algorithm>
 #include <functional>
 #include <iterator>
+#include <random>
 
 namespace RS::Range {
 
@@ -309,7 +309,8 @@ namespace RS::Range {
         size_t n = std::distance(b, e), m = std::min(rhs.num, n);
         auto result = make_shared_range<Meta::RangeValue<RandomAccessRange>>(b, b + m);
         for (size_t i = m; i < n; ++i) {
-            auto j = random_integer(i)(*rhs.rng);
+            std::uniform_int_distribution<size_t> dist(0, i - 1);
+            auto j = dist(*rhs.rng);
             if (j < m)
                 result.first[j] = b[i];
         }
@@ -349,16 +350,17 @@ namespace RS::Range {
         using underlying_iterator = Meta::RangeIterator<const Range>;
         using value_type = Meta::RangeValue<Range>;
         SampleByProbIterator() = default;
-        SampleByProbIterator(underlying_iterator i, underlying_iterator e, double p, RandomEngine* r): iter(i), end(e), prob(p), rng(r) { update(); }
+        SampleByProbIterator(underlying_iterator i, underlying_iterator e, double p, RandomEngine* r): iter(i), end(e), dist(p), rng(r) { update(); }
         const auto& operator*() const noexcept { return *iter; }
         SampleByProbIterator& operator++() { ++iter; update(); return *this; }
         bool operator==(const SampleByProbIterator& rhs) const noexcept { return iter == rhs.iter; }
     private:
         underlying_iterator iter;
         underlying_iterator end;
+        std::bernoulli_distribution dist;
         double prob = 0;
         RandomEngine* rng = nullptr;
-        void update() { while (iter != end && ! random_boolean(prob)(*rng)) ++iter; }
+        void update() { while (iter != end && ! dist(*rng)) ++iter; }
     };
 
     template <typename Range, typename RandomEngine>
@@ -374,7 +376,8 @@ namespace RS::Range {
         using std::begin;
         using std::end;
         Container temp;
-        std::copy_if(begin(lhs), end(lhs), append(temp), [&] (auto&) { return random_boolean(rhs.prob)(*rhs.rng); });
+        std::bernoulli_distribution dist(rhs.prob);
+        std::copy_if(begin(lhs), end(lhs), append(temp), [&] (auto&) { return dist(*rhs.rng); });
         lhs = move(temp);
         return lhs;
     }
@@ -401,9 +404,9 @@ namespace RS::Range {
         auto b = begin(lhs), e = end(lhs);
         size_t n = std::distance(b, e);
         auto result = make_shared_range<Meta::RangeValue<RandomAccessRange>>(rhs.num);
-        auto gen = random_integer(n);
+        std::uniform_int_distribution<size_t> dist(0, n - 1);
         for (auto& x: result)
-            x = b[gen(*rhs.rng)];
+            x = b[dist(*rhs.rng)];
         return result;
     }
 

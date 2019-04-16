@@ -77,7 +77,6 @@ void test_core_thread_pool_timing() {
     double total = double(duration_cast<nanoseconds>(stop - start).count());
     double each = total / double(iterations);
     double rate = 1e9 / each;
-    (void)rate;
-    // std::cout << "... Calls per second = " << fp_format(rate, 'f', 0) << std::endl;
+    std::cout << "... Calls per second = " << fp_format(rate, 'f', 0) << std::endl;
 
 }

@@ -76,6 +76,8 @@ void test_core_float_arithmetic_constants() {
 
 void test_core_float_arithmetic_functions() {
 
+    double x, y, z;
+
     TEST_EQUAL(c_pow(0.0, 0), 1.0);
     TEST_EQUAL(c_pow(0.0, 1), 0.0);
     TEST_EQUAL(c_pow(0.0, 2), 0.0);
@@ -194,6 +196,29 @@ void test_core_float_arithmetic_functions() {
     TEST_EQUAL(iceil<double>(-0.5), 0.0);    TEST_EQUAL(ifloor<double>(-0.5), -1.0);   TEST_EQUAL(iround<double>(-0.5), 0.0);
     TEST_EQUAL(iceil<double>(-0.75), 0.0);   TEST_EQUAL(ifloor<double>(-0.75), -1.0);  TEST_EQUAL(iround<double>(-0.75), -1.0);
     TEST_EQUAL(iceil<double>(-1), -1.0);     TEST_EQUAL(ifloor<double>(-1), -1.0);     TEST_EQUAL(iround<double>(-1), -1.0);
+
+    x = -5;  TRY(y = logistic(x));   TEST_NEAR(y, 0.006693);   TRY(z = inverse_logistic(y));   TEST_NEAR(z, x);
+    x = -4;  TRY(y = logistic(x));   TEST_NEAR(y, 0.017986);   TRY(z = inverse_logistic(y));   TEST_NEAR(z, x);
+    x = -3;  TRY(y = logistic(x));   TEST_NEAR(y, 0.047426);   TRY(z = inverse_logistic(y));   TEST_NEAR(z, x);
+    x = -2;  TRY(y = logistic(x));   TEST_NEAR(y, 0.119203);   TRY(z = inverse_logistic(y));   TEST_NEAR(z, x);
+    x = -1;  TRY(y = logistic(x));   TEST_NEAR(y, 0.268941);   TRY(z = inverse_logistic(y));   TEST_NEAR(z, x);
+    x = 0;   TRY(y = logistic(x));   TEST_NEAR(y, 0.5);        TRY(z = inverse_logistic(y));   TEST_NEAR(z, x);
+    x = 1;   TRY(y = logistic(x));   TEST_NEAR(y, 0.731059);   TRY(z = inverse_logistic(y));   TEST_NEAR(z, x);
+    x = 2;   TRY(y = logistic(x));   TEST_NEAR(y, 0.880797);   TRY(z = inverse_logistic(y));   TEST_NEAR(z, x);
+    x = 3;   TRY(y = logistic(x));   TEST_NEAR(y, 0.952574);   TRY(z = inverse_logistic(y));   TEST_NEAR(z, x);
+    x = 4;   TRY(y = logistic(x));   TEST_NEAR(y, 0.982014);   TRY(z = inverse_logistic(y));   TEST_NEAR(z, x);
+    x = 5;   TRY(y = logistic(x));   TEST_NEAR(y, 0.993307);   TRY(z = inverse_logistic(y));   TEST_NEAR(z, x);
+    x = -5;  TRY(y = logistic2(x));  TEST_NEAR(y, -0.986614);  TRY(z = inverse_logistic2(y));  TEST_NEAR(z, x);
+    x = -4;  TRY(y = logistic2(x));  TEST_NEAR(y, -0.964028);  TRY(z = inverse_logistic2(y));  TEST_NEAR(z, x);
+    x = -3;  TRY(y = logistic2(x));  TEST_NEAR(y, -0.905148);  TRY(z = inverse_logistic2(y));  TEST_NEAR(z, x);
+    x = -2;  TRY(y = logistic2(x));  TEST_NEAR(y, -0.761594);  TRY(z = inverse_logistic2(y));  TEST_NEAR(z, x);
+    x = -1;  TRY(y = logistic2(x));  TEST_NEAR(y, -0.462117);  TRY(z = inverse_logistic2(y));  TEST_NEAR(z, x);
+    x = 0;   TRY(y = logistic2(x));  TEST_NEAR(y, 0);          TRY(z = inverse_logistic2(y));  TEST_NEAR(z, x);
+    x = 1;   TRY(y = logistic2(x));  TEST_NEAR(y, 0.462117);   TRY(z = inverse_logistic2(y));  TEST_NEAR(z, x);
+    x = 2;   TRY(y = logistic2(x));  TEST_NEAR(y, 0.761594);   TRY(z = inverse_logistic2(y));  TEST_NEAR(z, x);
+    x = 3;   TRY(y = logistic2(x));  TEST_NEAR(y, 0.905148);   TRY(z = inverse_logistic2(y));  TEST_NEAR(z, x);
+    x = 4;   TRY(y = logistic2(x));  TEST_NEAR(y, 0.964028);   TRY(z = inverse_logistic2(y));  TEST_NEAR(z, x);
+    x = 5;   TRY(y = logistic2(x));  TEST_NEAR(y, 0.986614);   TRY(z = inverse_logistic2(y));  TEST_NEAR(z, x);
 
     TEST_EQUAL(round_to_digits(0.0, 1), 0);
     TEST_EQUAL(round_to_digits(0.0, 2), 0);

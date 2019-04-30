@@ -133,9 +133,13 @@ namespace RS {
     template <typename T2, typename T1> T2 iceil(T1 value) noexcept { return RS_Detail::Round<T2, T1, '>'>()(value); }
     template <typename T2, typename T1> T2 ifloor(T1 value) noexcept { return RS_Detail::Round<T2, T1, '<'>()(value); }
     template <typename T2, typename T1> T2 iround(T1 value) noexcept { return RS_Detail::Round<T2, T1, '='>()(value); }
+    template <typename T> T logistic(T x) noexcept { return T(1) / (T(1) + std::exp(- x)); }
+    template <typename T> T logistic2(T x) noexcept { return T(2) * logistic(x) - T(1); }
+    template <typename T> T inverse_logistic(T x) noexcept { return - std::log(T(1) / x - T(1)); }
+    template <typename T> T inverse_logistic2(T x) noexcept { return inverse_logistic((x + T(1)) / T(2)); }
 
     template <typename T>
-    T round_to_digits(T x, int prec) {
+    T round_to_digits(T x, int prec) noexcept {
         static_assert(std::is_floating_point_v<T>);
         if (x == 0)
             return 0;

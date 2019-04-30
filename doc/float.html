@@ -327,7 +327,18 @@ rules apply if the result is not representable by the return type.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; T</code> <strong><code>round_to_digits</code></strong><code>(T x, int prec)</code></li>
+<li><code>template &lt;typename T&gt; T</code> <strong><code>logistic</code></strong><code>(T x) noexcept</code></li>
+<li><code>template &lt;typename T&gt; T</code> <strong><code>logistic2</code></strong><code>(T x) noexcept</code></li>
+<li><code>template &lt;typename T&gt; T</code> <strong><code>inverse_logistic</code></strong><code>(T x) noexcept</code></li>
+<li><code>template &lt;typename T&gt; T</code> <strong><code>inverse_logistic2</code></strong><code>(T x) noexcept</code></li>
+</ul>
+<p>The logistic function <em>&sigma;(x)=1/(1+exp(-x))</em> and its inverse. The
+<code>logistic2()</code> function transforms the output to the range <code>(-1,1)</code> instead of
+<code>(0,1)</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; T</code> <strong><code>round_to_digits</code></strong><code>(T x, int prec) noexcept</code></li>
 </ul>
 <p>Rounds the first argument to the specified number of significant digits
 (minimum 1).</p>

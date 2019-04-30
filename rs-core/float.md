@@ -118,7 +118,16 @@ infinity (`ifloor()`), or to the nearest integer (`iround()`; halves round
 up), converting the result to the specified return type. The usual arithmetic
 rules apply if the result is not representable by the return type.
 
-* `template <typename T> T` **`round_to_digits`**`(T x, int prec)`
+* `template <typename T> T` **`logistic`**`(T x) noexcept`
+* `template <typename T> T` **`logistic2`**`(T x) noexcept`
+* `template <typename T> T` **`inverse_logistic`**`(T x) noexcept`
+* `template <typename T> T` **`inverse_logistic2`**`(T x) noexcept`
+
+The logistic function _&sigma;(x)=1/(1+exp(-x))_ and its inverse. The
+`logistic2()` function transforms the output to the range `(-1,1)` instead of
+`(0,1)`.
+
+* `template <typename T> T` **`round_to_digits`**`(T x, int prec) noexcept`
 
 Rounds the first argument to the specified number of significant digits
 (minimum 1).

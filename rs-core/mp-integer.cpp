@@ -134,7 +134,7 @@ namespace RS {
     size_t Nat::bits_set() const noexcept {
         size_t n = 0;
         for (auto i: rep)
-            n += ibits(i);
+            n += popcount(i);
         return n;
     }
 

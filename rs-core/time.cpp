@@ -173,7 +173,7 @@ namespace RS {
     system_clock::time_point parse_date(Uview str, uint32_t flags) {
         uint32_t order = flags & (ymd_order | dmy_order | mdy_order);
         uint32_t zone = flags & (utc_zone | local_zone);
-        if (ibits(order) > 1 || ibits(zone) > 1 || flags - order - zone)
+        if (popcount(order) > 1 || popcount(zone) > 1 || flags - order - zone)
             throw std::invalid_argument("Invalid date flags: 0x" + hex(flags, 1));
         int year = 0, month = 0, day = 0, hour = 0, min = 0;
         double sec = 0;

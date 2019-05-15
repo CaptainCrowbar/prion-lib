@@ -484,6 +484,12 @@ the final `else` clause of an `if constexpr` statement.
 
 Powers of 2<sup>10</sup>.
 
+* `template <int N> constexpr [unsigned integer]` **`setbit`** `= 1 << N`
+
+`[unicorn]` An integer constant with bit `N` set. The return type is the
+smallest unsigned integer (not counting `bool`) that will hold the value.
+Behaviour is undefined if `N<0` or `N>63`.
+
 ### Arithmetic literals ###
 
 * `namespace RS::`**`Literals`**

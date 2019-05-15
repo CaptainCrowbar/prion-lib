@@ -40,17 +40,17 @@ namespace RS {
     }
 
     enum class Mark: uint32_t {
-        none           = 0,                 // Empty bitmask
-        implicit_in    = uint32_t(1) << 0,  // Implicit conversion from T to Marked
-        implicit_out   = uint32_t(1) << 1,  // Implicit conversion from Marked to T
-        no_copy        = uint32_t(1) << 2,  // Marked type is move only
-        no_move        = uint32_t(1) << 3,  // Marked type is not copyable or movable
-        reset_on_move  = uint32_t(1) << 4,  // Moving resets the contained T to its default (implies no_copy)
-        arithmetic     = uint32_t(1) << 5,  // Define arithmetic operators
-        function       = uint32_t(1) << 6,  // Define function call operators
-        subscript      = uint32_t(1) << 7,  // Define subscript operators
-        string_tag     = uint32_t(1) << 8,  // String format is tagged with ID
-        json_tag       = uint32_t(1) << 9,  // JSON format is tagged with ID
+        none           = 0,          // Empty bitmask
+        implicit_in    = setbit<0>,  // Implicit conversion from T to Marked
+        implicit_out   = setbit<1>,  // Implicit conversion from Marked to T
+        no_copy        = setbit<2>,  // Marked type is move only
+        no_move        = setbit<3>,  // Marked type is not copyable or movable
+        reset_on_move  = setbit<4>,  // Moving resets the contained T to its default (implies no_copy)
+        arithmetic     = setbit<5>,  // Define arithmetic operators
+        function       = setbit<6>,  // Define function call operators
+        subscript      = setbit<7>,  // Define subscript operators
+        string_tag     = setbit<8>,  // String format is tagged with ID
+        json_tag       = setbit<9>,  // JSON format is tagged with ID
     };
 
     RS_BITMASK_OPERATORS(Mark);

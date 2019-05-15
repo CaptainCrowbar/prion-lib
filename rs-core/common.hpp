@@ -427,10 +427,10 @@ namespace RS {
 
     // Other constants
 
-    constexpr unsigned KB = 1u << 10;
-    constexpr unsigned long MB = 1ul << 20;
-    constexpr unsigned long GB = 1ul << 30;
-    constexpr unsigned long long TB = 1ull << 40;
+    constexpr auto KB = setbit<10>;
+    constexpr auto MB = setbit<20>;
+    constexpr auto GB = setbit<30>;
+    constexpr auto TB = setbit<40>;
 
     // [Algorithms and ranges]
 

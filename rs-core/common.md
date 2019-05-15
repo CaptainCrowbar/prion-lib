@@ -477,10 +477,10 @@ the final `else` clause of an `if constexpr` statement.
 
 ### Arithmetic constants ###
 
-* `constexpr unsigned` **`KB`** `= 1024`
-* `constexpr unsigned long` **`MB`** `= 1 048 576`
-* `constexpr unsigned long` **`GB`** `= 1 073 741 824`
-* `constexpr unsigned long long` **`TB`** `= 1 099 511 627 776`
+* `constexpr [unsigned integer]` **`KB`** `= 1024`
+* `constexpr [unsigned integer]` **`MB`** `= 1 048 576`
+* `constexpr [unsigned integer]` **`GB`** `= 1 073 741 824`
+* `constexpr [unsigned integer]` **`TB`** `= 1 099 511 627 776`
 
 Powers of 2<sup>10</sup>.
 

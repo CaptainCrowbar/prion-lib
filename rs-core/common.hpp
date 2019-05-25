@@ -208,10 +208,28 @@ namespace RS {
         template <> struct IntegerType<32> { using signed_type = int32_t; using unsigned_type = uint32_t; };
         template <> struct IntegerType<64> { using signed_type = int64_t; using unsigned_type = uint64_t; };
 
+        template <typename T, typename... TS> class TypeBySize {
+        private:
+            using X = TypeBySize<TS...>;
+            using L = typename X::larger_type;
+            using S = typename X::smaller_type;
+        public:
+            using larger_type = std::conditional_t<(sizeof(T) >= sizeof(L)), T, L>;
+            using smaller_type = std::conditional_t<(sizeof(T) <= sizeof(S)), T, S>;
+        };
+
+        template <typename T> class TypeBySize<T> {
+        public:
+            using larger_type = T;
+            using smaller_type = T;
+        };
+
     }
 
     template <typename T> using BinaryType = typename RS_Detail::IntegerType<8 * sizeof(T)>::unsigned_type;
     template <typename T1, typename T2> using CopyConst = std::conditional_t<std::is_const<T1>::value, std::add_const_t<T2>, std::remove_const_t<T2>>;
+    template <typename... TS> using LargerType = typename RS_Detail::TypeBySize<TS...>::larger_type;
+    template <typename... TS> using SmallerType = typename RS_Detail::TypeBySize<TS...>::smaller_type;
     template <size_t Bits> using SignedInteger = typename RS_Detail::IntegerType<Bits>::signed_type;
     template <size_t Bits> using UnsignedInteger = typename RS_Detail::IntegerType<Bits>::unsigned_type;
 

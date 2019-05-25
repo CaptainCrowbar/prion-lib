@@ -458,6 +458,19 @@ void test_core_common_metaprogramming() {
     {  using type = CopyConst<const int, std::string>;        TEST_TYPE(type, const std::string);  }
     {  using type = CopyConst<const int, const std::string>;  TEST_TYPE(type, const std::string);  }
 
+    {  using type = LargerType<int16_t>;                     TEST_TYPE(type, int16_t);  }
+    {  using type = LargerType<int16_t, int32_t>;            TEST_TYPE(type, int32_t);  }
+    {  using type = LargerType<int32_t, int16_t>;            TEST_TYPE(type, int32_t);  }
+    {  using type = LargerType<int16_t, int32_t, int64_t>;   TEST_TYPE(type, int64_t);  }
+    {  using type = LargerType<int64_t, int32_t, int16_t>;   TEST_TYPE(type, int64_t);  }
+    {  using type = LargerType<int32_t, int64_t, int16_t>;   TEST_TYPE(type, int64_t);  }
+    {  using type = SmallerType<int16_t>;                    TEST_TYPE(type, int16_t);  }
+    {  using type = SmallerType<int16_t, int32_t>;           TEST_TYPE(type, int16_t);  }
+    {  using type = SmallerType<int32_t, int16_t>;           TEST_TYPE(type, int16_t);  }
+    {  using type = SmallerType<int16_t, int32_t, int64_t>;  TEST_TYPE(type, int16_t);  }
+    {  using type = SmallerType<int64_t, int32_t, int16_t>;  TEST_TYPE(type, int16_t);  }
+    {  using type = SmallerType<int64_t, int16_t, int32_t>;  TEST_TYPE(type, int16_t);  }
+
     TEST_TYPE(SignedInteger<8>, int8_t);
     TEST_TYPE(SignedInteger<16>, int16_t);
     TEST_TYPE(SignedInteger<32>, int32_t);

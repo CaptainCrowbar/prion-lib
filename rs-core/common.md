@@ -442,6 +442,12 @@ it) from `T1` to the unqualified type of `T2`. For example, `CopyConst<int,
 const string>` yields `string`, while `CopyConst<const int, string>` yields
 `const string`.
 
+* `template <typename... TS> using` **`LargerType`** `= [largest type]`
+* `template <typename... TS> using` **`SmallerType`** `= [smallest type]`
+
+The largest or smallest type (by `sizeof`) in the argument list. In the event
+of a tie, the first qualifying type in the list is used.
+
 * `template <size_t Bits> using` **`SignedInteger`** `= [signed integer type]`
 * `template <size_t Bits> using` **`UnsignedInteger`** `= [unsigned integer type]`
 

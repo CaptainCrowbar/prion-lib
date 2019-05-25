@@ -626,6 +626,14 @@ const string&gt;</code> yields <code>string</code>, while <code>CopyConst&lt;con
 </div>
 <div class="defns">
 <ul>
+<li><code>template &lt;typename... TS&gt; using</code> <strong><code>LargerType</code></strong> <code>= [largest type]</code></li>
+<li><code>template &lt;typename... TS&gt; using</code> <strong><code>SmallerType</code></strong> <code>= [smallest type]</code></li>
+</ul>
+<p>The largest or smallest type (by <code>sizeof</code>) in the argument list. In the event
+of a tie, the first qualifying type in the list is used.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>template &lt;size_t Bits&gt; using</code> <strong><code>SignedInteger</code></strong> <code>= [signed integer type]</code></li>
 <li><code>template &lt;size_t Bits&gt; using</code> <strong><code>UnsignedInteger</code></strong> <code>= [unsigned integer type]</code></li>
 </ul>

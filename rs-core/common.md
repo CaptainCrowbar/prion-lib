@@ -708,6 +708,16 @@ return zero if either pointer is null.
 Swap two blocks of memory. This will work if the two ranges overlap or are the
 same, but behaviour is undefined if either pointer is null.
 
+* `template <typename T> T` **`read_be`**`(const void* src) noexcept`
+* `template <typename T> void` **`read_be`**`(const void* src, T& dst) noexcept`
+* `template <typename T> T` **`read_le`**`(const void* src) noexcept`
+* `template <typename T> void` **`read_le`**`(const void* src, T& dst) noexcept`
+* `template <typename T> void` **`write_be`**`(T src, void* dst) noexcept`
+* `template <typename T> void` **`write_le`**`(T src, void* dst) noexcept`
+
+Read or write integers to memory, in big or little endian order. `T` must be a
+scalar type; the number of bytes read or written matches the size of `T`.
+
 ## Arithmetic functions ##
 
 ### Generic arithmetic functions ###

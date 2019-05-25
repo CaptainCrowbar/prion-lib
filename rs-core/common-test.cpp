@@ -1129,6 +1129,36 @@ void test_core_common_memory_algorithms() {
     TEST_EQUAL(s1, "world");
     TEST_EQUAL(s2, "hello");
 
+    uint8_t a = 0, b = 0;
+    uint16_t c = 0, d = 0;
+    uint32_t e = 0, f = 0;
+    uint64_t g = 0, h = 0;
+
+    a = 0x12;                      TRY(b = read_be<uint8_t>(&a));   TEST_EQUAL(b, 0x12);
+    a = 0x12;                      TRY(b = read_le<uint8_t>(&a));   TEST_EQUAL(b, 0x12);
+    a = 0x12;                      TRY(read_be(&a, b));             TEST_EQUAL(b, 0x12);
+    a = 0x12;                      TRY(read_le(&a, b));             TEST_EQUAL(b, 0x12);
+    a = 0x12;                      TRY(write_be(a, &b));            TEST_EQUAL(b, 0x12);
+    a = 0x12;                      TRY(write_le(a, &b));            TEST_EQUAL(b, 0x12);
+    c = 0x1234;                    TRY(d = read_be<uint16_t>(&c));  TEST_EQUAL(d, 0x3412);
+    c = 0x1234;                    TRY(d = read_le<uint16_t>(&c));  TEST_EQUAL(d, 0x1234);
+    c = 0x1234;                    TRY(read_be(&c, d));             TEST_EQUAL(d, 0x3412);
+    c = 0x1234;                    TRY(read_le(&c, d));             TEST_EQUAL(d, 0x1234);
+    c = 0x1234;                    TRY(write_be(c, &d));            TEST_EQUAL(d, 0x3412);
+    c = 0x1234;                    TRY(write_le(c, &d));            TEST_EQUAL(d, 0x1234);
+    e = 0x1234'5678ul;             TRY(f = read_be<uint32_t>(&e));  TEST_EQUAL(f, 0x7856'3412ul);
+    e = 0x1234'5678ul;             TRY(f = read_le<uint32_t>(&e));  TEST_EQUAL(f, 0x1234'5678ul);
+    e = 0x1234'5678ul;             TRY(read_be(&e, f));             TEST_EQUAL(f, 0x7856'3412ul);
+    e = 0x1234'5678ul;             TRY(read_le(&e, f));             TEST_EQUAL(f, 0x1234'5678ul);
+    e = 0x1234'5678ul;             TRY(write_be(e, &f));            TEST_EQUAL(f, 0x7856'3412ul);
+    e = 0x1234'5678ul;             TRY(write_le(e, &f));            TEST_EQUAL(f, 0x1234'5678ul);
+    g = 0x1234'5678'9abc'def0ull;  TRY(h = read_be<uint64_t>(&g));  TEST_EQUAL(h, 0xf0de'bc9a'7856'3412ull);
+    g = 0x1234'5678'9abc'def0ull;  TRY(h = read_le<uint64_t>(&g));  TEST_EQUAL(h, 0x1234'5678'9abc'def0ull);
+    g = 0x1234'5678'9abc'def0ull;  TRY(read_be(&g, h));             TEST_EQUAL(h, 0xf0de'bc9a'7856'3412ull);
+    g = 0x1234'5678'9abc'def0ull;  TRY(read_le(&g, h));             TEST_EQUAL(h, 0x1234'5678'9abc'def0ull);
+    g = 0x1234'5678'9abc'def0ull;  TRY(write_be(g, &h));            TEST_EQUAL(h, 0xf0de'bc9a'7856'3412ull);
+    g = 0x1234'5678'9abc'def0ull;  TRY(write_le(g, &h));            TEST_EQUAL(h, 0x1234'5678'9abc'def0ull);
+
 }
 
 void test_core_common_generic_arithmetic() {

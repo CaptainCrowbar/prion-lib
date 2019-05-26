@@ -79,6 +79,7 @@ extern void test_core_digest_djb2a();
 extern void test_core_digest_fnv1a_32();
 extern void test_core_digest_fnv1a_64();
 extern void test_core_digest_murmur3_32();
+extern void test_core_digest_siphash();
 extern void test_core_digest_md5();
 extern void test_core_digest_sha1();
 extern void test_core_digest_sha256();
@@ -530,6 +531,7 @@ int main() {
         { "core/digest/fnv1a-32", test_core_digest_fnv1a_32 },
         { "core/digest/fnv1a-64", test_core_digest_fnv1a_64 },
         { "core/digest/murmur3-32", test_core_digest_murmur3_32 },
+        { "core/digest/siphash", test_core_digest_siphash },
         { "core/digest/md5", test_core_digest_md5 },
         { "core/digest/sha1", test_core_digest_sha1 },
         { "core/digest/sha256", test_core_digest_sha256 },

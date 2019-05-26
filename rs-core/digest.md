@@ -62,6 +62,35 @@ as the other hash classes. The first version of `clear()` clears the hash
 state but keeps the previous seed; the second re-initializes the state from a
 new seed.
 
+### Sip hash ###
+
+* `template <typename T, size_t C = 2, size_t D = 4> class` **`SipHash`**
+    * `using SipHash::`**`key_type`** `= [uint32_t if T is 32-bit, otherwise uint64_t]`
+    * `using SipHash::`**`result_type`** `= T`
+    * `static constexpr size_t SipHash::`**`key_size`** `= 2 * sizeof(key_type)`
+    * `static constexpr size_t SipHash::`**`result_size`** `= sizeof(T)`
+    * `SipHash::`**`SipHash`**`() noexcept`
+    * `SipHash::`**`SipHash`**`(key_type k0, key_type k1) noexcept`
+    * `explicit SipHash::`**`SipHash`**`(const uint8_t* keyptr) noexcept`
+    * `void SipHash::`**`add`**`(const void* ptr, size_t len) noexcept`
+    * `void SipHash::`**`clear`**`() noexcept`
+    * `void SipHash::`**`clear`**`(key_type k0, key_type k1) noexcept`
+    * `void SipHash::`**`clear`**`(const uint8_t* keyptr) noexcept`
+    * `result_type SipHash::`**`get`**`() noexcept`
+* `using` **`SipHash32`** `= SipHash<uint32_t>`
+* `using` **`SipHash64`** `= SipHash<uint64_t>`
+* `using` **`SipHash128`** `= SipHash<Uint128>`
+
+SipHash is widely used as a hash table keying function to avoid hash flooding
+attacks. The result type `T` must be a 32, 64, or 128-bit unsigned integer
+(the [`Uint128`](int128.html) class can be used). The alternative
+"half-sip-hash" algorithm is used for the 32-bit hash.
+
+The key can be supplied either as a pair of integers (defaulting to `{0,0}`),
+or as a block of memory containing `key_size` bytes. The first version of
+`clear()` clears the hash state but keeps the previous seed; the other
+versions re-initialize the state from a new seed.
+
 ### Other general purpose hash functions ###
 
 <!-- DEFN -->

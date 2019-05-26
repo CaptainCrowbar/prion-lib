@@ -10,7 +10,7 @@ $(BUILD)/auto-array-test.o: rs-core/auto-array-test.cpp rs-core/auto-array.hpp r
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/blob-test.o: rs-core/blob-test.cpp rs-core/blob.hpp rs-core/common.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/utility.hpp
-$(BUILD)/blob.o: rs-core/blob.cpp rs-core/blob.hpp rs-core/common.hpp rs-core/digest.hpp rs-core/meta.hpp rs-core/string.hpp \
+$(BUILD)/blob.o: rs-core/blob.cpp rs-core/blob.hpp rs-core/common.hpp rs-core/digest.hpp rs-core/int128.hpp rs-core/meta.hpp rs-core/string.hpp \
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/segment.hpp /usr/local/include/unicorn/string.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/bounded-array-test.o: rs-core/bounded-array-test.cpp rs-core/bounded-array.hpp rs-core/common.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/segment.hpp /usr/local/include/unicorn/string.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
@@ -26,9 +26,9 @@ $(BUILD)/common.o: rs-core/common.cpp rs-core/common.hpp \
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/compact-array-test.o: rs-core/compact-array-test.cpp rs-core/common.hpp rs-core/compact-array.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/segment.hpp /usr/local/include/unicorn/string.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
-$(BUILD)/digest-test.o: rs-core/digest-test.cpp rs-core/common.hpp rs-core/digest.hpp rs-core/unit-test.hpp \
-    /usr/local/include/unicorn/utility.hpp
-$(BUILD)/digest.o: rs-core/digest.cpp rs-core/common.hpp rs-core/digest.hpp \
+$(BUILD)/digest-test.o: rs-core/digest-test.cpp rs-core/common.hpp rs-core/digest.hpp rs-core/float.hpp rs-core/int128.hpp rs-core/meta.hpp rs-core/random.hpp rs-core/rational.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp \
+    /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/segment.hpp /usr/local/include/unicorn/string.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
+$(BUILD)/digest.o: rs-core/digest.cpp rs-core/common.hpp rs-core/digest.hpp rs-core/int128.hpp \
     /usr/local/include/unicorn/utility.hpp
 $(BUILD)/dso-test.o: rs-core/dso-test.cpp rs-core/common.hpp rs-core/dso.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/path.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
@@ -62,7 +62,7 @@ $(BUILD)/io.o: rs-core/io.cpp rs-core/common.hpp rs-core/io.hpp rs-core/meta.hpp
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/path.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/segment.hpp /usr/local/include/unicorn/string.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/ipc-test.o: rs-core/ipc-test.cpp rs-core/common.hpp rs-core/ipc.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/time.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/segment.hpp /usr/local/include/unicorn/string.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
-$(BUILD)/ipc.o: rs-core/ipc.cpp rs-core/common.hpp rs-core/digest.hpp rs-core/ipc.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/time.hpp \
+$(BUILD)/ipc.o: rs-core/ipc.cpp rs-core/common.hpp rs-core/digest.hpp rs-core/int128.hpp rs-core/ipc.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/time.hpp \
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/segment.hpp /usr/local/include/unicorn/string.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/marked-test.o: rs-core/marked-test.cpp rs-core/array-map.hpp rs-core/auto-array.hpp rs-core/blob.hpp rs-core/channel.hpp rs-core/common.hpp rs-core/digest.hpp rs-core/float.hpp rs-core/grid.hpp rs-core/int128.hpp rs-core/ipc.hpp rs-core/marked.hpp rs-core/meta.hpp rs-core/mirror-map.hpp rs-core/mp-integer.hpp rs-core/optional.hpp rs-core/ordered-map.hpp rs-core/random.hpp rs-core/rational.hpp rs-core/serial.hpp rs-core/string.hpp rs-core/terminal.hpp rs-core/time.hpp rs-core/unit-test.hpp rs-core/uuid.hpp rs-core/vector.hpp \
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/path.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/segment.hpp /usr/local/include/unicorn/string.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
@@ -76,7 +76,7 @@ $(BUILD)/mp-integer.o: rs-core/mp-integer.cpp rs-core/common.hpp rs-core/meta.hp
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/segment.hpp /usr/local/include/unicorn/string.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/net-test.o: rs-core/net-test.cpp rs-core/channel.hpp rs-core/common.hpp rs-core/meta.hpp rs-core/net.hpp rs-core/optional.hpp rs-core/string.hpp rs-core/time.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/segment.hpp /usr/local/include/unicorn/string.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
-$(BUILD)/net.o: rs-core/net.cpp rs-core/channel.hpp rs-core/common.hpp rs-core/digest.hpp rs-core/meta.hpp rs-core/net.hpp rs-core/optional.hpp rs-core/string.hpp rs-core/time.hpp \
+$(BUILD)/net.o: rs-core/net.cpp rs-core/channel.hpp rs-core/common.hpp rs-core/digest.hpp rs-core/int128.hpp rs-core/meta.hpp rs-core/net.hpp rs-core/optional.hpp rs-core/string.hpp rs-core/time.hpp \
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/segment.hpp /usr/local/include/unicorn/string.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/optional-test.o: rs-core/optional-test.cpp rs-core/common.hpp rs-core/meta.hpp rs-core/optional.hpp rs-core/string.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/segment.hpp /usr/local/include/unicorn/string.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp

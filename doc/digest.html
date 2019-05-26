@@ -21,6 +21,7 @@
 <li><a href="#hash-classes">Hash classes</a><ul>
 <li><a href="#multiplicative-hash-classes">Multiplicative hash classes</a></li>
 <li><a href="#murmur-hash">Murmur hash</a></li>
+<li><a href="#sip-hash">Sip hash</a></li>
 <li><a href="#other-general-purpose-hash-functions">Other general purpose hash functions</a></li>
 <li><a href="#cryptographic-hash-functions">Cryptographic hash functions</a></li>
 </ul>
@@ -91,6 +92,37 @@ no seed is supplied, the seed defaults to zero and the behaviour is the same
 as the other hash classes. The first version of <code>clear()</code> clears the hash
 state but keeps the previous seed; the second re-initializes the state from a
 new seed.</p>
+</div>
+<h3 id="sip-hash">Sip hash</h3>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T, size_t C = 2, size_t D = 4&gt; class</code> <strong><code>SipHash</code></strong><ul>
+<li><code>using SipHash::</code><strong><code>key_type</code></strong> <code>= [uint32_t if T is 32-bit, otherwise uint64_t]</code></li>
+<li><code>using SipHash::</code><strong><code>result_type</code></strong> <code>= T</code></li>
+<li><code>static constexpr size_t SipHash::</code><strong><code>key_size</code></strong> <code>= 2 * sizeof(key_type)</code></li>
+<li><code>static constexpr size_t SipHash::</code><strong><code>result_size</code></strong> <code>= sizeof(T)</code></li>
+<li><code>SipHash::</code><strong><code>SipHash</code></strong><code>() noexcept</code></li>
+<li><code>SipHash::</code><strong><code>SipHash</code></strong><code>(key_type k0, key_type k1) noexcept</code></li>
+<li><code>explicit SipHash::</code><strong><code>SipHash</code></strong><code>(const uint8_t* keyptr) noexcept</code></li>
+<li><code>void SipHash::</code><strong><code>add</code></strong><code>(const void* ptr, size_t len) noexcept</code></li>
+<li><code>void SipHash::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
+<li><code>void SipHash::</code><strong><code>clear</code></strong><code>(key_type k0, key_type k1) noexcept</code></li>
+<li><code>void SipHash::</code><strong><code>clear</code></strong><code>(const uint8_t* keyptr) noexcept</code></li>
+<li><code>result_type SipHash::</code><strong><code>get</code></strong><code>() noexcept</code></li>
+</ul>
+</li>
+<li><code>using</code> <strong><code>SipHash32</code></strong> <code>= SipHash&lt;uint32_t&gt;</code></li>
+<li><code>using</code> <strong><code>SipHash64</code></strong> <code>= SipHash&lt;uint64_t&gt;</code></li>
+<li><code>using</code> <strong><code>SipHash128</code></strong> <code>= SipHash&lt;Uint128&gt;</code></li>
+</ul>
+<p>SipHash is widely used as a hash table keying function to avoid hash flooding
+attacks. The result type <code>T</code> must be a 32, 64, or 128-bit unsigned integer
+(the <a href="int128.html"><code>Uint128</code></a> class can be used). The alternative
+"half-sip-hash" algorithm is used for the 32-bit hash.</p>
+<p>The key can be supplied either as a pair of integers (defaulting to <code>{0,0}</code>),
+or as a block of memory containing <code>key_size</code> bytes. The first version of
+<code>clear()</code> clears the hash state but keeps the previous seed; the other
+versions re-initialize the state from a new seed.</p>
 </div>
 <h3 id="other-general-purpose-hash-functions">Other general purpose hash functions</h3>
 <div class="defns">

@@ -202,22 +202,30 @@ void test_core_int128_uint128_literals() {
 
     Uint128 x;
 
-    TRY(x = 0_u128);                                         TEST_EQUAL(dec(x), "0");
-    TRY(x = 42_u128);                                        TEST_EQUAL(dec(x), "42");
-    TRY(x = 0000000000000000000000000000000000000042_u128);  TEST_EQUAL(dec(x), "42");
-    TRY(x = 123456789_u128);                                 TEST_EQUAL(dec(x), "123456789");
-    TRY(x = 123456789123456789_u128);                        TEST_EQUAL(dec(x), "123456789123456789");
-    TRY(x = 123456789123456789123456789_u128);               TEST_EQUAL(dec(x), "123456789123456789123456789");
-    TRY(x = 123456789123456789123456789123456789_u128);      TEST_EQUAL(dec(x), "123456789123456789123456789123456789");
-    TRY(x = 340282366920938463463374607431768211455_u128);   TEST_EQUAL(dec(x), "340282366920938463463374607431768211455");
-
-    TRY(x = 0b0_u128);                                 TEST_EQUAL(hex(x), "00000000000000000000000000000000");
-    TRY(x = 0b10000000000000000000000000000001_u128);  TEST_EQUAL(hex(x), "00000000000000000000000080000001");
-    TRY(x = 0b11111111111111111111111111111111_u128);  TEST_EQUAL(hex(x), "000000000000000000000000ffffffff");
-
-    TRY(x = 0x0_u128);                                 TEST_EQUAL(hex(x), "00000000000000000000000000000000");
-    TRY(x = 0x123456789abcdef0123456789abcdef0_u128);  TEST_EQUAL(hex(x), "123456789abcdef0123456789abcdef0");
-    TRY(x = 0xfffffffffffffffffffffffffffffff0_u128);  TEST_EQUAL(hex(x), "fffffffffffffffffffffffffffffff0");
+    TRY(x = 0_u128);                                                      TEST_EQUAL(dec(x), "0");
+    TRY(x = 42_u128);                                                     TEST_EQUAL(dec(x), "42");
+    TRY(x = 0000000000000000000000000000000000000042_u128);               TEST_EQUAL(dec(x), "42");
+    TRY(x = 123456789_u128);                                              TEST_EQUAL(dec(x), "123456789");
+    TRY(x = 123456789123456789_u128);                                     TEST_EQUAL(dec(x), "123456789123456789");
+    TRY(x = 123456789123456789123456789_u128);                            TEST_EQUAL(dec(x), "123456789123456789123456789");
+    TRY(x = 123456789123456789123456789123456789_u128);                   TEST_EQUAL(dec(x), "123456789123456789123456789123456789");
+    TRY(x = 340282366920938463463374607431768211455_u128);                TEST_EQUAL(dec(x), "340282366920938463463374607431768211455");
+    TRY(x = 0'000'000'000'000'000'000'000'000'000'000'000'000'042_u128);  TEST_EQUAL(dec(x), "42");
+    TRY(x = 123'456'789_u128);                                            TEST_EQUAL(dec(x), "123456789");
+    TRY(x = 123'456'789'123'456'789_u128);                                TEST_EQUAL(dec(x), "123456789123456789");
+    TRY(x = 123'456'789'123'456'789'123'456'789_u128);                    TEST_EQUAL(dec(x), "123456789123456789123456789");
+    TRY(x = 123'456'789'123'456'789'123'456'789'123'456'789_u128);        TEST_EQUAL(dec(x), "123456789123456789123456789123456789");
+    TRY(x = 340'282'366'920'938'463'463'374'607'431'768'211'455_u128);    TEST_EQUAL(dec(x), "340282366920938463463374607431768211455");
+    TRY(x = 0b0_u128);                                                    TEST_EQUAL(hex(x), "00000000000000000000000000000000");
+    TRY(x = 0b10000000000000000000000000000001_u128);                     TEST_EQUAL(hex(x), "00000000000000000000000080000001");
+    TRY(x = 0b11111111111111111111111111111111_u128);                     TEST_EQUAL(hex(x), "000000000000000000000000ffffffff");
+    TRY(x = 0b1000'0000'0000'0000'0000'0000'0000'0001_u128);              TEST_EQUAL(hex(x), "00000000000000000000000080000001");
+    TRY(x = 0b1111'1111'1111'1111'1111'1111'1111'1111_u128);              TEST_EQUAL(hex(x), "000000000000000000000000ffffffff");
+    TRY(x = 0x0_u128);                                                    TEST_EQUAL(hex(x), "00000000000000000000000000000000");
+    TRY(x = 0x123456789abcdef0123456789abcdef0_u128);                     TEST_EQUAL(hex(x), "123456789abcdef0123456789abcdef0");
+    TRY(x = 0xfffffffffffffffffffffffffffffff0_u128);                     TEST_EQUAL(hex(x), "fffffffffffffffffffffffffffffff0");
+    TRY(x = 0x1234'5678'9abc'def0'1234'5678'9abc'def0_u128);              TEST_EQUAL(hex(x), "123456789abcdef0123456789abcdef0");
+    TRY(x = 0xffff'ffff'ffff'ffff'ffff'ffff'ffff'fff0_u128);              TEST_EQUAL(hex(x), "fffffffffffffffffffffffffffffff0");
 
 }
 

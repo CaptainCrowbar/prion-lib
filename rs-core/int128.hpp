@@ -159,9 +159,8 @@ namespace RS {
         template <int Base, char C, char... Str> struct U128LiteralBase<Base, C, Str...> {
             using next = U128LiteralBase<Base, Str...>;
             static constexpr int digit = u128_digit(C);
-            static_assert(digit < Base);
-            static constexpr Uint128 scale = Uint128(Base) * next::scale;
-            static constexpr Uint128 value = Uint128(digit) * next::scale + next::value;
+            static constexpr Uint128 scale = (digit < Base) ? Uint128(Base) * next::scale : next::scale;
+            static constexpr Uint128 value = (digit < Base) ? Uint128(digit) * next::scale + next::value : next::value;
         };
         template <int Base> struct U128LiteralBase<Base> {
             static constexpr Uint128 scale = 1;

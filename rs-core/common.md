@@ -721,8 +721,10 @@ same, but behaviour is undefined if either pointer is null.
 * `template <typename T> void` **`write_be`**`(T src, void* dst) noexcept`
 * `template <typename T> void` **`write_le`**`(T src, void* dst) noexcept`
 
-Read or write integers to memory, in big or little endian order. `T` must be a
-scalar type; the number of bytes read or written matches the size of `T`.
+Read or write integers to memory, in big or little endian order. The number of
+bytes read or written is equal to `sizeof(T)`. It is up to the caller to
+ensure that `T` is a type for which bytewise copying and the concept of byte
+order make sense.
 
 ## Arithmetic functions ##
 

@@ -834,7 +834,6 @@ namespace RS {
 
     template <typename T>
     T read_be(const void* src) noexcept {
-        static_assert(std::is_scalar_v<T>);
         T dst = {};
         std::memcpy(&dst, src, sizeof(T));
         return RS_Detail::order_bytes<big_endian>(dst);
@@ -842,7 +841,6 @@ namespace RS {
 
     template <typename T>
     void read_be(const void* src, T& dst) noexcept {
-        static_assert(std::is_scalar_v<T>);
         T t = {};
         std::memcpy(&t, src, sizeof(T));
         dst = RS_Detail::order_bytes<big_endian>(t);
@@ -850,7 +848,6 @@ namespace RS {
 
     template <typename T>
     T read_le(const void* src) noexcept {
-        static_assert(std::is_scalar_v<T>);
         T dst = {};
         std::memcpy(&dst, src, sizeof(T));
         return RS_Detail::order_bytes<little_endian>(dst);
@@ -858,7 +855,6 @@ namespace RS {
 
     template <typename T>
     void read_le(const void* src, T& dst) noexcept {
-        static_assert(std::is_scalar_v<T>);
         T t = {};
         std::memcpy(&t, src, sizeof(T));
         dst = RS_Detail::order_bytes<little_endian>(t);
@@ -866,14 +862,12 @@ namespace RS {
 
     template <typename T>
     void write_be(T src, void* dst) noexcept {
-        static_assert(std::is_scalar_v<T>);
         T t = RS_Detail::order_bytes<big_endian>(src);
         std::memcpy(dst, &t, sizeof(T));
     }
 
     template <typename T>
     void write_le(T src, void* dst) noexcept {
-        static_assert(std::is_scalar_v<T>);
         T t = RS_Detail::order_bytes<little_endian>(src);
         std::memcpy(dst, &t, sizeof(T));
     }

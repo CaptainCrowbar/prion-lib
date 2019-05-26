@@ -29,9 +29,13 @@
 <li><code>constexpr Uint128::</code><strong><code>Uint128</code></strong><code>(uint64_t x) noexcept</code></li>
 <li><code>constexpr Uint128::</code><strong><code>Uint128</code></strong><code>(uint64_t high, uint64_t low) noexcept</code></li>
 <li><code>explicit Uint128::</code><strong><code>Uint128</code></strong><code>(Uview str, int base = 10)</code></li>
-<li><code>size_t Uint128::</code><strong><code>hash</code></strong><code>() const noexcept</code></li>
+<li><code>uint8_t* Uint128::</code><strong><code>data</code></strong><code>() noexcept</code></li>
+<li><code>const uint8_t* Uint128::</code><strong><code>data</code></strong><code>() const noexcept</code></li>
+<li><code>constexpr uint64_t&amp; Uint128::</code><strong><code>high</code></strong><code>() noexcept</code></li>
 <li><code>constexpr uint64_t Uint128::</code><strong><code>high</code></strong><code>() const noexcept</code></li>
+<li><code>constexpr uint64_t&amp; Uint128::</code><strong><code>low</code></strong><code>() noexcept</code></li>
 <li><code>constexpr uint64_t Uint128::</code><strong><code>low</code></strong><code>() const noexcept</code></li>
+<li><code>size_t Uint128::</code><strong><code>hash</code></strong><code>() const noexcept</code></li>
 <li><code>Ustring Uint128::</code><strong><code>str</code></strong><code>(int base = 10, int digits = 1) const</code></li>
 <li><code>constexpr explicit Uint128::</code><strong><code>operator bool</code></strong><code>() const noexcept</code></li>
 <li><code>template &lt;typename T&gt; constexpr explicit Uint128::</code><strong><code>operator T</code></strong><code>() const noexcept</code></li>
@@ -70,8 +74,13 @@
 <li><code>constexpr bool</code><strong><code>operator&gt;=</code></strong><code>(Uint128 x, Uint128 y) noexcept</code></li>
 <li><code>constexpr std::pair&lt;Uint128, Uint128&gt;</code> <strong><code>divide</code></strong><code>(Uint128 x, Uint128 y) noexcept</code></li>
 <li><code>constexpr int</code> <strong><code>ilog2p1</code></strong><code>(Uint128 x) noexcept</code></li>
+<li><code>constexpr int</code> <strong><code>popcount</code></strong><code>(Uint128 x) noexcept</code></li>
 <li><code>constexpr Uint128</code> <strong><code>rotl</code></strong><code>(Uint128 x, int y) noexcept</code></li>
 <li><code>constexpr Uint128</code> <strong><code>rotr</code></strong><code>(Uint128 x, int y) noexcept</code></li>
+<li><code>void</code> <strong><code>read_be</code></strong><code>(const void* src, Uint128&amp; dst) noexcept</code></li>
+<li><code>void</code> <strong><code>read_le</code></strong><code>(const void* src, Uint128&amp; dst) noexcept</code></li>
+<li><code>void</code> <strong><code>write_be</code></strong><code>(Uint128 src, void* dst) noexcept</code></li>
+<li><code>void</code> <strong><code>write_le</code></strong><code>(Uint128 src, void* dst) noexcept</code></li>
 <li><code>Ustring</code> <strong><code>bin</code></strong><code>(Uint128 x, int digits = 128)</code></li>
 <li><code>Ustring</code> <strong><code>dec</code></strong><code>(Uint128 x, int digits = 1)</code></li>
 <li><code>Ustring</code> <strong><code>hex</code></strong><code>(Uint128 x, int digits = 32)</code></li>
@@ -86,15 +95,17 @@
 </ul>
 <p>A 128-bit unsigned integer. The <a href="fixed-binary.html"><code>rs-core/fixed-binary</code></a>
 module provides essentially the same type, but being restricted to a specific
-size allows this version to be fully <code>constexpr</code> in all operations not
+size allows this version to be fully <code>constexpr</code> in almost all operations not
 involving strings.</p>
 <p>The operations listed here have their natural semantics as far as possible, or
-the semantics of the equivalent function from <a href="common.html"><code>rs-core/common</code></a>.
-The default constructor initializes the value to zero. The <code>high()</code> and
-<code>low()</code> functions return the upper and lower 64 bits of the value. The RHS of
-the shift operators is unrestricted; a negative shift is interpreted as a
-positive shift in the other direction. Behaviour is undefined if the RHS of a
-division or remainder function is zero, if the base in a string conversion
-function is outside the range 2-35, or if the output type in <code>operator T()</code> is
-not a primitive arithmetic type.</p></body>
+the semantics of the equivalent function from <a href="common.html"><code>rs-core/common</code></a>.</p>
+<p>The default constructor initializes the value to zero.</p>
+<p>The <code>data()</code> functions return a pointer to the binary representation, which
+will be in the execution system's normal byte order. The <code>high()</code> and <code>low()</code>
+functions give access to the upper and lower 64 bits of the value.</p>
+<p>The RHS of the shift operators is unrestricted; a negative shift is
+interpreted as a positive shift in the other direction.</p>
+<p>Behaviour is undefined if the RHS of a division or remainder function is zero,
+if the base in a string conversion function is outside the range 2-35, or if
+the output type in <code>operator T()</code> is not a primitive arithmetic type.</p></body>
 </html>

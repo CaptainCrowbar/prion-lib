@@ -833,13 +833,6 @@ namespace RS {
     void mem_swap(void* ptr1, void* ptr2, size_t n) noexcept;
 
     template <typename T>
-    T read_be(const void* src) noexcept {
-        T dst = {};
-        std::memcpy(&dst, src, sizeof(T));
-        return RS_Detail::order_bytes<big_endian>(dst);
-    }
-
-    template <typename T>
     void read_be(const void* src, T& dst) noexcept {
         T t = {};
         std::memcpy(&t, src, sizeof(T));
@@ -847,10 +840,10 @@ namespace RS {
     }
 
     template <typename T>
-    T read_le(const void* src) noexcept {
+    T read_be(const void* src) noexcept {
         T dst = {};
-        std::memcpy(&dst, src, sizeof(T));
-        return RS_Detail::order_bytes<little_endian>(dst);
+        read_be(src, dst);
+        return dst;
     }
 
     template <typename T>
@@ -858,6 +851,13 @@ namespace RS {
         T t = {};
         std::memcpy(&t, src, sizeof(T));
         dst = RS_Detail::order_bytes<little_endian>(t);
+    }
+
+    template <typename T>
+    T read_le(const void* src) noexcept {
+        T dst = {};
+        read_le(src, dst);
+        return dst;
     }
 
     template <typename T>

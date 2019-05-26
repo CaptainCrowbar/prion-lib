@@ -121,7 +121,9 @@ extern void test_core_grid_class();
 extern void test_core_index_table_classes();
 extern void test_core_int128_uint128_basics();
 extern void test_core_int128_uint128_arithmetic();
+extern void test_core_int128_uint128_bitwise_properties();
 extern void test_core_int128_uint128_conversion();
+extern void test_core_int128_uint128_representation();
 extern void test_core_int128_uint128_literals();
 extern void test_core_int128_uint128_numeric_limits();
 extern void test_core_io_cstdio();
@@ -570,7 +572,9 @@ int main() {
         { "core/index-table/classes", test_core_index_table_classes },
         { "core/int128/uint128-basics", test_core_int128_uint128_basics },
         { "core/int128/uint128-arithmetic", test_core_int128_uint128_arithmetic },
+        { "core/int128/uint128-bitwise-properties", test_core_int128_uint128_bitwise_properties },
         { "core/int128/uint128-conversion", test_core_int128_uint128_conversion },
+        { "core/int128/uint128-representation", test_core_int128_uint128_representation },
         { "core/int128/uint128-literals", test_core_int128_uint128_literals },
         { "core/int128/uint128-numeric-limits", test_core_int128_uint128_numeric_limits },
         { "core/io/cstdio", test_core_io_cstdio },

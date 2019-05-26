@@ -1,11 +1,16 @@
 #include "rs-core/int128.hpp"
 #include "rs-core/unit-test.hpp"
+#include <cstring>
 #include <stdexcept>
+#include <string>
 
 using namespace RS;
 using namespace RS::Literals;
+using namespace std::literals;
 
 void test_core_int128_uint128_basics() {
+
+    static_assert(sizeof(Uint128) == 16);
 
     Uint128 x, y;
 
@@ -127,6 +132,27 @@ void test_core_int128_uint128_arithmetic() {
 
 }
 
+void test_core_int128_uint128_bitwise_properties() {
+
+    Uint128 x;
+    int n = 0;
+
+    TRY(x = {});                                                      TRY(n = ilog2p1(x));  TEST_EQUAL(n, 0);
+    TRY(x = 1);                                                       TRY(n = ilog2p1(x));  TEST_EQUAL(n, 1);
+    TRY(x = 0x1234);                                                  TRY(n = ilog2p1(x));  TEST_EQUAL(n, 13);
+    TRY(x = 0xffff'0000'0000'0001ull);                                TRY(n = ilog2p1(x));  TEST_EQUAL(n, 64);
+    TRY((x = {0x1234, 0xffff'0000'0000'0001ull}));                    TRY(n = ilog2p1(x));  TEST_EQUAL(n, 77);
+    TRY((x = {0xffff'0000'0000'0001ull, 0xffff'0000'0000'0001ull}));  TRY(n = ilog2p1(x));  TEST_EQUAL(n, 128);
+
+    TRY(x = {});                                                      TRY(n = popcount(x));  TEST_EQUAL(n, 0);
+    TRY(x = 1);                                                       TRY(n = popcount(x));  TEST_EQUAL(n, 1);
+    TRY(x = 0x1234);                                                  TRY(n = popcount(x));  TEST_EQUAL(n, 5);
+    TRY(x = 0xffff'0000'0000'0001ull);                                TRY(n = popcount(x));  TEST_EQUAL(n, 17);
+    TRY((x = {0x1234, 0xffff'0000'0000'0001ull}));                    TRY(n = popcount(x));  TEST_EQUAL(n, 22);
+    TRY((x = {0xffff'0000'0000'0001ull, 0xffff'0000'0000'0001ull}));  TRY(n = popcount(x));  TEST_EQUAL(n, 34);
+
+}
+
 void test_core_int128_uint128_conversion() {
 
     Uint128 x;
@@ -195,6 +221,46 @@ void test_core_int128_uint128_conversion() {
     TEST_THROW(Uint128("2", 2), std::invalid_argument);
     TEST_THROW(Uint128("42", 1), std::invalid_argument);
     TEST_THROW(Uint128("42", 36), std::invalid_argument);
+
+}
+
+void test_core_int128_uint128_representation() {
+
+    Uint128 x;
+    std::string s(16, '\0');
+
+    std::memcpy(s.data(), x.data(), s.size());
+    TEST_EQUAL(s, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"s);
+    TRY(write_le(x, s.data()));
+    TEST_EQUAL(s, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"s);
+    TRY(write_be(x, s.data()));
+    TEST_EQUAL(s, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"s);
+
+    TRY(x = Uint128(0x1234'5678'9abc'def0_u64, 0x9876'5432'10fe'dcba_u64));
+    std::memcpy(s.data(), x.data(), s.size());
+    TEST_EQUAL(s, "\xba\xdc\xfe\x10\x32\x54\x76\x98\xf0\xde\xbc\x9a\x78\x56\x34\x12"s);
+    TRY(write_le(x, s.data()));
+    TEST_EQUAL(s, "\xba\xdc\xfe\x10\x32\x54\x76\x98\xf0\xde\xbc\x9a\x78\x56\x34\x12"s);
+    TRY(write_be(x, s.data()));
+    TEST_EQUAL(s, "\x12\x34\x56\x78\x9a\xbc\xde\xf0\x98\x76\x54\x32\x10\xfe\xdc\xba"s);
+
+    TRY(x.high() = 0x9876'5432'10fe'dcba_u64);
+    TRY(x.low() = 0x1234'5678'9abc'def0_u64);
+    std::memcpy(s.data(), x.data(), s.size());
+    TEST_EQUAL(s, "\xf0\xde\xbc\x9a\x78\x56\x34\x12\xba\xdc\xfe\x10\x32\x54\x76\x98"s);
+    TRY(write_le(x, s.data()));
+    TEST_EQUAL(s, "\xf0\xde\xbc\x9a\x78\x56\x34\x12\xba\xdc\xfe\x10\x32\x54\x76\x98"s);
+    TRY(write_be(x, s.data()));
+    TEST_EQUAL(s, "\x98\x76\x54\x32\x10\xfe\xdc\xba\x12\x34\x56\x78\x9a\xbc\xde\xf0"s);
+
+    s = "\xba\xdc\xfe\x10\x32\x54\x76\x98\xf0\xde\xbc\x9a\x78\x56\x34\x12"s;
+    TRY(read_le(s.data(), x));
+    TEST_EQUAL(x.high(), 0x1234'5678'9abc'def0_u64);
+    TEST_EQUAL(x.low(), 0x9876'5432'10fe'dcba_u64);
+    s = "\x12\x34\x56\x78\x9a\xbc\xde\xf0\x98\x76\x54\x32\x10\xfe\xdc\xba"s;
+    TRY(read_be(s.data(), x));
+    TEST_EQUAL(x.high(), 0x1234'5678'9abc'def0_u64);
+    TEST_EQUAL(x.low(), 0x9876'5432'10fe'dcba_u64);
 
 }
 

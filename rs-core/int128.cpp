@@ -1,5 +1,4 @@
 #include "rs-core/int128.hpp"
-#include <algorithm>
 #include <functional>
 #include <stdexcept>
 #include <string>
@@ -17,14 +16,14 @@ namespace RS {
         for (auto c: str) {
             if (c == ' ' || c == '\'' || c == ',' || c == '_')
                 continue;
-            digit.lo = ~ uint64_t(0);
+            digit.low() = ~ uint64_t(0);
             if (ascii_isdigit(c))
-                digit.lo = uint64_t(c - '0');
+                digit.low() = uint64_t(c - '0');
             else if (ascii_isupper(c))
-                digit.lo = uint64_t(c - 'A' + 10);
+                digit.low() = uint64_t(c - 'A' + 10);
             else if (ascii_islower(c))
-                digit.lo = uint64_t(c - 'a' + 10);
-            if (digit.lo >= uint64_t(base))
+                digit.low() = uint64_t(c - 'a' + 10);
+            if (digit.low() >= uint64_t(base))
                 throw std::invalid_argument("Invalid integer: " + quote(str));
             *this *= scale;
             *this += digit;
@@ -37,7 +36,7 @@ namespace RS {
     size_t Uint128::hash() const noexcept {
         using h64 = std::hash<uint64_t>;
         size_t h = 0;
-        hash_combine(h, h64()(lo), h64()(hi));
+        hash_combine(h, h64()(low()), h64()(high()));
         return h;
     }
 

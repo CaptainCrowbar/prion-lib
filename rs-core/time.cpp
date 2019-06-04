@@ -137,29 +137,29 @@ namespace RS {
                 unit.clear();
                 while (next != end && ascii_isalpha(*next))
                     unit += *next++;
-                if (starts_with(unit, "Yy"s))         count *= jyear * 1.0e24;
-                else if (starts_with(unit, "Zy"s))    count *= jyear * 1.0e21;
-                else if (starts_with(unit, "Ey"s))    count *= jyear * 1.0e18;
-                else if (starts_with(unit, "Py"s))    count *= jyear * 1.0e15;
-                else if (starts_with(unit, "Ty"s))    count *= jyear * 1.0e12;
-                else if (starts_with(unit, "Gy"s))    count *= jyear * 1.0e9;
-                else if (starts_with(unit, "My"s))    count *= jyear * 1.0e6;
-                else if (starts_with(unit, "ky"s))    count *= jyear * 1.0e3;
-                else if (starts_with(unit, "ms"s))    count *= 1.0e-3;
-                else if (starts_with(unit, "us"s))    count *= 1.0e-6;
-                else if (starts_with(unit, u8"µs"s))  count *= 1.0e-6;
-                else if (starts_with(unit, "ns"s))    count *= 1.0e-9;
-                else if (starts_with(unit, "ps"s))    count *= 1.0e-12;
-                else if (starts_with(unit, "fs"s))    count *= 1.0e-15;
-                else if (starts_with(unit, "as"s))    count *= 1.0e-18;
-                else if (starts_with(unit, "zs"s))    count *= 1.0e-21;
-                else if (starts_with(unit, "ys"s))    count *= 1.0e-24;
-                else if (starts_with(unit, "y"s))     count *= jyear;
-                else if (starts_with(unit, "d"s))     count *= 86400.0;
-                else if (starts_with(unit, "h"s))     count *= 3600.0;
-                else if (starts_with(unit, "m"s))     count *= 60.0;
-                else if (starts_with(unit, "s"s))     {}
-                else                                  throw std::invalid_argument("Invalid time: " + quote(str));
+                if (starts_with(unit, "Yy"s))       count *= jyear * 1.0e24;
+                else if (starts_with(unit, "Zy"s))  count *= jyear * 1.0e21;
+                else if (starts_with(unit, "Ey"s))  count *= jyear * 1.0e18;
+                else if (starts_with(unit, "Py"s))  count *= jyear * 1.0e15;
+                else if (starts_with(unit, "Ty"s))  count *= jyear * 1.0e12;
+                else if (starts_with(unit, "Gy"s))  count *= jyear * 1.0e9;
+                else if (starts_with(unit, "My"s))  count *= jyear * 1.0e6;
+                else if (starts_with(unit, "ky"s))  count *= jyear * 1.0e3;
+                else if (starts_with(unit, "ms"s))  count *= 1.0e-3;
+                else if (starts_with(unit, "us"s))  count *= 1.0e-6;
+                else if (starts_with(unit, "µs"s))  count *= 1.0e-6;
+                else if (starts_with(unit, "ns"s))  count *= 1.0e-9;
+                else if (starts_with(unit, "ps"s))  count *= 1.0e-12;
+                else if (starts_with(unit, "fs"s))  count *= 1.0e-15;
+                else if (starts_with(unit, "as"s))  count *= 1.0e-18;
+                else if (starts_with(unit, "zs"s))  count *= 1.0e-21;
+                else if (starts_with(unit, "ys"s))  count *= 1.0e-24;
+                else if (starts_with(unit, "y"s))   count *= jyear;
+                else if (starts_with(unit, "d"s))   count *= 86400.0;
+                else if (starts_with(unit, "h"s))   count *= 3600.0;
+                else if (starts_with(unit, "m"s))   count *= 60.0;
+                else if (starts_with(unit, "s"s))   {}
+                else                                throw std::invalid_argument("Invalid time: " + quote(str));
                 seconds += count;
                 ptr = next;
             }

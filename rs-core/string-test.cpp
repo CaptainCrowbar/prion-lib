@@ -264,7 +264,7 @@ void test_core_string_property() {
     TEST(string_is_ascii(""));
     TEST(string_is_ascii("Hello world"));
     TEST(! string_is_ascii("Hello world\xff"));
-    TEST(! string_is_ascii(u8"åß∂"));
+    TEST(! string_is_ascii("åß∂"));
 
 }
 

@@ -105,7 +105,7 @@ namespace RS::Astro {
                 min_symbol = "m"sv;
                 sec_symbol = "s"sv;
             } else {
-                whole_symbol = u8"˚"sv;
+                whole_symbol = "˚"sv;
                 min_symbol = "\'"sv;
                 sec_symbol = "\""sv;
             }

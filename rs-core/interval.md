@@ -234,7 +234,7 @@ These determine the relationship between a specific value and an interval. The
 `match()` function returns a value of the `IntervalMatch` enumeration
 indicating the precise relationship, while `contains()` simply indicates
 whether the value is an element of the interval. The function call operator is
-equivalent to `contains()`
+equivalent to `contains()`.
 
 * `IntervalSet<T> Interval::`**`inverse`**`() const`
 * `IntervalSet<T> Interval::`**`operator~`**`() const`

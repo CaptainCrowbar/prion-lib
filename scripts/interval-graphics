@@ -18,7 +18,7 @@ interval_diagram() {
         -strokewidth 2 \
         -fill black \
         -draw "roundRectangle $b_left,7 $b_right,17 2,2" \
-        -fill "#eee" \
+        -fill white \
         -draw "roundRectangle $a_left,3 $a_right,13 2,2" \
         graphics/interval$id.png
 

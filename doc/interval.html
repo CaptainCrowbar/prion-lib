@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Intervals and Interval Based Containers</title>
+<link type="text/css" rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<h1 id="intervals-and-interval-based-containers">Intervals and Interval Based Containers</h1>
+<p>By Ross Smith</p>
+<ul>
+<li><code>#include "rs-core/interval.hpp"</code></li>
+</ul>
+<h2 id="contents">Contents</h2>
+<div class="toc">
+<ul>
+<li><a href="#intervals-and-interval-based-containers">Intervals and Interval Based Containers</a><ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#supporting-types">Supporting types</a></li>
+<li><a href="#interval-class">Interval class</a></li>
+<li><a href="#interval-set">Interval set</a></li>
+<li><a href="#interval-map">Interval map</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="supporting-types">Supporting types</h2>
+<div class="defns">
+<ul>
+<li><code>enum class</code> <strong><code>IntervalBound</code></strong><ul>
+<li><code>IntervalBound::</code><strong><code>empty</code></strong> <code>= 0</code>    <em>[the interval is empty]</em></li>
+<li><code>IntervalBound::</code><strong><code>open</code></strong> <code>= 1</code>     <em>[the interval does not include the boundary value]</em></li>
+<li><code>IntervalBound::</code><strong><code>closed</code></strong> <code>= 2</code>   <em>[the interval includes the boundary value]</em></li>
+<li><code>IntervalBound::</code><strong><code>unbound</code></strong> <code>= 3</code>  <em>[the interval is unbounded in this direction]</em></li>
+</ul>
+</li>
+</ul>
+<p>Indicates what kind of bound the interval has. An <code>Interval</code> object contains
+two of these values, one for each bound. Some combinations are impossible; if
+one bound is <code>empty</code>, the other must also be <code>empty</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>enum class</code> <strong><code>IntervalCategory</code></strong><ul>
+<li><code>IntervalCategory::</code><strong><code>none</code></strong> <code>= 0</code>        <em>[not usable in an interval]</em></li>
+<li><code>IntervalCategory::</code><strong><code>ordered</code></strong> <code>= 1</code>     <em>[ordered but not an arithmetic type, e.g. string]</em></li>
+<li><code>IntervalCategory::</code><strong><code>integral</code></strong> <code>= 2</code>    <em>[incrementable and not continuous, e.g. integer]</em></li>
+<li><code>IntervalCategory::</code><strong><code>continuous</code></strong> <code>= 3</code>  <em>[models a continuous arithmetic type, e.g. floating point]</em></li>
+</ul>
+</li>
+<li><code>template &lt;typename T&gt; struct</code> <strong><code>IntervalTraits</code></strong><ul>
+<li><code>static constexpr IntervalCategory IntervalTraits::</code><strong><code>category</code></strong></li>
+</ul>
+</li>
+<li><code>template &lt;typename T&gt; constexpr IntervalCategory</code> <strong><code>interval_category</code></strong> <code>= IntervalTraits&lt;T&gt;::category</code></li>
+</ul>
+<p>Indicates the behaviour of a particular underlying type with respect to
+intervals. To be usable as the template parameter to <code>Interval</code> and related
+types, a type must at the very least be default constructible, copyable, and
+equality and less-than comparable. Additional type properties enable
+additional interval properties.</p>
+<p>The <code>IntervalTraits</code> or <code>interval_category</code> templates determine the category
+of a given type, according to the following algorithm:</p>
+<!-- TEXT -->
+
+<ul>
+<li><em>if <code>T</code> is not default constructible, copy constructible, equality comparable, and less-than comparable</em><ul>
+<li><em>category is <code>none</code></em></li>
+</ul>
+</li>
+<li><em>else if <code>T</code> is a primitive integer type other than <code>bool</code></em><ul>
+<li><em>category is <code>integral</code></em></li>
+</ul>
+</li>
+<li><em>else if <code>T</code> is a primitive floating point type</em><ul>
+<li><em>category is <code>continuous</code></em></li>
+</ul>
+</li>
+<li><em>else if <code>T</code> has binary <code>+ - * /</code> operators but not <code>%</code></em><ul>
+<li><em>category is <code>continuous</code></em></li>
+</ul>
+</li>
+<li><em>else if <code>T</code> has unary <code>++</code> and <code>--</code> operators</em><ul>
+<li><em>category is <code>integral</code></em></li>
+</ul>
+</li>
+<li><em>else</em><ul>
+<li><em>category is <code>ordered</code></em></li>
+</ul>
+</li>
+</ul>
+<p>The interval category for a user defined type can be controlled by
+specializing <code>IntervalCategory</code> for that type, if the default algorithm does
+not give the appropriate category.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>enum class</code> <strong><code>IntervalMatch</code></strong><ul>
+<li><code>IntervalMatch::</code><strong><code>empty</code></strong> <code>= -2</code>  <em>[the interval is empty]</em></li>
+<li><code>IntervalMatch::</code><strong><code>low</code></strong> <code>= -1</code>    <em>[the value is less than the interval's lower bound]</em></li>
+<li><code>IntervalMatch::</code><strong><code>ok</code></strong> <code>= 0</code>      <em>[the value is an element of the interval]</em></li>
+<li><code>IntervalMatch::</code><strong><code>high</code></strong> <code>= 1</code>    <em>[the value is greater than the interval's upper bound]</em></li>
+</ul>
+</li>
+</ul>
+<p>The result of the <code>Interval::match(t)</code> method, indicating the relationship of
+a specific value to the interval.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>enum class</code> <strong><code>IntervalOrder</code></strong><ul>
+<li><em>[see below for the list of values]</em></li>
+</ul>
+</li>
+</ul>
+<p>The result of the <code>Interval::order(interval)</code> method, indicating the
+relationship of one interval to another. In the table below, the values in the
+first column are the possible results of calling <code>A.order(B)</code>, where <code>A</code> and
+<code>B</code> are intervals. In the relationship diagrams, <code>A</code> is the white interval,
+<code>B</code> is the black interval, with the underlying type running horizontally from
+left to right.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value</th>
+<th>Picture</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IntervalOrder::</code><strong><code>b_only</code></strong></td>
+<td>-7</td>
+<td><img alt="bbb" src="../graphics/interval-7.png" /></td>
+<td>A is empty, B is not</td>
+</tr>
+<tr>
+<td><code>IntervalOrder::</code><strong><code>a_below_b</code></strong></td>
+<td>-6</td>
+<td><img alt="aaa...bbb" src="../graphics/interval-6.png" /></td>
+<td>A's upper bound is less than B's lower bound, with a gap</td>
+</tr>
+<tr>
+<td><code>IntervalOrder::</code><strong><code>a_touches_b</code></strong></td>
+<td>-5</td>
+<td><img alt="aaabbb" src="../graphics/interval-5.png" /></td>
+<td>A's upper bound is less than B's lower bound, with no gap</td>
+</tr>
+<tr>
+<td><code>IntervalOrder::</code><strong><code>a_overlaps_b</code></strong></td>
+<td>-4</td>
+<td><img alt="aaa***bbb" src="../graphics/interval-4.png" /></td>
+<td>A's upper bound overlaps B's lower bound</td>
+</tr>
+<tr>
+<td><code>IntervalOrder::</code><strong><code>a_extends_below_b</code></strong></td>
+<td>-3</td>
+<td><img alt="aaa***" src="../graphics/interval-3.png" /></td>
+<td>B is a subset of A, with the same upper bound</td>
+</tr>
+<tr>
+<td><code>IntervalOrder::</code><strong><code>a_encloses_b</code></strong></td>
+<td>-2</td>
+<td><img alt="aaa***aaa" src="../graphics/interval-2.png" /></td>
+<td>B is a subset of A, matching neither bound</td>
+</tr>
+<tr>
+<td><code>IntervalOrder::</code><strong><code>b_extends_above_a</code></strong></td>
+<td>-1</td>
+<td><img alt="***bbb" src="../graphics/interval-1.png" /></td>
+<td>A is a subset of B, with the same lower bound</td>
+</tr>
+<tr>
+<td><code>IntervalOrder::</code><strong><code>equal</code></strong></td>
+<td>0</td>
+<td><img alt="***" src="../graphics/interval+0.png" /></td>
+<td>A and B are the same (this includes the case where both are empty)</td>
+</tr>
+<tr>
+<td><code>IntervalOrder::</code><strong><code>a_extends_above_b</code></strong></td>
+<td>1</td>
+<td><img alt="***aaa" src="../graphics/interval+1.png" /></td>
+<td>B is a subset of A, with the same lower bound</td>
+</tr>
+<tr>
+<td><code>IntervalOrder::</code><strong><code>b_encloses_a</code></strong></td>
+<td>2</td>
+<td><img alt="bbb***bbb" src="../graphics/interval+2.png" /></td>
+<td>A is a subset of B, matching neither bound</td>
+</tr>
+<tr>
+<td><code>IntervalOrder::</code><strong><code>b_extends_below_a</code></strong></td>
+<td>3</td>
+<td><img alt="bbb***" src="../graphics/interval+3.png" /></td>
+<td>A is a subset of B, with the same upper bound</td>
+</tr>
+<tr>
+<td><code>IntervalOrder::</code><strong><code>b_overlaps_a</code></strong></td>
+<td>4</td>
+<td><img alt="bbb***aaa" src="../graphics/interval+4.png" /></td>
+<td>B's upper bound overlaps A's lower bound</td>
+</tr>
+<tr>
+<td><code>IntervalOrder::</code><strong><code>b_touches_a</code></strong></td>
+<td>5</td>
+<td><img alt="bbbaaa" src="../graphics/interval+5.png" /></td>
+<td>B's upper bound is less than A's lower bound, with no gap</td>
+</tr>
+<tr>
+<td><code>IntervalOrder::</code><strong><code>b_below_a</code></strong></td>
+<td>6</td>
+<td><img alt="bbb...aaa" src="../graphics/interval+6.png" /></td>
+<td>B's upper bound is less than A's lower bound, with a gap</td>
+</tr>
+<tr>
+<td><code>IntervalOrder::</code><strong><code>a_only</code></strong></td>
+<td>7</td>
+<td><img alt="aaa" src="../graphics/interval+7.png" /></td>
+<td>B is empty, A is not</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="interval-class">Interval class</h2>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>Interval</code></strong></li>
+</ul>
+<p>A class representing an interval over the underlying type <code>T</code>. This template
+is only defined for underlying types for which the interval category is not
+<code>none</code>.</p>
+<p>The interval may be a finite interval with upper and lower bounds, bounded on
+one side but unbounded on the other, an empty interval (containing no values),
+or a universal interval (containing all values of the underlying type).
+Depending on the properties of the underlying type, the interval class may
+also distinguish between open, closed, and half-open intervals, indicating
+whether or not the interval includes neither, both, or one of its bounds. For
+integer-like types the open-closed distinction is not made, since an interval
+specified using open bounds can be trivially turned into a closed interval by
+incrementing or decrementing the bounds.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>using Interval::</code><strong><code>value_type</code></strong> <code>= T</code></li>
+</ul>
+<p>The underlying domain type.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>class Interval::</code><strong><code>iterator</code></strong></li>
+</ul>
+<p>An iterator over all values in the interval. This is defined only for
+integer-like underlying types (i.e. types where the <code>interval_category</code> is
+<code>integral</code>). This is a <code>const</code> iterator, and is random access if the
+underlying type has addition and subtraction operators, otherwise
+bidirectional.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>static constexpr IntervalCategory Interval::</code><strong><code>category</code></strong> <code>= interval_category&lt;T&gt;</code></li>
+</ul>
+<p>The interval category of the underlying type.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Interval::</code><strong><code>Interval</code></strong><code>()</code></li>
+<li><code>Interval::</code><strong><code>Interval</code></strong><code>(const T&amp; t)</code></li>
+<li><code>Interval::</code><strong><code>Interval</code></strong><code>(const T&amp; t, IntervalBound l, IntervalBound r)</code></li>
+<li><code>Interval::</code><strong><code>Interval</code></strong><code>(const T&amp; min, const T&amp; max, IntervalBound lr = IntervalBound::closed)</code></li>
+<li><code>Interval::</code><strong><code>Interval</code></strong><code>(const T&amp; min, const T&amp; max, IntervalBound l, IntervalBound r)</code></li>
+<li><code>Interval::</code><strong><code>Interval</code></strong><code>(const T&amp; min, const T&amp; max, Uview mode)</code></li>
+</ul>
+<p>Constructors. The default constructor creates an empty interval. The second
+constructor creates an interval containing exactly one value, and provides an
+implicit conversion from <code>T</code> to <code>Interval&lt;T&gt;</code>.</p>
+<p>The next three constructors take the two boundary values and the two boundary
+types; either can be reduced to a single value for both bounds. These will
+automatically adjust the interval properties to produce a consistent result:
+for integral types, open bounds will be turned into closed ones, and for all
+types, the interval will be turned into an empty interval if the upper bound
+is less than the lower bound (less than or equal if one or both is an open
+bound). If one or both bounds is <code>empty</code> or <code>unbound</code>, the corresponding <code>min</code>
+or <code>max</code> value is ignored. These constructors will throw
+<code>std::invalid_argument</code> if one boundary type is <code>empty</code> but the other is not.</p>
+<p>The sixth constructor also takes explicit boundary value and boundary type
+arguments, but the boundary types are specified using a string as shorthand:</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Left bound</th>
+<th>Right bound</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>"()"</code></td>
+<td><code>open</code></td>
+<td><code>open</code></td>
+<td>Open interval</td>
+</tr>
+<tr>
+<td><code>"(]"</code></td>
+<td><code>open</code></td>
+<td><code>closed</code></td>
+<td>Half-open interval, closed on the right</td>
+</tr>
+<tr>
+<td><code>"[)"</code></td>
+<td><code>closed</code></td>
+<td><code>open</code></td>
+<td>Half-open interval, closed on the left</td>
+</tr>
+<tr>
+<td><code>"[]"</code></td>
+<td><code>closed</code></td>
+<td><code>closed</code></td>
+<td>Closed interval</td>
+</tr>
+<tr>
+<td><code>"&lt;"</code></td>
+<td><code>unbound</code></td>
+<td><code>open</code></td>
+<td>Open interval, bounded above (first argument is ignored)</td>
+</tr>
+<tr>
+<td><code>"&lt;="</code></td>
+<td><code>unbound</code></td>
+<td><code>closed</code></td>
+<td>Closed interval, bounded above (first argument is ignored)</td>
+</tr>
+<tr>
+<td><code>"&gt;"</code></td>
+<td><code>open</code></td>
+<td><code>unbound</code></td>
+<td>Open interval, bounded below (second argument is ignored)</td>
+</tr>
+<tr>
+<td><code>"&gt;="</code></td>
+<td><code>closed</code></td>
+<td><code>unbound</code></td>
+<td>Closed interval, bounded below (second argument is ignored)</td>
+</tr>
+</tbody>
+</table>
+<p>This constructor will throw <code>std::invalid_argument</code> if the mode string is not
+one of these.</p>
+<p>A universal interval (containing all possible values of <code>T</code>) can be
+constructed using the <code>all()</code> static member function (see below).</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Interval::</code><strong><code>Interval</code></strong><code>(const Interval&amp; in)</code></li>
+<li><code>Interval::</code><strong><code>Interval</code></strong><code>(Interval&amp;&amp; in) noexcept</code></li>
+<li><code>Interval::</code><strong><code>~Interval</code></strong><code>() noexcept</code></li>
+<li><code>Interval&amp; Interval::</code><strong><code>operator=</code></strong><code>(const Interval&amp; in)</code></li>
+<li><code>Interval&amp; Interval::</code><strong><code>operator=</code></strong><code>(Interval&amp;&amp; in) noexcept</code></li>
+</ul>
+<p>Other life cycle functions.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>explicit Interval::</code><strong><code>operator bool</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>Explicit conversion to <code>bool</code>; true if the interval is not empty.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>const T&amp; Interval::</code><strong><code>min</code></strong><code>() const noexcept</code></li>
+<li><code>const T&amp; Interval::</code><strong><code>max</code></strong><code>() const noexcept</code></li>
+<li><code>IntervalBound Interval::</code><strong><code>left</code></strong><code>() const noexcept</code></li>
+<li><code>IntervalBound Interval::</code><strong><code>right</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>These return the boundary values and boundary types. If either end of the
+interval is unbounded (boundary type <code>empty</code> or <code>unbound</code>), the value of the
+corresponding <code>min()</code> or <code>max()</code> function is unspecified.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool Interval::</code><strong><code>is_empty</code></strong><code>() const noexcept</code> <em>[true if the interval is empty]</em></li>
+<li><code>bool Interval::</code><strong><code>is_single</code></strong><code>() const noexcept</code> <em>[true if the interval contains exactly one value ]</em></li>
+<li><code>bool Interval::</code><strong><code>is_finite</code></strong><code>() const noexcept</code> <em>[true if the interval is non-empty and bounded on both sides]</em></li>
+<li><code>bool Interval::</code><strong><code>is_infinite</code></strong><code>() const noexcept</code> <em>[true if the interval is non-empty and unbound on at least one side]</em></li>
+<li><code>bool Interval::</code><strong><code>is_universal</code></strong><code>() const noexcept</code> <em>[true if the interval contains all values of the underlying type]</em></li>
+<li><code>bool Interval::</code><strong><code>is_left_bounded</code></strong><code>() const noexcept</code> <em>[true if the interval is non-empty and bounded below]</em></li>
+<li><code>bool Interval::</code><strong><code>is_left_closed</code></strong><code>() const noexcept</code> <em>[true if the interval is non-empty and includes its lower bound]</em></li>
+<li><code>bool Interval::</code><strong><code>is_left_open</code></strong><code>() const noexcept</code> <em>[true if the interval is non-empty and does not include its lower bound]</em></li>
+<li><code>bool Interval::</code><strong><code>is_right_bounded</code></strong><code>() const noexcept</code> <em>[true if the interval is non-empty and bounded above]</em></li>
+<li><code>bool Interval::</code><strong><code>is_right_closed</code></strong><code>() const noexcept</code> <em>[true if the interval is non-empty and includes its upper bound]</em></li>
+<li><code>bool Interval::</code><strong><code>is_right_open</code></strong><code>() const noexcept</code> <em>[true if the interval is non-empty and does not include its upper bound]</em></li>
+</ul>
+<p>Interval properties.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Interval::iterator Interval::</code><strong><code>begin</code></strong><code>() const</code></li>
+<li><code>Interval::iterator Interval::</code><strong><code>end</code></strong><code>() const</code></li>
+</ul>
+<p>Iterators over the values in an interval. These are defined only for
+integer-like underlying types (interval category <code>integral</code>). If either of the
+bounds does not exist (bound type <code>empty</code> or <code>unbound</code>), behaviour is
+undefined if the corresponding <code>begin ()</code> or <code>end()</code> function is called.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>[see below] Interval::</code><strong><code>size</code></strong><code>() const</code></li>
+</ul>
+<p>Returns the length of the interval. For <code>integral</code> types, the return type is
+<code>size_t</code>, and <code>size()</code> returns the number of values in the interval, or <code>npos</code>
+if one or both bounds is <code>unbound</code>.</p>
+<p>For <code>continuous</code> types, the return type is <code>T</code>, and <code>size()</code> returns the
+difference between the upper and lower bounds, without regard to whether they
+are open or closed bounds. Behaviour is undefined if one or both of the bounds
+is <code>unbound</code>.</p>
+<p>For <code>ordered</code> types, the <code>size()</code> function is not defined.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool Interval::</code><strong><code>contains</code></strong><code>(const T&amp; t) const</code></li>
+<li><code>IntervalMatch Interval::</code><strong><code>match</code></strong><code>(const T&amp; t) const</code></li>
+<li><code>bool Interval::</code><strong><code>operator()</code></strong><code>(const T&amp; t) const</code></li>
+</ul>
+<p>These determine the relationship between a specific value and an interval. The
+<code>match()</code> function returns a value of the <code>IntervalMatch</code> enumeration
+indicating the precise relationship, while <code>contains()</code> simply indicates
+whether the value is an element of the interval. The function call operator is
+equivalent to <code>contains()</code></p>
+</div>
+<div class="defns">
+<ul>
+<li><code>IntervalSet&lt;T&gt; Interval::</code><strong><code>inverse</code></strong><code>() const</code></li>
+<li><code>IntervalSet&lt;T&gt; Interval::</code><strong><code>operator~</code></strong><code>() const</code></li>
+</ul>
+<p>These return the inverse interval (the set of all values that are not in the
+interval). The inverse may in general consist of more than one interval, so
+the return type is <code>IntervalSet</code> (described below), not <code>Interval</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>IntervalOrder Interval::</code><strong><code>order</code></strong><code>(const Interval&amp; b) const</code></li>
+</ul>
+<p>Determines the relationship between two intervals. See the description of the
+<code>IntervalOrder</code> enumeration above for the interpretation of the result.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>int Interval::</code><strong><code>compare</code></strong><code>(const Interval&amp; b) const noexcept</code></li>
+</ul>
+<p>Performs a three-way lexicographical ordering of two intervals, according to
+<code>T</code>'s less-than operator. The return value is a positive integer if <code>*this&gt;b</code>,
+a negative integer if <code>*this&lt;b</code>, or zero if <code>*this==b</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool Interval::</code><strong><code>includes</code></strong><code>(const Interval&amp; b) const</code> <em>[true if <code>b</code> is a subset of <code>*this</code>]</em></li>
+<li><code>bool Interval::</code><strong><code>overlaps</code></strong><code>(const Interval&amp; b) const</code> <em>[true if <code>*this</code> and <code>b</code> have any values in common]</em></li>
+<li><code>bool Interval::</code><strong><code>touches</code></strong><code>(const Interval&amp; b) const</code> <em>[true if there are no values between the two intervals]</em></li>
+</ul>
+<p>Query specific relationships between two intervals.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Interval Interval::</code><strong><code>envelope</code></strong><code>(const Interval&amp; b) const</code></li>
+</ul>
+<p>Returns the smallest interval that contains both argument intervals (<code>*this</code>
+and <code>b</code>). This is similar to <code>set_union()</code>, except that if the intervals are
+both non-empty and are disjoint, this will also contain the interval between
+them.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Interval Interval::</code><strong><code>set_intersection</code></strong><code>(const Interval&amp; b) const</code></li>
+<li><code>IntervalSet&lt;T&gt; Interval::</code><strong><code>set_union</code></strong><code>(const Interval&amp; b) const</code></li>
+<li><code>IntervalSet&lt;T&gt; Interval::</code><strong><code>set_difference</code></strong><code>(const Interval&amp; b) const</code></li>
+<li><code>IntervalSet&lt;T&gt; Interval::</code><strong><code>set_symmetric_difference</code></strong><code>(const Interval&amp; b) const</code></li>
+<li><code>Interval&amp; Interval::</code><strong><code>operator&amp;=</code></strong><code>(const Interval&amp; b)</code> <em>[set intersection]</em></li>
+<li><code>Interval</code> <strong><code>operator&amp;</code></strong><code>(const Interval&amp; a, const Interval&amp; b)</code> <em>[set intersection]</em></li>
+<li><code>IntervalSet&lt;T&gt;</code> <strong><code>operator|</code></strong><code>(const Interval&amp; a, const Interval&amp; b)</code> <em>[set union]</em></li>
+<li><code>IntervalSet&lt;T&gt;</code> <strong><code>operator-</code></strong><code>(const Interval&amp; a, const Interval&amp; b)</code> <em>[set difference]</em></li>
+<li><code>IntervalSet&lt;T&gt;</code> <strong><code>operator^</code></strong><code>(const Interval&amp; a, const Interval&amp; b)</code> <em>[set symmetric difference]</em></li>
+</ul>
+<p>Set operations on two intervals. In general the result of a set operation may
+consist of more than one interval, so most of these return an <code>IntervalSet</code>
+rather than an <code>Interval</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool Interval::</code><strong><code>parse</code></strong><code>(Uview view) noexcept</code></li>
+<li><code>Ustring Interval::</code><strong><code>str</code></strong><code>() const</code></li>
+<li><code>bool</code> <strong><code>from_str</code></strong><code>(Uview view, Interval&amp; in)</code></li>
+<li><code>Ustring</code> <strong><code>to_str</code></strong><code>(const Interval&amp; in)</code></li>
+<li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const Interval&amp; in)</code></li>
+</ul>
+<p>Conversions between intervals and strings. These are defined only if the
+corresponding <code>from_str()</code> or <code>to_str()</code> function is defined for <code>T</code>. They do
+not attempt to cover every possible serialization format; if <code>T</code>'s string
+format contains characters that may be used as punctuation in the formats
+listed below, parsing a string may not work, while generating one may produce
+a string that cannot be parsed.</p>
+<p>In the table below, the format in the first column is the format generated by
+<code>to_str()</code> and related functions; the formats in the alternate column will
+also be recognized by <code>from_str()</code> and related functions, but will not be
+generated. <code>A</code> and <code>B</code> represent formatted values of <code>T</code>. If <code>T</code>'s
+<code>from_str()</code> or <code>to_str()</code> fail, <code>parse()</code> will return false, while the other
+functions will propagate the exceptions thrown by the corresponding functions
+on <code>T</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Alternate</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>{}</code></td>
+<td><em>empty string</em></td>
+<td>Empty interval</td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td></td>
+<td>Universal interval (contains every value)</td>
+</tr>
+<tr>
+<td><code>A</code></td>
+<td><code>=A</code></td>
+<td>Single value</td>
+</tr>
+<tr>
+<td><code>(A,B)</code></td>
+<td></td>
+<td>Open interval</td>
+</tr>
+<tr>
+<td><code>(A,B]</code></td>
+<td></td>
+<td>Half-open interval, closed on the right</td>
+</tr>
+<tr>
+<td><code>[A,B)</code></td>
+<td><code>A..&lt;B</code></td>
+<td>Half-open interval, closed on the left</td>
+</tr>
+<tr>
+<td><code>[A,B]</code></td>
+<td><code>A..B</code> <em>or</em> <code>A...B</code></td>
+<td>Closed interval</td>
+</tr>
+<tr>
+<td><code>&lt;A</code></td>
+<td></td>
+<td>Open interval, bounded above</td>
+</tr>
+<tr>
+<td><code>&lt;=A</code></td>
+<td><code>A-</code></td>
+<td>Closed interval, bounded above</td>
+</tr>
+<tr>
+<td><code>&gt;A</code></td>
+<td></td>
+<td>Open interval, bounded below</td>
+</tr>
+<tr>
+<td><code>&gt;=A</code></td>
+<td><code>A+</code></td>
+<td>Closed interval, bounded below</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="defns">
+<ul>
+<li><code>void Interval::</code><strong><code>convert_from_json</code></strong><code>(const json&amp; j)</code></li>
+<li><code>json Interval::</code><strong><code>convert_to_json</code></strong><code>() const</code></li>
+<li><code>void</code> <strong><code>from_json</code></strong><code>(const json&amp; j, Interval&amp; in)</code></li>
+<li><code>void</code> <strong><code>to_json</code></strong><code>(json&amp; j, const Interval&amp; in)</code></li>
+</ul>
+<p>Conversions between <code>Interval&lt;T&gt;</code> and <code>nlohmann::json</code>. These are only defined
+if the corresponding functions are defined for <code>T</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>size_t Interval::</code><strong><code>hash</code></strong><code>() const noexcept</code></li>
+<li><code>class</code> <strong><code>std::hash&lt;Interval&lt;T&gt;&gt;</code></strong></li>
+</ul>
+<p>Hash function for an interval.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void Interval::</code><strong><code>swap</code></strong><code>(Interval&amp; in) noexcept</code></li>
+<li><code>void</code> <strong><code>swap</code></strong><code>(Interval&amp; a, Interval&amp; b)</code></li>
+</ul>
+<p>Swap two intervals.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>static Interval Interval::</code><strong><code>all</code></strong><code>() noexcept</code></li>
+</ul>
+<p>Constructs a universal interval, i.e. an unbounded interval containing all
+possible values of <code>T</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool</code> <strong><code>operator==</code></strong><code>(const Interval&amp; a, const Interval&amp; b) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator!=</code></strong><code>(const Interval&amp; a, const Interval&amp; b) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&lt;</code></strong><code>(const Interval&amp; a, const Interval&amp; b) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&gt;</code></strong><code>(const Interval&amp; a, const Interval&amp; b) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&lt;=</code></strong><code>(const Interval&amp; a, const Interval&amp; b) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&gt;=</code></strong><code>(const Interval&amp; a, const Interval&amp; b) noexcept</code></li>
+</ul>
+<p>Lexicographical comparison operators. These call <code>T</code>'s equality and less-than
+operators.</p>
+</div>
+<h2 id="interval-set">Interval set</h2>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T&gt; class</code> <strong><code>IntervalSet</code></strong></li>
+</ul>
+<p>This class represents a subset of <code>T</code>'s domain as a set of intervals.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>using IntervalSet::</code><strong><code>value_type</code></strong> <code>= T</code></li>
+<li><code>using IntervalSet::</code><strong><code>interval_type</code></strong> <code>= Interval&lt;T&gt;</code></li>
+<li><code>class IntervalSet::</code><strong><code>iterator</code></strong> <em>[bidirectional const iterator]</em></li>
+</ul>
+<p>Member types.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>static constexpr IntervalCategory IntervalSet::</code><strong><code>category</code></strong> <code>= interval_category&lt;T&gt;</code></li>
+</ul>
+<p>The underlying value type's interval category.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>IntervalSet::</code><strong><code>IntervalSet</code></strong><code>()</code></li>
+<li><code>IntervalSet::</code><strong><code>IntervalSet</code></strong><code>(const T&amp; t)</code></li>
+<li><code>IntervalSet::</code><strong><code>IntervalSet</code></strong><code>(const Interval&lt;T&gt;&amp; in)</code></li>
+<li><code>IntervalSet::</code><strong><code>IntervalSet</code></strong><code>(std::initializer_list&lt;Interval&lt;T&gt;&gt; list)</code></li>
+<li><code>IntervalSet::</code><strong><code>IntervalSet</code></strong><code>(const IntervalSet&amp; set)</code></li>
+<li><code>IntervalSet::</code><strong><code>IntervalSet</code></strong><code>(IntervalSet&amp;&amp; set) noexcept</code></li>
+<li><code>IntervalSet::</code><strong><code>~IntervalSet</code></strong><code>() noexcept</code></li>
+<li><code>IntervalSet&amp; IntervalSet::</code><strong><code>operator=</code></strong><code>(const IntervalSet&amp; set)</code></li>
+<li><code>IntervalSet&amp; IntervalSet::</code><strong><code>operator=</code></strong><code>(IntervalSet&amp;&amp; set) noexcept</code></li>
+</ul>
+<p>Life cycle functions. When a set is constructed from a list of intervals or
+values, the intervals are ordered lexicographically, and adjacent intervals
+are merged when they touch or overlap.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>IntervalSet::iterator IntervalSet::</code><strong><code>begin</code></strong><code>() const noexcept</code></li>
+<li><code>IntervalSet::iterator IntervalSet::</code><strong><code>end</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>Iterators over the intervals in the set.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool IntervalSet::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>True if the set is empty.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>size_t IntervalSet::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>Returns the number of intervals in the set.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool IntervalSet::</code><strong><code>contains</code></strong><code>(const T&amp; t) const</code></li>
+<li><code>bool IntervalSet::</code><strong><code>operator()</code></strong><code>(const T&amp; t) const</code></li>
+</ul>
+<p>True if the value is an element of any of the intervals in the set.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void IntervalSet::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
+</ul>
+<p>Clears all intervals from the set, leaving it empty.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void IntervalSet::</code><strong><code>insert</code></strong><code>(const Interval&lt;T&gt;&amp; in)</code></li>
+</ul>
+<p>Adds a new interval to the set. Adjacent intervals are merged when they touch
+or overlap.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void IntervalSet::</code><strong><code>erase</code></strong><code>(const Interval&lt;T&gt;&amp; in)</code></li>
+</ul>
+<p>Removes an interval from the set. Intervals in the set that overlap this
+interval will be modified or removed as necessary. This will have no effect if
+this interval does not overlap any existing interval in the set.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>IntervalSet IntervalSet::</code><strong><code>inverse</code></strong><code>() const</code></li>
+<li><code>IntervalSet IntervalSet::</code><strong><code>operator~</code></strong><code>() const</code></li>
+</ul>
+<p>Returns the complement of the set, i.e. a new set whose member intervals
+contain every value of <code>T</code> that is not in this set.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>IntervalSet IntervalSet::</code><strong><code>set_intersection</code></strong><code>(const IntervalSet&amp; b) const</code></li>
+<li><code>IntervalSet IntervalSet::</code><strong><code>set_union</code></strong><code>(const IntervalSet&amp; b) const</code></li>
+<li><code>IntervalSet IntervalSet::</code><strong><code>set_difference</code></strong><code>(const IntervalSet&amp; b) const</code></li>
+<li><code>IntervalSet IntervalSet::</code><strong><code>set_symmetric_difference</code></strong><code>(const IntervalSet&amp; b) const</code></li>
+<li><code>IntervalSet&amp; IntervalSet::</code><strong><code>operator&amp;=</code></strong><code>(const IntervalSet&amp; b)</code> <em>[set intersection]</em></li>
+<li><code>IntervalSet&amp; IntervalSet::</code><strong><code>operator|=</code></strong><code>(const IntervalSet&amp; b)</code> <em>[set union]</em></li>
+<li><code>IntervalSet&amp; IntervalSet::</code><strong><code>operator-=</code></strong><code>(const IntervalSet&amp; b)</code> <em>[set difference]</em></li>
+<li><code>IntervalSet&amp; IntervalSet::</code><strong><code>operator^=</code></strong><code>(const IntervalSet&amp; b)</code> <em>[set symmetric difference]</em></li>
+<li><code>IntervalSet</code> <strong><code>operator&amp;</code></strong><code>(const IntervalSet&amp; a, const IntervalSet&amp; b)</code> <em>[set intersection]</em></li>
+<li><code>IntervalSet</code> <strong><code>operator|</code></strong><code>(const IntervalSet&amp; a, const IntervalSet&amp; b)</code> <em>[set union]</em></li>
+<li><code>IntervalSet</code> <strong><code>operator-</code></strong><code>(const IntervalSet&amp; a, const IntervalSet&amp; b)</code> <em>[set difference]</em></li>
+<li><code>IntervalSet</code> <strong><code>operator^</code></strong><code>(const IntervalSet&amp; a, const IntervalSet&amp; b)</code> <em>[set symmetric difference]</em></li>
+</ul>
+<p>Set operations.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool IntervalSet::</code><strong><code>parse</code></strong><code>(Uview view) noexcept</code></li>
+<li><code>Ustring IntervalSet::</code><strong><code>str</code></strong><code>() const</code></li>
+<li><code>bool</code> <strong><code>from_str</code></strong><code>(Uview view, IntervalSet&amp; set)</code></li>
+<li><code>Ustring</code> <strong><code>to_str</code></strong><code>(const IntervalSet&amp; set)</code></li>
+<li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const IntervalSet&amp; set)</code></li>
+</ul>
+<p>Interval set parsing and formatting functions. An interval set is expected to
+be in the format <code>"{A,B,C,...}"</code>, where <code>A</code>, <code>B</code>, <code>C</code>, etc are intervals or
+values of <code>T</code>. A single value of <code>T</code> or <code>Interval&lt;T&gt;</code> will also be recognized,
+as will an empty set represented by an empty string or <code>"{}"</code>. These call the
+corresponding functions on <code>Interval&lt;T&gt;</code>, which in turn call the corresponding
+functions on <code>T</code>, and will propagate any exceptions (or false return values)
+from those. As with the string functions for <code>Interval</code>, results may be
+inconsistent, or not round-trippable, if the format of a serialized <code>T</code>
+contains any characters that may be mistaken for punctuation in the set
+format.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>size_t IntervalSet::</code><strong><code>hash</code></strong><code>() const noexcept</code></li>
+<li><code>class</code> <strong><code>std::hash&lt;IntervalSet&gt;</code></strong></li>
+</ul>
+<p>Hash function for an interval set.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void IntervalSet::</code><strong><code>swap</code></strong><code>(IntervalSet&amp; set) noexcept</code></li>
+<li><code>void</code> <strong><code>swap</code></strong><code>(IntervalSet&amp; a, IntervalSet&amp; b)</code></li>
+</ul>
+<p>Swap two interval sets.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool</code> <strong><code>operator==</code></strong><code>(const IntervalSet&amp; a, const IntervalSet&amp; b) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator!=</code></strong><code>(const IntervalSet&amp; a, const IntervalSet&amp; b) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&lt;</code></strong><code>(const IntervalSet&amp; a, const IntervalSet&amp; b) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&gt;</code></strong><code>(const IntervalSet&amp; a, const IntervalSet&amp; b) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&lt;=</code></strong><code>(const IntervalSet&amp; a, const IntervalSet&amp; b) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&gt;=</code></strong><code>(const IntervalSet&amp; a, const IntervalSet&amp; b) noexcept</code></li>
+</ul>
+<p>Lexicographical comparison operators. These call <code>T</code>'s equality and less-than
+operators.</p>
+</div>
+<h2 id="interval-map">Interval map</h2>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename K, typename T&gt; class</code> <strong><code>IntervalMap</code></strong></li>
+</ul>
+<p>A map from a set of intervals over <code>K</code> to values of <code>T</code>. The <code>IntervalMap</code>
+object also contains a default value of <code>T</code> that will be returned when a key
+is not a member of any of the intervals in the map.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>using IntervalMap::</code><strong><code>key_type</code></strong> <code>= K</code></li>
+<li><code>using IntervalMap::</code><strong><code>interval_type</code></strong> <code>= Interval&lt;K&gt;</code></li>
+<li><code>using IntervalMap::</code><strong><code>mapped_type</code></strong> <code>= T</code></li>
+<li><code>using IntervalMap::</code><strong><code>value_type</code></strong> <code>= std::pair&lt;const Interval&lt;K&gt;, T&gt;</code></li>
+<li><code>class IntervalMap::</code><strong><code>iterator</code></strong> <em>[bidirectional const iterator]</em></li>
+</ul>
+<p>Member types.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>static constexpr IntervalCategory IntervalMap::</code><strong><code>category</code></strong> <code>= interval_category&lt;K&gt;</code></li>
+</ul>
+<p>The underlying value type's interval category.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>IntervalMap::</code><strong><code>IntervalMap</code></strong><code>()</code></li>
+<li><code>explicit IntervalMap::</code><strong><code>IntervalMap</code></strong><code>(const T&amp; defval)</code></li>
+<li><code>IntervalMap::</code><strong><code>IntervalMap</code></strong><code>(std::initializer_list&lt;value_type&gt; list)</code></li>
+<li><code>IntervalMap::</code><strong><code>IntervalMap</code></strong><code>(const IntervalMap&amp; map)</code></li>
+<li><code>IntervalMap::</code><strong><code>IntervalMap</code></strong><code>(IntervalMap&amp;&amp; map) noexcept</code></li>
+<li><code>IntervalMap::</code><strong><code>~IntervalMap</code></strong><code>() noexcept</code></li>
+<li><code>IntervalMap&amp; IntervalMap::</code><strong><code>operator=</code></strong><code>(const IntervalMap&amp; map)</code></li>
+<li><code>IntervalMap&amp; IntervalMap::</code><strong><code>operator=</code></strong><code>(IntervalMap&amp;&amp; map) noexcept</code></li>
+</ul>
+<p>Life cycle functions. An optional default value can be provided; if none is
+provided, <code>T</code>'s default constructor is used. When a map is constructed from a
+list of <code>(interval,value)</code> pairs, the intervals are ordered lexicographically,
+and adjacent intervals are merged when they touch or overlap and have the same
+mapped value. When two intervals overlap but do not have the same mapped
+value, later entries in the initializer list will overwrite earlier ones.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>const T&amp; IntervalMap::</code><strong><code>operator[]</code></strong><code>(const K&amp; key) const</code></li>
+</ul>
+<p>Returns the mapped value corresponding to the interval containing the given
+key, or the default value if no interval contains the key.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>IntervalMap::iterator IntervalMap::</code><strong><code>begin</code></strong><code>() const noexcept</code></li>
+<li><code>IntervalMap::iterator IntervalMap::</code><strong><code>end</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>Iterators over the map's list of <code>(interval,value)</code> pairs.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool IntervalMap::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>True if the map is empty.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>size_t IntervalMap::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>Returns the number of intervals in the map.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>const T&amp; IntervalMap::</code><strong><code>default_value</code></strong><code>() const noexcept</code></li>
+<li><code>void IntervalMap::</code><strong><code>default_value</code></strong><code>(const T&amp; defval)</code></li>
+</ul>
+<p>Query or set the default value.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool IntervalMap::</code><strong><code>contains</code></strong><code>(const K&amp; key) const</code></li>
+</ul>
+<p>True if one of the intervals in the map contains the key.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>IntervalMap::iterator IntervalMap::</code><strong><code>find</code></strong><code>(const K&amp; key) const</code></li>
+</ul>
+<p>Returns an iterator pointing to the interval containing the given key, or
+<code>end()</code> if no such interval exists.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>IntervalMap::iterator IntervalMap::</code><strong><code>lower_bound</code></strong><code>(const K&amp; key) const</code></li>
+<li><code>IntervalMap::iterator IntervalMap::</code><strong><code>upper_bound</code></strong><code>(const K&amp; key) const</code></li>
+</ul>
+<p>If the key is contained in one of the intervals in the map, <code>lower_bound()</code>
+returns an iterator pointing to that interval, and <code>upper_bound()</code> returns the
+next iterator. If not, both functions return the iterator pointing to the
+first interval after the given key, or <code>end()</code> if no such interval exists.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void IntervalMap::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
+<li><code>void IntervalMap::</code><strong><code>reset</code></strong><code>(const T&amp; defval = {})</code></li>
+</ul>
+<p>These clear all <code>(interval,value)</code> pairs from the map. The <code>clear()</code> function
+does not change the default value, while <code>reset()</code> also changes it.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void IntervalMap::</code><strong><code>insert</code></strong><code>(const Interval&lt;K&gt;&amp; in, const T&amp; t)</code></li>
+<li><code>void IntervalMap::</code><strong><code>insert</code></strong><code>(const value_type&amp; v)</code></li>
+</ul>
+<p>Adds a new <code>(interval,value)</code> pair to the map. Intervals in the map that
+overlap this interval will be modified or removed as necessary.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void IntervalMap::</code><strong><code>erase</code></strong><code>(const Interval&lt;K&gt;&amp; in)</code></li>
+</ul>
+<p>Removes an interval from the map. Intervals in the map that overlap this
+interval will be modified or removed as necessary. This will have no effect if
+this interval does not overlap any existing interval in the map.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool IntervalMap::</code><strong><code>parse</code></strong><code>(Uview view) noexcept</code></li>
+<li><code>Ustring IntervalMap::</code><strong><code>str</code></strong><code>() const</code></li>
+<li><code>bool</code> <strong><code>from_str</code></strong><code>(Uview view, IntervalMap&amp; set)</code></li>
+<li><code>Ustring</code> <strong><code>to_str</code></strong><code>(const IntervalMap&amp; set)</code></li>
+<li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const IntervalMap&amp; set)</code></li>
+</ul>
+<p>Interval map parsing and formatting functions. An interval map is expected to
+be in the format <code>"{A:X,B:Y,C:Z,...}"</code>, where <code>A</code>, <code>B</code>, <code>C</code>, etc are intervals
+or values of <code>K</code>, and <code>X</code>, <code>Y</code>, <code>Z</code>, etc are values of <code>T</code>. An empty map can
+be represented by an empty string or <code>"{}"</code>. The default value does not
+participate in serialization; a map constructed from a string will always have
+its default value set to <code>T()</code>.</p>
+<p>These call the corresponding functions on <code>Interval&lt;K&gt;</code> (which in turn call
+the corresponding functions on <code>K</code>) and <code>T</code>, and will propagate any exceptions
+(or false return values) from those. As with the string functions for
+<code>Interval</code> and <code>IntervalSet</code>, results may be inconsistent, or not
+round-trippable, if the format of a serialized <code>K</code> or <code>T</code> contains any
+characters that may be mistaken for punctuation in the map format.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>size_t IntervalMap::</code><strong><code>hash</code></strong><code>() const noexcept</code></li>
+<li><code>class</code> <strong><code>std::hash&lt;IntervalMap&gt;</code></strong></li>
+</ul>
+<p>Hash function for an interval map.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void IntervalMap::</code><strong><code>swap</code></strong><code>(IntervalMap&amp; map) noexcept</code></li>
+<li><code>void</code> <strong><code>swap</code></strong><code>(IntervalMap&amp; a, IntervalMap&amp; b)</code></li>
+</ul>
+<p>Swap two interval maps.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>bool</code> <strong><code>operator==</code></strong><code>(const IntervalMap&amp; a, const IntervalMap&amp; b) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator!=</code></strong><code>(const IntervalMap&amp; a, const IntervalMap&amp; b) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&lt;</code></strong><code>(const IntervalMap&amp; a, const IntervalMap&amp; b) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&gt;</code></strong><code>(const IntervalMap&amp; a, const IntervalMap&amp; b) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&lt;=</code></strong><code>(const IntervalMap&amp; a, const IntervalMap&amp; b) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator&gt;=</code></strong><code>(const IntervalMap&amp; a, const IntervalMap&amp; b) noexcept</code></li>
+</ul>
+<p>Lexicographical comparison operators. These call <code>T</code>'s equality and less-than
+operators.</p></body>
+</html>

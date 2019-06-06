@@ -24,6 +24,7 @@
     * [`"rs-core/compact-array.hpp"`](compact-array.html) - Array optimized for small sizes
     * [`"rs-core/grid.hpp"`](grid.html) - Multidimensional array
     * [`"rs-core/index-table.hpp"`](index-table.html) - Multi-index map
+    * [`"rs-core/interval.hpp"`](interval.html) - Intervals and interval-based containers
     * [`"rs-core/mirror-map.hpp"`](mirror-map.html) - Map with two-way lookup
     * [`"rs-core/ordered-map.hpp"`](ordered-map.html) - Map with insertion order preservation
     * [`"rs-core/ring-buffer.hpp"`](ring-buffer.html) - Ring buffer

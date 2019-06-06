@@ -20,6 +20,7 @@
 #include "rs-core/grid.hpp"
 #include "rs-core/index-table.hpp"
 #include "rs-core/int128.hpp"
+#include "rs-core/interval.hpp"
 #include "rs-core/io.hpp"
 #include "rs-core/ipc.hpp"
 #include "rs-core/marked.hpp"

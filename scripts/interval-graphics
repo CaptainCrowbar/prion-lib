@@ -1,0 +1,41 @@
+#!/usr/local/bin/bash
+
+mkdir -p graphics
+
+interval_diagram() {
+
+    id=$1
+    a_left=$2
+    a_width=$3
+    b_left=$4
+    b_width=$5
+
+    (( a_right=a_left+a_width ))
+    (( b_right=b_left+b_width ))
+
+    gm convert -size 90x20 xc:transparent \
+        -stroke black \
+        -strokewidth 2 \
+        -fill black \
+        -draw "roundRectangle $b_left,7 $b_right,17 2,2" \
+        -fill "#eee" \
+        -draw "roundRectangle $a_left,3 $a_right,13 2,2" \
+        graphics/interval$id.png
+
+}
+
+interval_diagram '-7'  -20  2   4    32  # b_only             -7  bbb        A is empty, B is not
+interval_diagram '-6'  4    32  48   32  # a_below_b          -6  aaa...bbb  A's upper bound is less than B's lower bound, with a gap
+interval_diagram '-5'  4    32  36   32  # a_touches_b        -5  aaabbb     A's upper bound is less than B's lower bound, with no gap
+interval_diagram '-4'  4    32  20   32  # a_overlaps_b       -4  aaa***bbb  A's upper bound overlaps B's lower bound
+interval_diagram '-3'  4    48  28   24  # a_extends_below_b  -3  aaa***     B is a subset of A, with the same upper bound
+interval_diagram '-2'  4    48  20   16  # a_encloses_b       -2  aaa***aaa  B is a subset of A, matching neither bound
+interval_diagram '-1'  4    24  4    48  # b_extends_above_a  -1  ***bbb     A is a subset of B, with the same lower bound
+interval_diagram '+0'  4    32  4    32  # equal              0   ***        A and B are the same (this includes the case where both are empty)
+interval_diagram '+1'  4    48  4    24  # a_extends_above_b  +1  ***aaa     B is a subset of A, with the same lower bound
+interval_diagram '+2'  20   16  4    48  # b_encloses_a       +2  bbb***bbb  A is a subset of B, matching neither bound
+interval_diagram '+3'  28   24  4    48  # b_extends_below_a  +3  bbb***     A is a subset of B, with the same upper bound
+interval_diagram '+4'  20   32  4    32  # b_overlaps_a       +4  bbb***aaa  B's upper bound overlaps A's lower bound
+interval_diagram '+5'  36   32  4    32  # b_touches_a        +5  bbbaaa     B's upper bound is less than A's lower bound, with no gap
+interval_diagram '+6'  48   32  4    32  # b_below_a          +6  bbb...aaa  B's upper bound is less than A's lower bound, with a gap
+interval_diagram '+7'  4    32  -20  2   # a_only             +7  aaa        B is empty, A is not

@@ -127,6 +127,29 @@ extern void test_core_int128_uint128_conversion();
 extern void test_core_int128_uint128_representation();
 extern void test_core_int128_uint128_literals();
 extern void test_core_int128_uint128_numeric_limits();
+extern void test_source_interval_basic_type_traits();
+extern void test_source_interval_continuous_basic_properties();
+extern void test_source_interval_continuous_string_parsing();
+extern void test_source_interval_continuous_inverse();
+extern void test_source_interval_continuous_binary_operations();
+extern void test_source_interval_continuous_set_construct_insert_erase();
+extern void test_source_interval_continuous_set_operations();
+extern void test_source_interval_continuous_map();
+extern void test_source_interval_integral_basic_properties();
+extern void test_source_interval_integral_string_parsing();
+extern void test_source_interval_integral_iterators();
+extern void test_source_interval_integral_inverse();
+extern void test_source_interval_integral_binary_operations();
+extern void test_source_interval_integral_set_construct_insert_erase();
+extern void test_source_interval_integral_set_operations();
+extern void test_source_interval_integral_map();
+extern void test_source_interval_ordered_basic_properties();
+extern void test_source_interval_ordered_string_parsing();
+extern void test_source_interval_ordered_inverse();
+extern void test_source_interval_ordered_binary_operations();
+extern void test_source_interval_ordered_set_construct_insert_erase();
+extern void test_source_interval_ordered_set_operations();
+extern void test_source_interval_ordered_map();
 extern void test_core_io_cstdio();
 extern void test_core_io_fdio();
 extern void test_core_io_pipe();
@@ -579,6 +602,29 @@ int main() {
         { "core/int128/uint128-representation", test_core_int128_uint128_representation },
         { "core/int128/uint128-literals", test_core_int128_uint128_literals },
         { "core/int128/uint128-numeric-limits", test_core_int128_uint128_numeric_limits },
+        { "source/interval-basic/type-traits", test_source_interval_basic_type_traits },
+        { "source/interval-continuous/basic-properties", test_source_interval_continuous_basic_properties },
+        { "source/interval-continuous/string-parsing", test_source_interval_continuous_string_parsing },
+        { "source/interval-continuous/inverse", test_source_interval_continuous_inverse },
+        { "source/interval-continuous/binary-operations", test_source_interval_continuous_binary_operations },
+        { "source/interval-continuous/set-construct-insert-erase", test_source_interval_continuous_set_construct_insert_erase },
+        { "source/interval-continuous/set-operations", test_source_interval_continuous_set_operations },
+        { "source/interval-continuous/map", test_source_interval_continuous_map },
+        { "source/interval-integral/basic-properties", test_source_interval_integral_basic_properties },
+        { "source/interval-integral/string-parsing", test_source_interval_integral_string_parsing },
+        { "source/interval-integral/iterators", test_source_interval_integral_iterators },
+        { "source/interval-integral/inverse", test_source_interval_integral_inverse },
+        { "source/interval-integral/binary-operations", test_source_interval_integral_binary_operations },
+        { "source/interval-integral/set-construct-insert-erase", test_source_interval_integral_set_construct_insert_erase },
+        { "source/interval-integral/set-operations", test_source_interval_integral_set_operations },
+        { "source/interval-integral/map", test_source_interval_integral_map },
+        { "source/interval-ordered/basic-properties", test_source_interval_ordered_basic_properties },
+        { "source/interval-ordered/string-parsing", test_source_interval_ordered_string_parsing },
+        { "source/interval-ordered/inverse", test_source_interval_ordered_inverse },
+        { "source/interval-ordered/binary-operations", test_source_interval_ordered_binary_operations },
+        { "source/interval-ordered/set-construct-insert-erase", test_source_interval_ordered_set_construct_insert_erase },
+        { "source/interval-ordered/set-operations", test_source_interval_ordered_set_operations },
+        { "source/interval-ordered/map", test_source_interval_ordered_map },
         { "core/io/cstdio", test_core_io_cstdio },
         { "core/io/fdio", test_core_io_fdio },
         { "core/io/pipe", test_core_io_pipe },

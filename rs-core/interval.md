@@ -211,7 +211,7 @@ Interval properties.
 Iterators over the values in an interval. These are defined only for
 integer-like underlying types (interval category `integral`). If either of the
 bounds does not exist (bound type `empty` or `unbound`), behaviour is
-undefined if the corresponding `begin ()` or `end()` function is called.
+undefined if the corresponding `begin()` or `end()` function is called.
 
 * `[see below] Interval::`**`size`**`() const`
 

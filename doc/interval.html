@@ -118,7 +118,9 @@ relationship of one interval to another. In the table below, the values in the
 first column are the possible results of calling <code>A.order(B)</code>, where <code>A</code> and
 <code>B</code> are intervals. In the relationship diagrams, <code>A</code> is the white interval,
 <code>B</code> is the black interval, with the underlying type running horizontally from
-left to right.</p>
+left to right. A negative value indicates that <code>A</code> will compare
+lexicographically less than <code>B</code>; a positive value indicates that <code>A</code> will
+compare greater than <code>B</code>.</p>
 <table>
 <thead>
 <tr>
@@ -450,7 +452,8 @@ the return type is <code>IntervalSet</code> (described below), not <code>Interva
 </ul>
 <p>Performs a three-way lexicographical ordering of two intervals, according to
 <code>T</code>'s less-than operator. The return value is a positive integer if <code>*this&gt;b</code>,
-a negative integer if <code>*this&lt;b</code>, or zero if <code>*this==b</code>.</p>
+a negative integer if <code>*this&lt;b</code>, or zero if <code>*this==b</code>. An empty interval
+compares less than any non-empty interval.</p>
 </div>
 <div class="defns">
 <ul>

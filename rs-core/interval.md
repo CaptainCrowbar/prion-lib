@@ -73,7 +73,9 @@ relationship of one interval to another. In the table below, the values in the
 first column are the possible results of calling `A.order(B)`, where `A` and
 `B` are intervals. In the relationship diagrams, `A` is the white interval,
 `B` is the black interval, with the underlying type running horizontally from
-left to right.
+left to right. A negative value indicates that `A` will compare
+lexicographically less than `B`; a positive value indicates that `A` will
+compare greater than `B`.
 
 Name                                      | Value  | Picture                                   | Description
 ----                                      | -----  | -------                                   | -----------
@@ -250,7 +252,8 @@ Determines the relationship between two intervals. See the description of the
 
 Performs a three-way lexicographical ordering of two intervals, according to
 `T`'s less-than operator. The return value is a positive integer if `*this>b`,
-a negative integer if `*this<b`, or zero if `*this==b`.
+a negative integer if `*this<b`, or zero if `*this==b`. An empty interval
+compares less than any non-empty interval.
 
 * `bool Interval::`**`includes`**`(const Interval& b) const` _[true if `b` is a subset of `*this`]_
 * `bool Interval::`**`overlaps`**`(const Interval& b) const` _[true if `*this` and `b` have any values in common]_

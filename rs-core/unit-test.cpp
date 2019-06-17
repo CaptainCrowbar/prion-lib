@@ -66,7 +66,19 @@ extern void test_core_channel_queue();
 extern void test_core_channel_value();
 extern void test_core_channel_timer();
 extern void test_core_channel_throttle();
-extern void test_core_channel_dispatch();
+extern void test_core_channel_dispatch_empty();
+extern void test_core_channel_dispatch_sync_close();
+extern void test_core_channel_dispatch_async_close();
+extern void test_core_channel_dispatch_sync_exception();
+extern void test_core_channel_dispatch_async_exception();
+extern void test_core_channel_dispatch_multiple_sync_exception();
+extern void test_core_channel_dispatch_multiple_async_exception();
+extern void test_core_channel_dispatch_heterogeneous_sync_exception();
+extern void test_core_channel_dispatch_heterogeneous_async_exception();
+extern void test_core_channel_dispatch_sync_message_channel();
+extern void test_core_channel_dispatch_async_message_channel();
+extern void test_core_channel_dispatch_sync_stream_channel();
+extern void test_core_channel_dispatch_async_stream_channel();
 extern void test_core_compact_array_construction();
 extern void test_core_compact_array_capacity();
 extern void test_core_compact_array_insertion();
@@ -541,7 +553,19 @@ int main() {
         { "core/channel/value", test_core_channel_value },
         { "core/channel/timer", test_core_channel_timer },
         { "core/channel/throttle", test_core_channel_throttle },
-        { "core/channel/dispatch", test_core_channel_dispatch },
+        { "core/channel/dispatch-empty", test_core_channel_dispatch_empty },
+        { "core/channel/dispatch-sync-close", test_core_channel_dispatch_sync_close },
+        { "core/channel/dispatch-async-close", test_core_channel_dispatch_async_close },
+        { "core/channel/dispatch-sync-exception", test_core_channel_dispatch_sync_exception },
+        { "core/channel/dispatch-async-exception", test_core_channel_dispatch_async_exception },
+        { "core/channel/dispatch-multiple-sync-exception", test_core_channel_dispatch_multiple_sync_exception },
+        { "core/channel/dispatch-multiple-async-exception", test_core_channel_dispatch_multiple_async_exception },
+        { "core/channel/dispatch-heterogeneous-sync-exception", test_core_channel_dispatch_heterogeneous_sync_exception },
+        { "core/channel/dispatch-heterogeneous-async-exception", test_core_channel_dispatch_heterogeneous_async_exception },
+        { "core/channel/dispatch-sync-message-channel", test_core_channel_dispatch_sync_message_channel },
+        { "core/channel/dispatch-async-message-channel", test_core_channel_dispatch_async_message_channel },
+        { "core/channel/dispatch-sync-stream-channel", test_core_channel_dispatch_sync_stream_channel },
+        { "core/channel/dispatch-async-stream-channel", test_core_channel_dispatch_async_stream_channel },
         { "core/compact-array/construction", test_core_compact_array_construction },
         { "core/compact-array/capacity", test_core_compact_array_capacity },
         { "core/compact-array/insertion", test_core_compact_array_insertion },

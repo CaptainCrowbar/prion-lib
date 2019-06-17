@@ -16,16 +16,6 @@ using namespace RS;
 using namespace std::chrono;
 using namespace std::literals;
 
-namespace {
-
-    class TestException:
-    public std::runtime_error {
-    public:
-        TestException(): std::runtime_error("Test exception") {}
-    };
-
-}
-
 void test_core_channel_true() {
 
     TrueChannel chan;
@@ -236,6 +226,12 @@ namespace {
 
     constexpr int cycles = 100;
     constexpr auto time_interval = 1ms;
+
+    class TestException:
+    public std::runtime_error {
+    public:
+        TestException(): std::runtime_error("Test exception") {}
+    };
 
 }
 

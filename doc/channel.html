@@ -178,7 +178,7 @@ currently running event handlers to finish.</p>
 <ul>
 <li><code>class</code> <strong><code>EventChannel</code></strong><code>: public Channel</code><ul>
 <li><code>using EventChannel::</code><strong><code>callback</code></strong> <code>= std::function&lt;void()&gt;</code></li>
-<li><code>void EventChannel::</code><strong><code>dispatch</code></strong><code>(mode m, callback func)</code></li>
+<li><code>void EventChannel::</code><strong><code>dispatch</code></strong><code>(mode m, callback f)</code></li>
 <li><code>protected EventChannel::</code><strong><code>EventChannel</code></strong><code>()</code></li>
 </ul>
 </li>
@@ -192,7 +192,7 @@ beyond the fact that an event has happened).</p>
 <li><code>template &lt;typename T&gt; class</code> <strong><code>MessageChannel</code></strong><code>: public Channel</code><ul>
 <li><code>using MessageChannel::</code><strong><code>callback</code></strong> <code>= std::function&lt;void(const T&amp;)&gt;</code></li>
 <li><code>using MessageChannel::</code><strong><code>value_type</code></strong> <code>= T</code></li>
-<li><code>void MessageChannel::</code><strong><code>dispatch</code></strong><code>(mode m, callback func)</code></li>
+<li><code>void MessageChannel::</code><strong><code>dispatch</code></strong><code>(mode m, callback f)</code></li>
 <li><code>virtual bool MessageChannel::</code><strong><code>read</code></strong><code>(T&amp; t) = 0</code></li>
 <li><code>Optional&lt;T&gt; MessageChannel::</code><strong><code>read_opt</code></strong><code>()</code></li>
 <li><code>protected MessageChannel::</code><strong><code>MessageChannel</code></strong><code>()</code></li>
@@ -221,7 +221,7 @@ or an empty value on failure.</p>
 <li><code>static constexpr size_t StreamChannel::</code><strong><code>default_buffer</code></strong> <code>= 16384</code></li>
 <li><code>virtual size_t StreamChannel::</code><strong><code>read</code></strong><code>(void* dst, size_t maxlen) = 0</code></li>
 <li><code>size_t StreamChannel::</code><strong><code>buffer</code></strong><code>() const noexcept</code></li>
-<li><code>void StreamChannel::</code><strong><code>dispatch</code></strong><code>(mode m, callback func)</code></li>
+<li><code>void StreamChannel::</code><strong><code>dispatch</code></strong><code>(mode m, callback f)</code></li>
 <li><code>std::string StreamChannel::</code><strong><code>read_all</code></strong><code>()</code></li>
 <li><code>std::string StreamChannel::</code><strong><code>read_str</code></strong><code>()</code></li>
 <li><code>size_t StreamChannel::</code><strong><code>read_to</code></strong><code>(std::string&amp; dst)</code></li>

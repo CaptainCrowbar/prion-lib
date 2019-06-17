@@ -20,7 +20,7 @@ namespace RS {
             int calls = 0;
             for (auto& t: global_tasks()) {
                 rc.channel = t.first;
-                if (t.second.runmode == Channel::mode::sync) {
+                if (t.second.runmode == mode::sync) {
                     try {
                         if (t.first->poll()) {
                             if (t.first->is_closed()) {
@@ -62,24 +62,24 @@ namespace RS {
             run_dispatch();
     }
 
-    void Channel::global_dispatch(Channel& chan, mode m, dispatch_callback call) {
+    void Channel::global_dispatch(Channel& c, mode m, dispatch_callback f) {
         using namespace std::chrono;
-        if (! chan.is_shared() && global_tasks().count(&chan))
+        if (! c.is_shared() && global_tasks().count(&c))
             throw std::invalid_argument("Channel is not shareable");
-        if (m != Channel::mode::sync && m != Channel::mode::async)
+        if (m != mode::sync && m != mode::async)
             throw std::invalid_argument("Invalid dispatch mode");
-        if (m == Channel::mode::async && ! chan.is_async())
+        if (m == mode::async && ! c.is_async())
             throw std::invalid_argument("Invalid dispatch mode for channel");
-        auto& task = global_tasks()[&chan];
+        auto& task = global_tasks()[&c];
         task.runmode = m;
-        task.call = call;
-        if (task.runmode == Channel::mode::async) {
+        task.call = f;
+        if (task.runmode == mode::async) {
             auto payload = [&] () noexcept {
                 try {
                     for (;;) {
-                        if (! chan.wait_for(seconds(1)))
+                        if (! c.wait_for(seconds(1)))
                             continue;
-                        if (chan.is_closed())
+                        if (c.is_closed())
                             break;
                         task.call();
                     }
@@ -117,20 +117,20 @@ namespace RS {
 
     // Class EventChannel
 
-    void EventChannel::dispatch(mode m, callback func) {
-        if (! func)
+    void EventChannel::dispatch(mode m, callback f) {
+        if (! f)
             throw std::invalid_argument("Channel callback is null");
-        global_dispatch(*this, m, func);
+        global_dispatch(*this, m, f);
     }
 
     // Class StreamChannel
 
-    void StreamChannel::dispatch(mode m, callback func) {
-        if (! func)
+    void StreamChannel::dispatch(mode m, callback f) {
+        if (! f)
             throw std::invalid_argument("Channel callback is null");
-        auto call = [this,func,s=std::string()] () mutable {
+        auto call = [this,f,s=std::string()] () mutable {
             if (read_to(s))
-                func(s);
+                f(s);
         };
         global_dispatch(*this, m, call);
     }

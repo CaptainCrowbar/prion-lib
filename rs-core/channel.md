@@ -133,7 +133,7 @@ currently running event handlers to finish.
 
 * `class` **`EventChannel`**`: public Channel`
     * `using EventChannel::`**`callback`** `= std::function<void()>`
-    * `void EventChannel::`**`dispatch`**`(mode m, callback func)`
+    * `void EventChannel::`**`dispatch`**`(mode m, callback f)`
     * `protected EventChannel::`**`EventChannel`**`()`
 
 Intermediate base class for event channels (channels that carry no information
@@ -144,7 +144,7 @@ beyond the fact that an event has happened).
 * `template <typename T> class` **`MessageChannel`**`: public Channel`
     * `using MessageChannel::`**`callback`** `= std::function<void(const T&)>`
     * `using MessageChannel::`**`value_type`** `= T`
-    * `void MessageChannel::`**`dispatch`**`(mode m, callback func)`
+    * `void MessageChannel::`**`dispatch`**`(mode m, callback f)`
     * `virtual bool MessageChannel::`**`read`**`(T& t) = 0`
     * `Optional<T> MessageChannel::`**`read_opt`**`()`
     * `protected MessageChannel::`**`MessageChannel`**`()`
@@ -172,7 +172,7 @@ or an empty value on failure.
     * `static constexpr size_t StreamChannel::`**`default_buffer`** `= 16384`
     * `virtual size_t StreamChannel::`**`read`**`(void* dst, size_t maxlen) = 0`
     * `size_t StreamChannel::`**`buffer`**`() const noexcept`
-    * `void StreamChannel::`**`dispatch`**`(mode m, callback func)`
+    * `void StreamChannel::`**`dispatch`**`(mode m, callback f)`
     * `std::string StreamChannel::`**`read_all`**`()`
     * `std::string StreamChannel::`**`read_str`**`()`
     * `size_t StreamChannel::`**`read_to`**`(std::string& dst)`

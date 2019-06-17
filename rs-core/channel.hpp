@@ -62,7 +62,7 @@ namespace RS {
     protected:
         using dispatch_callback = std::function<void()>;
         Channel() = default;
-        static void global_dispatch(Channel& chan, mode m, dispatch_callback call);
+        static void global_dispatch(Channel& c, mode m, dispatch_callback f);
     private:
         struct dispatch_task {
             mode runmode;
@@ -75,6 +75,8 @@ namespace RS {
         static dispatch_map& global_tasks() noexcept;
     };
 
+    std::string to_str(Channel::mode m);
+    std::string to_str(Channel::reason r);
     inline std::ostream& operator<<(std::ostream& out, Channel::mode m) { return out << to_str(m); }
     inline std::ostream& operator<<(std::ostream& out, Channel::reason r) { return out << to_str(r); }
 
@@ -84,7 +86,7 @@ namespace RS {
     public Channel {
     public:
         using callback = std::function<void()>;
-        void dispatch(mode m, callback func);
+        void dispatch(mode m, callback f);
     protected:
         EventChannel() = default;
     };
@@ -96,19 +98,19 @@ namespace RS {
         using callback = std::function<void(const T&)>;
         using value_type = T;
         virtual bool read(T& t) = 0;
-        void dispatch(mode m, callback func);
+        void dispatch(mode m, callback f);
         Optional<T> read_opt();
     protected:
         MessageChannel() = default;
     };
 
         template <typename T>
-        void MessageChannel<T>::dispatch(mode m, typename MessageChannel::callback func) {
-            if (! func)
+        void MessageChannel<T>::dispatch(mode m, callback f) {
+            if (! f)
                 throw std::invalid_argument("Channel callback is null");
-            auto call = [this,func,t=T()] () mutable {
+            auto call = [this,f,t=T()] () mutable {
                 if (read(t))
-                    func(t);
+                    f(t);
             };
             global_dispatch(*this, m, call);
         }
@@ -129,7 +131,7 @@ namespace RS {
         static constexpr size_t default_buffer = 16384;
         virtual size_t read(void* dst, size_t maxlen) = 0;
         size_t buffer() const noexcept { return bytes; }
-        void dispatch(mode m, callback func);
+        void dispatch(mode m, callback f);
         std::string read_all();
         std::string read_str();
         size_t read_to(std::string& dst);

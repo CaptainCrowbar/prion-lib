@@ -42,9 +42,6 @@ namespace RS {
     template <typename T, ByteOrder B> void to_json(json& j, const Endian<T, B>& x) { j = x.get(); }
     template <typename T, ByteOrder B> void from_json(const json& j, Endian<T, B>& x) { x = j.get<T>(); }
 
-    inline void to_json(json& j, const Int& x) { j = x.str(); }
-    inline void from_json(const json& j, Int& x) { x = Int(j.get<Ustring>()); }
-
     template <typename T, size_t N, MatrixLayout L>
     void to_json(json& j, const Matrix<T, N, L>& x) {
         j = json::array();
@@ -59,8 +56,10 @@ namespace RS {
                 x(r, c) = j[r][c].get<T>();
     }
 
-    inline void to_json(json& j, const Nat& x) { j = x.str(); }
-    inline void from_json(const json& j, Nat& x) { x = Nat(j.get<Ustring>()); }
+    inline void to_json(json& j, const Mpint& x) { j = x.str(); }
+    inline void from_json(const json& j, Mpint& x) { x = Mpint(j.get<Ustring>()); }
+    inline void to_json(json& j, const Mpuint& x) { j = x.str(); }
+    inline void from_json(const json& j, Mpuint& x) { x = Mpuint(j.get<Ustring>()); }
 
     template <typename T>
     void to_json(json& j, const Quaternion<T>& x) {

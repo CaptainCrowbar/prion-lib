@@ -5,16 +5,16 @@
 
 namespace RS {
 
-    // Class Nat
+    // Class Mpuint
 
-    Nat::Nat(uint64_t x) {
+    Mpuint::Mpuint(uint64_t x) {
         if (x > 0)
             rep.push_back(uint32_t(x));
         if (x > mask32)
             rep.push_back(uint32_t(x >> 32));
     }
 
-    Nat& Nat::operator+=(const Nat& rhs) {
+    Mpuint& Mpuint::operator+=(const Mpuint& rhs) {
         size_t common = std::min(rep.size(), rhs.rep.size());
         rep.resize(std::max(rep.size(), rhs.rep.size()), 0);
         uint64_t sum = 0;
@@ -37,7 +37,7 @@ namespace RS {
         return *this;
     }
 
-    Nat& Nat::operator-=(const Nat& rhs) {
+    Mpuint& Mpuint::operator-=(const Mpuint& rhs) {
         size_t common = std::min(rep.size(), rhs.rep.size());
         bool carry = false;
         for (size_t i = 0; i < common; ++i) {
@@ -53,7 +53,7 @@ namespace RS {
         return *this;
     }
 
-    Nat& Nat::operator&=(const Nat& rhs) {
+    Mpuint& Mpuint::operator&=(const Mpuint& rhs) {
         size_t common = std::min(rep.size(), rhs.rep.size());
         rep.resize(common);
         for (size_t i = 0; i < common; ++i)
@@ -62,7 +62,7 @@ namespace RS {
         return *this;
     }
 
-    Nat& Nat::operator|=(const Nat& rhs) {
+    Mpuint& Mpuint::operator|=(const Mpuint& rhs) {
         size_t common = std::min(rep.size(), rhs.rep.size());
         rep.resize(std::max(rep.size(), rhs.rep.size()));
         for (size_t i = 0; i < common; ++i)
@@ -70,7 +70,7 @@ namespace RS {
         return *this;
     }
 
-    Nat& Nat::operator^=(const Nat& rhs) {
+    Mpuint& Mpuint::operator^=(const Mpuint& rhs) {
         size_t common = std::min(rep.size(), rhs.rep.size());
         rep.resize(std::max(rep.size(), rhs.rep.size()));
         for (size_t i = 0; i < common; ++i)
@@ -79,7 +79,7 @@ namespace RS {
         return *this;
     }
 
-    Nat& Nat::operator<<=(ptrdiff_t rhs) {
+    Mpuint& Mpuint::operator<<=(ptrdiff_t rhs) {
         if (rhs == 0)
             return *this;
         if (rhs < 0)
@@ -100,7 +100,7 @@ namespace RS {
         return *this;
     }
 
-    Nat& Nat::operator>>=(ptrdiff_t rhs) {
+    Mpuint& Mpuint::operator>>=(ptrdiff_t rhs) {
         if (rhs == 0)
             return *this;
         if (rhs < 0)
@@ -124,21 +124,21 @@ namespace RS {
         return *this;
     }
 
-    size_t Nat::bits() const noexcept {
+    size_t Mpuint::bits() const noexcept {
         size_t n = 32 * rep.size();
         if (! rep.empty())
             n -= 32 - ilog2p1(rep.back());
         return n;
     }
 
-    size_t Nat::bits_set() const noexcept {
+    size_t Mpuint::bits_set() const noexcept {
         size_t n = 0;
         for (auto i: rep)
             n += popcount(i);
         return n;
     }
 
-    size_t Nat::bytes() const noexcept {
+    size_t Mpuint::bytes() const noexcept {
         if (rep.empty())
             return 0;
         else
@@ -146,7 +146,7 @@ namespace RS {
                 + size_t(rep.back() > size_t(0xffff)) + size_t(rep.back() > size_t(0xffffff));
     }
 
-    int Nat::compare(const Nat& rhs) const noexcept {
+    int Mpuint::compare(const Mpuint& rhs) const noexcept {
         if (rep.size() != rhs.rep.size())
             return rep.size() < rhs.rep.size() ? -1 : 1;
         for (size_t i = rep.size() - 1; i != npos; --i)
@@ -155,21 +155,21 @@ namespace RS {
         return 0;
     }
 
-    bool Nat::get_bit(size_t i) const noexcept {
+    bool Mpuint::get_bit(size_t i) const noexcept {
         if (i < 32 * rep.size())
             return (rep[i / 32] >> (i % 32)) & 1;
         else
             return false;
     }
 
-    uint8_t Nat::get_byte(size_t i) const noexcept {
+    uint8_t Mpuint::get_byte(size_t i) const noexcept {
         if (i < 4 * rep.size())
             return (rep[i / 4] >> (i % 4 * 8)) & 0xff;
         else
             return 0;
     }
 
-    void Nat::set_bit(size_t i, bool b) {
+    void Mpuint::set_bit(size_t i, bool b) {
         bool in_rep = i < 32 * rep.size();
         if (b) {
             if (! in_rep)
@@ -181,22 +181,22 @@ namespace RS {
         }
     }
 
-    void Nat::set_byte(size_t i, uint8_t b) {
+    void Mpuint::set_byte(size_t i, uint8_t b) {
         if (i >= 4 * rep.size())
             rep.resize(i / 4 + 1, 0);
         rep[i / 4] |= uint32_t(b) << (i % 4 * 8);
         trim();
     }
 
-    void Nat::flip_bit(size_t i) {
+    void Mpuint::flip_bit(size_t i) {
         if (i >= 32 * rep.size())
             rep.resize(i / 32 + 1, 0);
         rep[i / 32] ^= uint32_t(1) << (i % 32);
         trim();
     }
 
-    Nat Nat::pow(const Nat& n) const {
-        Nat x = *this, y = n, z = 1;
+    Mpuint Mpuint::pow(const Mpuint& n) const {
+        Mpuint x = *this, y = n, z = 1;
         while (y) {
             if (y.is_odd())
                 z *= x;
@@ -206,7 +206,7 @@ namespace RS {
         return z;
     }
 
-    Ustring Nat::str(int base, size_t digits) const {
+    Ustring Mpuint::str(int base, size_t digits) const {
         if (base < 2 || base > 36)
             throw std::invalid_argument("Invalid base: " + RS::dec(base));
         if (rep.empty())
@@ -221,7 +221,7 @@ namespace RS {
             for (size_t i = rep.size() - 2; i != npos; --i)
                 s += RS::hex(rep[i], 8);
         } else if (base <= 10) {
-            Nat b = base, q, r, t = *this;
+            Mpuint b = base, q, r, t = *this;
             while (t) {
                 do_divide(t, b, q, r);
                 s += char(int(r) + '0');
@@ -229,7 +229,7 @@ namespace RS {
             }
             std::reverse(s.begin(), s.end());
         } else {
-            Nat b = base, q, r, t = *this;
+            Mpuint b = base, q, r, t = *this;
             while (t) {
                 do_divide(t, b, q, r);
                 int d = int(r);
@@ -246,7 +246,7 @@ namespace RS {
         return s;
     }
 
-    void Nat::write_be(void* ptr, size_t n) const noexcept {
+    void Mpuint::write_be(void* ptr, size_t n) const noexcept {
         size_t nb = std::min(n, bytes());
         std::memset(ptr, 0, n - nb);
         auto bp = static_cast<uint8_t*>(ptr) + n - nb, end = bp + nb;
@@ -254,7 +254,7 @@ namespace RS {
             *bp++ = get_byte(--nb);
     }
 
-    void Nat::write_le(void* ptr, size_t n) const noexcept {
+    void Mpuint::write_le(void* ptr, size_t n) const noexcept {
         auto bp = static_cast<uint8_t*>(ptr);
         size_t nb = std::min(n, bytes());
         for (size_t i = 0; i < nb; ++i)
@@ -262,16 +262,16 @@ namespace RS {
         std::memset(bp + nb, 0, n - nb);
     }
 
-    Nat Nat::from_double(double x) {
+    Mpuint Mpuint::from_double(double x) {
         int e = 0;
         double m = frexp(fabs(x), &e);
-        Nat n = uint64_t(floor(ldexp(m, 64)));
+        Mpuint n = uint64_t(floor(ldexp(m, 64)));
         n <<= e - 64;
         return n;
     }
 
-    Nat Nat::read_be(const void* ptr, size_t n) {
-        Nat result;
+    Mpuint Mpuint::read_be(const void* ptr, size_t n) {
+        Mpuint result;
         result.rep.resize((n + 3) / 4);
         auto bp = static_cast<const uint8_t*>(ptr);
         for (size_t i = 0, j = n - 1; i < n; ++i, --j)
@@ -280,8 +280,8 @@ namespace RS {
         return result;
     }
 
-    Nat Nat::read_le(const void* ptr, size_t n) {
-        Nat result;
+    Mpuint Mpuint::read_le(const void* ptr, size_t n) {
+        Mpuint result;
         result.rep.resize((n + 3) / 4);
         auto bp = static_cast<const uint8_t*>(ptr);
         for (size_t i = 0; i < n; ++i)
@@ -290,19 +290,19 @@ namespace RS {
         return result;
     }
 
-    void Nat::do_divide(const Nat& x, const Nat& y, Nat& q, Nat& r) {
+    void Mpuint::do_divide(const Mpuint& x, const Mpuint& y, Mpuint& q, Mpuint& r) {
         if (! y)
             throw std::domain_error("Division by zero");
-        Nat quo, rem = x;
+        Mpuint quo, rem = x;
         if (x >= y) {
             size_t shift = x.bits() - y.bits();
-            Nat rsub = y;
+            Mpuint rsub = y;
             rsub <<= shift;
             if (rsub > x) {
                 --shift;
                 rsub >>= 1;
             }
-            Nat qadd = 1;
+            Mpuint qadd = 1;
             qadd <<= shift;
             while (qadd) {
                 if (rem >= rsub) {
@@ -317,7 +317,7 @@ namespace RS {
         r = std::move(rem);
     }
 
-    void Nat::do_multiply(const Nat& x, const Nat& y, Nat& z) {
+    void Mpuint::do_multiply(const Mpuint& x, const Mpuint& y, Mpuint& z) {
         if (! x || ! y) {
             z.rep.clear();
         } else {
@@ -341,7 +341,7 @@ namespace RS {
         }
     }
 
-    void Nat::init(Uview s, int base) {
+    void Mpuint::init(Uview s, int base) {
         if (base != 0 && base != 2 && base != 10 && base != 16)
             throw std::invalid_argument("Invalid base: " + RS::dec(base));
         if (s.empty())
@@ -359,7 +359,7 @@ namespace RS {
             if (base != 10)
                 ptr += 2;
         }
-        Nat nbase = base;
+        Mpuint nbase = base;
         int digit = 0;
         auto digit_f = base == 2 ? digit_2 : base == 16 ? digit_16 : digit_10;
         for (; ptr != end; ++ptr) {
@@ -373,16 +373,16 @@ namespace RS {
         }
     }
 
-    void Nat::trim() noexcept {
+    void Mpuint::trim() noexcept {
         size_t i = rep.size() - 1;
         while (i != npos && rep[i] == 0)
             --i;
         rep.resize(i + 1);
     }
 
-    // Class Int
+    // Class Mpint
 
-    Int& Int::operator+=(const Int& rhs) {
+    Mpint& Mpint::operator+=(const Mpint& rhs) {
         if (! rhs.mag) {
             // do nothing
         } else if (! mag) {
@@ -408,23 +408,23 @@ namespace RS {
         return *this;
     }
 
-    int Int::compare(const Int& rhs) const noexcept {
+    int Mpint::compare(const Mpint& rhs) const noexcept {
         if (neg != rhs.neg)
             return neg ? -1 : 1;
         int c = mag.compare(rhs.mag);
         return neg ? - c : c;
     }
 
-    Int Int::pow(const Int& n) const {
+    Mpint Mpint::pow(const Mpint& n) const {
         if (n.neg)
             throw std::domain_error("Negative exponent in integer expression");
-        Int z;
+        Mpint z;
         z.mag = mag.pow(n.mag);
         z.neg = neg && n.mag.is_odd();
         return z;
     }
 
-    Ustring Int::str(int base, size_t digits, bool sign) const {
+    Ustring Mpint::str(int base, size_t digits, bool sign) const {
         Ustring s = mag.str(base, digits);
         if (neg)
             s.insert(s.begin(), '-');
@@ -433,14 +433,14 @@ namespace RS {
         return s;
     }
 
-    Int Int::from_double(double x) {
-        Int i = Nat::from_double(x);
+    Mpint Mpint::from_double(double x) {
+        Mpint i = Mpuint::from_double(x);
         if (x < 0)
             i = - i;
         return i;
     }
 
-    void Int::init(Uview s, int base) {
+    void Mpint::init(Uview s, int base) {
         if (base != 0 && base != 2 && base != 10 && base != 16)
             throw std::invalid_argument("Invalid base: " + RS::dec(base));
         if (s.empty())
@@ -454,9 +454,9 @@ namespace RS {
         neg &= bool(mag);
     }
 
-    void Int::do_divide(const Int& x, const Int& y, Int& q, Int& r) {
-        Int quo, rem;
-        Nat::do_divide(x.mag, y.mag, quo.mag, rem.mag);
+    void Mpint::do_divide(const Mpint& x, const Mpint& y, Mpint& q, Mpint& r) {
+        Mpint quo, rem;
+        Mpuint::do_divide(x.mag, y.mag, quo.mag, rem.mag);
         if (rem.mag && (x.neg || y.neg)) {
             if (x.neg) {
                 ++quo.mag;
@@ -468,8 +468,8 @@ namespace RS {
         r = std::move(rem);
     }
 
-    void Int::do_multiply(const Int& x, const Int& y, Int& z) {
-        Nat::do_multiply(x.mag, y.mag, z.mag);
+    void Mpint::do_multiply(const Mpint& x, const Mpint& y, Mpint& z) {
+        Mpuint::do_multiply(x.mag, y.mag, z.mag);
         z.neg = bool(x) && bool(y) && x.neg != y.neg;
     }
 

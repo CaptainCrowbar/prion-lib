@@ -4,7 +4,7 @@ By Ross Smith
 
 * `#include "rs-core/mp-integer.hpp"`
 
-The `Nat` and `Int` classes are simple arbitrary precision integer
+The `Mpint` and `Mpuint` classes are simple arbitrary precision integer
 implementations. Multiplication and division are less efficient than they
 could be.
 
@@ -14,82 +14,82 @@ could be.
 
 ## Unsigned integers ##
 
-* `class` **`Nat`**
-    * `Nat::`**`Nat`**`()`
-    * `Nat::`**`Nat`**`(uint64_t x)`
-    * `explicit Nat::`**`Nat`**`(Uview s, int base = 0)`
-    * `Nat::`**`~Nat`**`() noexcept`
-    * `Nat::`**`Nat`**`(const Nat& n)`
-    * `Nat::`**`Nat`**`(Nat&& n) noexcept`
-    * `Nat& Nat::`**`operator=`**`(const Nat& n)`
-    * `Nat& Nat::`**`operator=`**`(Nat&& n) noexcept`
-    * `template <typename T> explicit Nat::`**`operator T`**`() const`
-    * `explicit Nat::`**`operator bool`**`() const noexcept`
-    * `bool Nat::`**`operator!`**`() const noexcept`
-    * `Nat Nat::`**`operator+`**`() const`
-    * `Nat& Nat::`**`operator++`**`()`
-    * `Nat Nat::`**`operator++`**`(int)`
-    * `Nat& Nat::`**`operator--`**`()`
-    * `Nat Nat::`**`operator--`**`(int)`
-    * `Nat& Nat::`**`operator+=`**`(const Nat& rhs)`
-    * `Nat& Nat::`**`operator-=`**`(const Nat& rhs)`
-    * `Nat& Nat::`**`operator*=`**`(const Nat& rhs)`
-    * `Nat& Nat::`**`operator/=`**`(const Nat& rhs)`
-    * `Nat& Nat::`**`operator%=`**`(const Nat& rhs)`
-    * `Nat& Nat::`**`operator&=`**`(const Nat& rhs)`
-    * `Nat& Nat::`**`operator|=`**`(const Nat& rhs)`
-    * `Nat& Nat::`**`operator^=`**`(const Nat& rhs)`
-    * `Nat& Nat::`**`operator<<=`**`(ptrdiff_t rhs)`
-    * `Nat& Nat::`**`operator>>=`**`(ptrdiff_t rhs)`
-    * `size_t Nat::`**`bits`**`() const noexcept`
-    * `size_t Nat::`**`bits_set`**`() const noexcept`
-    * `size_t Nat::`**`bytes`**`() const noexcept`
-    * `int Nat::`**`compare`**`(const Nat& rhs) const noexcept`
-    * `bool Nat::`**`get_bit`**`(size_t i) const noexcept`
-    * `uint8_t Nat::`**`get_byte`**`(size_t i) const noexcept`
-    * `void Nat::`**`set_bit`**`(size_t i, bool b = true)`
-    * `void Nat::`**`set_byte`**`(size_t i, uint8_t b)`
-    * `void Nat::`**`flip_bit`**`(size_t i)`
-    * `size_t Nat::`**`hash`**`() const noexcept`
-    * `bool Nat::`**`is_even`**`() const noexcept`
-    * `bool Nat::`**`is_odd`**`() const noexcept`
-    * `Nat Nat::`**`pow`**`(const Nat& n) const`
-    * `int Nat::`**`sign`**`() const noexcept`
-    * `Ustring Nat::`**`str`**`(int base = 10, size_t digits = 1) const`
-    * `void Nat::`**`write_be`**`(void* ptr, size_t n) const noexcept`
-    * `void Nat::`**`write_le`**`(void* ptr, size_t n) const noexcept`
-    * `static Nat Nat::`**`from_double`**`(double x)`
-    * `template <typename RNG> static Nat Nat::`**`random`**`(RNG& rng, const Nat& n)`
-    * `static Nat Nat::`**`read_be`**`(const void* ptr, size_t n)`
-    * `static Nat Nat::`**`read_le`**`(const void* ptr, size_t n)`
-* `Nat` **`operator+`**`(const Nat& lhs, const Nat& rhs)`
-* `Nat` **`operator-`**`(const Nat& lhs, const Nat& rhs)`
-* `Nat` **`operator*`**`(const Nat& lhs, const Nat& rhs)`
-* `Nat` **`operator/`**`(const Nat& lhs, const Nat& rhs)`
-* `Nat` **`operator%`**`(const Nat& lhs, const Nat& rhs)`
-* `pair<Nat, Nat>` **`divide`**`(const Nat& lhs, const Nat& rhs)`
-* `Nat` **`quo`**`(const Nat& lhs, const Nat& rhs)`
-* `Nat` **`rem`**`(const Nat& lhs, const Nat& rhs)`
-* `Nat` **`operator&`**`(const Nat& lhs, const Nat& rhs)`
-* `Nat` **`operator|`**`(const Nat& lhs, const Nat& rhs)`
-* `Nat` **`operator^`**`(const Nat& lhs, const Nat& rhs)`
-* `Nat` **`operator<<`**`(const Nat& lhs, size_t rhs)`
-* `Nat` **`operator>>`**`(const Nat& lhs, size_t rhs)`
-* `bool` **`operator==`**`(const Nat& lhs, const Nat& rhs) noexcept`
-* `bool` **`operator!=`**`(const Nat& lhs, const Nat& rhs) noexcept`
-* `bool` **`operator<`**`(const Nat& lhs, const Nat& rhs) noexcept`
-* `bool` **`operator>`**`(const Nat& lhs, const Nat& rhs) noexcept`
-* `bool` **`operator<=`**`(const Nat& lhs, const Nat& rhs) noexcept`
-* `bool` **`operator>=`**`(const Nat& lhs, const Nat& rhs) noexcept`
-* `Nat` **`abs`**`(const Nat& x)`
-* `int` **`sign_of`**`(const Nat& x) noexcept`
-* `Ustring` **`bin`**`(const Nat& x, size_t digits = 1)`
-* `Ustring` **`dec`**`(const Nat& x, size_t digits = 1)`
-* `Ustring` **`hex`**`(const Nat& x, size_t digits = 1)`
-* `Ustring` **`to_str`**`(const Nat& x)`
-* `std::ostream&` **`operator<<`**`(std::ostream& out, const Nat& x)`
-* `struct std::`**`hash`**`<Nat>`
-* `class std::`**`numeric_limits`**`<Nat>`
+* `class` **`Mpuint`**
+    * `Mpuint::`**`Mpuint`**`()`
+    * `Mpuint::`**`Mpuint`**`(uint64_t x)`
+    * `explicit Mpuint::`**`Mpuint`**`(Uview s, int base = 0)`
+    * `Mpuint::`**`~Mpuint`**`() noexcept`
+    * `Mpuint::`**`Mpuint`**`(const Mpuint& n)`
+    * `Mpuint::`**`Mpuint`**`(Mpuint&& n) noexcept`
+    * `Mpuint& Mpuint::`**`operator=`**`(const Mpuint& n)`
+    * `Mpuint& Mpuint::`**`operator=`**`(Mpuint&& n) noexcept`
+    * `template <typename T> explicit Mpuint::`**`operator T`**`() const`
+    * `explicit Mpuint::`**`operator bool`**`() const noexcept`
+    * `bool Mpuint::`**`operator!`**`() const noexcept`
+    * `Mpuint Mpuint::`**`operator+`**`() const`
+    * `Mpuint& Mpuint::`**`operator++`**`()`
+    * `Mpuint Mpuint::`**`operator++`**`(int)`
+    * `Mpuint& Mpuint::`**`operator--`**`()`
+    * `Mpuint Mpuint::`**`operator--`**`(int)`
+    * `Mpuint& Mpuint::`**`operator+=`**`(const Mpuint& rhs)`
+    * `Mpuint& Mpuint::`**`operator-=`**`(const Mpuint& rhs)`
+    * `Mpuint& Mpuint::`**`operator*=`**`(const Mpuint& rhs)`
+    * `Mpuint& Mpuint::`**`operator/=`**`(const Mpuint& rhs)`
+    * `Mpuint& Mpuint::`**`operator%=`**`(const Mpuint& rhs)`
+    * `Mpuint& Mpuint::`**`operator&=`**`(const Mpuint& rhs)`
+    * `Mpuint& Mpuint::`**`operator|=`**`(const Mpuint& rhs)`
+    * `Mpuint& Mpuint::`**`operator^=`**`(const Mpuint& rhs)`
+    * `Mpuint& Mpuint::`**`operator<<=`**`(ptrdiff_t rhs)`
+    * `Mpuint& Mpuint::`**`operator>>=`**`(ptrdiff_t rhs)`
+    * `size_t Mpuint::`**`bits`**`() const noexcept`
+    * `size_t Mpuint::`**`bits_set`**`() const noexcept`
+    * `size_t Mpuint::`**`bytes`**`() const noexcept`
+    * `int Mpuint::`**`compare`**`(const Mpuint& rhs) const noexcept`
+    * `bool Mpuint::`**`get_bit`**`(size_t i) const noexcept`
+    * `uint8_t Mpuint::`**`get_byte`**`(size_t i) const noexcept`
+    * `void Mpuint::`**`set_bit`**`(size_t i, bool b = true)`
+    * `void Mpuint::`**`set_byte`**`(size_t i, uint8_t b)`
+    * `void Mpuint::`**`flip_bit`**`(size_t i)`
+    * `size_t Mpuint::`**`hash`**`() const noexcept`
+    * `bool Mpuint::`**`is_even`**`() const noexcept`
+    * `bool Mpuint::`**`is_odd`**`() const noexcept`
+    * `Mpuint Mpuint::`**`pow`**`(const Mpuint& n) const`
+    * `int Mpuint::`**`sign`**`() const noexcept`
+    * `Ustring Mpuint::`**`str`**`(int base = 10, size_t digits = 1) const`
+    * `void Mpuint::`**`write_be`**`(void* ptr, size_t n) const noexcept`
+    * `void Mpuint::`**`write_le`**`(void* ptr, size_t n) const noexcept`
+    * `static Mpuint Mpuint::`**`from_double`**`(double x)`
+    * `template <typename RNG> static Mpuint Mpuint::`**`random`**`(RNG& rng, const Mpuint& n)`
+    * `static Mpuint Mpuint::`**`read_be`**`(const void* ptr, size_t n)`
+    * `static Mpuint Mpuint::`**`read_le`**`(const void* ptr, size_t n)`
+* `Mpuint` **`operator+`**`(const Mpuint& lhs, const Mpuint& rhs)`
+* `Mpuint` **`operator-`**`(const Mpuint& lhs, const Mpuint& rhs)`
+* `Mpuint` **`operator*`**`(const Mpuint& lhs, const Mpuint& rhs)`
+* `Mpuint` **`operator/`**`(const Mpuint& lhs, const Mpuint& rhs)`
+* `Mpuint` **`operator%`**`(const Mpuint& lhs, const Mpuint& rhs)`
+* `pair<Mpuint, Mpuint>` **`divide`**`(const Mpuint& lhs, const Mpuint& rhs)`
+* `Mpuint` **`quo`**`(const Mpuint& lhs, const Mpuint& rhs)`
+* `Mpuint` **`rem`**`(const Mpuint& lhs, const Mpuint& rhs)`
+* `Mpuint` **`operator&`**`(const Mpuint& lhs, const Mpuint& rhs)`
+* `Mpuint` **`operator|`**`(const Mpuint& lhs, const Mpuint& rhs)`
+* `Mpuint` **`operator^`**`(const Mpuint& lhs, const Mpuint& rhs)`
+* `Mpuint` **`operator<<`**`(const Mpuint& lhs, size_t rhs)`
+* `Mpuint` **`operator>>`**`(const Mpuint& lhs, size_t rhs)`
+* `bool` **`operator==`**`(const Mpuint& lhs, const Mpuint& rhs) noexcept`
+* `bool` **`operator!=`**`(const Mpuint& lhs, const Mpuint& rhs) noexcept`
+* `bool` **`operator<`**`(const Mpuint& lhs, const Mpuint& rhs) noexcept`
+* `bool` **`operator>`**`(const Mpuint& lhs, const Mpuint& rhs) noexcept`
+* `bool` **`operator<=`**`(const Mpuint& lhs, const Mpuint& rhs) noexcept`
+* `bool` **`operator>=`**`(const Mpuint& lhs, const Mpuint& rhs) noexcept`
+* `Mpuint` **`abs`**`(const Mpuint& x)`
+* `int` **`sign_of`**`(const Mpuint& x) noexcept`
+* `Ustring` **`bin`**`(const Mpuint& x, size_t digits = 1)`
+* `Ustring` **`dec`**`(const Mpuint& x, size_t digits = 1)`
+* `Ustring` **`hex`**`(const Mpuint& x, size_t digits = 1)`
+* `Ustring` **`to_str`**`(const Mpuint& x)`
+* `std::ostream&` **`operator<<`**`(std::ostream& out, const Mpuint& x)`
+* `struct std::`**`hash`**`<Mpuint>`
+* `class std::`**`numeric_limits`**`<Mpuint>`
 
 An arbitrary precision unsigned integer (natural number). Most of its methods
 are conventional arithmetic operations with their natural behaviour.
@@ -132,69 +132,69 @@ is undefined if `n<1`.
 
 ## Signed integers ##
 
-* `class` **`Int`**
-    * `Int::`**`Int`**`()`
-    * `Int::`**`Int`**`(int64_t x)`
-    * `Int::`**`Int`**`(const Nat& x)`
-    * `explicit Int::`**`Int`**`(Uview s, int base = 0)`
-    * `Int::`**`~Int`**`() noexcept`
-    * `Int::`**`Int`**`(const Int& n)`
-    * `Int::`**`Int`**`(Int&& n) noexcept`
-    * `Int& Int::`**`operator=`**`(const Int& n)`
-    * `Int& Int::`**`operator=`**`(Int&& n) noexcept`
-    * `template <typename T> explicit Int::`**`operator T`**`() const`
-    * `explicit Int::`**`operator Nat`**`() const`
-    * `explicit Int::`**`operator bool`**`() const noexcept`
-    * `bool Int::`**`operator!`**`() const noexcept`
-    * `Int Int::`**`operator+`**`() const`
-    * `Int Int::`**`operator-`**`() const`
-    * `Int& Int::`**`operator++`**`()`
-    * `Int Int::`**`operator++`**`(int)`
-    * `Int& Int::`**`operator--`**`()`
-    * `Int Int::`**`operator--`**`(int)`
-    * `Int& Int::`**`operator+=`**`(const Int& rhs)`
-    * `Int& Int::`**`operator-=`**`(const Int& rhs)`
-    * `Int& Int::`**`operator*=`**`(const Int& rhs)`
-    * `Int& Int::`**`operator/=`**`(const Int& rhs)`
-    * `Int& Int::`**`operator%=`**`(const Int& rhs)`
-    * `Nat Int::`**`abs`**`() const`
-    * `int Int::`**`compare`**`(const Int& rhs) const noexcept`
-    * `size_t Int::`**`hash`**`() const noexcept`
-    * `bool Int::`**`is_even`**`() const noexcept`
-    * `bool Int::`**`is_odd`**`() const noexcept`
-    * `Int Int::`**`pow`**`(const Int& n) const`
-    * `int Int::`**`sign`**`() const noexcept`
-    * `Ustring Int::`**`str`**`(int base = 10, size_t digits = 1, bool sign = false) const`
-    * `static Int Int::`**`from_double`**`(double x)`
-    * `template <typename RNG> static Int Int::`**`random`**`(RNG& rng, const Int& n)`
-* `Int` **`operator+`**`(const Int& lhs, const Int& rhs)`
-* `Int` **`operator-`**`(const Int& lhs, const Int& rhs)`
-* `Int` **`operator*`**`(const Int& lhs, const Int& rhs)`
-* `Int` **`operator/`**`(const Int& lhs, const Int& rhs)`
-* `Int` **`operator%`**`(const Int& lhs, const Int& rhs)`
-* `pair<Int, Int>` **`divide`**`(const Int& lhs, const Int& rhs)`
-* `Int` **`quo`**`(const Int& lhs, const Int& rhs)`
-* `Int` **`rem`**`(const Int& lhs, const Int& rhs)`
-* `bool` **`operator==`**`(const Int& lhs, const Int& rhs) noexcept`
-* `bool` **`operator!=`**`(const Int& lhs, const Int& rhs) noexcept`
-* `bool` **`operator<`**`(const Int& lhs, const Int& rhs) noexcept`
-* `bool` **`operator>`**`(const Int& lhs, const Int& rhs) noexcept`
-* `bool` **`operator<=`**`(const Int& lhs, const Int& rhs) noexcept`
-* `bool` **`operator>=`**`(const Int& lhs, const Int& rhs) noexcept`
-* `Int` **`abs`**`(const Int& x)`
-* `int` **`sign_of`**`(const Int& x) noexcept`
-* `Ustring` **`bin`**`(const Int& x, size_t digits = 1)`
-* `Ustring` **`dec`**`(const Int& x, size_t digits = 1)`
-* `Ustring` **`hex`**`(const Int& x, size_t digits = 1)`
-* `Ustring` **`to_str`**`(const Int& x)`
-* `std::ostream&` **`operator<<`**`(std::ostream& out, const Int& x)`
-* `struct std::`**`hash`**`<Int>`
-* `class std::`**`numeric_limits`**`<Int>`
+* `class` **`Mpint`**
+    * `Mpint::`**`Mpint`**`()`
+    * `Mpint::`**`Mpint`**`(int64_t x)`
+    * `Mpint::`**`Mpint`**`(const Mpuint& x)`
+    * `explicit Mpint::`**`Mpint`**`(Uview s, int base = 0)`
+    * `Mpint::`**`~Mpint`**`() noexcept`
+    * `Mpint::`**`Mpint`**`(const Mpint& n)`
+    * `Mpint::`**`Mpint`**`(Mpint&& n) noexcept`
+    * `Mpint& Mpint::`**`operator=`**`(const Mpint& n)`
+    * `Mpint& Mpint::`**`operator=`**`(Mpint&& n) noexcept`
+    * `template <typename T> explicit Mpint::`**`operator T`**`() const`
+    * `explicit Mpint::`**`operator Mpuint`**`() const`
+    * `explicit Mpint::`**`operator bool`**`() const noexcept`
+    * `bool Mpint::`**`operator!`**`() const noexcept`
+    * `Mpint Mpint::`**`operator+`**`() const`
+    * `Mpint Mpint::`**`operator-`**`() const`
+    * `Mpint& Mpint::`**`operator++`**`()`
+    * `Mpint Mpint::`**`operator++`**`(int)`
+    * `Mpint& Mpint::`**`operator--`**`()`
+    * `Mpint Mpint::`**`operator--`**`(int)`
+    * `Mpint& Mpint::`**`operator+=`**`(const Mpint& rhs)`
+    * `Mpint& Mpint::`**`operator-=`**`(const Mpint& rhs)`
+    * `Mpint& Mpint::`**`operator*=`**`(const Mpint& rhs)`
+    * `Mpint& Mpint::`**`operator/=`**`(const Mpint& rhs)`
+    * `Mpint& Mpint::`**`operator%=`**`(const Mpint& rhs)`
+    * `Mpuint Mpint::`**`abs`**`() const`
+    * `int Mpint::`**`compare`**`(const Mpint& rhs) const noexcept`
+    * `size_t Mpint::`**`hash`**`() const noexcept`
+    * `bool Mpint::`**`is_even`**`() const noexcept`
+    * `bool Mpint::`**`is_odd`**`() const noexcept`
+    * `Mpint Mpint::`**`pow`**`(const Mpint& n) const`
+    * `int Mpint::`**`sign`**`() const noexcept`
+    * `Ustring Mpint::`**`str`**`(int base = 10, size_t digits = 1, bool sign = false) const`
+    * `static Mpint Mpint::`**`from_double`**`(double x)`
+    * `template <typename RNG> static Mpint Mpint::`**`random`**`(RNG& rng, const Mpint& n)`
+* `Mpint` **`operator+`**`(const Mpint& lhs, const Mpint& rhs)`
+* `Mpint` **`operator-`**`(const Mpint& lhs, const Mpint& rhs)`
+* `Mpint` **`operator*`**`(const Mpint& lhs, const Mpint& rhs)`
+* `Mpint` **`operator/`**`(const Mpint& lhs, const Mpint& rhs)`
+* `Mpint` **`operator%`**`(const Mpint& lhs, const Mpint& rhs)`
+* `pair<Mpint, Mpint>` **`divide`**`(const Mpint& lhs, const Mpint& rhs)`
+* `Mpint` **`quo`**`(const Mpint& lhs, const Mpint& rhs)`
+* `Mpint` **`rem`**`(const Mpint& lhs, const Mpint& rhs)`
+* `bool` **`operator==`**`(const Mpint& lhs, const Mpint& rhs) noexcept`
+* `bool` **`operator!=`**`(const Mpint& lhs, const Mpint& rhs) noexcept`
+* `bool` **`operator<`**`(const Mpint& lhs, const Mpint& rhs) noexcept`
+* `bool` **`operator>`**`(const Mpint& lhs, const Mpint& rhs) noexcept`
+* `bool` **`operator<=`**`(const Mpint& lhs, const Mpint& rhs) noexcept`
+* `bool` **`operator>=`**`(const Mpint& lhs, const Mpint& rhs) noexcept`
+* `Mpint` **`abs`**`(const Mpint& x)`
+* `int` **`sign_of`**`(const Mpint& x) noexcept`
+* `Ustring` **`bin`**`(const Mpint& x, size_t digits = 1)`
+* `Ustring` **`dec`**`(const Mpint& x, size_t digits = 1)`
+* `Ustring` **`hex`**`(const Mpint& x, size_t digits = 1)`
+* `Ustring` **`to_str`**`(const Mpint& x)`
+* `std::ostream&` **`operator<<`**`(std::ostream& out, const Mpint& x)`
+* `struct std::`**`hash`**`<Mpint>`
+* `class std::`**`numeric_limits`**`<Mpint>`
 
 An arbitrary precision signed integer. Most of its operations do the same
-thing as the corresponding functions on `Nat` or plain `int`.
+thing as the corresponding functions on `Mpuint` or plain `int`.
 
-The explicit conversion to `Nat` returns the absolute value of the number. The
+The explicit conversion to `Mpuint` returns the absolute value of the number. The
 `pow()` function will throw `std::domain_error` if the exponent is negative.
 
 The signed division operators perform Euclidean division: if the division is
@@ -206,46 +206,45 @@ for standard arithmetic types.
 
 ## Related types ##
 
-* `using` **`Uratmp`** `= Rational<Nat>`
-* `using` **`Ratmp`** `= Rational<Int>`
+* `using` **`Mpratio`** `= Rational<Mpint>`
 
 Multiple precision rational numbers.
 
 ## Integer literals ##
 
 * `namespace RS::Literals`
-    * `Nat operator""`**`_nat`**`(const char* raw)`
-    * `Int operator""`**`_int`**`(const char* raw)`
+    * `Mpint operator""`**`_mpi`**`(const char* raw)`
+    * `Mpuint operator""`**`_mpu`**`(const char* raw)`
 
-These allow MP integer literals such as `12345_int` or `0xabcdef_nat`. They
+These allow MP integer literals such as `12345_mpi` or `0xabcdef_mpu`. They
 perform the same conversions as the constructors with base 0.
 
 ## Random distributions ##
 
-* `class` **`RandomNat`**
-    * `using RandomNat::`**`result_type`** `= Nat`
-    * `RandomNat::`**`RandomNat`**`()`
-    * `RandomNat::`**`RandomNat`**`(Nat a, Nat b)`
-    * `RandomNat::`**`~RandomNat`**`() noexcept`
-    * `RandomNat::`**`RandomNat`**`(const RandomNat& n)`
-    * `RandomNat::`**`RandomNat`**`(RandomNat&& n) noexcept`
-    * `RandomNat& RandomNat::`**`operator=`**`(const RandomNat& n)`
-    * `RandomNat& RandomNat::`**`operator=`**`(RandomNat&& n) noexcept`
-    * `template <typename RNG> Nat RandomNat::`**`operator()`**`(RNG& rng)`
-    * `Nat RandomNat::`**`min`**`() const`
-    * `Nat RandomNat::`**`max`**`() const`
-* `class` **`RandomInt`**
-    * `using RandomInt::`**`result_type`** `= Int`
-    * `RandomInt::`**`RandomInt`**`()`
-    * `RandomInt::`**`RandomInt`**`(Int a, Int b)`
-    * `RandomInt::`**`~RandomInt`**`() noexcept`
-    * `RandomInt::`**`RandomInt`**`(const RandomInt& n)`
-    * `RandomInt::`**`RandomInt`**`(RandomInt&& n) noexcept`
-    * `RandomInt& RandomInt::`**`operator=`**`(const RandomInt& n)`
-    * `RandomInt& RandomInt::`**`operator=`**`(RandomInt&& n) noexcept`
-    * `template <typename RNG> Int RandomInt::`**`operator()`**`(RNG& rng)`
-    * `Int RandomInt::`**`min`**`() const`
-    * `Int RandomInt::`**`max`**`() const`
+* `class` **`RandomMpint`**
+    * `using RandomMpint::`**`result_type`** `= Mpint`
+    * `RandomMpint::`**`RandomMpint`**`()`
+    * `RandomMpint::`**`RandomMpint`**`(Mpint a, Mpint b)`
+    * `RandomMpint::`**`~RandomMpint`**`() noexcept`
+    * `RandomMpint::`**`RandomMpint`**`(const RandomMpint& n)`
+    * `RandomMpint::`**`RandomMpint`**`(RandomMpint&& n) noexcept`
+    * `RandomMpint& RandomMpint::`**`operator=`**`(const RandomMpint& n)`
+    * `RandomMpint& RandomMpint::`**`operator=`**`(RandomMpint&& n) noexcept`
+    * `template <typename RNG> Mpint RandomMpint::`**`operator()`**`(RNG& rng)`
+    * `Mpint RandomMpint::`**`min`**`() const`
+    * `Mpint RandomMpint::`**`max`**`() const`
+* `class` **`RandomMpuint`**
+    * `using RandomMpuint::`**`result_type`** `= Mpuint`
+    * `RandomMpuint::`**`RandomMpuint`**`()`
+    * `RandomMpuint::`**`RandomMpuint`**`(Mpuint a, Mpuint b)`
+    * `RandomMpuint::`**`~RandomMpuint`**`() noexcept`
+    * `RandomMpuint::`**`RandomMpuint`**`(const RandomMpuint& n)`
+    * `RandomMpuint::`**`RandomMpuint`**`(RandomMpuint&& n) noexcept`
+    * `RandomMpuint& RandomMpuint::`**`operator=`**`(const RandomMpuint& n)`
+    * `RandomMpuint& RandomMpuint::`**`operator=`**`(RandomMpuint&& n) noexcept`
+    * `template <typename RNG> Mpuint RandomMpuint::`**`operator()`**`(RNG& rng)`
+    * `Mpuint RandomMpuint::`**`min`**`() const`
+    * `Mpuint RandomMpuint::`**`max`**`() const`
 
 These generate random integers within the specified range (`a` to `b`,
 inclusive). The bounds can be supplied in either order. The default

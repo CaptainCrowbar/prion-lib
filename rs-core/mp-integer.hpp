@@ -15,34 +15,34 @@ namespace RS {
 
     // Unsigned integers
 
-    class Nat:
-    public LessThanComparable<Nat> {
+    class Mpuint:
+    public LessThanComparable<Mpuint> {
     public:
-        Nat() = default;
-        Nat(uint64_t x);
-        explicit Nat(Uview s, int base = 0) { init(s, base); }
+        Mpuint() = default;
+        Mpuint(uint64_t x);
+        explicit Mpuint(Uview s, int base = 0) { init(s, base); }
         template <typename T> explicit operator T() const;
         explicit operator bool() const noexcept { return ! rep.empty(); }
         bool operator!() const noexcept { return ! bool(*this); }
-        Nat operator+() const { return *this; }
-        Nat& operator++() { return *this += 1; }
-        Nat operator++(int) { auto x = *this; ++*this; return x; }
-        Nat& operator--() { return *this -= 1; }
-        Nat operator--(int) { auto x = *this; --*this; return x; }
-        Nat& operator+=(const Nat& rhs);
-        Nat& operator-=(const Nat& rhs);
-        Nat& operator*=(const Nat& rhs) { Nat z; do_multiply(*this, rhs, z); rep.swap(z.rep); return *this; }
-        Nat& operator/=(const Nat& rhs) { Nat q, r; do_divide(*this, rhs, q, r); rep.swap(q.rep); return *this; }
-        Nat& operator%=(const Nat& rhs) { Nat q, r; do_divide(*this, rhs, q, r); rep.swap(r.rep); return *this; }
-        Nat& operator&=(const Nat& rhs);
-        Nat& operator|=(const Nat& rhs);
-        Nat& operator^=(const Nat& rhs);
-        Nat& operator<<=(ptrdiff_t rhs);
-        Nat& operator>>=(ptrdiff_t rhs);
+        Mpuint operator+() const { return *this; }
+        Mpuint& operator++() { return *this += 1; }
+        Mpuint operator++(int) { auto x = *this; ++*this; return x; }
+        Mpuint& operator--() { return *this -= 1; }
+        Mpuint operator--(int) { auto x = *this; --*this; return x; }
+        Mpuint& operator+=(const Mpuint& rhs);
+        Mpuint& operator-=(const Mpuint& rhs);
+        Mpuint& operator*=(const Mpuint& rhs) { Mpuint z; do_multiply(*this, rhs, z); rep.swap(z.rep); return *this; }
+        Mpuint& operator/=(const Mpuint& rhs) { Mpuint q, r; do_divide(*this, rhs, q, r); rep.swap(q.rep); return *this; }
+        Mpuint& operator%=(const Mpuint& rhs) { Mpuint q, r; do_divide(*this, rhs, q, r); rep.swap(r.rep); return *this; }
+        Mpuint& operator&=(const Mpuint& rhs);
+        Mpuint& operator|=(const Mpuint& rhs);
+        Mpuint& operator^=(const Mpuint& rhs);
+        Mpuint& operator<<=(ptrdiff_t rhs);
+        Mpuint& operator>>=(ptrdiff_t rhs);
         size_t bits() const noexcept;
         size_t bits_set() const noexcept;
         size_t bytes() const noexcept;
-        int compare(const Nat& rhs) const noexcept;
+        int compare(const Mpuint& rhs) const noexcept;
         bool get_bit(size_t i) const noexcept;
         uint8_t get_byte(size_t i) const noexcept;
         void set_bit(size_t i, bool b = true);
@@ -51,21 +51,21 @@ namespace RS {
         size_t hash() const noexcept { return hash_range(rep); }
         bool is_even() const noexcept { return rep.empty() || (rep.front() & 1) == 0; }
         bool is_odd() const noexcept { return ! is_even(); }
-        Nat pow(const Nat& n) const;
+        Mpuint pow(const Mpuint& n) const;
         int sign() const noexcept { return int(bool(*this)); }
         Ustring str(int base = 10, size_t digits = 1) const;
         void write_be(void* ptr, size_t n) const noexcept;
         void write_le(void* ptr, size_t n) const noexcept;
-        static Nat from_double(double x);
-        template <typename RNG> static Nat random(RNG& rng, const Nat& n);
-        static Nat read_be(const void* ptr, size_t n);
-        static Nat read_le(const void* ptr, size_t n);
-        friend Nat operator*(const Nat& lhs, const Nat& rhs) { Nat z; Nat::do_multiply(lhs, rhs, z); return z; }
-        friend Nat operator/(const Nat& lhs, const Nat& rhs) { Nat q, r; Nat::do_divide(lhs, rhs, q, r); return q; }
-        friend Nat operator%(const Nat& lhs, const Nat& rhs) { Nat q, r; Nat::do_divide(lhs, rhs, q, r); return r; }
-        friend std::pair<Nat, Nat> divide(const Nat& lhs, const Nat& rhs) { Nat q, r; Nat::do_divide(lhs, rhs, q, r); return {q, r}; }
+        static Mpuint from_double(double x);
+        template <typename RNG> static Mpuint random(RNG& rng, const Mpuint& n);
+        static Mpuint read_be(const void* ptr, size_t n);
+        static Mpuint read_le(const void* ptr, size_t n);
+        friend Mpuint operator*(const Mpuint& lhs, const Mpuint& rhs) { Mpuint z; Mpuint::do_multiply(lhs, rhs, z); return z; }
+        friend Mpuint operator/(const Mpuint& lhs, const Mpuint& rhs) { Mpuint q, r; Mpuint::do_divide(lhs, rhs, q, r); return q; }
+        friend Mpuint operator%(const Mpuint& lhs, const Mpuint& rhs) { Mpuint q, r; Mpuint::do_divide(lhs, rhs, q, r); return r; }
+        friend std::pair<Mpuint, Mpuint> divide(const Mpuint& lhs, const Mpuint& rhs) { Mpuint q, r; Mpuint::do_divide(lhs, rhs, q, r); return {q, r}; }
     private:
-        friend class Int;
+        friend class Mpint;
         static constexpr auto mask32 = ~ uint32_t(0);
         std::vector<uint32_t> rep; // Least significant word first
         void init(Uview s, int base);
@@ -74,22 +74,22 @@ namespace RS {
         static constexpr int digit_10(char c) noexcept { return c >= '0' && c <= '9' ? int(c - '0') : -1; }
         static constexpr int digit_16(char c) noexcept
             { return c >= '0' && c <= '9' ? int(c - '0') : c >= 'A' && c <= 'F' ? int(c - 'A') + 10 : c >= 'a' && c <= 'f' ? int(c - 'a') + 10 : -1; }
-        static void do_divide(const Nat& x, const Nat& y, Nat& q, Nat& r);
-        static void do_multiply(const Nat& x, const Nat& y, Nat& z);
+        static void do_divide(const Mpuint& x, const Mpuint& y, Mpuint& q, Mpuint& r);
+        static void do_multiply(const Mpuint& x, const Mpuint& y, Mpuint& z);
     };
 
-    inline Nat operator+(const Nat& lhs, const Nat& rhs) { auto z = lhs; z += rhs; return z; }
-    inline Nat operator-(const Nat& lhs, const Nat& rhs) { auto z = lhs; z -= rhs; return z; }
-    inline Nat operator&(const Nat& lhs, const Nat& rhs) { auto z = lhs; z &= rhs; return z; }
-    inline Nat operator|(const Nat& lhs, const Nat& rhs) { auto z = lhs; z |= rhs; return z; }
-    inline Nat operator^(const Nat& lhs, const Nat& rhs) { auto z = lhs; z ^= rhs; return z; }
-    inline Nat operator<<(const Nat& lhs, size_t rhs) { auto z = lhs; z <<= rhs; return z; }
-    inline Nat operator>>(const Nat& lhs, size_t rhs) { auto z = lhs; z >>= rhs; return z; }
-    inline bool operator==(const Nat& lhs, const Nat& rhs) noexcept { return lhs.compare(rhs) == 0; }
-    inline bool operator<(const Nat& lhs, const Nat& rhs) noexcept { return lhs.compare(rhs) == -1; }
+    inline Mpuint operator+(const Mpuint& lhs, const Mpuint& rhs) { auto z = lhs; z += rhs; return z; }
+    inline Mpuint operator-(const Mpuint& lhs, const Mpuint& rhs) { auto z = lhs; z -= rhs; return z; }
+    inline Mpuint operator&(const Mpuint& lhs, const Mpuint& rhs) { auto z = lhs; z &= rhs; return z; }
+    inline Mpuint operator|(const Mpuint& lhs, const Mpuint& rhs) { auto z = lhs; z |= rhs; return z; }
+    inline Mpuint operator^(const Mpuint& lhs, const Mpuint& rhs) { auto z = lhs; z ^= rhs; return z; }
+    inline Mpuint operator<<(const Mpuint& lhs, size_t rhs) { auto z = lhs; z <<= rhs; return z; }
+    inline Mpuint operator>>(const Mpuint& lhs, size_t rhs) { auto z = lhs; z >>= rhs; return z; }
+    inline bool operator==(const Mpuint& lhs, const Mpuint& rhs) noexcept { return lhs.compare(rhs) == 0; }
+    inline bool operator<(const Mpuint& lhs, const Mpuint& rhs) noexcept { return lhs.compare(rhs) == -1; }
 
     template <typename T>
-    Nat::operator T() const {
+    Mpuint::operator T() const {
         T t = 0;
         int bit = 0;
         for (auto w: rep) {
@@ -100,10 +100,10 @@ namespace RS {
     }
 
     template <typename RNG>
-    Nat Nat::random(RNG& rng, const Nat& n) {
+    Mpuint Mpuint::random(RNG& rng, const Mpuint& n) {
         size_t words = n.rep.size();
         std::uniform_int_distribution<uint32_t> head(0, n.rep.back()), tail;
-        Nat x;
+        Mpuint x;
         do {
             x.rep.resize(words);
             std::generate_n(x.rep.begin(), words - 1, [&] { return tail(rng); });
@@ -113,124 +113,123 @@ namespace RS {
         return x;
     }
 
-    inline Nat abs(const Nat& x) { return x; }
-    inline int sign_of(const Nat& x) noexcept { return x.sign(); }
-    inline Nat quo(const Nat& lhs, const Nat& rhs) { return lhs / rhs; }
-    inline Nat rem(const Nat& lhs, const Nat& rhs) { return lhs % rhs; }
-    inline Ustring bin(const Nat& x, size_t digits = 1) { return x.str(2, digits); }
-    inline Ustring dec(const Nat& x, size_t digits = 1) { return x.str(10, digits); }
-    inline Ustring hex(const Nat& x, size_t digits = 1) { return x.str(16, digits); }
-    inline Ustring to_str(const Nat& x) { return x.str(); }
-    inline std::ostream& operator<<(std::ostream& out, const Nat& x) { return out << x.str(); }
+    inline Mpuint abs(const Mpuint& x) { return x; }
+    inline int sign_of(const Mpuint& x) noexcept { return x.sign(); }
+    inline Mpuint quo(const Mpuint& lhs, const Mpuint& rhs) { return lhs / rhs; }
+    inline Mpuint rem(const Mpuint& lhs, const Mpuint& rhs) { return lhs % rhs; }
+    inline Ustring bin(const Mpuint& x, size_t digits = 1) { return x.str(2, digits); }
+    inline Ustring dec(const Mpuint& x, size_t digits = 1) { return x.str(10, digits); }
+    inline Ustring hex(const Mpuint& x, size_t digits = 1) { return x.str(16, digits); }
+    inline Ustring to_str(const Mpuint& x) { return x.str(); }
+    inline std::ostream& operator<<(std::ostream& out, const Mpuint& x) { return out << x.str(); }
 
     // Signed integers
 
-    class Int:
-    public LessThanComparable<Int> {
+    class Mpint:
+    public LessThanComparable<Mpint> {
     public:
-        Int() = default;
-        Int(int64_t x): mag(uint64_t(std::abs(x))), neg(x < 0) {}
-        Int(const Nat& x): mag(x), neg(false) {}
-        explicit Int(Uview s, int base = 0) { init(s, base); }
+        Mpint() = default;
+        Mpint(int64_t x): mag(uint64_t(std::abs(x))), neg(x < 0) {}
+        Mpint(const Mpuint& x): mag(x), neg(false) {}
+        explicit Mpint(Uview s, int base = 0) { init(s, base); }
         template <typename T> explicit operator T() const;
-        explicit operator Nat() const { return mag; }
+        explicit operator Mpuint() const { return mag; }
         explicit operator bool() const noexcept { return bool(mag); }
         bool operator!() const noexcept { return ! bool(*this); }
-        Int operator+() const { return *this; }
-        Int operator-() const { Int z = *this; if (z) z.neg = ! z.neg; return z; }
-        Int& operator++() { return *this += 1; }
-        Int operator++(int) { auto x = *this; ++*this; return x; }
-        Int& operator--() { return *this -= 1; }
-        Int operator--(int) { auto x = *this; --*this; return x; }
-        Int& operator+=(const Int& rhs);
-        Int& operator-=(const Int& rhs) { return *this += - rhs; }
-        Int& operator*=(const Int& rhs) { Int z; do_multiply(*this, rhs, z); std::swap(*this, z); return *this; }
-        Int& operator/=(const Int& rhs) { Int q, r; do_divide(*this, rhs, q, r); std::swap(*this, q); return *this; }
-        Int& operator%=(const Int& rhs) { Int q, r; do_divide(*this, rhs, q, r); std::swap(*this, r); return *this; }
-        Nat abs() const { return mag; }
-        int compare(const Int& rhs) const noexcept;
+        Mpint operator+() const { return *this; }
+        Mpint operator-() const { Mpint z = *this; if (z) z.neg = ! z.neg; return z; }
+        Mpint& operator++() { return *this += 1; }
+        Mpint operator++(int) { auto x = *this; ++*this; return x; }
+        Mpint& operator--() { return *this -= 1; }
+        Mpint operator--(int) { auto x = *this; --*this; return x; }
+        Mpint& operator+=(const Mpint& rhs);
+        Mpint& operator-=(const Mpint& rhs) { return *this += - rhs; }
+        Mpint& operator*=(const Mpint& rhs) { Mpint z; do_multiply(*this, rhs, z); std::swap(*this, z); return *this; }
+        Mpint& operator/=(const Mpint& rhs) { Mpint q, r; do_divide(*this, rhs, q, r); std::swap(*this, q); return *this; }
+        Mpint& operator%=(const Mpint& rhs) { Mpint q, r; do_divide(*this, rhs, q, r); std::swap(*this, r); return *this; }
+        Mpuint abs() const { return mag; }
+        int compare(const Mpint& rhs) const noexcept;
         size_t hash() const noexcept { return hash_value(mag, neg); }
         bool is_even() const noexcept { return mag.is_even(); }
         bool is_odd() const noexcept { return mag.is_odd(); }
-        Int pow(const Int& n) const;
+        Mpint pow(const Mpint& n) const;
         int sign() const noexcept { return neg ? -1 : mag.sign(); }
         Ustring str(int base = 10, size_t digits = 1, bool sign = false) const;
-        static Int from_double(double x);
-        template <typename RNG> static Int random(RNG& rng, const Int& n) { return Int(Nat::random(rng, n.mag)); }
-        friend Int operator*(const Int& lhs, const Int& rhs) { Int z; Int::do_multiply(lhs, rhs, z); return z; }
-        friend Int operator/(const Int& lhs, const Int& rhs) { Int q, r; Int::do_divide(lhs, rhs, q, r); return q; }
-        friend Int operator%(const Int& lhs, const Int& rhs) { Int q, r; Int::do_divide(lhs, rhs, q, r); return r; }
-        friend std::pair<Int, Int> divide(const Int& lhs, const Int& rhs) { Int q, r; Int::do_divide(lhs, rhs, q, r); return {q, r}; }
+        static Mpint from_double(double x);
+        template <typename RNG> static Mpint random(RNG& rng, const Mpint& n) { return Mpint(Mpuint::random(rng, n.mag)); }
+        friend Mpint operator*(const Mpint& lhs, const Mpint& rhs) { Mpint z; Mpint::do_multiply(lhs, rhs, z); return z; }
+        friend Mpint operator/(const Mpint& lhs, const Mpint& rhs) { Mpint q, r; Mpint::do_divide(lhs, rhs, q, r); return q; }
+        friend Mpint operator%(const Mpint& lhs, const Mpint& rhs) { Mpint q, r; Mpint::do_divide(lhs, rhs, q, r); return r; }
+        friend std::pair<Mpint, Mpint> divide(const Mpint& lhs, const Mpint& rhs) { Mpint q, r; Mpint::do_divide(lhs, rhs, q, r); return {q, r}; }
     private:
-        Nat mag;
+        Mpuint mag;
         bool neg = false;
         void init(Uview s, int base);
-        static void do_divide(const Int& x, const Int& y, Int& q, Int& r);
-        static void do_multiply(const Int& x, const Int& y, Int& z);
+        static void do_divide(const Mpint& x, const Mpint& y, Mpint& q, Mpint& r);
+        static void do_multiply(const Mpint& x, const Mpint& y, Mpint& z);
     };
 
-    inline Int operator+(const Int& lhs, const Int& rhs) { auto z = lhs; z += rhs; return z; }
-    inline Int operator-(const Int& lhs, const Int& rhs) { auto z = lhs; z -= rhs; return z; }
-    inline bool operator==(const Int& lhs, const Int& rhs) noexcept { return lhs.compare(rhs) == 0; }
-    inline bool operator<(const Int& lhs, const Int& rhs) noexcept { return lhs.compare(rhs) == -1; }
+    inline Mpint operator+(const Mpint& lhs, const Mpint& rhs) { auto z = lhs; z += rhs; return z; }
+    inline Mpint operator-(const Mpint& lhs, const Mpint& rhs) { auto z = lhs; z -= rhs; return z; }
+    inline bool operator==(const Mpint& lhs, const Mpint& rhs) noexcept { return lhs.compare(rhs) == 0; }
+    inline bool operator<(const Mpint& lhs, const Mpint& rhs) noexcept { return lhs.compare(rhs) == -1; }
 
     template <typename T>
-    Int::operator T() const {
+    Mpint::operator T() const {
         auto t = T(mag);
         if (neg)
             t = T(0) - t;
         return t;
     }
 
-    inline Int abs(const Int& x) { return x.abs(); }
-    inline int sign_of(const Int& x) noexcept{ return x.sign(); }
-    inline Int quo(const Int& lhs, const Int& rhs) { return lhs / rhs; }
-    inline Int rem(const Int& lhs, const Int& rhs) { return lhs % rhs; }
-    inline Ustring bin(const Int& x, size_t digits = 1) { return x.str(2, digits); }
-    inline Ustring dec(const Int& x, size_t digits = 1) { return x.str(10, digits); }
-    inline Ustring hex(const Int& x, size_t digits = 1) { return x.str(16, digits); }
-    inline Ustring to_str(const Int& x) { return x.str(); }
-    inline std::ostream& operator<<(std::ostream& out, const Int& x) { return out << x.str(); }
+    inline Mpint abs(const Mpint& x) { return x.abs(); }
+    inline int sign_of(const Mpint& x) noexcept{ return x.sign(); }
+    inline Mpint quo(const Mpint& lhs, const Mpint& rhs) { return lhs / rhs; }
+    inline Mpint rem(const Mpint& lhs, const Mpint& rhs) { return lhs % rhs; }
+    inline Ustring bin(const Mpint& x, size_t digits = 1) { return x.str(2, digits); }
+    inline Ustring dec(const Mpint& x, size_t digits = 1) { return x.str(10, digits); }
+    inline Ustring hex(const Mpint& x, size_t digits = 1) { return x.str(16, digits); }
+    inline Ustring to_str(const Mpint& x) { return x.str(); }
+    inline std::ostream& operator<<(std::ostream& out, const Mpint& x) { return out << x.str(); }
 
     // Related types
 
-    using Uratmp = Rational<Nat>;
-    using Ratmp = Rational<Int>;
+    using Mpratio = Rational<Mpint>;
 
     // Integer literals
 
     namespace Literals {
 
-        inline Nat operator""_nat(const char* raw) { return Nat(raw); }
-        inline Int operator""_int(const char* raw) { return Int(raw); }
+        inline Mpint operator""_mpi(const char* raw) { return Mpint(raw); }
+        inline Mpuint operator""_mpu(const char* raw) { return Mpuint(raw); }
 
     }
 
     // Random distributions
 
-    class RandomNat {
+    class RandomMpint {
     public:
-        using result_type = Nat;
-        RandomNat(): base(0), range(1) {}
-        RandomNat(Nat a, Nat b) { if (a > b) std::swap(a, b); base = a; range = b - a + 1; }
-        template <typename RNG> Nat operator()(RNG& rng) { return base + Nat::random(rng, range); }
-        Nat min() const { return base; }
-        Nat max() const { return base + range - 1; }
+        using result_type = Mpint;
+        RandomMpint(): base(0), range(1) {}
+        RandomMpint(Mpint a, Mpint b) { if (a > b) std::swap(a, b); base = a; range = (b - a + 1).abs(); }
+        template <typename RNG> Mpint operator()(RNG& rng) { return base + Mpint(Mpuint::random(rng, range)); }
+        Mpint min() const { return base; }
+        Mpint max() const { return base + range - 1; }
     private:
-        Nat base, range;
+        Mpint base;
+        Mpuint range;
     };
 
-    class RandomInt {
+    class RandomMpuint {
     public:
-        using result_type = Int;
-        RandomInt(): base(0), range(1) {}
-        RandomInt(Int a, Int b) { if (a > b) std::swap(a, b); base = a; range = (b - a + 1).abs(); }
-        template <typename RNG> Int operator()(RNG& rng) { return base + Int(Nat::random(rng, range)); }
-        Int min() const { return base; }
-        Int max() const { return base + range - 1; }
+        using result_type = Mpuint;
+        RandomMpuint(): base(0), range(1) {}
+        RandomMpuint(Mpuint a, Mpuint b) { if (a > b) std::swap(a, b); base = a; range = b - a + 1; }
+        template <typename RNG> Mpuint operator()(RNG& rng) { return base + Mpuint::random(rng, range); }
+        Mpuint min() const { return base; }
+        Mpuint max() const { return base + range - 1; }
     private:
-        Int base;
-        Nat range;
+        Mpuint base, range;
     };
 
 }
@@ -238,25 +237,10 @@ namespace RS {
 namespace std {
 
     template <>
-    class numeric_limits<RS::Nat>:
-    public RS::NumericLimitsBase<RS::Nat> {
+    class numeric_limits<RS::Mpint>:
+    public RS::NumericLimitsBase<RS::Mpint> {
     private:
-        using type                        = RS::Nat;
-        using base                        = RS::NumericLimitsBase<type>;
-    public:
-        static constexpr bool is_bounded  = false;
-        static constexpr bool is_exact    = true;
-        static constexpr bool is_integer  = true;
-        static constexpr bool is_modulo   = false;
-        static constexpr bool is_signed   = false;
-        static constexpr int radix        = 2;
-    };
-
-    template <>
-    class numeric_limits<RS::Int>:
-    public RS::NumericLimitsBase<RS::Int> {
-    private:
-        using type                        = RS::Int;
+        using type                        = RS::Mpint;
         using base                        = RS::NumericLimitsBase<type>;
     public:
         static constexpr bool is_bounded  = false;
@@ -267,7 +251,22 @@ namespace std {
         static constexpr int radix        = 2;
     };
 
+    template <>
+    class numeric_limits<RS::Mpuint>:
+    public RS::NumericLimitsBase<RS::Mpuint> {
+    private:
+        using type                        = RS::Mpuint;
+        using base                        = RS::NumericLimitsBase<type>;
+    public:
+        static constexpr bool is_bounded  = false;
+        static constexpr bool is_exact    = true;
+        static constexpr bool is_integer  = true;
+        static constexpr bool is_modulo   = false;
+        static constexpr bool is_signed   = false;
+        static constexpr int radix        = 2;
+    };
+
 }
 
-RS_DEFINE_STD_HASH(RS::Nat);
-RS_DEFINE_STD_HASH(RS::Int);
+RS_DEFINE_STD_HASH(RS::Mpint);
+RS_DEFINE_STD_HASH(RS::Mpuint);

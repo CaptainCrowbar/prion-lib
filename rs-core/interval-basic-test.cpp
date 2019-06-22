@@ -38,7 +38,7 @@ void test_source_interval_basic_type_traits() {
     TEST_EQUAL(interval_category<std::vector<int>::iterator>, IC::integral);
     TEST_EQUAL(interval_category<microseconds>, IC::integral);
     TEST_EQUAL(interval_category<Binary<128>>, IC::integral);
-    TEST_EQUAL(interval_category<Int>, IC::integral);
+    TEST_EQUAL(interval_category<Mpint>, IC::integral);
 
     TEST_EQUAL(interval_category<float>, IC::continuous);
     TEST_EQUAL(interval_category<double>, IC::continuous);

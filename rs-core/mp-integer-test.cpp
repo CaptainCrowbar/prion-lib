@@ -22,7 +22,7 @@ namespace {
 
 void test_core_mp_integer_unsigned_conversion() {
 
-    Nat x;
+    Mpuint x;
     Ustring s;
 
     TEST_EQUAL(uint64_t(x), 0);
@@ -50,47 +50,47 @@ void test_core_mp_integer_unsigned_conversion() {
     TRY(s = x.str(16));  TEST_EQUAL(s, "123456789abcdef0");
     TRY(s = x.str(36));  TEST_EQUAL(s, "9ys742pps3qo");
 
-    TRY(x = Nat("110011000011110111111011111001011100011101100011001111101111100000001000101111100010101", 2));
+    TRY(x = Mpuint("110011000011110111111011111001011100011101100011001111101111100000001000101111100010101", 2));
     TEST_NEAR_EPSILON(double(x), 1.234568e26, 1e20);
     TRY(s = x.str(2));   TEST_EQUAL(s, "110011000011110111111011111001011100011101100011001111101111100000001000101111100010101");
     TRY(s = x.str(10));  TEST_EQUAL(s, "123456789123456789123456789");
     TRY(s = x.str(16));  TEST_EQUAL(s, "661efdf2e3b19f7c045f15");
 
-    TRY(x = Nat("123456789123456789123456789", 10));
+    TRY(x = Mpuint("123456789123456789123456789", 10));
     TEST_NEAR_EPSILON(double(x), 1.234568e26, 1e20);
     TRY(s = x.str(2));   TEST_EQUAL(s, "110011000011110111111011111001011100011101100011001111101111100000001000101111100010101");
     TRY(s = x.str(10));  TEST_EQUAL(s, "123456789123456789123456789");
     TRY(s = x.str(16));  TEST_EQUAL(s, "661efdf2e3b19f7c045f15");
 
-    TRY(x = Nat("661efdf2e3b19f7c045f15", 16));
+    TRY(x = Mpuint("661efdf2e3b19f7c045f15", 16));
     TEST_NEAR_EPSILON(double(x), 1.234568e26, 1e20);
     TRY(s = x.str(2));   TEST_EQUAL(s, "110011000011110111111011111001011100011101100011001111101111100000001000101111100010101");
     TRY(s = x.str(10));  TEST_EQUAL(s, "123456789123456789123456789");
     TRY(s = x.str(16));  TEST_EQUAL(s, "661efdf2e3b19f7c045f15");
 
-    TRY(x = Nat("123456789123456789123456789", 0));
+    TRY(x = Mpuint("123456789123456789123456789", 0));
     TEST_NEAR_EPSILON(double(x), 1.234568e26, 1e20);
     TRY(s = x.str(2));   TEST_EQUAL(s, "110011000011110111111011111001011100011101100011001111101111100000001000101111100010101");
     TRY(s = x.str(10));  TEST_EQUAL(s, "123456789123456789123456789");
     TRY(s = x.str(16));  TEST_EQUAL(s, "661efdf2e3b19f7c045f15");
 
-    TRY(x = Nat("0x661efdf2e3b19f7c045f15", 0));
+    TRY(x = Mpuint("0x661efdf2e3b19f7c045f15", 0));
     TEST_NEAR_EPSILON(double(x), 1.234568e26, 1e20);
     TRY(s = x.str(2));   TEST_EQUAL(s, "110011000011110111111011111001011100011101100011001111101111100000001000101111100010101");
     TRY(s = x.str(10));  TEST_EQUAL(s, "123456789123456789123456789");
     TRY(s = x.str(16));  TEST_EQUAL(s, "661efdf2e3b19f7c045f15");
 
-    TRY(x = Nat::from_double(0.0));            TRY(s = x.str());  TEST_EQUAL(s, "0");
-    TRY(x = Nat::from_double(0.99));           TRY(s = x.str());  TEST_EQUAL(s, "0");
-    TRY(x = Nat::from_double(1.0));            TRY(s = x.str());  TEST_EQUAL(s, "1");
-    TRY(x = Nat::from_double(123456789.0));    TRY(s = x.str());  TEST_EQUAL(s, "123456789");
-    TRY(x = Nat::from_double(1.23456789e40));  TRY(s = x.str());  TEST_MATCH(s, "^12345678\\d{33}$");
+    TRY(x = Mpuint::from_double(0.0));            TRY(s = x.str());  TEST_EQUAL(s, "0");
+    TRY(x = Mpuint::from_double(0.99));           TRY(s = x.str());  TEST_EQUAL(s, "0");
+    TRY(x = Mpuint::from_double(1.0));            TRY(s = x.str());  TEST_EQUAL(s, "1");
+    TRY(x = Mpuint::from_double(123456789.0));    TRY(s = x.str());  TEST_EQUAL(s, "123456789");
+    TRY(x = Mpuint::from_double(1.23456789e40));  TRY(s = x.str());  TEST_MATCH(s, "^12345678\\d{33}$");
 
 }
 
 void test_core_mp_integer_unsigned_arithmetic() {
 
-    Nat x, y, z, q, r;
+    Mpuint x, y, z, q, r;
     Ustring s;
 
     TRY(x = 0);
@@ -141,34 +141,34 @@ void test_core_mp_integer_unsigned_arithmetic() {
     TRY(s = to_str(z));  TEST_EQUAL(s, "24197857203266734862169780735577366800");
     TRY(s = z.str(16));  TEST_EQUAL(s, "123456789abcdeefedcba98765432110");
 
-    TRY(x = Nat("123456789123456789123456789123456789123456789"));
-    TRY(y = Nat("123456789123456789123456789123456789"));
+    TRY(x = Mpuint("123456789123456789123456789123456789123456789"));
+    TRY(y = Mpuint("123456789123456789123456789123456789"));
     TRY(z = x - y);
-    TEST_EQUAL(z, Nat("123456789000000000000000000000000000000000000"));
-    TRY(y = Nat("123456789123456789123456789123456789000000000"));
+    TEST_EQUAL(z, Mpuint("123456789000000000000000000000000000000000000"));
+    TRY(y = Mpuint("123456789123456789123456789123456789000000000"));
     TRY(z = x - y);
-    TEST_EQUAL(z, Nat("123456789"));
-    TRY(x = Nat("123456789123456789123456789123456789123456789"));
-    TRY(y = Nat("1357913579135791357913579"));
+    TEST_EQUAL(z, Mpuint("123456789"));
+    TRY(x = Mpuint("123456789123456789123456789123456789123456789"));
+    TRY(y = Mpuint("1357913579135791357913579"));
     TRY(z = x - y);
-    TEST_EQUAL(z, Nat("123456789123456789122098875544320997765543210"));
+    TEST_EQUAL(z, Mpuint("123456789123456789122098875544320997765543210"));
 
-    TRY(x = Nat("123456789123456789123456789123456789123456789"));
-    TRY(y = Nat("123456789"));
+    TRY(x = Mpuint("123456789123456789123456789123456789123456789"));
+    TRY(y = Mpuint("123456789"));
     TRY(q = x / y);
     TRY(r = x % y);
-    TEST_EQUAL(q, Nat("1000000001000000001000000001000000001"));
-    TEST_EQUAL(r, Nat("0"));
-    TRY(y = Nat("987654321"));
+    TEST_EQUAL(q, Mpuint("1000000001000000001000000001000000001"));
+    TEST_EQUAL(r, Mpuint("0"));
+    TRY(y = Mpuint("987654321"));
     TRY(q = x / y);
     TRY(r = x % y);
-    TEST_EQUAL(q, Nat("124999998985937499000175780249997801"));
-    TEST_EQUAL(r, Nat("725308668"));
-    TRY(y = Nat("987654321987654321987654321987654321987654321"));
+    TEST_EQUAL(q, Mpuint("124999998985937499000175780249997801"));
+    TEST_EQUAL(r, Mpuint("725308668"));
+    TRY(y = Mpuint("987654321987654321987654321987654321987654321"));
     TRY(q = x / y);
     TRY(r = x % y);
-    TEST_EQUAL(q, Nat("0"));
-    TEST_EQUAL(r, Nat("123456789123456789123456789123456789123456789"));
+    TEST_EQUAL(q, Mpuint("0"));
+    TEST_EQUAL(r, Mpuint("123456789123456789123456789123456789123456789"));
     TRY(y = {});
     TEST_THROW(x / y, std::domain_error);
     TEST_THROW(x % y, std::domain_error);
@@ -217,7 +217,7 @@ void test_core_mp_integer_unsigned_arithmetic() {
 
 void test_core_mp_integer_unsigned_bit_operations() {
 
-    Nat x, y, z;
+    Mpuint x, y, z;
     Ustring s;
 
     TEST_EQUAL(x.bits_set(), 0);
@@ -295,48 +295,48 @@ void test_core_mp_integer_unsigned_bit_operations() {
     TEST(! x.get_bit(100));
 
     TRY(x.set_bit(16));
-    TEST_EQUAL(x, Nat("0x10000"));
+    TEST_EQUAL(x, Mpuint("0x10000"));
     TEST(! x.get_bit(15));
     TEST(x.get_bit(16));
     TEST(! x.get_bit(17));
 
     TRY(x.set_bit(80));
-    TEST_EQUAL(x, Nat("0x100000000000000010000"));
+    TEST_EQUAL(x, Mpuint("0x100000000000000010000"));
     TEST(! x.get_bit(79));
     TEST(x.get_bit(80));
     TEST(! x.get_bit(81));
 
     TRY(x.set_bit(80, false));
-    TEST_EQUAL(x, Nat("0x10000"));
+    TEST_EQUAL(x, Mpuint("0x10000"));
     TEST(! x.get_bit(80));
 
     TRY(x.flip_bit(80));
-    TEST_EQUAL(x, Nat("0x100000000000000010000"));
+    TEST_EQUAL(x, Mpuint("0x100000000000000010000"));
     TEST(x.get_bit(80));
 
     TRY(x.flip_bit(80));
-    TEST_EQUAL(x, Nat("0x10000"));
+    TEST_EQUAL(x, Mpuint("0x10000"));
     TEST(! x.get_bit(80));
 
 }
 
 void test_core_mp_integer_unsigned_byte_operations() {
 
-    Nat a, b;
+    Mpuint a, b;
     std::vector<uint8_t> v;
 
     TEST_EQUAL(a.bytes(), 0);
 
-    TRY(a = Nat("0x12"));                    TEST_EQUAL(a.bytes(), 1);
-    TRY(a = Nat("0x1234"));                  TEST_EQUAL(a.bytes(), 2);
-    TRY(a = Nat("0x123456"));                TEST_EQUAL(a.bytes(), 3);
-    TRY(a = Nat("0x12345678"));              TEST_EQUAL(a.bytes(), 4);
-    TRY(a = Nat("0x123456789a"));            TEST_EQUAL(a.bytes(), 5);
-    TRY(a = Nat("0x123456789abc"));          TEST_EQUAL(a.bytes(), 6);
-    TRY(a = Nat("0x123456789abcde"));        TEST_EQUAL(a.bytes(), 7);
-    TRY(a = Nat("0x123456789abcdef1"));      TEST_EQUAL(a.bytes(), 8);
-    TRY(a = Nat("0x123456789abcdef123"));    TEST_EQUAL(a.bytes(), 9);
-    TRY(a = Nat("0x123456789abcdef12345"));  TEST_EQUAL(a.bytes(), 10);
+    TRY(a = Mpuint("0x12"));                    TEST_EQUAL(a.bytes(), 1);
+    TRY(a = Mpuint("0x1234"));                  TEST_EQUAL(a.bytes(), 2);
+    TRY(a = Mpuint("0x123456"));                TEST_EQUAL(a.bytes(), 3);
+    TRY(a = Mpuint("0x12345678"));              TEST_EQUAL(a.bytes(), 4);
+    TRY(a = Mpuint("0x123456789a"));            TEST_EQUAL(a.bytes(), 5);
+    TRY(a = Mpuint("0x123456789abc"));          TEST_EQUAL(a.bytes(), 6);
+    TRY(a = Mpuint("0x123456789abcde"));        TEST_EQUAL(a.bytes(), 7);
+    TRY(a = Mpuint("0x123456789abcdef1"));      TEST_EQUAL(a.bytes(), 8);
+    TRY(a = Mpuint("0x123456789abcdef123"));    TEST_EQUAL(a.bytes(), 9);
+    TRY(a = Mpuint("0x123456789abcdef12345"));  TEST_EQUAL(a.bytes(), 10);
 
     TEST_EQUAL(a.get_byte(0), 0x45);
     TEST_EQUAL(a.get_byte(1), 0x23);
@@ -366,7 +366,7 @@ void test_core_mp_integer_unsigned_byte_operations() {
     TRY(a.set_byte(15, 0xff));  TEST_EQUAL(hex(a), "ff00ff00ff00ff34ff78ffbcfff1ff45");
 
     TRY(a = 0);
-    TRY(b = Nat("0x123456789abcdef12345"));
+    TRY(b = Mpuint("0x123456789abcdef12345"));
 
     v.resize(7);
 
@@ -378,22 +378,22 @@ void test_core_mp_integer_unsigned_byte_operations() {
 
     v = {0x11,0x22,0x33,0x44,0x55,0x66,0x77,0x88,0x99,0xaa,0xbb,0xcc,0xdd,0xee,0xff};
 
-    TRY(a = Nat::read_be(v.data(), v.size()));  TEST_EQUAL(hex(a), "112233445566778899aabbccddeeff");
-    TRY(a = Nat::read_le(v.data(), v.size()));  TEST_EQUAL(hex(a), "ffeeddccbbaa998877665544332211");
+    TRY(a = Mpuint::read_be(v.data(), v.size()));  TEST_EQUAL(hex(a), "112233445566778899aabbccddeeff");
+    TRY(a = Mpuint::read_le(v.data(), v.size()));  TEST_EQUAL(hex(a), "ffeeddccbbaa998877665544332211");
 
 }
 
 void test_core_mp_integer_unsigned_random() {
 
     std::mt19937 rng(42);
-    RandomNat random;
-    Nat a, b, lo, hi, sum, sum2, x;
+    RandomMpuint random;
+    Mpuint a, b, lo, hi, sum, sum2, x;
     int n = 10000;
 
-    TRY(a = Nat("123456789123456789123456789123456789"));
-    TRY(b = Nat("987654321987654321987654321987654321"));
-    TRY(lo = Nat(1) << 1000);
-    TRY(random = RandomNat(a, b));
+    TRY(a = Mpuint("123456789123456789123456789123456789"));
+    TRY(b = Mpuint("987654321987654321987654321987654321"));
+    TRY(lo = Mpuint(1) << 1000);
+    TRY(random = RandomMpuint(a, b));
 
     for (int i = 0; i < n; ++i) {
         TRY(x = random(rng));
@@ -416,7 +416,7 @@ void test_core_mp_integer_unsigned_random() {
 
 void test_core_mp_integer_signed_conversion() {
 
-    Int x;
+    Mpint x;
     Ustring s;
 
     TEST_EQUAL(x.sign(), 0);
@@ -468,69 +468,69 @@ void test_core_mp_integer_signed_conversion() {
     TRY(s = x.str(16));  TEST_EQUAL(s, "-1b69b4bacd05f15");
     TRY(s = x.str(36));  TEST_EQUAL(s, "-xrls1yk9rf9");
 
-    TRY(x = Int("123456789123456789123456789123456789123456789", 10));
+    TRY(x = Mpint("123456789123456789123456789123456789123456789", 10));
     TEST_EQUAL(x.sign(), 1);
     TEST_NEAR_EPSILON(double(x), 1.234568e44, 1e38);
     TRY(s = to_str(x));  TEST_EQUAL(s, "123456789123456789123456789123456789123456789");
     TRY(s = x.str(16));  TEST_EQUAL(s, "58936e53d139afefabb2683f150b684045f15");
 
-    TRY(x = Int("123456789abcdef123456789abcdef123456789abcdef123456789abcdef", 16));
+    TRY(x = Mpint("123456789abcdef123456789abcdef123456789abcdef123456789abcdef", 16));
     TEST_EQUAL(x.sign(), 1);
     TEST_NEAR_EPSILON(double(x), 1.256425e71, 1e65);
     TRY(s = to_str(x));  TEST_EQUAL(s, "125642457939796217460094503631385345882379387509263401568735420576681455");
     TRY(s = x.str(16));  TEST_EQUAL(s, "123456789abcdef123456789abcdef123456789abcdef123456789abcdef");
 
-    TRY(x = Int("-123456789123456789123456789123456789123456789", 10));
+    TRY(x = Mpint("-123456789123456789123456789123456789123456789", 10));
     TEST_EQUAL(x.sign(), -1);
     TEST_NEAR_EPSILON(double(x), -1.234568e44, 1e38);
     TRY(s = to_str(x));  TEST_EQUAL(s, "-123456789123456789123456789123456789123456789");
     TRY(s = x.str(16));  TEST_EQUAL(s, "-58936e53d139afefabb2683f150b684045f15");
 
-    TRY(x = Int("-123456789abcdef123456789abcdef123456789abcdef123456789abcdef", 16));
+    TRY(x = Mpint("-123456789abcdef123456789abcdef123456789abcdef123456789abcdef", 16));
     TEST_EQUAL(x.sign(), -1);
     TEST_NEAR_EPSILON(double(x), -1.256425e71, 1e65);
     TRY(s = to_str(x));  TEST_EQUAL(s, "-125642457939796217460094503631385345882379387509263401568735420576681455");
     TRY(s = x.str(16));  TEST_EQUAL(s, "-123456789abcdef123456789abcdef123456789abcdef123456789abcdef");
 
-    TRY(x = Int("123456789123456789123456789123456789123456789", 0));
+    TRY(x = Mpint("123456789123456789123456789123456789123456789", 0));
     TEST_EQUAL(x.sign(), 1);
     TEST_NEAR_EPSILON(double(x), 1.234568e44, 1e38);
     TRY(s = to_str(x));  TEST_EQUAL(s, "123456789123456789123456789123456789123456789");
     TRY(s = x.str(16));  TEST_EQUAL(s, "58936e53d139afefabb2683f150b684045f15");
 
-    TRY(x = Int("0x123456789abcdef123456789abcdef123456789abcdef123456789abcdef", 0));
+    TRY(x = Mpint("0x123456789abcdef123456789abcdef123456789abcdef123456789abcdef", 0));
     TEST_EQUAL(x.sign(), 1);
     TEST_NEAR_EPSILON(double(x), 1.256425e71, 1e65);
     TRY(s = to_str(x));  TEST_EQUAL(s, "125642457939796217460094503631385345882379387509263401568735420576681455");
     TRY(s = x.str(16));  TEST_EQUAL(s, "123456789abcdef123456789abcdef123456789abcdef123456789abcdef");
 
-    TRY(x = Int("-123456789123456789123456789123456789123456789", 0));
+    TRY(x = Mpint("-123456789123456789123456789123456789123456789", 0));
     TEST_EQUAL(x.sign(), -1);
     TEST_NEAR_EPSILON(double(x), -1.234568e44, 1e38);
     TRY(s = to_str(x));  TEST_EQUAL(s, "-123456789123456789123456789123456789123456789");
     TRY(s = x.str(16));  TEST_EQUAL(s, "-58936e53d139afefabb2683f150b684045f15");
 
-    TRY(x = Int("-0x123456789abcdef123456789abcdef123456789abcdef123456789abcdef", 0));
+    TRY(x = Mpint("-0x123456789abcdef123456789abcdef123456789abcdef123456789abcdef", 0));
     TEST_EQUAL(x.sign(), -1);
     TEST_NEAR_EPSILON(double(x), -1.256425e71, 1e65);
     TRY(s = to_str(x));  TEST_EQUAL(s, "-125642457939796217460094503631385345882379387509263401568735420576681455");
     TRY(s = x.str(16));  TEST_EQUAL(s, "-123456789abcdef123456789abcdef123456789abcdef123456789abcdef");
 
-    TRY(x = Int::from_double(0.0));             TRY(s = x.str());  TEST_EQUAL(s, "0");
-    TRY(x = Int::from_double(0.99));            TRY(s = x.str());  TEST_EQUAL(s, "0");
-    TRY(x = Int::from_double(-0.99));           TRY(s = x.str());  TEST_EQUAL(s, "0");
-    TRY(x = Int::from_double(1.0));             TRY(s = x.str());  TEST_EQUAL(s, "1");
-    TRY(x = Int::from_double(-1.0));            TRY(s = x.str());  TEST_EQUAL(s, "-1");
-    TRY(x = Int::from_double(123456789.0));     TRY(s = x.str());  TEST_EQUAL(s, "123456789");
-    TRY(x = Int::from_double(-123456789.0));    TRY(s = x.str());  TEST_EQUAL(s, "-123456789");
-    TRY(x = Int::from_double(1.23456789e40));   TRY(s = x.str());  TEST_MATCH(s, "^12345678\\d{33}$");
-    TRY(x = Int::from_double(-1.23456789e40));  TRY(s = x.str());  TEST_MATCH(s, "^-12345678\\d{33}$");
+    TRY(x = Mpint::from_double(0.0));             TRY(s = x.str());  TEST_EQUAL(s, "0");
+    TRY(x = Mpint::from_double(0.99));            TRY(s = x.str());  TEST_EQUAL(s, "0");
+    TRY(x = Mpint::from_double(-0.99));           TRY(s = x.str());  TEST_EQUAL(s, "0");
+    TRY(x = Mpint::from_double(1.0));             TRY(s = x.str());  TEST_EQUAL(s, "1");
+    TRY(x = Mpint::from_double(-1.0));            TRY(s = x.str());  TEST_EQUAL(s, "-1");
+    TRY(x = Mpint::from_double(123456789.0));     TRY(s = x.str());  TEST_EQUAL(s, "123456789");
+    TRY(x = Mpint::from_double(-123456789.0));    TRY(s = x.str());  TEST_EQUAL(s, "-123456789");
+    TRY(x = Mpint::from_double(1.23456789e40));   TRY(s = x.str());  TEST_MATCH(s, "^12345678\\d{33}$");
+    TRY(x = Mpint::from_double(-1.23456789e40));  TRY(s = x.str());  TEST_MATCH(s, "^-12345678\\d{33}$");
 
 }
 
 void test_core_mp_integer_signed_arithmetic() {
 
-    Int a, b, c, d, q, r, x, y, z;
+    Mpint a, b, c, d, q, r, x, y, z;
     Ustring s;
 
     TRY(z = a + b);  TRY(s = to_str(z));  TEST_EQUAL(s, "0");
@@ -549,8 +549,8 @@ void test_core_mp_integer_signed_arithmetic() {
     TRY(z = a / b);  TRY(s = to_str(z));  TEST_EQUAL(s, "0");
     TRY(z = a % b);  TRY(s = to_str(z));  TEST_EQUAL(s, "0");
 
-    TRY(a = Int("42"));
-    TRY(b = Int("10"));
+    TRY(a = Mpint("42"));
+    TRY(b = Mpint("10"));
     TRY(c = - a);
     TRY(d = - b);
 
@@ -641,8 +641,8 @@ void test_core_mp_integer_signed_arithmetic() {
     TRY(a = 5);   TRY(b = -3);  TRY(q = quo(a, b));  TRY(r = rem(a, b));  TEST_EQUAL(q, -1);  TEST_EQUAL(r, 2);  TEST_EQUAL(b * q + r, a);
     TRY(a = 6);   TRY(b = -3);  TRY(q = quo(a, b));  TRY(r = rem(a, b));  TEST_EQUAL(q, -2);  TEST_EQUAL(r, 0);  TEST_EQUAL(b * q + r, a);
 
-    TRY(a = Int("123456789123456789123456789123456789123456789"));
-    TRY(b = Int("1357913579135791357913579"));
+    TRY(a = Mpint("123456789123456789123456789123456789123456789"));
+    TRY(b = Mpint("1357913579135791357913579"));
     TRY(c = - a);
     TRY(d = - b);
 
@@ -764,15 +764,15 @@ void test_core_mp_integer_signed_arithmetic() {
 void test_core_mp_integer_signed_random() {
 
     std::mt19937 rng(42);
-    RandomInt random;
-    Int a, b, lo, hi, sum, sum2, x;
+    RandomMpint random;
+    Mpint a, b, lo, hi, sum, sum2, x;
     int n = 10000;
 
-    TRY(a = Int("-123456789123456789123456789123456789"));
-    TRY(b = Int("987654321987654321987654321987654321"));
-    TRY(lo = Nat(1) << 1000);
+    TRY(a = Mpint("-123456789123456789123456789123456789"));
+    TRY(b = Mpint("987654321987654321987654321987654321"));
+    TRY(lo = Mpuint(1) << 1000);
     TRY(hi = - lo);
-    TRY(random = RandomInt(a, b));
+    TRY(random = RandomMpint(a, b));
 
     for (int i = 0; i < n; ++i) {
         TRY(x = random(rng));
@@ -795,55 +795,55 @@ void test_core_mp_integer_signed_random() {
 
 void test_core_mp_integer_literals() {
 
-    Nat n;
-    Int i;
+    Mpint i;
+    Mpuint n;
 
-    TRY(n = 0_nat);                                                                                          TEST_EQUAL(n.str(), "0");
-    TRY(n = 0x12345678_nat);                                                                                 TEST_EQUAL(n.str(), "305419896");
-    TRY(n = 0x123456789abcdef0_nat);                                                                         TEST_EQUAL(n.str(), "1311768467463790320");
-    TRY(n = 0b110011000011110111111011111001011100011101100011001111101111100000001000101111100010101_nat);  TEST_EQUAL(n.str(), "123456789123456789123456789");
-    TRY(n = 123456789123456789123456789_nat);                                                                TEST_EQUAL(n.str(), "123456789123456789123456789");
-    TRY(n = 0x661efdf2e3b19f7c045f15_nat);                                                                   TEST_EQUAL(n.str(), "123456789123456789123456789");
+    TRY(i = 0_mpi);                                                                TEST_EQUAL(i.str(), "0");
+    TRY(i = 123456789_mpi);                                                        TEST_EQUAL(i.str(), "123456789");
+    TRY(i = -123456789_mpi);                                                       TEST_EQUAL(i.str(), "-123456789");
+    TRY(i = 123456789123456789_mpi);                                               TEST_EQUAL(i.str(), "123456789123456789");
+    TRY(i = -123456789123456789_mpi);                                              TEST_EQUAL(i.str(), "-123456789123456789");
+    TRY(i = 123456789123456789123456789123456789123456789_mpi);                    TEST_EQUAL(i.str(), "123456789123456789123456789123456789123456789");
+    TRY(i = -123456789123456789123456789123456789123456789_mpi);                   TEST_EQUAL(i.str(), "-123456789123456789123456789123456789123456789");
+    TRY(i = 0b10101010101010101010101010101010101010101010101010_mpi);             TEST_EQUAL(i.str(), "750599937895082");
+    TRY(i = -0b10101010101010101010101010101010101010101010101010_mpi);            TEST_EQUAL(i.str(), "-750599937895082");
+    TRY(i = 0x123456789abcdef123456789abcdef123456789abcdef123456789abcdef_mpi);   TEST_EQUAL(i.str(), "125642457939796217460094503631385345882379387509263401568735420576681455");
+    TRY(i = -0x123456789abcdef123456789abcdef123456789abcdef123456789abcdef_mpi);  TEST_EQUAL(i.str(), "-125642457939796217460094503631385345882379387509263401568735420576681455");
 
-    TRY(n = 0x12'345'678_nat);                                                                               TEST_EQUAL(n.str(), "305419896");
-    TRY(n = 0x1234'5678'9abc'def0_nat);                                                                      TEST_EQUAL(n.str(), "1311768467463790320");
-    TRY(n = 0b110011000011110111111011111001011100011101100011001111101111100000001000101111100010101_nat);  TEST_EQUAL(n.str(), "123456789123456789123456789");
-    TRY(n = 123'456'789'123'456'789'123'456'789_nat);                                                        TEST_EQUAL(n.str(), "123456789123456789123456789");
-    TRY(n = 0x66'1efd'f2e3'b19f'7c04'5f15_nat);                                                              TEST_EQUAL(n.str(), "123456789123456789123456789");
+    TRY(i = 123'456'789_mpi);                                                                    TEST_EQUAL(i.str(), "123456789");
+    TRY(i = -123'456'789_mpi);                                                                   TEST_EQUAL(i.str(), "-123456789");
+    TRY(i = 123'456'789'123'456'789_mpi);                                                        TEST_EQUAL(i.str(), "123456789123456789");
+    TRY(i = -123'456'789'123'456'789_mpi);                                                       TEST_EQUAL(i.str(), "-123456789123456789");
+    TRY(i = 123'456'789'123'456'789'123'456'789'123'456'789'123'456'789_mpi);                    TEST_EQUAL(i.str(), "123456789123456789123456789123456789123456789");
+    TRY(i = -123'456'789'123'456'789'123'456'789'123'456'789'123'456'789_mpi);                   TEST_EQUAL(i.str(), "-123456789123456789123456789123456789123456789");
+    TRY(i = 0b10101'01010'10101'01010'10101'01010'10101'01010'10101'01010_mpi);                  TEST_EQUAL(i.str(), "750599937895082");
+    TRY(i = -0b10101'01010'10101'01010'10101'01010'10101'01010'10101'01010_mpi);                 TEST_EQUAL(i.str(), "-750599937895082");
+    TRY(i = 0x1234'5678'9abc'def1'2345'6789'abcd'ef12'3456'789a'bcde'f123'4567'89ab'cdef_mpi);   TEST_EQUAL(i.str(), "125642457939796217460094503631385345882379387509263401568735420576681455");
+    TRY(i = -0x1234'5678'9abc'def1'2345'6789'abcd'ef12'3456'789a'bcde'f123'4567'89ab'cdef_mpi);  TEST_EQUAL(i.str(), "-125642457939796217460094503631385345882379387509263401568735420576681455");
 
-    TRY(i = 0_int);                                                                TEST_EQUAL(i.str(), "0");
-    TRY(i = 123456789_int);                                                        TEST_EQUAL(i.str(), "123456789");
-    TRY(i = -123456789_int);                                                       TEST_EQUAL(i.str(), "-123456789");
-    TRY(i = 123456789123456789_int);                                               TEST_EQUAL(i.str(), "123456789123456789");
-    TRY(i = -123456789123456789_int);                                              TEST_EQUAL(i.str(), "-123456789123456789");
-    TRY(i = 123456789123456789123456789123456789123456789_int);                    TEST_EQUAL(i.str(), "123456789123456789123456789123456789123456789");
-    TRY(i = -123456789123456789123456789123456789123456789_int);                   TEST_EQUAL(i.str(), "-123456789123456789123456789123456789123456789");
-    TRY(i = 0b10101010101010101010101010101010101010101010101010_int);             TEST_EQUAL(i.str(), "750599937895082");
-    TRY(i = -0b10101010101010101010101010101010101010101010101010_int);            TEST_EQUAL(i.str(), "-750599937895082");
-    TRY(i = 0x123456789abcdef123456789abcdef123456789abcdef123456789abcdef_int);   TEST_EQUAL(i.str(), "125642457939796217460094503631385345882379387509263401568735420576681455");
-    TRY(i = -0x123456789abcdef123456789abcdef123456789abcdef123456789abcdef_int);  TEST_EQUAL(i.str(), "-125642457939796217460094503631385345882379387509263401568735420576681455");
+    TRY(n = 0_mpu);                                                                                          TEST_EQUAL(n.str(), "0");
+    TRY(n = 0x12345678_mpu);                                                                                 TEST_EQUAL(n.str(), "305419896");
+    TRY(n = 0x123456789abcdef0_mpu);                                                                         TEST_EQUAL(n.str(), "1311768467463790320");
+    TRY(n = 0b110011000011110111111011111001011100011101100011001111101111100000001000101111100010101_mpu);  TEST_EQUAL(n.str(), "123456789123456789123456789");
+    TRY(n = 123456789123456789123456789_mpu);                                                                TEST_EQUAL(n.str(), "123456789123456789123456789");
+    TRY(n = 0x661efdf2e3b19f7c045f15_mpu);                                                                   TEST_EQUAL(n.str(), "123456789123456789123456789");
 
-    TRY(i = 123'456'789_int);                                                                    TEST_EQUAL(i.str(), "123456789");
-    TRY(i = -123'456'789_int);                                                                   TEST_EQUAL(i.str(), "-123456789");
-    TRY(i = 123'456'789'123'456'789_int);                                                        TEST_EQUAL(i.str(), "123456789123456789");
-    TRY(i = -123'456'789'123'456'789_int);                                                       TEST_EQUAL(i.str(), "-123456789123456789");
-    TRY(i = 123'456'789'123'456'789'123'456'789'123'456'789'123'456'789_int);                    TEST_EQUAL(i.str(), "123456789123456789123456789123456789123456789");
-    TRY(i = -123'456'789'123'456'789'123'456'789'123'456'789'123'456'789_int);                   TEST_EQUAL(i.str(), "-123456789123456789123456789123456789123456789");
-    TRY(i = 0b10101'01010'10101'01010'10101'01010'10101'01010'10101'01010_int);                  TEST_EQUAL(i.str(), "750599937895082");
-    TRY(i = -0b10101'01010'10101'01010'10101'01010'10101'01010'10101'01010_int);                 TEST_EQUAL(i.str(), "-750599937895082");
-    TRY(i = 0x1234'5678'9abc'def1'2345'6789'abcd'ef12'3456'789a'bcde'f123'4567'89ab'cdef_int);   TEST_EQUAL(i.str(), "125642457939796217460094503631385345882379387509263401568735420576681455");
-    TRY(i = -0x1234'5678'9abc'def1'2345'6789'abcd'ef12'3456'789a'bcde'f123'4567'89ab'cdef_int);  TEST_EQUAL(i.str(), "-125642457939796217460094503631385345882379387509263401568735420576681455");
+    TRY(n = 0x12'345'678_mpu);                                                                               TEST_EQUAL(n.str(), "305419896");
+    TRY(n = 0x1234'5678'9abc'def0_mpu);                                                                      TEST_EQUAL(n.str(), "1311768467463790320");
+    TRY(n = 0b110011000011110111111011111001011100011101100011001111101111100000001000101111100010101_mpu);  TEST_EQUAL(n.str(), "123456789123456789123456789");
+    TRY(n = 123'456'789'123'456'789'123'456'789_mpu);                                                        TEST_EQUAL(n.str(), "123456789123456789123456789");
+    TRY(n = 0x66'1efd'f2e3'b19f'7c04'5f15_mpu);                                                              TEST_EQUAL(n.str(), "123456789123456789123456789");
 
 }
 
 void test_core_mp_integer_core_functions() {
 
-    Nat a = 42, b = 99, c, d;
-    Int w = 42, x = -99, y, z;
+    Mpuint a = 42, b = 99, c, d;
+    Mpint w = 42, x = -99, y, z;
     int s;
 
-    TRY(c = std::clamp(a, Nat(0), Nat(10)));  TEST_EQUAL(c, 10);
-    TRY(y = std::clamp(w, Int(0), Int(10)));  TEST_EQUAL(y, 10);
+    TRY(c = std::clamp(a, Mpuint(0), Mpuint(10)));  TEST_EQUAL(c, 10);
+    TRY(y = std::clamp(w, Mpint(0), Mpint(10)));  TEST_EQUAL(y, 10);
 
     TRY(c = quo(b, a));  TEST_EQUAL(c, 2);
     TRY(y = quo(x, w));  TEST_EQUAL(y, -3);
@@ -866,42 +866,42 @@ void test_core_mp_integer_core_functions() {
 
 void test_core_mp_integer_hash_set() {
 
-    std::unordered_set<Nat> natset;
-    std::unordered_set<Int> intset;
+    std::unordered_set<Mpuint> uset;
+    std::unordered_set<Mpint> iset;
 
-    TEST(natset.empty());
-    TEST(intset.empty());
+    TEST(uset.empty());
+    TEST(iset.empty());
 
     for (int i = 1; i <= 10; ++i) {
-        TRY(natset.insert(Nat(i)));
-        TRY(intset.insert(Int(i)));
+        TRY(uset.insert(Mpuint(i)));
+        TRY(iset.insert(Mpint(i)));
     }
 
-    TEST_EQUAL(natset.size(), 10);
-    TEST_EQUAL(intset.size(), 10);
+    TEST_EQUAL(uset.size(), 10);
+    TEST_EQUAL(iset.size(), 10);
 
 }
 
 void test_core_mp_integer_numeric_limits() {
 
-    using limits_nat = std::numeric_limits<Nat>;
-    using limits_int = std::numeric_limits<Int>;
+    using ulimits = std::numeric_limits<Mpuint>;
+    using ilimits = std::numeric_limits<Mpint>;
 
-    TEST(limits_nat::is_specialized);
-    TEST(! limits_nat::is_bounded);
-    TEST(limits_nat::is_integer);
-    TEST(! limits_nat::is_signed);
+    TEST(ulimits::is_specialized);
+    TEST(! ulimits::is_bounded);
+    TEST(ulimits::is_integer);
+    TEST(! ulimits::is_signed);
 
-    TEST(limits_int::is_specialized);
-    TEST(! limits_int::is_bounded);
-    TEST(limits_int::is_integer);
-    TEST(limits_int::is_signed);
+    TEST(ilimits::is_specialized);
+    TEST(! ilimits::is_bounded);
+    TEST(ilimits::is_integer);
+    TEST(ilimits::is_signed);
 
 }
 
 void test_core_mp_integer_rational_basics() {
 
-    Ratmp r;
+    Mpratio r;
 
     TEST_EQUAL(r.num(), 0);
     TEST_EQUAL(r.den(), 1);
@@ -918,7 +918,7 @@ void test_core_mp_integer_rational_basics() {
     TEST_EQUAL(r.mixed(), "0");
     TEST_EQUAL(to_str(r), "0");
 
-    TRY(r = Ratmp(5, 3));
+    TRY(r = Mpratio(5, 3));
     TEST_EQUAL(r.num(), 5);
     TEST_EQUAL(r.den(), 3);
     TEST_EQUAL(int(r), 1);
@@ -932,7 +932,7 @@ void test_core_mp_integer_rational_basics() {
     TEST_EQUAL(r.simple(), "5/3");
     TEST_EQUAL(to_str(r), "5/3");
 
-    TRY(r = Ratmp(-7, 9));
+    TRY(r = Mpratio(-7, 9));
     TEST_EQUAL(r.num(), -7);
     TEST_EQUAL(r.den(), 9);
     TEST_EQUAL(int(r), 0);
@@ -950,42 +950,42 @@ void test_core_mp_integer_rational_basics() {
 
 void test_core_mp_integer_rational_reduction() {
 
-    Ratmp r;
+    Mpratio r;
 
-    TRY(r = Ratmp(0, 6));    TEST_EQUAL(r.num(), 0);    TEST_EQUAL(r.den(), 1);  TEST_EQUAL(r.whole(), 0);   TEST_EQUAL(r.frac(), Ratmp(0, 6));
-    TRY(r = Ratmp(1, 6));    TEST_EQUAL(r.num(), 1);    TEST_EQUAL(r.den(), 6);  TEST_EQUAL(r.whole(), 0);   TEST_EQUAL(r.frac(), Ratmp(1, 6));
-    TRY(r = Ratmp(2, 6));    TEST_EQUAL(r.num(), 1);    TEST_EQUAL(r.den(), 3);  TEST_EQUAL(r.whole(), 0);   TEST_EQUAL(r.frac(), Ratmp(2, 6));
-    TRY(r = Ratmp(3, 6));    TEST_EQUAL(r.num(), 1);    TEST_EQUAL(r.den(), 2);  TEST_EQUAL(r.whole(), 0);   TEST_EQUAL(r.frac(), Ratmp(3, 6));
-    TRY(r = Ratmp(4, 6));    TEST_EQUAL(r.num(), 2);    TEST_EQUAL(r.den(), 3);  TEST_EQUAL(r.whole(), 0);   TEST_EQUAL(r.frac(), Ratmp(4, 6));
-    TRY(r = Ratmp(5, 6));    TEST_EQUAL(r.num(), 5);    TEST_EQUAL(r.den(), 6);  TEST_EQUAL(r.whole(), 0);   TEST_EQUAL(r.frac(), Ratmp(5, 6));
-    TRY(r = Ratmp(6, 6));    TEST_EQUAL(r.num(), 1);    TEST_EQUAL(r.den(), 1);  TEST_EQUAL(r.whole(), 1);   TEST_EQUAL(r.frac(), Ratmp(0, 6));
-    TRY(r = Ratmp(7, 6));    TEST_EQUAL(r.num(), 7);    TEST_EQUAL(r.den(), 6);  TEST_EQUAL(r.whole(), 1);   TEST_EQUAL(r.frac(), Ratmp(1, 6));
-    TRY(r = Ratmp(8, 6));    TEST_EQUAL(r.num(), 4);    TEST_EQUAL(r.den(), 3);  TEST_EQUAL(r.whole(), 1);   TEST_EQUAL(r.frac(), Ratmp(2, 6));
-    TRY(r = Ratmp(9, 6));    TEST_EQUAL(r.num(), 3);    TEST_EQUAL(r.den(), 2);  TEST_EQUAL(r.whole(), 1);   TEST_EQUAL(r.frac(), Ratmp(3, 6));
-    TRY(r = Ratmp(10, 6));   TEST_EQUAL(r.num(), 5);    TEST_EQUAL(r.den(), 3);  TEST_EQUAL(r.whole(), 1);   TEST_EQUAL(r.frac(), Ratmp(4, 6));
-    TRY(r = Ratmp(11, 6));   TEST_EQUAL(r.num(), 11);   TEST_EQUAL(r.den(), 6);  TEST_EQUAL(r.whole(), 1);   TEST_EQUAL(r.frac(), Ratmp(5, 6));
-    TRY(r = Ratmp(12, 6));   TEST_EQUAL(r.num(), 2);    TEST_EQUAL(r.den(), 1);  TEST_EQUAL(r.whole(), 2);   TEST_EQUAL(r.frac(), Ratmp(0, 6));
-    TRY(r = Ratmp(-1, 6));   TEST_EQUAL(r.num(), -1);   TEST_EQUAL(r.den(), 6);  TEST_EQUAL(r.whole(), -0);  TEST_EQUAL(r.frac(), Ratmp(-1, 6));
-    TRY(r = Ratmp(-2, 6));   TEST_EQUAL(r.num(), -1);   TEST_EQUAL(r.den(), 3);  TEST_EQUAL(r.whole(), -0);  TEST_EQUAL(r.frac(), Ratmp(-2, 6));
-    TRY(r = Ratmp(-3, 6));   TEST_EQUAL(r.num(), -1);   TEST_EQUAL(r.den(), 2);  TEST_EQUAL(r.whole(), -0);  TEST_EQUAL(r.frac(), Ratmp(-3, 6));
-    TRY(r = Ratmp(-4, 6));   TEST_EQUAL(r.num(), -2);   TEST_EQUAL(r.den(), 3);  TEST_EQUAL(r.whole(), -0);  TEST_EQUAL(r.frac(), Ratmp(-4, 6));
-    TRY(r = Ratmp(-5, 6));   TEST_EQUAL(r.num(), -5);   TEST_EQUAL(r.den(), 6);  TEST_EQUAL(r.whole(), -0);  TEST_EQUAL(r.frac(), Ratmp(-5, 6));
-    TRY(r = Ratmp(-6, 6));   TEST_EQUAL(r.num(), -1);   TEST_EQUAL(r.den(), 1);  TEST_EQUAL(r.whole(), -1);  TEST_EQUAL(r.frac(), Ratmp(-0, 6));
-    TRY(r = Ratmp(-7, 6));   TEST_EQUAL(r.num(), -7);   TEST_EQUAL(r.den(), 6);  TEST_EQUAL(r.whole(), -1);  TEST_EQUAL(r.frac(), Ratmp(-1, 6));
-    TRY(r = Ratmp(-8, 6));   TEST_EQUAL(r.num(), -4);   TEST_EQUAL(r.den(), 3);  TEST_EQUAL(r.whole(), -1);  TEST_EQUAL(r.frac(), Ratmp(-2, 6));
-    TRY(r = Ratmp(-9, 6));   TEST_EQUAL(r.num(), -3);   TEST_EQUAL(r.den(), 2);  TEST_EQUAL(r.whole(), -1);  TEST_EQUAL(r.frac(), Ratmp(-3, 6));
-    TRY(r = Ratmp(-10, 6));  TEST_EQUAL(r.num(), -5);   TEST_EQUAL(r.den(), 3);  TEST_EQUAL(r.whole(), -1);  TEST_EQUAL(r.frac(), Ratmp(-4, 6));
-    TRY(r = Ratmp(-11, 6));  TEST_EQUAL(r.num(), -11);  TEST_EQUAL(r.den(), 6);  TEST_EQUAL(r.whole(), -1);  TEST_EQUAL(r.frac(), Ratmp(-5, 6));
-    TRY(r = Ratmp(-12, 6));  TEST_EQUAL(r.num(), -2);   TEST_EQUAL(r.den(), 1);  TEST_EQUAL(r.whole(), -2);  TEST_EQUAL(r.frac(), Ratmp(-0, 6));
+    TRY(r = Mpratio(0, 6));    TEST_EQUAL(r.num(), 0);    TEST_EQUAL(r.den(), 1);  TEST_EQUAL(r.whole(), 0);   TEST_EQUAL(r.frac(), Mpratio(0, 6));
+    TRY(r = Mpratio(1, 6));    TEST_EQUAL(r.num(), 1);    TEST_EQUAL(r.den(), 6);  TEST_EQUAL(r.whole(), 0);   TEST_EQUAL(r.frac(), Mpratio(1, 6));
+    TRY(r = Mpratio(2, 6));    TEST_EQUAL(r.num(), 1);    TEST_EQUAL(r.den(), 3);  TEST_EQUAL(r.whole(), 0);   TEST_EQUAL(r.frac(), Mpratio(2, 6));
+    TRY(r = Mpratio(3, 6));    TEST_EQUAL(r.num(), 1);    TEST_EQUAL(r.den(), 2);  TEST_EQUAL(r.whole(), 0);   TEST_EQUAL(r.frac(), Mpratio(3, 6));
+    TRY(r = Mpratio(4, 6));    TEST_EQUAL(r.num(), 2);    TEST_EQUAL(r.den(), 3);  TEST_EQUAL(r.whole(), 0);   TEST_EQUAL(r.frac(), Mpratio(4, 6));
+    TRY(r = Mpratio(5, 6));    TEST_EQUAL(r.num(), 5);    TEST_EQUAL(r.den(), 6);  TEST_EQUAL(r.whole(), 0);   TEST_EQUAL(r.frac(), Mpratio(5, 6));
+    TRY(r = Mpratio(6, 6));    TEST_EQUAL(r.num(), 1);    TEST_EQUAL(r.den(), 1);  TEST_EQUAL(r.whole(), 1);   TEST_EQUAL(r.frac(), Mpratio(0, 6));
+    TRY(r = Mpratio(7, 6));    TEST_EQUAL(r.num(), 7);    TEST_EQUAL(r.den(), 6);  TEST_EQUAL(r.whole(), 1);   TEST_EQUAL(r.frac(), Mpratio(1, 6));
+    TRY(r = Mpratio(8, 6));    TEST_EQUAL(r.num(), 4);    TEST_EQUAL(r.den(), 3);  TEST_EQUAL(r.whole(), 1);   TEST_EQUAL(r.frac(), Mpratio(2, 6));
+    TRY(r = Mpratio(9, 6));    TEST_EQUAL(r.num(), 3);    TEST_EQUAL(r.den(), 2);  TEST_EQUAL(r.whole(), 1);   TEST_EQUAL(r.frac(), Mpratio(3, 6));
+    TRY(r = Mpratio(10, 6));   TEST_EQUAL(r.num(), 5);    TEST_EQUAL(r.den(), 3);  TEST_EQUAL(r.whole(), 1);   TEST_EQUAL(r.frac(), Mpratio(4, 6));
+    TRY(r = Mpratio(11, 6));   TEST_EQUAL(r.num(), 11);   TEST_EQUAL(r.den(), 6);  TEST_EQUAL(r.whole(), 1);   TEST_EQUAL(r.frac(), Mpratio(5, 6));
+    TRY(r = Mpratio(12, 6));   TEST_EQUAL(r.num(), 2);    TEST_EQUAL(r.den(), 1);  TEST_EQUAL(r.whole(), 2);   TEST_EQUAL(r.frac(), Mpratio(0, 6));
+    TRY(r = Mpratio(-1, 6));   TEST_EQUAL(r.num(), -1);   TEST_EQUAL(r.den(), 6);  TEST_EQUAL(r.whole(), -0);  TEST_EQUAL(r.frac(), Mpratio(-1, 6));
+    TRY(r = Mpratio(-2, 6));   TEST_EQUAL(r.num(), -1);   TEST_EQUAL(r.den(), 3);  TEST_EQUAL(r.whole(), -0);  TEST_EQUAL(r.frac(), Mpratio(-2, 6));
+    TRY(r = Mpratio(-3, 6));   TEST_EQUAL(r.num(), -1);   TEST_EQUAL(r.den(), 2);  TEST_EQUAL(r.whole(), -0);  TEST_EQUAL(r.frac(), Mpratio(-3, 6));
+    TRY(r = Mpratio(-4, 6));   TEST_EQUAL(r.num(), -2);   TEST_EQUAL(r.den(), 3);  TEST_EQUAL(r.whole(), -0);  TEST_EQUAL(r.frac(), Mpratio(-4, 6));
+    TRY(r = Mpratio(-5, 6));   TEST_EQUAL(r.num(), -5);   TEST_EQUAL(r.den(), 6);  TEST_EQUAL(r.whole(), -0);  TEST_EQUAL(r.frac(), Mpratio(-5, 6));
+    TRY(r = Mpratio(-6, 6));   TEST_EQUAL(r.num(), -1);   TEST_EQUAL(r.den(), 1);  TEST_EQUAL(r.whole(), -1);  TEST_EQUAL(r.frac(), Mpratio(-0, 6));
+    TRY(r = Mpratio(-7, 6));   TEST_EQUAL(r.num(), -7);   TEST_EQUAL(r.den(), 6);  TEST_EQUAL(r.whole(), -1);  TEST_EQUAL(r.frac(), Mpratio(-1, 6));
+    TRY(r = Mpratio(-8, 6));   TEST_EQUAL(r.num(), -4);   TEST_EQUAL(r.den(), 3);  TEST_EQUAL(r.whole(), -1);  TEST_EQUAL(r.frac(), Mpratio(-2, 6));
+    TRY(r = Mpratio(-9, 6));   TEST_EQUAL(r.num(), -3);   TEST_EQUAL(r.den(), 2);  TEST_EQUAL(r.whole(), -1);  TEST_EQUAL(r.frac(), Mpratio(-3, 6));
+    TRY(r = Mpratio(-10, 6));  TEST_EQUAL(r.num(), -5);   TEST_EQUAL(r.den(), 3);  TEST_EQUAL(r.whole(), -1);  TEST_EQUAL(r.frac(), Mpratio(-4, 6));
+    TRY(r = Mpratio(-11, 6));  TEST_EQUAL(r.num(), -11);  TEST_EQUAL(r.den(), 6);  TEST_EQUAL(r.whole(), -1);  TEST_EQUAL(r.frac(), Mpratio(-5, 6));
+    TRY(r = Mpratio(-12, 6));  TEST_EQUAL(r.num(), -2);   TEST_EQUAL(r.den(), 1);  TEST_EQUAL(r.whole(), -2);  TEST_EQUAL(r.frac(), Mpratio(-0, 6));
 
 }
 
 void test_core_mp_integer_rational_arithmetic() {
 
-    Ratmp r, s, t;
+    Mpratio r, s, t;
 
-    TRY(r = Ratmp(5, 3));
-    TRY(s = Ratmp(7, 9));
+    TRY(r = Mpratio(5, 3));
+    TRY(s = Mpratio(7, 9));
 
     TRY(t = r + s);  TEST_EQUAL(t.num(), 22);  TEST_EQUAL(t.den(), 9);
     TRY(t = r - s);  TEST_EQUAL(t.num(), 8);   TEST_EQUAL(t.den(), 9);
@@ -996,100 +996,100 @@ void test_core_mp_integer_rational_arithmetic() {
 
 void test_core_mp_integer_rational_properties() {
 
-    Ratmp r, s, t;
+    Mpratio r, s, t;
 
-    TRY(r = Ratmp(5, 3));
-    TRY(s = Ratmp(-7, 9));
+    TRY(r = Mpratio(5, 3));
+    TRY(s = Mpratio(-7, 9));
 
-    TEST_EQUAL(abs(r), Ratmp(5, 3));  TEST_EQUAL(sign_of(r), 1);
-    TEST_EQUAL(abs(s), Ratmp(7, 9));  TEST_EQUAL(sign_of(s), -1);
-    TEST_EQUAL(abs(t), Ratmp(0));     TEST_EQUAL(sign_of(t), 0);
+    TEST_EQUAL(abs(r), Mpratio(5, 3));  TEST_EQUAL(sign_of(r), 1);
+    TEST_EQUAL(abs(s), Mpratio(7, 9));  TEST_EQUAL(sign_of(s), -1);
+    TEST_EQUAL(abs(t), Mpratio(0));     TEST_EQUAL(sign_of(t), 0);
 
-    TRY(r = Ratmp(-6, 3));  TEST_EQUAL(r.floor(), -2);  TEST_EQUAL(r.ceil(), -2);  TEST_EQUAL(r.round(), -2);
-    TRY(r = Ratmp(-5, 3));  TEST_EQUAL(r.floor(), -2);  TEST_EQUAL(r.ceil(), -1);  TEST_EQUAL(r.round(), -2);
-    TRY(r = Ratmp(-4, 3));  TEST_EQUAL(r.floor(), -2);  TEST_EQUAL(r.ceil(), -1);  TEST_EQUAL(r.round(), -1);
-    TRY(r = Ratmp(-3, 3));  TEST_EQUAL(r.floor(), -1);  TEST_EQUAL(r.ceil(), -1);  TEST_EQUAL(r.round(), -1);
-    TRY(r = Ratmp(-2, 3));  TEST_EQUAL(r.floor(), -1);  TEST_EQUAL(r.ceil(), 0);   TEST_EQUAL(r.round(), -1);
-    TRY(r = Ratmp(-1, 3));  TEST_EQUAL(r.floor(), -1);  TEST_EQUAL(r.ceil(), 0);   TEST_EQUAL(r.round(), 0);
-    TRY(r = Ratmp(0, 3));   TEST_EQUAL(r.floor(), 0);   TEST_EQUAL(r.ceil(), 0);   TEST_EQUAL(r.round(), 0);
-    TRY(r = Ratmp(1, 3));   TEST_EQUAL(r.floor(), 0);   TEST_EQUAL(r.ceil(), 1);   TEST_EQUAL(r.round(), 0);
-    TRY(r = Ratmp(2, 3));   TEST_EQUAL(r.floor(), 0);   TEST_EQUAL(r.ceil(), 1);   TEST_EQUAL(r.round(), 1);
-    TRY(r = Ratmp(3, 3));   TEST_EQUAL(r.floor(), 1);   TEST_EQUAL(r.ceil(), 1);   TEST_EQUAL(r.round(), 1);
-    TRY(r = Ratmp(4, 3));   TEST_EQUAL(r.floor(), 1);   TEST_EQUAL(r.ceil(), 2);   TEST_EQUAL(r.round(), 1);
-    TRY(r = Ratmp(5, 3));   TEST_EQUAL(r.floor(), 1);   TEST_EQUAL(r.ceil(), 2);   TEST_EQUAL(r.round(), 2);
-    TRY(r = Ratmp(6, 3));   TEST_EQUAL(r.floor(), 2);   TEST_EQUAL(r.ceil(), 2);   TEST_EQUAL(r.round(), 2);
-    TRY(r = Ratmp(-8, 4));  TEST_EQUAL(r.floor(), -2);  TEST_EQUAL(r.ceil(), -2);  TEST_EQUAL(r.round(), -2);
-    TRY(r = Ratmp(-7, 4));  TEST_EQUAL(r.floor(), -2);  TEST_EQUAL(r.ceil(), -1);  TEST_EQUAL(r.round(), -2);
-    TRY(r = Ratmp(-6, 4));  TEST_EQUAL(r.floor(), -2);  TEST_EQUAL(r.ceil(), -1);  TEST_EQUAL(r.round(), -1);
-    TRY(r = Ratmp(-5, 4));  TEST_EQUAL(r.floor(), -2);  TEST_EQUAL(r.ceil(), -1);  TEST_EQUAL(r.round(), -1);
-    TRY(r = Ratmp(-4, 4));  TEST_EQUAL(r.floor(), -1);  TEST_EQUAL(r.ceil(), -1);  TEST_EQUAL(r.round(), -1);
-    TRY(r = Ratmp(-3, 4));  TEST_EQUAL(r.floor(), -1);  TEST_EQUAL(r.ceil(), 0);   TEST_EQUAL(r.round(), -1);
-    TRY(r = Ratmp(-2, 4));  TEST_EQUAL(r.floor(), -1);  TEST_EQUAL(r.ceil(), 0);   TEST_EQUAL(r.round(), 0);
-    TRY(r = Ratmp(-1, 4));  TEST_EQUAL(r.floor(), -1);  TEST_EQUAL(r.ceil(), 0);   TEST_EQUAL(r.round(), 0);
-    TRY(r = Ratmp(0, 4));   TEST_EQUAL(r.floor(), 0);   TEST_EQUAL(r.ceil(), 0);   TEST_EQUAL(r.round(), 0);
-    TRY(r = Ratmp(1, 4));   TEST_EQUAL(r.floor(), 0);   TEST_EQUAL(r.ceil(), 1);   TEST_EQUAL(r.round(), 0);
-    TRY(r = Ratmp(2, 4));   TEST_EQUAL(r.floor(), 0);   TEST_EQUAL(r.ceil(), 1);   TEST_EQUAL(r.round(), 1);
-    TRY(r = Ratmp(3, 4));   TEST_EQUAL(r.floor(), 0);   TEST_EQUAL(r.ceil(), 1);   TEST_EQUAL(r.round(), 1);
-    TRY(r = Ratmp(4, 4));   TEST_EQUAL(r.floor(), 1);   TEST_EQUAL(r.ceil(), 1);   TEST_EQUAL(r.round(), 1);
-    TRY(r = Ratmp(5, 4));   TEST_EQUAL(r.floor(), 1);   TEST_EQUAL(r.ceil(), 2);   TEST_EQUAL(r.round(), 1);
-    TRY(r = Ratmp(6, 4));   TEST_EQUAL(r.floor(), 1);   TEST_EQUAL(r.ceil(), 2);   TEST_EQUAL(r.round(), 2);
-    TRY(r = Ratmp(7, 4));   TEST_EQUAL(r.floor(), 1);   TEST_EQUAL(r.ceil(), 2);   TEST_EQUAL(r.round(), 2);
-    TRY(r = Ratmp(8, 4));   TEST_EQUAL(r.floor(), 2);   TEST_EQUAL(r.ceil(), 2);   TEST_EQUAL(r.round(), 2);
+    TRY(r = Mpratio(-6, 3));  TEST_EQUAL(r.floor(), -2);  TEST_EQUAL(r.ceil(), -2);  TEST_EQUAL(r.round(), -2);
+    TRY(r = Mpratio(-5, 3));  TEST_EQUAL(r.floor(), -2);  TEST_EQUAL(r.ceil(), -1);  TEST_EQUAL(r.round(), -2);
+    TRY(r = Mpratio(-4, 3));  TEST_EQUAL(r.floor(), -2);  TEST_EQUAL(r.ceil(), -1);  TEST_EQUAL(r.round(), -1);
+    TRY(r = Mpratio(-3, 3));  TEST_EQUAL(r.floor(), -1);  TEST_EQUAL(r.ceil(), -1);  TEST_EQUAL(r.round(), -1);
+    TRY(r = Mpratio(-2, 3));  TEST_EQUAL(r.floor(), -1);  TEST_EQUAL(r.ceil(), 0);   TEST_EQUAL(r.round(), -1);
+    TRY(r = Mpratio(-1, 3));  TEST_EQUAL(r.floor(), -1);  TEST_EQUAL(r.ceil(), 0);   TEST_EQUAL(r.round(), 0);
+    TRY(r = Mpratio(0, 3));   TEST_EQUAL(r.floor(), 0);   TEST_EQUAL(r.ceil(), 0);   TEST_EQUAL(r.round(), 0);
+    TRY(r = Mpratio(1, 3));   TEST_EQUAL(r.floor(), 0);   TEST_EQUAL(r.ceil(), 1);   TEST_EQUAL(r.round(), 0);
+    TRY(r = Mpratio(2, 3));   TEST_EQUAL(r.floor(), 0);   TEST_EQUAL(r.ceil(), 1);   TEST_EQUAL(r.round(), 1);
+    TRY(r = Mpratio(3, 3));   TEST_EQUAL(r.floor(), 1);   TEST_EQUAL(r.ceil(), 1);   TEST_EQUAL(r.round(), 1);
+    TRY(r = Mpratio(4, 3));   TEST_EQUAL(r.floor(), 1);   TEST_EQUAL(r.ceil(), 2);   TEST_EQUAL(r.round(), 1);
+    TRY(r = Mpratio(5, 3));   TEST_EQUAL(r.floor(), 1);   TEST_EQUAL(r.ceil(), 2);   TEST_EQUAL(r.round(), 2);
+    TRY(r = Mpratio(6, 3));   TEST_EQUAL(r.floor(), 2);   TEST_EQUAL(r.ceil(), 2);   TEST_EQUAL(r.round(), 2);
+    TRY(r = Mpratio(-8, 4));  TEST_EQUAL(r.floor(), -2);  TEST_EQUAL(r.ceil(), -2);  TEST_EQUAL(r.round(), -2);
+    TRY(r = Mpratio(-7, 4));  TEST_EQUAL(r.floor(), -2);  TEST_EQUAL(r.ceil(), -1);  TEST_EQUAL(r.round(), -2);
+    TRY(r = Mpratio(-6, 4));  TEST_EQUAL(r.floor(), -2);  TEST_EQUAL(r.ceil(), -1);  TEST_EQUAL(r.round(), -1);
+    TRY(r = Mpratio(-5, 4));  TEST_EQUAL(r.floor(), -2);  TEST_EQUAL(r.ceil(), -1);  TEST_EQUAL(r.round(), -1);
+    TRY(r = Mpratio(-4, 4));  TEST_EQUAL(r.floor(), -1);  TEST_EQUAL(r.ceil(), -1);  TEST_EQUAL(r.round(), -1);
+    TRY(r = Mpratio(-3, 4));  TEST_EQUAL(r.floor(), -1);  TEST_EQUAL(r.ceil(), 0);   TEST_EQUAL(r.round(), -1);
+    TRY(r = Mpratio(-2, 4));  TEST_EQUAL(r.floor(), -1);  TEST_EQUAL(r.ceil(), 0);   TEST_EQUAL(r.round(), 0);
+    TRY(r = Mpratio(-1, 4));  TEST_EQUAL(r.floor(), -1);  TEST_EQUAL(r.ceil(), 0);   TEST_EQUAL(r.round(), 0);
+    TRY(r = Mpratio(0, 4));   TEST_EQUAL(r.floor(), 0);   TEST_EQUAL(r.ceil(), 0);   TEST_EQUAL(r.round(), 0);
+    TRY(r = Mpratio(1, 4));   TEST_EQUAL(r.floor(), 0);   TEST_EQUAL(r.ceil(), 1);   TEST_EQUAL(r.round(), 0);
+    TRY(r = Mpratio(2, 4));   TEST_EQUAL(r.floor(), 0);   TEST_EQUAL(r.ceil(), 1);   TEST_EQUAL(r.round(), 1);
+    TRY(r = Mpratio(3, 4));   TEST_EQUAL(r.floor(), 0);   TEST_EQUAL(r.ceil(), 1);   TEST_EQUAL(r.round(), 1);
+    TRY(r = Mpratio(4, 4));   TEST_EQUAL(r.floor(), 1);   TEST_EQUAL(r.ceil(), 1);   TEST_EQUAL(r.round(), 1);
+    TRY(r = Mpratio(5, 4));   TEST_EQUAL(r.floor(), 1);   TEST_EQUAL(r.ceil(), 2);   TEST_EQUAL(r.round(), 1);
+    TRY(r = Mpratio(6, 4));   TEST_EQUAL(r.floor(), 1);   TEST_EQUAL(r.ceil(), 2);   TEST_EQUAL(r.round(), 2);
+    TRY(r = Mpratio(7, 4));   TEST_EQUAL(r.floor(), 1);   TEST_EQUAL(r.ceil(), 2);   TEST_EQUAL(r.round(), 2);
+    TRY(r = Mpratio(8, 4));   TEST_EQUAL(r.floor(), 2);   TEST_EQUAL(r.ceil(), 2);   TEST_EQUAL(r.round(), 2);
 
 }
 
 void test_core_mp_integer_rational_comparison() {
 
-    Ratmp r, s;
+    Mpratio r, s;
 
-    TRY(r = Ratmp(5, 6));   TRY(s = Ratmp(7, 9));     TEST_COMPARE(r, >, s);   TEST_COMPARE(r, >=, s);  TEST_COMPARE(r, !=, s);
-    TRY(r = Ratmp(5, 6));   TRY(s = Ratmp(8, 9));     TEST_COMPARE(r, <, s);   TEST_COMPARE(r, <=, s);  TEST_COMPARE(r, !=, s);
-    TRY(r = Ratmp(5, 6));   TRY(s = Ratmp(10, 12));   TEST_COMPARE(r, ==, s);  TEST_COMPARE(r, <=, s);  TEST_COMPARE(r, >=, s);
-    TRY(r = Ratmp(-5, 6));  TRY(s = Ratmp(-7, 9));    TEST_COMPARE(r, <, s);   TEST_COMPARE(r, <=, s);  TEST_COMPARE(r, !=, s);
-    TRY(r = Ratmp(-5, 6));  TRY(s = Ratmp(-8, 9));    TEST_COMPARE(r, >, s);   TEST_COMPARE(r, >=, s);  TEST_COMPARE(r, !=, s);
-    TRY(r = Ratmp(-5, 6));  TRY(s = Ratmp(-10, 12));  TEST_COMPARE(r, ==, s);  TEST_COMPARE(r, <=, s);  TEST_COMPARE(r, >=, s);
+    TRY(r = Mpratio(5, 6));   TRY(s = Mpratio(7, 9));     TEST_COMPARE(r, >, s);   TEST_COMPARE(r, >=, s);  TEST_COMPARE(r, !=, s);
+    TRY(r = Mpratio(5, 6));   TRY(s = Mpratio(8, 9));     TEST_COMPARE(r, <, s);   TEST_COMPARE(r, <=, s);  TEST_COMPARE(r, !=, s);
+    TRY(r = Mpratio(5, 6));   TRY(s = Mpratio(10, 12));   TEST_COMPARE(r, ==, s);  TEST_COMPARE(r, <=, s);  TEST_COMPARE(r, >=, s);
+    TRY(r = Mpratio(-5, 6));  TRY(s = Mpratio(-7, 9));    TEST_COMPARE(r, <, s);   TEST_COMPARE(r, <=, s);  TEST_COMPARE(r, !=, s);
+    TRY(r = Mpratio(-5, 6));  TRY(s = Mpratio(-8, 9));    TEST_COMPARE(r, >, s);   TEST_COMPARE(r, >=, s);  TEST_COMPARE(r, !=, s);
+    TRY(r = Mpratio(-5, 6));  TRY(s = Mpratio(-10, 12));  TEST_COMPARE(r, ==, s);  TEST_COMPARE(r, <=, s);  TEST_COMPARE(r, >=, s);
 
 }
 
 void test_core_mp_integer_rational_mixed() {
 
-    Ratmp r;
+    Mpratio r;
 
     TRY(r = 42);    TEST_EQUAL(r.num(), 42);   TEST_EQUAL(r.den(), 1);
     TRY(r += 100);  TEST_EQUAL(r.num(), 142);  TEST_EQUAL(r.den(), 1);
     TRY(r *= 2);    TEST_EQUAL(r.num(), 284);  TEST_EQUAL(r.den(), 1);
 
-    TRY(r = Int(42));    TEST_EQUAL(r.num(), 42);   TEST_EQUAL(r.den(), 1);
-    TRY(r += Int(100));  TEST_EQUAL(r.num(), 142);  TEST_EQUAL(r.den(), 1);
-    TRY(r *= Int(2));    TEST_EQUAL(r.num(), 284);  TEST_EQUAL(r.den(), 1);
+    TRY(r = Mpint(42));    TEST_EQUAL(r.num(), 42);   TEST_EQUAL(r.den(), 1);
+    TRY(r += Mpint(100));  TEST_EQUAL(r.num(), 142);  TEST_EQUAL(r.den(), 1);
+    TRY(r *= Mpint(2));    TEST_EQUAL(r.num(), 284);  TEST_EQUAL(r.den(), 1);
 
     TRY(r = 42);
 
-    TEST_COMPARE(r, ==, 42);   TEST_COMPARE(r, ==, Int(42));
-    TEST_COMPARE(r, <=, 42);   TEST_COMPARE(r, <=, Int(42));
-    TEST_COMPARE(r, >=, 42);   TEST_COMPARE(r, >=, Int(42));
-    TEST_COMPARE(r, !=, 100);  TEST_COMPARE(r, !=, Int(100));
-    TEST_COMPARE(r, <, 100);   TEST_COMPARE(r, <, Int(100));
-    TEST_COMPARE(r, <=, 100);  TEST_COMPARE(r, <=, Int(100));
+    TEST_COMPARE(r, ==, 42);   TEST_COMPARE(r, ==, Mpint(42));
+    TEST_COMPARE(r, <=, 42);   TEST_COMPARE(r, <=, Mpint(42));
+    TEST_COMPARE(r, >=, 42);   TEST_COMPARE(r, >=, Mpint(42));
+    TEST_COMPARE(r, !=, 100);  TEST_COMPARE(r, !=, Mpint(100));
+    TEST_COMPARE(r, <, 100);   TEST_COMPARE(r, <, Mpint(100));
+    TEST_COMPARE(r, <=, 100);  TEST_COMPARE(r, <=, Mpint(100));
 
 }
 
 void test_core_mp_integer_rational_parsing() {
 
-    Ratmp r;
+    Mpratio r;
 
-    TRY(r = Ratmp::parse("0"));       TEST_EQUAL(r.num(), 0);   TEST_EQUAL(r.den(), 1);
-    TRY(r = Ratmp::parse("5"));       TEST_EQUAL(r.num(), 5);   TEST_EQUAL(r.den(), 1);
-    TRY(r = Ratmp::parse("-5"));      TEST_EQUAL(r.num(), -5);  TEST_EQUAL(r.den(), 1);
-    TRY(r = Ratmp::parse("1/3"));     TEST_EQUAL(r.num(), 1);   TEST_EQUAL(r.den(), 3);
-    TRY(r = Ratmp::parse("4/6"));     TEST_EQUAL(r.num(), 2);   TEST_EQUAL(r.den(), 3);
-    TRY(r = Ratmp::parse("-1/3"));    TEST_EQUAL(r.num(), -1);  TEST_EQUAL(r.den(), 3);
-    TRY(r = Ratmp::parse("-4/6"));    TEST_EQUAL(r.num(), -2);  TEST_EQUAL(r.den(), 3);
-    TRY(r = Ratmp::parse("1 2/3"));   TEST_EQUAL(r.num(), 5);   TEST_EQUAL(r.den(), 3);
-    TRY(r = Ratmp::parse("-1 2/3"));  TEST_EQUAL(r.num(), -5);  TEST_EQUAL(r.den(), 3);
+    TRY(r = Mpratio::parse("0"));       TEST_EQUAL(r.num(), 0);   TEST_EQUAL(r.den(), 1);
+    TRY(r = Mpratio::parse("5"));       TEST_EQUAL(r.num(), 5);   TEST_EQUAL(r.den(), 1);
+    TRY(r = Mpratio::parse("-5"));      TEST_EQUAL(r.num(), -5);  TEST_EQUAL(r.den(), 1);
+    TRY(r = Mpratio::parse("1/3"));     TEST_EQUAL(r.num(), 1);   TEST_EQUAL(r.den(), 3);
+    TRY(r = Mpratio::parse("4/6"));     TEST_EQUAL(r.num(), 2);   TEST_EQUAL(r.den(), 3);
+    TRY(r = Mpratio::parse("-1/3"));    TEST_EQUAL(r.num(), -1);  TEST_EQUAL(r.den(), 3);
+    TRY(r = Mpratio::parse("-4/6"));    TEST_EQUAL(r.num(), -2);  TEST_EQUAL(r.den(), 3);
+    TRY(r = Mpratio::parse("1 2/3"));   TEST_EQUAL(r.num(), 5);   TEST_EQUAL(r.den(), 3);
+    TRY(r = Mpratio::parse("-1 2/3"));  TEST_EQUAL(r.num(), -5);  TEST_EQUAL(r.den(), 3);
 
-    TEST_THROW(r = Ratmp::parse(""), std::invalid_argument);
-    TEST_THROW(r = Ratmp::parse("1 2"), std::invalid_argument);
-    TEST_THROW(r = Ratmp::parse("1 -2/3"), std::invalid_argument);
+    TEST_THROW(r = Mpratio::parse(""), std::invalid_argument);
+    TEST_THROW(r = Mpratio::parse("1 2"), std::invalid_argument);
+    TEST_THROW(r = Mpratio::parse("1 -2/3"), std::invalid_argument);
 
 }

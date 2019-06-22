@@ -48,9 +48,9 @@ Specializations of `to_json()` and `from_json()` are provided for:
     * [`OrderedMap<K,T>`](ordered-map.html)
 * Numeric types
     * [`Endian<T,B>`](common.html)
-    * [`Int`](mp-integer.html)
     * [`Matrix<T,N,L>`](vector.html)
-    * [`Nat`](mp-integer.html)
+    * [`Mpint`](mp-integer.html)
+    * [`Mpuint`](mp-integer.html)
     * [`Quaternion<T>`](vector.html)
     * [`Rational<T>`](rational.html)
     * [`Vector<T,N>`](vector.html)

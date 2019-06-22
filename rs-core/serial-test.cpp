@@ -322,15 +322,15 @@ void test_core_serial_endian() {
 
 void test_core_serial_multiprecision_integers() {
 
-    static const Nat cn = Nat("123456789123456789123456789123456789123456789");
-    static const Int ci = Int("-987654321987654321987654321987654321987654321");
+    static const Mpint ci = Mpint("-987654321987654321987654321987654321987654321");
+    static const Mpuint cn = Mpuint("123456789123456789123456789123456789123456789");
 
     json j;
-    Nat n;
-    Int i;
+    Mpint i;
+    Mpuint n;
 
-    TRY(j = cn);  TRY(n = j.get<Nat>());  TEST_EQUAL(n, cn);  TEST_EQUAL(n.str(), "123456789123456789123456789123456789123456789");
-    TRY(j = ci);  TRY(i = j.get<Int>());  TEST_EQUAL(i, ci);  TEST_EQUAL(i.str(), "-987654321987654321987654321987654321987654321");
+    TRY(j = ci);  TRY(i = j.get<Mpint>());  TEST_EQUAL(i, ci);  TEST_EQUAL(i.str(), "-987654321987654321987654321987654321987654321");
+    TRY(j = cn);  TRY(n = j.get<Mpuint>());  TEST_EQUAL(n, cn);  TEST_EQUAL(n.str(), "123456789123456789123456789123456789123456789");
 
 }
 

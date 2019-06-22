@@ -103,6 +103,7 @@ namespace RS {
 
     }
 
+    void add_lf(std::string& str);
     std::string add_prefix(std::string_view s, std::string_view prefix);
     std::string add_suffix(std::string_view s, std::string_view suffix);
     std::string drop_prefix(std::string_view s, std::string_view prefix);

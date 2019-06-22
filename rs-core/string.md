@@ -194,6 +194,11 @@ True if the string contains no 8-bit bytes.
 
 ## String manipulation functions ##
 
+* `void` **`add_lf`**`(std::string& str)`
+
+Append a line feed to the string, if the string is not empty and does not
+already end in a line feed.
+
 * `std::string` **`add_prefix`**`(std::string_view s, std::string_view prefix)`
 * `std::string` **`add_suffix`**`(std::string_view s, std::string_view suffix)`
 * `std::string` **`drop_prefix`**`(std::string_view s, std::string_view prefix)`

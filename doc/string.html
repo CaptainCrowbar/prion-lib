@@ -249,6 +249,13 @@ code points).</p>
 <h2 id="string-manipulation-functions">String manipulation functions</h2>
 <div class="defns">
 <ul>
+<li><code>void</code> <strong><code>add_lf</code></strong><code>(std::string&amp; str)</code></li>
+</ul>
+<p>Append a line feed to the string, if the string is not empty and does not
+already end in a line feed.</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>std::string</code> <strong><code>add_prefix</code></strong><code>(std::string_view s, std::string_view prefix)</code></li>
 <li><code>std::string</code> <strong><code>add_suffix</code></strong><code>(std::string_view s, std::string_view suffix)</code></li>
 <li><code>std::string</code> <strong><code>drop_prefix</code></strong><code>(std::string_view s, std::string_view prefix)</code></li>

@@ -100,6 +100,11 @@ namespace RS {
 
     // String manipulation functions
 
+    void add_lf(std::string& str) {
+        if (! str.empty() && str.back() != '\n')
+            str += '\n';
+    }
+
     std::string add_prefix(std::string_view s, std::string_view prefix) {
         if (starts_with(s, prefix))
             return std::string(s);

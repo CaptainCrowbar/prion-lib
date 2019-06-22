@@ -275,6 +275,12 @@ void test_core_string_manipulation() {
     std::string_view sv1, sv2;
     Strings sv;
 
+    s = "";                 add_lf(s);  TEST_EQUAL(s, "");
+    s = "\n";               add_lf(s);  TEST_EQUAL(s, "\n");
+    s = "Hello world";      add_lf(s);  TEST_EQUAL(s, "Hello world\n");
+    s = "Hello world\n";    add_lf(s);  TEST_EQUAL(s, "Hello world\n");
+    s = "Hello world\n\n";  add_lf(s);  TEST_EQUAL(s, "Hello world\n\n");
+
     s = "";            TRY(s = add_prefix(s, ""));       TEST_EQUAL(s, "");
     s = "";            TRY(s = add_prefix(s, "Hello"));  TEST_EQUAL(s, "Hello");
     s = "Hello";       TRY(s = add_prefix(s, ""));       TEST_EQUAL(s, "Hello");

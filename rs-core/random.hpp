@@ -452,7 +452,7 @@ namespace RS {
         return min + T(result);
     }
 
-    // Generic random number engine
+    // Generic random number engine wrappers
 
     template <typename T>
     class GenericEngine {
@@ -471,6 +471,32 @@ namespace RS {
 
     using GenRng32 = GenericEngine<uint32_t>;
     using GenRng64 = GenericEngine<uint64_t>;
+
+    // Random device engines
+
+    class Urandom32 {
+    public:
+        RS_NO_COPY_MOVE(Urandom32);
+        using result_type = uint32_t;
+        Urandom32() = default;
+        uint32_t operator()();
+        static constexpr uint32_t min() noexcept { return 0; }
+        static constexpr uint32_t max() noexcept { return ~ uint32_t(0); }
+    private:
+        std::random_device dev_;
+    };
+
+    class Urandom64 {
+    public:
+        RS_NO_COPY_MOVE(Urandom64);
+        using result_type = uint64_t;
+        Urandom64() = default;
+        uint64_t operator()();
+        static constexpr uint64_t min() noexcept { return 0; }
+        static constexpr uint64_t max() noexcept { return ~ uint64_t(0); }
+    private:
+        std::random_device dev_;
+    };
 
     // Basic random distributions
 

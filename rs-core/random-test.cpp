@@ -585,6 +585,18 @@ void test_core_random_generic_rng() {
 
 }
 
+void test_core_random_device_rng() {
+
+    static constexpr size_t iterations = 10'000;
+
+    Urandom32 dev32;
+    Urandom64 dev64;
+
+    CHECK_RANDOM_GENERATOR(dev32, 0, max32, mean32, sd32);
+    CHECK_RANDOM_GENERATOR(dev64, 0, max64, mean64, sd64);
+
+}
+
 void test_core_random_basic_distributions() {
 
     static constexpr size_t iterations = 100'000;

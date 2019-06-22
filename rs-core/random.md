@@ -152,15 +152,15 @@ Algorithm         | Result      | State     | Seeds                  | Recommend
     * `GenRng32::`**`GenRng32`**`() noexcept`
     * `template <typename RNG> GenRng32::`**`GenRng32`**`(RNG& rng)`
     * `uint32_t GenRng32::`**`operator()`**`()`
-    * `static constexpr uint32_t GenRng32::`**`min`**`() noexcept` _(min = 0)_
-    * `static constexpr uint32_t GenRng32::`**`max`**`() noexcept` _(max = 2<sup>32</sup>-1)_
+    * `static constexpr uint32_t GenRng32::`**`min`**`() noexcept`
+    * `static constexpr uint32_t GenRng32::`**`max`**`() noexcept`
 * `class` **`GenRng64`**
     * `using GenRng64::`**`result_type`** `= uint64_t`
     * `GenRng64::`**`GenRng64`**`() noexcept`
     * `template <typename RNG> GenRng64::`**`GenRng64`**`(RNG& rng)`
     * `uint64_t GenRng64::`**`operator()`**`()`
-    * `static constexpr uint64_t GenRng64::`**`min`**`() noexcept` _(min = 0)_
-    * `static constexpr uint64_t GenRng64::`**`max`**`() noexcept` _(max = 2<sup>64</sup>-1)_
+    * `static constexpr uint64_t GenRng64::`**`min`**`() noexcept`
+    * `static constexpr uint64_t GenRng64::`**`max`**`() noexcept`
 
 Wrapper function objects that call an arbitrary random number engine and
 return a uniformly distributed value, from zero to 2<sup>32</sup>-1 or
@@ -172,6 +172,23 @@ The `GenRng*` object holds a reference to the generator that was passed to the
 constructor, which is expected to remain valid. Behaviour is undefined if the
 underlying generator is destroyed while a `GenRng*` object still has a
 reference to it.
+
+### Random device engines ###
+
+* `class` **`Urandom32`**
+    * `using Urandom32::`**`result_type`** `= uint32_t`
+    * `Urandom32::`**`Urandom32`**`() noexcept`
+    * `uint32_t Urandom32::`**`operator()`**`()`
+    * `static constexpr uint32_t Urandom32::`**`min`**`() noexcept`
+    * `static constexpr uint32_t Urandom32::`**`max`**`() noexcept`
+* `class` **`Urandom64`**
+    * `using Urandom64::`**`result_type`** `= uint64_t`
+    * `Urandom64::`**`Urandom64`**`() noexcept`
+    * `uint64_t Urandom64::`**`operator()`**`()`
+    * `static constexpr uint64_t Urandom64::`**`min`**`() noexcept`
+    * `static constexpr uint64_t Urandom64::`**`max`**`() noexcept`
+
+Wrappers for `std::random_device` that generate values of a known size.
 
 ## Random distributions ##
 

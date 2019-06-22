@@ -179,6 +179,30 @@ namespace RS {
         index = 0;
     }
 
+    // Random device engines
+
+    uint32_t Urandom32::operator()() {
+        if constexpr (sizeof(unsigned) >= 4) {
+            return uint32_t(dev_());
+        } else {
+            static const auto gen = random_integer(min(), max());
+            return gen(dev_);
+        }
+    }
+
+    uint64_t Urandom64::operator()() {
+        if constexpr (sizeof(unsigned) >= 8) {
+            return uint64_t(dev_());
+        } else if constexpr (sizeof(unsigned) >= 4) {
+            uint64_t x = uint32_t(dev_());
+            uint64_t y = uint32_t(dev_());
+            return (x << 32) + y;
+        } else {
+            static const auto gen = random_integer(min(), max());
+            return gen(dev_);
+        }
+    }
+
     // Text generators
 
     Ustring lorem_ipsum(uint64_t seed, size_t bytes, bool paras) {

@@ -22,6 +22,7 @@
 <li><a href="#pcg-generators">PCG generators</a></li>
 <li><a href="#xoshiro-and-related-generators">Xoshiro and related generators</a></li>
 <li><a href="#generic-random-number-engine-wrappers">Generic random number engine wrappers</a></li>
+<li><a href="#random-device-engines">Random device engines</a></li>
 </ul>
 </li>
 <li><a href="#random-distributions">Random distributions</a><ul>
@@ -275,8 +276,8 @@ from Pierre L'Ecuyer (1999),
 <li><code>GenRng32::</code><strong><code>GenRng32</code></strong><code>() noexcept</code></li>
 <li><code>template &lt;typename RNG&gt; GenRng32::</code><strong><code>GenRng32</code></strong><code>(RNG&amp; rng)</code></li>
 <li><code>uint32_t GenRng32::</code><strong><code>operator()</code></strong><code>()</code></li>
-<li><code>static constexpr uint32_t GenRng32::</code><strong><code>min</code></strong><code>() noexcept</code> <em>(min = 0)</em></li>
-<li><code>static constexpr uint32_t GenRng32::</code><strong><code>max</code></strong><code>() noexcept</code> <em>(max = 2<sup>32</sup>-1)</em></li>
+<li><code>static constexpr uint32_t GenRng32::</code><strong><code>min</code></strong><code>() noexcept</code></li>
+<li><code>static constexpr uint32_t GenRng32::</code><strong><code>max</code></strong><code>() noexcept</code></li>
 </ul>
 </li>
 <li><code>class</code> <strong><code>GenRng64</code></strong><ul>
@@ -284,8 +285,8 @@ from Pierre L'Ecuyer (1999),
 <li><code>GenRng64::</code><strong><code>GenRng64</code></strong><code>() noexcept</code></li>
 <li><code>template &lt;typename RNG&gt; GenRng64::</code><strong><code>GenRng64</code></strong><code>(RNG&amp; rng)</code></li>
 <li><code>uint64_t GenRng64::</code><strong><code>operator()</code></strong><code>()</code></li>
-<li><code>static constexpr uint64_t GenRng64::</code><strong><code>min</code></strong><code>() noexcept</code> <em>(min = 0)</em></li>
-<li><code>static constexpr uint64_t GenRng64::</code><strong><code>max</code></strong><code>() noexcept</code> <em>(max = 2<sup>64</sup>-1)</em></li>
+<li><code>static constexpr uint64_t GenRng64::</code><strong><code>min</code></strong><code>() noexcept</code></li>
+<li><code>static constexpr uint64_t GenRng64::</code><strong><code>max</code></strong><code>() noexcept</code></li>
 </ul>
 </li>
 </ul>
@@ -298,6 +299,28 @@ return zero</p>
 constructor, which is expected to remain valid. Behaviour is undefined if the
 underlying generator is destroyed while a <code>GenRng*</code> object still has a
 reference to it.</p>
+</div>
+<h3 id="random-device-engines">Random device engines</h3>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>Urandom32</code></strong><ul>
+<li><code>using Urandom32::</code><strong><code>result_type</code></strong> <code>= uint32_t</code></li>
+<li><code>Urandom32::</code><strong><code>Urandom32</code></strong><code>() noexcept</code></li>
+<li><code>uint32_t Urandom32::</code><strong><code>operator()</code></strong><code>()</code></li>
+<li><code>static constexpr uint32_t Urandom32::</code><strong><code>min</code></strong><code>() noexcept</code></li>
+<li><code>static constexpr uint32_t Urandom32::</code><strong><code>max</code></strong><code>() noexcept</code></li>
+</ul>
+</li>
+<li><code>class</code> <strong><code>Urandom64</code></strong><ul>
+<li><code>using Urandom64::</code><strong><code>result_type</code></strong> <code>= uint64_t</code></li>
+<li><code>Urandom64::</code><strong><code>Urandom64</code></strong><code>() noexcept</code></li>
+<li><code>uint64_t Urandom64::</code><strong><code>operator()</code></strong><code>()</code></li>
+<li><code>static constexpr uint64_t Urandom64::</code><strong><code>min</code></strong><code>() noexcept</code></li>
+<li><code>static constexpr uint64_t Urandom64::</code><strong><code>max</code></strong><code>() noexcept</code></li>
+</ul>
+</li>
+</ul>
+<p>Wrappers for <code>std::random_device</code> that generate values of a known size.</p>
 </div>
 <h2 id="random-distributions">Random distributions</h2>
 <h3 id="basic-random-distributions">Basic random distributions</h3>

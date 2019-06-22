@@ -466,10 +466,10 @@ namespace RS {
         static constexpr T min() noexcept { return 0; }
         static constexpr T max() noexcept { return ~ T(0); }
     private:
-        std::function<T()> engine_;
+        std::function<T()> engine_ = min;
     };
 
-    using GenRng = GenericEngine<uint32_t>;
+    using GenRng32 = GenericEngine<uint32_t>;
     using GenRng64 = GenericEngine<uint64_t>;
 
     // Basic random distributions

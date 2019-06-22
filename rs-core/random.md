@@ -145,15 +145,15 @@ Algorithm         | Result      | State     | Seeds                  | Recommend
 `Xoshiro256ss`    | `uint64_t`  | 32 bytes  | 1, 2, or 4 `uint64_t`  | Best general purpose
 `Xoshiro`         | `uint64_t`  | 32 bytes  | 1, 2, or 4 `uint64_t`  | Synonym for `Xoshiro256ss`
 
-### Generic random number engines ###
+### Generic random number engine wrappers ###
 
-* `class` **`GenRng`**
-    * `using GenRng::`**`result_type`** `= uint32_t`
-    * `GenRng::`**`GenRng`**`() noexcept`
-    * `template <typename RNG> GenRng::`**`GenRng`**`(RNG& rng)`
-    * `uint32_t GenRng::`**`operator()`**`()`
-    * `static constexpr uint32_t GenRng::`**`min`**`() noexcept` _(min = 0)_
-    * `static constexpr uint32_t GenRng::`**`max`**`() noexcept` _(max = 2<sup>32</sup>-1)_
+* `class` **`GenRng32`**
+    * `using GenRng32::`**`result_type`** `= uint32_t`
+    * `GenRng32::`**`GenRng32`**`() noexcept`
+    * `template <typename RNG> GenRng32::`**`GenRng32`**`(RNG& rng)`
+    * `uint32_t GenRng32::`**`operator()`**`()`
+    * `static constexpr uint32_t GenRng32::`**`min`**`() noexcept` _(min = 0)_
+    * `static constexpr uint32_t GenRng32::`**`max`**`() noexcept` _(max = 2<sup>32</sup>-1)_
 * `class` **`GenRng64`**
     * `using GenRng64::`**`result_type`** `= uint64_t`
     * `GenRng64::`**`GenRng64`**`() noexcept`
@@ -163,13 +163,14 @@ Algorithm         | Result      | State     | Seeds                  | Recommend
     * `static constexpr uint64_t GenRng64::`**`max`**`() noexcept` _(max = 2<sup>64</sup>-1)_
 
 Wrapper function objects that call an arbitrary random number engine and
-return a know distribution. A single call to `GenRng[64]::operator()` may call
-the underlying RNG more than once. Calling `operator()` on a default
-constructed `GenRng[64]` will throw `std::bad_funcyion_call`.
+return a uniformly distributed value, from zero to 2<sup>32</sup>-1 or
+2<sup>64</sup>-1. A single call to `GenRng*::operator()` may call the
+underlying RNG more than once. A default constructed `GenRng*` will always
+return zero
 
-The `GenRng[64]` object holds a reference to the generator that was passed to
-the constructor, which is expected to remain valid. Behaviour is undefined if
-the underlying generator is destroyed while a `GenRng[64]` object still has a
+The `GenRng*` object holds a reference to the generator that was passed to the
+constructor, which is expected to remain valid. Behaviour is undefined if the
+underlying generator is destroyed while a `GenRng*` object still has a
 reference to it.
 
 ## Random distributions ##

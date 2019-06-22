@@ -568,11 +568,15 @@ void test_core_random_generic_rng() {
 
     static constexpr size_t iterations = 1'000'000;
 
+    GenRng32 gen32;
+    GenRng64 gen64;
     std::ranlux24 lux24(42);
     std::ranlux48 lux48(42);
+    auto u32 = ~ uint32_t(0);
+    auto u64 = ~ uint64_t(0);
 
-    GenRng gen32;
-    GenRng64 gen64;
+    TRY(u32 = gen32());  TEST_EQUAL(u32, 0u);
+    TRY(u64 = gen64());  TEST_EQUAL(u64, 0u);
 
     TRY(gen32 = lux24);  CHECK_RANDOM_GENERATOR(gen32, 0, max32, mean32, sd32);
     TRY(gen32 = lux48);  CHECK_RANDOM_GENERATOR(gen32, 0, max32, mean32, sd32);

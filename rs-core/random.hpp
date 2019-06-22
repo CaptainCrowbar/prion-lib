@@ -556,20 +556,20 @@ namespace RS {
     public:
         using result_type = bool;
         Bernoulli() = default;
-        explicit Bernoulli(Rat p) noexcept: prob_(std::clamp(p, Rat(0), Rat(1))) {}
+        explicit Bernoulli(Ratio p) noexcept: prob_(std::clamp(p, Ratio(0), Ratio(1))) {}
         template <typename RNG> bool operator()(RNG& rng) const { return random_integer(prob_.den())(rng) < prob_.num(); }
-        Rat prob() const noexcept { return prob_; }
+        Ratio prob() const noexcept { return prob_; }
     private:
-        Rat prob_ = {1,2};
+        Ratio prob_ = {1,2};
     };
 
     inline Bernoulli random_boolean() { return {}; }
-    inline Bernoulli random_boolean(Rat p) { return Bernoulli(p); }
-    inline Bernoulli random_boolean(int a, int b) { return Bernoulli(Rat(a, b)); }
+    inline Bernoulli random_boolean(Ratio p) { return Bernoulli(p); }
+    inline Bernoulli random_boolean(int a, int b) { return Bernoulli(Ratio(a, b)); }
 
     inline Bernoulli random_boolean(double p) {
         static constexpr int maxint = std::numeric_limits<int>::max();
-        Rat r;
+        Ratio r;
         if (p <= 0)
             r = 0;
         else if (p >= 1)

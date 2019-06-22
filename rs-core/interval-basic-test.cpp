@@ -42,6 +42,6 @@ void test_source_interval_basic_type_traits() {
 
     TEST_EQUAL(interval_category<float>, IC::continuous);
     TEST_EQUAL(interval_category<double>, IC::continuous);
-    TEST_EQUAL(interval_category<Rat>, IC::continuous);
+    TEST_EQUAL(interval_category<Ratio>, IC::continuous);
 
 }

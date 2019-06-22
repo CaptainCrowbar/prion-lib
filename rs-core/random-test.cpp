@@ -613,10 +613,10 @@ void test_core_random_basic_distributions() {
     { auto gen = [&] { return random_integer(42, 42)(rng); };                     CHECK_RANDOM_GENERATOR(gen, 42, 42, 42, 0); }
     { auto gen = [&] { return random_boolean()(rng); };                           CHECK_RANDOM_GENERATOR(gen, 0, 1, 0.5, 0.5); }
     { auto gen = [&] { return random_boolean(0.25)(rng); };                       CHECK_RANDOM_GENERATOR(gen, 0, 1, 0.25, 0.433013); }
-    { auto gen = [&] { return random_boolean(Rat(3, 4))(rng); };                  CHECK_RANDOM_GENERATOR(gen, 0, 1, 0.75, 0.433013); }
+    { auto gen = [&] { return random_boolean(Ratio(3, 4))(rng); };                  CHECK_RANDOM_GENERATOR(gen, 0, 1, 0.75, 0.433013); }
     { auto gen = [&] { return random_boolean(3, 4)(rng); };                       CHECK_RANDOM_GENERATOR(gen, 0, 1, 0.75, 0.433013); }
-    { auto gen = [&] { return random_binomial(Rat(3, 4), 10)(rng); };             CHECK_RANDOM_GENERATOR(gen, 0, 10, 7.5, 1.369306); }
-    { auto gen = [&] { return random_binomial(Rat(1, 4), 20)(rng); };             CHECK_RANDOM_GENERATOR(gen, 0, 20, 5, 1.936492); }
+    { auto gen = [&] { return random_binomial(Ratio(3, 4), 10)(rng); };             CHECK_RANDOM_GENERATOR(gen, 0, 10, 7.5, 1.369306); }
+    { auto gen = [&] { return random_binomial(Ratio(1, 4), 20)(rng); };             CHECK_RANDOM_GENERATOR(gen, 0, 20, 5, 1.936492); }
     { auto gen = [&] { return random_dice<int>()(rng); };                         CHECK_RANDOM_GENERATOR(gen, 1, 6, 3.5, 1.70783); }
     { auto gen = [&] { return random_dice(3)(rng); };                             CHECK_RANDOM_GENERATOR(gen, 3, 18, 10.5, 2.95804); }
     { auto gen = [&] { return random_dice(3, 10)(rng); };                         CHECK_RANDOM_GENERATOR(gen, 3, 30, 16.5, 4.97494); }
@@ -970,8 +970,8 @@ void test_core_random_uniform_integer_distribution_properties() {
 
     TEST_EQUAL(ri.min(), 1);
     TEST_EQUAL(ri.max(), 8);
-    TEST_EQUAL(ri.mean(), Rat(9,2));
-    TEST_EQUAL(ri.variance(), Rat(21,4));
+    TEST_EQUAL(ri.mean(), Ratio(9,2));
+    TEST_EQUAL(ri.variance(), Ratio(21,4));
     TEST_NEAR(ri.sd(), 2.291288);
 
     TEST_EQUAL(ri.pdf(0), 0);
@@ -1011,10 +1011,10 @@ void test_core_random_uniform_integer_distribution_properties() {
 
 void test_core_random_binomial_distribution_properties() {
 
-    auto bin = random_binomial(Rat(1,5), 4);
+    auto bin = random_binomial(Ratio(1,5), 4);
 
-    TEST_EQUAL(bin.mean(), Rat(4,5));
-    TEST_EQUAL(bin.variance(), Rat(16,25));
+    TEST_EQUAL(bin.mean(), Ratio(4,5));
+    TEST_EQUAL(bin.variance(), Ratio(16,25));
     TEST_NEAR(bin.sd(), 0.8);
     TEST_EQUAL(bin.pdf(-1), 0);
     TEST_NEAR(bin.pdf(0), 0.4096);
@@ -1044,8 +1044,8 @@ void test_core_random_dice_distribution_properties() {
 
     Dice<int> dice;
 
-    TEST_EQUAL(dice.mean(), Rat(7,2));
-    TEST_EQUAL(dice.variance(), Rat(35,12));
+    TEST_EQUAL(dice.mean(), Ratio(7,2));
+    TEST_EQUAL(dice.variance(), Ratio(35,12));
     TEST_NEAR(dice.sd(), 1.707825);
     TEST_EQUAL(dice.pdf(0), 0);
     TEST_NEAR(dice.pdf(1), 0.166667);
@@ -1075,7 +1075,7 @@ void test_core_random_dice_distribution_properties() {
     dice = random_dice(2, 6);
 
     TEST_EQUAL(dice.mean(), 7);
-    TEST_EQUAL(dice.variance(), Rat(35,6));
+    TEST_EQUAL(dice.variance(), Ratio(35,6));
     TEST_NEAR(dice.sd(), 2.415229);
     TEST_EQUAL(dice.pdf(1), 0);
     TEST_NEAR(dice.pdf(2), 0.027778);

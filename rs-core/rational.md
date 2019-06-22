@@ -19,14 +19,14 @@ lowest terms; the denominator will always be positive. If the underlying type
 is a fixed precision integer, results are unspecified if a calculation would
 overflow the integer type's range.
 
-* `using` **`Rat`** `= Rational<int>`
-* `using` **`Urat`** `= Rational<unsigned>`
-* `using` **`Rat16`** `= Rational<int16_t>`
-* `using` **`Rat32`** `= Rational<int32_t>`
-* `using` **`Rat64`** `= Rational<int64_t>`
-* `using` **`Urat16`** `= Rational<uint16_t>`
-* `using` **`Urat32`** `= Rational<uint32_t>`
-* `using` **`Urat64`** `= Rational<uint64_t>`
+* `using` **`Ratio`** `= Rational<int>`
+* `using` **`Uratio`** `= Rational<unsigned>`
+* `using` **`Ratio16`** `= Rational<int16_t>`
+* `using` **`Ratio32`** `= Rational<int32_t>`
+* `using` **`Ratio64`** `= Rational<int64_t>`
+* `using` **`Uratio16`** `= Rational<uint16_t>`
+* `using` **`Uratio32`** `= Rational<uint32_t>`
+* `using` **`Uratio64`** `= Rational<uint64_t>`
 
 Named instantiations.
 

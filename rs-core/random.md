@@ -248,11 +248,11 @@ A default constructed distribution always returns zero.
 * `class` **`Bernoulli`**
     * `using Bernoulli::`**`result_type`** `= bool`
     * `Bernoulli::`**`Bernoulli`**`() noexcept`
-    * `explicit Bernoulli::`**`Bernoulli`**`(Rat p) noexcept`
+    * `explicit Bernoulli::`**`Bernoulli`**`(Ratio p) noexcept`
     * `template <typename RNG> bool Bernoulli::`**`operator()`**`(RNG& rng) const`
-    * `Rat Bernoulli::`**`prob`**`() const noexcept`
+    * `Ratio Bernoulli::`**`prob`**`() const noexcept`
 * `Bernoulli` **`random_boolean`**`()`
-* `Bernoulli` **`random_boolean`**`(Rat p)`
+* `Bernoulli` **`random_boolean`**`(Ratio p)`
 * `Bernoulli` **`random_boolean`**`(int a, int b)`
 * `Bernoulli` **`random_boolean`**`(double p)`
 

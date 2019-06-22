@@ -351,15 +351,15 @@ void test_core_serial_optional() {
 
 void test_core_serial_rational() {
 
-    static const Rat y = {};
-    static const Rat z = {16, 10};
+    static const Ratio y = {};
+    static const Ratio z = {16, 10};
 
     json j;
-    Rat x;
+    Ratio x;
 
-    TRY(j = y);   TRY(x = j.get<Rat>());  TEST_EQUAL(x, y);   TEST_EQUAL(x.num(), 0);   TEST_EQUAL(x.den(), 1);
-    TRY(j = z);   TRY(x = j.get<Rat>());  TEST_EQUAL(x, z);   TEST_EQUAL(x.num(), 8);   TEST_EQUAL(x.den(), 5);
-    TRY(j = 42);  TRY(x = j.get<Rat>());  TEST_EQUAL(x, 42);  TEST_EQUAL(x.num(), 42);  TEST_EQUAL(x.den(), 1);
+    TRY(j = y);   TRY(x = j.get<Ratio>());  TEST_EQUAL(x, y);   TEST_EQUAL(x.num(), 0);   TEST_EQUAL(x.den(), 1);
+    TRY(j = z);   TRY(x = j.get<Ratio>());  TEST_EQUAL(x, z);   TEST_EQUAL(x.num(), 8);   TEST_EQUAL(x.den(), 5);
+    TRY(j = 42);  TRY(x = j.get<Ratio>());  TEST_EQUAL(x, 42);  TEST_EQUAL(x.num(), 42);  TEST_EQUAL(x.den(), 1);
 
 }
 

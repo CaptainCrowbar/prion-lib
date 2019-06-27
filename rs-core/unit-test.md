@@ -122,12 +122,17 @@ an exception is thrown.
     * `void Accountable::`**`set`**`(const T& t)` _[not defined if T is void]_
     * `static int Accountable::`**`count`**`() noexcept`
     * `static void Accountable::`**`reset`**`() noexcept`
+* `bool` **`operator==`**`(const Accountable& lhs, const Accountable& rhs)` _[not defined if T is void]_
+* `bool` **`operator!=`**`(const Accountable& lhs, const Accountable& rhs)` _[not defined if T is void]_
+* `std::ostream&` **`operator<<`**`(std::ostream& out, const Accountable& a)` _[not defined if T is void]_
 
 A class that keeps track of how many instances exist. This is useful for
 testing for object leaks, double destruction, and similar object accounting
 errors. A separate count is kept for each value type `T`; `count()` returns
 the current count, `reset()` sets it to zero (to simplify continued testing
-even if a leak is detected). Object counting is thread safe. `T` must be
-default constructible and movable, and copyable if `Copy` is true; the value
-of a moved-from object is reset to the default value. `T` can be `void` if no
-embedded value is required.
+even if a leak is detected). Object counting is thread safe.
+
+`T` must be default constructible and movable, and copyable if `Copy` is true;
+the value of a moved-from object is reset to the default value. The equality
+and output operators call the corresponding operators on `T`. `T` can be
+`void` if no embedded value is required.

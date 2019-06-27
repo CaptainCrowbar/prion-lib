@@ -153,13 +153,17 @@ an exception is thrown.</p>
 <li><code>static void Accountable::</code><strong><code>reset</code></strong><code>() noexcept</code></li>
 </ul>
 </li>
+<li><code>bool</code> <strong><code>operator==</code></strong><code>(const Accountable&amp; lhs, const Accountable&amp; rhs)</code> <em>[not defined if T is void]</em></li>
+<li><code>bool</code> <strong><code>operator!=</code></strong><code>(const Accountable&amp; lhs, const Accountable&amp; rhs)</code> <em>[not defined if T is void]</em></li>
+<li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const Accountable&amp; a)</code> <em>[not defined if T is void]</em></li>
 </ul>
 <p>A class that keeps track of how many instances exist. This is useful for
 testing for object leaks, double destruction, and similar object accounting
 errors. A separate count is kept for each value type <code>T</code>; <code>count()</code> returns
 the current count, <code>reset()</code> sets it to zero (to simplify continued testing
-even if a leak is detected). Object counting is thread safe. <code>T</code> must be
-default constructible and movable, and copyable if <code>Copy</code> is true; the value
-of a moved-from object is reset to the default value. <code>T</code> can be <code>void</code> if no
-embedded value is required.</p></body>
+even if a leak is detected). Object counting is thread safe.</p>
+<p><code>T</code> must be default constructible and movable, and copyable if <code>Copy</code> is true;
+the value of a moved-from object is reset to the default value. The equality
+and output operators call the corresponding operators on <code>T</code>. <code>T</code> can be
+<code>void</code> if no embedded value is required.</p></body>
 </html>

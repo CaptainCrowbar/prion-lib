@@ -303,7 +303,7 @@ namespace RS {
         size_t pos = i - begin();
         reserve(num + 1);
         if (pos < num) {
-            new (data() + num) T(std::move(cend()[-1]));
+            new (data() + num) T(std::move(end()[-1]));
             std::move_backward(begin() + pos, end() - 1, end());
             begin()[pos].~T();
         }
@@ -317,7 +317,7 @@ namespace RS {
         size_t pos = i - begin();
         reserve(num + 1);
         if (pos < num) {
-            new (data() + num) T(std::move(cend()[-1]));
+            new (data() + num) T(std::move(end()[-1]));
             std::move_backward(begin() + pos, end() - 1, end());
             begin()[pos] = t;
         } else {
@@ -332,7 +332,7 @@ namespace RS {
         size_t pos = i - begin();
         reserve(num + 1);
         if (pos < num) {
-            new (data() + num) T(std::move(cend()[-1]));
+            new (data() + num) T(std::move(end()[-1]));
             std::move_backward(begin() + pos, end() - 1, end());
             begin()[pos] = std::move(t);
         } else {

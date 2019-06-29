@@ -389,8 +389,8 @@ namespace RS {
 
     template <typename T, size_t N>
     void CompactArray<T, N>::erase(const_iterator i) noexcept {
-        auto mut = begin() + (i - begin());
-        std::move(i + 1, cend(), mut);
+        auto x = i - cbegin();
+        std::move(begin() + x + 1, end(), begin() + x);
         end()[-1].~T();
         --num;
     }
@@ -399,8 +399,9 @@ namespace RS {
     void CompactArray<T, N>::erase(const_iterator i, const_iterator j) noexcept {
         using namespace RS_Detail;
         size_t n_erase = j - i;
-        auto mut = begin() + (i - begin());
-        std::move(j, cend(), mut);
+        auto x = i - cbegin();
+        auto y = j - cbegin();
+        std::move(begin() + y, end(), begin() + x);
         std::destroy(end() - n_erase, end());
         num -= n_erase;
     }

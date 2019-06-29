@@ -114,6 +114,8 @@ void test_core_compact_array_construction() {
     TEST_EQUAL(a[4], 5);
     TRY(s = to_str(a));
     TEST_EQUAL(s, "[1,2,3,4,5]");
+    TEST_EQUAL(a.front(), 1);
+    TEST_EQUAL(a.back(), 5);
 
     TRY((a = ICA{1,2,3,4,5,6,7,8,9,10}));
     TEST(! a.empty());

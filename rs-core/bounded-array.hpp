@@ -67,6 +67,10 @@ namespace RS {
         T* data() noexcept { return reinterpret_cast<T*>(mem); }
         const T* data() const noexcept { return cdata(); }
         const T* cdata() const noexcept { return reinterpret_cast<const T*>(mem); }
+        T& front() noexcept { return *data(); }
+        const T& front() const noexcept { return *cdata(); }
+        T& back() noexcept { return data()[num - 1]; }
+        const T& back() const noexcept { return cdata()[num - 1]; }
         size_t capacity() const noexcept { return N; }
         void clear() noexcept;
         bool empty() const noexcept { return num == 0; }

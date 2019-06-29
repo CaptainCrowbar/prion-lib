@@ -93,6 +93,8 @@ void test_core_bounded_array_construction() {
     TEST_EQUAL(a[0], 1);
     TEST_EQUAL(a[4], 5);
     TEST_EQUAL(to_str(a), "[1,2,3,4,5]");
+    TEST_EQUAL(a.front(), 1);
+    TEST_EQUAL(a.back(), 5);
 
     TRY((a = IBA{1,2,3,4,5,6,7,8,9,10}));
     TEST(! a.empty());

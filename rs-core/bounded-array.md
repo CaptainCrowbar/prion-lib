@@ -72,6 +72,10 @@ Life cycle functions.
 * `T* BoundedArray::`**`data`**`() noexcept`
 * `const T* BoundedArray::`**`data`**`() const noexcept`
 * `const T* BoundedArray::`**`cdata`**`() const noexcept`
+* `T& BoundedArray::`**`front`**`() noexcept`
+* `const T& BoundedArray::`**`front`**`() const noexcept`
+* `T& BoundedArray::`**`back`**`() noexcept`
+* `const T& BoundedArray::`**`back`**`() const noexcept`
 
 Element access functions.
 

@@ -23,7 +23,7 @@ namespace RS {
         using integer_type = T;
         Rational() = default;
         template <typename T2> Rational(T2 t): numer(t), denom(T(1)) {}
-        template <typename T2, typename T3> Rational(T2 n, T3 d): numer(n), denom(d) { reduce(); }
+        template <typename T2, typename T3> Rational(T2 n, T3 d);
         template <typename T2> Rational& operator=(T2 t) { numer = t; denom = T(1); return *this; }
         explicit operator bool() const noexcept { return numer != T(0); }
         bool operator!() const noexcept { return numer == T(0); }
@@ -68,6 +68,15 @@ namespace RS {
     using Uratio64 = Rational<uint64_t>;
 
     template <typename T>
+    template <typename T2, typename T3>
+    Rational<T>::Rational(T2 n, T3 d):
+    numer(n), denom(d) {
+        if (d == T3(0))
+            throw std::domain_error("Division by zero");
+        reduce();
+    }
+
+    template <typename T>
     Rational<T> Rational<T>::operator-() const {
         auto r = *this;
         r.numer = - r.numer;
@@ -103,6 +112,8 @@ namespace RS {
 
     template <typename T>
     Rational<T> Rational<T>::reciprocal() const {
+        if (numer == T(0))
+            throw std::domain_error("Division by zero");
         auto r = *this;
         std::swap(r.numer, r.denom);
         return r;
@@ -224,6 +235,8 @@ namespace RS {
     template <typename T1, typename T2>
     auto operator/(const Rational<T1>& lhs, const Rational<T2>& rhs) {
         using RT = std::common_type_t<T1, T2>;
+        if (rhs.num() == T2(0))
+            throw std::domain_error("Division by zero");
         RT num = lhs.num() * rhs.den();
         RT den = lhs.den() * rhs.num();
         Rational<RT> r = {num, den};
@@ -260,6 +273,8 @@ namespace RS {
     template <typename T1, typename T2>
     auto operator/(const Rational<T1>& lhs, const T2& rhs) {
         using RT = std::common_type_t<T1, T2>;
+        if (rhs == T2(0))
+            throw std::domain_error("Division by zero");
         RT num = lhs.num();
         RT den = lhs.den() * rhs;
         Rational<RT> r = {num, den};
@@ -296,6 +311,8 @@ namespace RS {
     template <typename T1, typename T2>
     auto operator/(const T1& lhs, const Rational<T2>& rhs) {
         using RT = std::common_type_t<T1, T2>;
+        if (rhs.num() == T2(0))
+            throw std::domain_error("Division by zero");
         RT num = lhs * rhs.den();
         RT den = rhs.num();
         Rational<RT> r = {num, den};

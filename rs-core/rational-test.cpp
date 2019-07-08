@@ -53,6 +53,8 @@ void test_core_rational_basics() {
     TEST_EQUAL(r.simple(), "-7/9");
     TEST_EQUAL(to_str(r), "-7/9");
 
+    TEST_THROW(r = Ratio(1, 0), std::domain_error);
+
 }
 
 void test_core_rational_reduction() {
@@ -108,6 +110,14 @@ void test_core_rational_arithmetic() {
     TRY(t = 6 * s);  TEST_EQUAL(t.num(), 14);   TEST_EQUAL(t.den(), 3);
     TRY(t = s / 6);  TEST_EQUAL(t.num(), 7);    TEST_EQUAL(t.den(), 54);
     TRY(t = 6 / s);  TEST_EQUAL(t.num(), 54);   TEST_EQUAL(t.den(), 7);
+
+    TRY(s = 0);
+    TEST_THROW(t = r / 0, std::domain_error);
+    TEST_THROW(t = r / s, std::domain_error);
+
+    TRY(t = r.reciprocal());  TEST_EQUAL(t.num(), 3);  TEST_EQUAL(t.den(), 5);
+
+    TEST_THROW(t = s.reciprocal(), std::domain_error);
 
 }
 

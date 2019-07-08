@@ -49,6 +49,7 @@
     * [`"rs-core/prime.hpp"`](prime.html) - Prime numbers
     * [`"rs-core/random.hpp"`](random.html) - Random numbers
     * [`"rs-core/rational.hpp"`](rational.html) -- Rational numbers
+    * [`"rs-core/rpg-dice.hpp"`](rpg-dice.html) -- RPG-style dice
     * [`"rs-core/statistics.hpp"`](statistics.html) -- Statistics
     * [`"rs-core/vector.hpp"`](vector.html) - Vectors, matrices, and quaternions
 * _Text processing_

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>RPG-Style Dice</title>
+<link type="text/css" rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<h1 id="rpg-style-dice">RPG-Style Dice</h1>
+<p>By Ross Smith</p>
+<ul>
+<li><code>#include "rs-core/rpg-dice.hpp"</code></li>
+</ul>
+<h2 id="contents">Contents</h2>
+<div class="toc">
+<ul>
+<li><a href="#rpg-style-dice">RPG-Style Dice</a><ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#class-rpgdice">Class RpgDice</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="class-rpgdice">Class RpgDice</h2>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename T, typename S = double&gt; class</code> <strong><code>RpgDice</code></strong></li>
+<li><code>using</code> <strong><code>IntDice</code></strong> <code>= RpgDice&lt;int&gt;</code></li>
+</ul>
+<p>The <code>RpgDice</code> class is a random number distribution that emulates rolling
+multiple dice of different kinds, and applying some limited arithmetic to the
+results. The first template argument type <code>T</code> must be an integer type; the
+scalar type <code>S</code> must be a floating point type. A set of dice can be specified
+either by building it up from instances of the <code>RpgDice</code> class, or by parsing
+a string in a conventional format.</p>
+<p>Examples:</p>
+<pre><code>// These both produce the same distribution
+auto dice1 = IntDice(2, 10) * 5 + IntDice(3, 6) + 10;
+auto dice2 = IntDice("2d10x5 + 3d6 + 10");
+</code></pre>
+</div>
+<div class="defns">
+<ul>
+<li><code>using RpgDice::</code><strong><code>integer_type</code></strong> <code>= T</code></li>
+<li><code>using RpgDice::</code><strong><code>rational_type</code></strong> <code>= Rational&lt;T&gt;</code></li>
+<li><code>using RpgDice::</code><strong><code>scalar_type</code></strong> <code>= S</code></li>
+</ul>
+<p>Types used in the class. <code>rational_type</code> is the output type of the generator.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>RpgDice::</code><strong><code>RpgDice</code></strong><code>() noexcept</code></li>
+</ul>
+<p>Creates a null dice roller, which always yields zero.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>explicit RpgDice::</code><strong><code>RpgDice</code></strong><code>(T n, T faces = 6, const Rational&lt;T&gt;&amp; factor = 1)</code></li>
+</ul>
+<p>Creates an object that rolls <code>n</code> dice, each numbered from 1 to <code>faces</code>,
+optionally multiplying the result by <code>factor</code>. This will produce a null
+(always zero) dice roller if any of the arguments is zero; it will throw
+<code>std::invalid_argument</code> if <code>n</code> or <code>faces</code> is negative.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>explicit RpgDice::</code><strong><code>RpgDice</code></strong><code>(Uview str)</code></li>
+</ul>
+<p>Creates a dice roller by parsing the string representation.</p>
+<p>A dice representation consists of any number of dice groups or numeric
+modifiers. A dice group can consist of an optional number of dice (1 by
+default), the letter <code>"D"</code> (case insensitive), and an optional number of faces
+(6 by default). For example, <code>"3d6"</code> means "roll three six-sided dice and add
+the results" (and could also be written <code>"3D"</code>).</p>
+<p>A group can be preceded or followed by an integer multiplier, delimited by
+either a star or the letter <code>"X"</code> (case insensitive), and followed by a
+divisor, delimited by a slash. For example, <code>"3d6x2/3"</code> means "roll 3d6 and
+multiply the result by two thirds". The returned value always keeps fractions
+intact, it does not round to an integer.</p>
+<p>The string can also add or subtract constant integers or fractions. For
+example, <code>"3d6+10"</code> means "roll 3d6 and add 10" (the modifier does not have to
+be at the end; <code>"10+3d6"</code> is equally valid).</p>
+<p>White space is not significant. More complicated arithmetic, such as anything
+that would require parentheses, is not supported. This constructor will throw
+<code>std::invalid_argument</code> if the expression is not a valid dice specification
+according to the above rules, or <code>std::domain_error</code> if it requires division
+by zero. Behaviour is undefined if any of the numbers in the expression, or
+any intermediate value in the arithmetic required to evaluate it, is out of
+range for <code>T</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>RpgDice::</code><strong><code>RpgDice</code></strong><code>(const RpgDice&amp; d)</code></li>
+<li><code>RpgDice::</code><strong><code>RpgDice</code></strong><code>(RpgDice&amp;&amp; d) noexcept</code></li>
+<li><code>RpgDice::</code><strong><code>~RpgDice</code></strong><code>() noexcept</code></li>
+<li><code>RpgDice&amp; RpgDice::</code><strong><code>operator=</code></strong><code>(const RpgDice&amp; d)</code></li>
+<li><code>RpgDice&amp; RpgDice::</code><strong><code>operator=</code></strong><code>(RpgDice&amp;&amp; d) noexcept</code></li>
+</ul>
+<p>Other life cycle functions.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename RNG&gt; Rational&lt;T&gt; RpgDice::</code><strong><code>operator()</code></strong><code>(RNG&amp; rng)</code></li>
+</ul>
+<p>The main generator function. The <code>RNG</code> class can be any standard conforming
+random number engine.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>RpgDice RpgDice::</code><strong><code>operator+</code></strong><code>() const</code></li>
+<li><code>RpgDice RpgDice::</code><strong><code>operator-</code></strong><code>() const</code></li>
+<li><code>RpgDice&amp; RpgDice::</code><strong><code>operator+=</code></strong><code>(const RpgDice&amp; rhs)</code></li>
+<li><code>RpgDice&amp; RpgDice::</code><strong><code>operator+=</code></strong><code>(const Rational&lt;T&gt;&amp; rhs)</code></li>
+<li><code>RpgDice&amp; RpgDice::</code><strong><code>operator+=</code></strong><code>(T rhs)</code></li>
+<li><code>RpgDice&amp; RpgDice::</code><strong><code>operator-=</code></strong><code>(const RpgDice&amp; rhs)</code></li>
+<li><code>RpgDice&amp; RpgDice::</code><strong><code>operator-=</code></strong><code>(const Rational&lt;T&gt;&amp; rhs)</code></li>
+<li><code>RpgDice&amp; RpgDice::</code><strong><code>operator-=</code></strong><code>(T rhs)</code></li>
+<li><code>RpgDice&amp; RpgDice::</code><strong><code>operator*=</code></strong><code>(const Rational&lt;T&gt;&amp; rhs)</code></li>
+<li><code>RpgDice&amp; RpgDice::</code><strong><code>operator*=</code></strong><code>(T rhs)</code></li>
+<li><code>RpgDice&amp; RpgDice::</code><strong><code>operator/=</code></strong><code>(const Rational&lt;T&gt;&amp; rhs)</code></li>
+<li><code>RpgDice&amp; RpgDice::</code><strong><code>operator/=</code></strong><code>(T rhs)</code></li>
+<li><code>RpgDice</code> <strong><code>operator+</code></strong><code>(const RpgDice&amp; lhs, const RpgDice&amp; rhs)</code></li>
+<li><code>RpgDice</code> <strong><code>operator+</code></strong><code>(const RpgDice&amp; lhs, const Rational&lt;T&gt;&amp; rhs)</code></li>
+<li><code>RpgDice</code> <strong><code>operator+</code></strong><code>(const RpgDice&amp; lhs, T rhs)</code></li>
+<li><code>RpgDice</code> <strong><code>operator+</code></strong><code>(const Rational&lt;T&gt;&amp; lhs, const RpgDice&amp; rhs)</code></li>
+<li><code>RpgDice</code> <strong><code>operator+</code></strong><code>(T lhs, const RpgDice&amp; rhs)</code></li>
+<li><code>RpgDice</code> <strong><code>operator-</code></strong><code>(const RpgDice&amp; lhs, const RpgDice&amp; rhs)</code></li>
+<li><code>RpgDice</code> <strong><code>operator-</code></strong><code>(const RpgDice&amp; lhs, const Rational&lt;T&gt;&amp; rhs)</code></li>
+<li><code>RpgDice</code> <strong><code>operator-</code></strong><code>(const RpgDice&amp; lhs, T rhs)</code></li>
+<li><code>RpgDice</code> <strong><code>operator-</code></strong><code>(const Rational&lt;T&gt;&amp; lhs, const RpgDice&amp; rhs)</code></li>
+<li><code>RpgDice</code> <strong><code>operator-</code></strong><code>(T lhs, const RpgDice&amp; rhs)</code></li>
+<li><code>RpgDice</code> <strong><code>operator*</code></strong><code>(const RpgDice&amp; lhs, const Rational&lt;T&gt;&amp; rhs)</code></li>
+<li><code>RpgDice</code> <strong><code>operator*</code></strong><code>(const RpgDice&amp; lhs, T rhs)</code></li>
+<li><code>RpgDice</code> <strong><code>operator*</code></strong><code>(const Rational&lt;T&gt;&amp; lhs, const RpgDice&amp; rhs)</code></li>
+<li><code>RpgDice</code> <strong><code>operator*</code></strong><code>(T lhs, const RpgDice&amp; rhs)</code></li>
+<li><code>RpgDice</code> <strong><code>operator/</code></strong><code>(const RpgDice&amp; lhs, const Rational&lt;T&gt;&amp; rhs)</code></li>
+<li><code>RpgDice</code> <strong><code>operator/</code></strong><code>(const RpgDice&amp; lhs, T rhs)</code></li>
+</ul>
+<p>Operations that modify or combine two sets of dice, or a set of dice and a
+numeric factor. Addition and subtraction simply combine groups of dice
+together, in the same way as the plus and minus operators in the string
+format. Multiplication or division by a rational number multiplies or divides
+the result of future rolls by that number.</p>
+<p>The division operators will throw <code>std::domain_error</code> if the RHS is zero.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Rational&lt;T&gt; RpgDice::</code><strong><code>mean</code></strong><code>() const noexcept</code></li>
+<li><code>Rational&lt;T&gt; RpgDice::</code><strong><code>variance</code></strong><code>() const noexcept</code></li>
+<li><code>S RpgDice::</code><strong><code>sd</code></strong><code>() const noexcept</code></li>
+<li><code>Rational&lt;T&gt; RpgDice::</code><strong><code>min</code></strong><code>() const noexcept</code></li>
+<li><code>Rational&lt;T&gt; RpgDice::</code><strong><code>max</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>These return statistical properties of the dice roll results.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Ustring RpgDice::</code><strong><code>str</code></strong><code>() const</code></li>
+<li><code>Ustring</code> <strong><code>to_str</code></strong><code>(const RpgDice&amp; d)</code></li>
+<li><code>std::ostream&amp;</code> <strong><code>operator&lt;&lt;</code></strong><code>(std::ostream&amp; out, const RpgDice&amp; d)</code></li>
+</ul>
+<p>These format the collection of dice stored in the object, in the same format
+as described for the constructor. Because the string is being reconstructed
+from the stored properties of the distribution, the result may not exactly
+match the original string supplied to the constructor, but will be
+functionally equivalent.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>IntDice</code> <strong><code>operator""_d4</code></strong><code>(unsigned long long n)</code></li>
+<li><code>IntDice</code> <strong><code>operator""_d6</code></strong><code>(unsigned long long n)</code></li>
+<li><code>IntDice</code> <strong><code>operator""_d8</code></strong><code>(unsigned long long n)</code></li>
+<li><code>IntDice</code> <strong><code>operator""_d10</code></strong><code>(unsigned long long n)</code></li>
+<li><code>IntDice</code> <strong><code>operator""_d12</code></strong><code>(unsigned long long n)</code></li>
+<li><code>IntDice</code> <strong><code>operator""_d20</code></strong><code>(unsigned long long n)</code></li>
+<li><code>IntDice</code> <strong><code>operator""_d100</code></strong><code>(unsigned long long n)</code></li>
+</ul>
+<p>Literals for some commonly used dice. For example, <code>3_d6</code> is equivalent to
+<code>IntDice(3,6)</code> or <code>IntDice("3d6")</code>.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>IntDice</code> <strong><code>operator""_dice</code></strong><code>(const char* p, size_t n)</code></li>
+</ul>
+<p>Literal equivalent of the constructor from a string. For example, <code>"3d6"_dice</code>
+is equivalent to <code>IntDice(3,6)</code> or <code>IntDice("3d6")</code>.</p></body>
+</html>

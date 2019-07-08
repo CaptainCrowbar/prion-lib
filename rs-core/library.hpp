@@ -45,6 +45,7 @@
 #include "rs-core/range.hpp"
 #include "rs-core/rational.hpp"
 #include "rs-core/ring-buffer.hpp"
+#include "rs-core/rpg-dice.hpp"
 #include "rs-core/scale-map.hpp"
 #include "rs-core/serial.hpp"
 #include "rs-core/signal.hpp"

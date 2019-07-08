@@ -408,6 +408,11 @@ extern void test_core_rational_numeric_limits();
 extern void test_core_ring_buffer_basics();
 extern void test_core_ring_buffer_accounting_with_copy();
 extern void test_core_ring_buffer_accounting_with_move();
+extern void test_core_rpg_dice_arithmetic();
+extern void test_core_rpg_dice_statistics();
+extern void test_core_rpg_dice_parser();
+extern void test_core_rpg_dice_generation();
+extern void test_core_rpg_dice_literals();
 extern void test_core_scale_map_class();
 extern void test_core_serial_standard_types();
 extern void test_core_serial_std_chrono();
@@ -896,6 +901,11 @@ int main() {
         { "core/ring-buffer/basics", test_core_ring_buffer_basics },
         { "core/ring-buffer/accounting-with-copy", test_core_ring_buffer_accounting_with_copy },
         { "core/ring-buffer/accounting-with-move", test_core_ring_buffer_accounting_with_move },
+        { "core/rpg-dice/arithmetic", test_core_rpg_dice_arithmetic },
+        { "core/rpg-dice/statistics", test_core_rpg_dice_statistics },
+        { "core/rpg-dice/parser", test_core_rpg_dice_parser },
+        { "core/rpg-dice/generation", test_core_rpg_dice_generation },
+        { "core/rpg-dice/literals", test_core_rpg_dice_literals },
         { "core/scale-map/class", test_core_scale_map_class },
         { "core/serial/standard-types", test_core_serial_standard_types },
         { "core/serial/std-chrono", test_core_serial_std_chrono },

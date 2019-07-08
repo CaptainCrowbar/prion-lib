@@ -17,11 +17,7 @@
 <li><a href="#message-dispatch">Message Dispatch</a><ul>
 <li><a href="#contents">Contents</a></li>
 <li><a href="#class-hierarchy">Class hierarchy</a></li>
-<li><a href="#channel-base-class">Channel base class</a><ul>
-<li><a href="#channel-instance-methods">Channel instance methods</a></li>
-<li><a href="#global-dispatch-methods">Global dispatch methods</a></li>
-</ul>
-</li>
+<li><a href="#channel-base-class">Channel base class</a></li>
 <li><a href="#intermediate-base-classes">Intermediate base classes</a><ul>
 <li><a href="#class-eventchannel">Class EventChannel</a></li>
 <li><a href="#class-messagechannel">Class MessageChannel</a></li>
@@ -38,6 +34,7 @@
 <li><a href="#class-bufferchannel">Class BufferChannel</a></li>
 </ul>
 </li>
+<li><a href="#dispatch-controller-class">Dispatch controller class</a></li>
 </ul>
 </li>
 </ul>
@@ -65,21 +62,13 @@
 </li>
 </ul>
 </li>
+<li><code>class</code> <strong><code>Dispatch</code></strong></li>
 </ul>
 </div>
 <h2 id="channel-base-class">Channel base class</h2>
 <div class="defns">
 <ul>
-<li><code>class</code> <strong><code>Channel</code></strong><code>: public Wait</code></li>
-</ul>
-<p>The base class for all readable message channels. All concrete channel classes
-must derive from one of the three intermediate classes below, not directly
-from Channel. Functions for handling global message dispatch are static
-methods of this class.</p>
-</div>
-<h3 id="channel-instance-methods">Channel instance methods</h3>
-<div class="defns">
-<ul>
+<li><code>class</code> <strong><code>Channel</code></strong><code>: public Wait</code><ul>
 <li><code>virtual Channel::</code><strong><code>~Channel</code></strong><code>() noexcept</code></li>
 <li><code>Channel::</code><strong><code>Channel</code></strong><code>(Channel&amp;&amp; c) noexcept</code></li>
 <li><code>Channel&amp; Channel::</code><strong><code>operator=</code></strong><code>(Channel&amp;&amp; c) noexcept</code></li>
@@ -87,6 +76,12 @@ methods of this class.</p>
 <li><code>virtual bool Channel::</code><strong><code>is_closed</code></strong><code>() const noexcept = 0</code></li>
 <li><code>virtual bool Channel::</code><strong><code>is_async</code></strong><code>() const noexcept</code> <em>= true</em></li>
 </ul>
+</li>
+</ul>
+<p>The base class for all readable message channels. All concrete channel classes
+must derive from one of the three intermediate classes below, not directly
+from Channel. Functions for handling global message dispatch are static
+methods of this class.</p>
 <p>Derived classes need to implement at least <code>close()</code>, <code>is_closed()</code>, and one
 of the <code>do_wait_*()</code> functions from <a href="time.html"><code>Wait</code></a>; <code>close()</code> must be
 async safe and idempotent.</p>
@@ -103,82 +98,12 @@ of thread.</p>
 needs them, but derived channel types are usually not movable. Channel classes
 are never copyable.</p>
 </div>
-<h3 id="global-dispatch-methods">Global dispatch methods</h3>
-<div class="defns">
-<ul>
-<li><code>enum class Channel::</code><strong><code>mode</code></strong><ul>
-<li><code>Channel::mode::</code><strong><code>async</code></strong></li>
-<li><code>Channel::mode::</code><strong><code>sync</code></strong></li>
-</ul>
-</li>
-<li><code>enum class Channel::</code><strong><code>reason</code></strong><ul>
-<li><code>Channel::reason::</code><strong><code>closed</code></strong></li>
-<li><code>Channel::reason::</code><strong><code>empty</code></strong></li>
-<li><code>Channel::reason::</code><strong><code>error</code></strong></li>
-</ul>
-</li>
-<li><code>struct Channel::</code><strong><code>dispatch_result</code></strong><ul>
-<li><code>Channel* dispatch_result::</code><strong><code>channel</code></strong></li>
-<li><code>std::exception_ptr dispatch_result::</code><strong><code>error</code></strong></li>
-<li><code>Channel::reason dispatch_result::</code><strong><code>why</code></strong></li>
-</ul>
-</li>
-<li><code>void Channel::</code><strong><code>drop</code></strong><code>() noexcept</code></li>
-<li><code>static bool Channel::</code><strong><code>empty_dispatch</code></strong><code>() noexcept</code></li>
-<li><code>static dispatch_result Channel::</code><strong><code>run_dispatch</code></strong><code>() noexcept</code></li>
-<li><code>static void Channel::</code><strong><code>stop_dispatch</code></strong><code>() noexcept</code></li>
-</ul>
-<p>In addition to the functions listed above, each of the intermediate base
-classes below has a <code>dispatch()</code> function that takes a callback function and a
-dispatch mode flag (the callback function type varies with the channel type,
-so there is no common virtual dispatch function in the <code>Channel</code> class). Add
-channels and their associated callback functions to the queue using their
-respective <code>dispatch()</code> functions, and then call <code>run_dispatch()</code> to start the
-dispatch loop. Behaviour is undefined if <code>run_dispatch()</code> is called from
-multiple threads at the same time; normally it should only be called from the
-main thread.</p>
-<p>Dispatch functions must only be called synchronously (i.e. not from inside an
-asynchronous callback function). Channels can safely be destroyed while in a
-dispatch set (the dispatch queue will notice this and silently drop the
-channel), provided this is done synchronously.</p>
-<p>The <code>dispatch()</code> functions start a synchronous or asynchronous task reading
-from the channel. Asynchronous handlers are started immediately in a separate
-thread; synchronous handlers will be executed when <code>run_dispatch()</code> is called.
-A <code>dispatch()</code> function will throw <code>std::invalid_argument</code> if any of these
-conditions is true:</p>
-<ul>
-<li>The callback function is null.</li>
-<li>The mode flag is not one of the <code>Channel::mode</code> enumeration values.</li>
-<li>The channel is synchronous (<code>Channel::is_async()</code> is false), but the mode is <code>Channel::mode::async</code>.</li>
-<li>The same channel is added more than once, and the channel is not shareable (<code>Channel::is_shared()</code> is false).</li>
-</ul>
-<p>The <code>drop()</code> function removes a channel from the dispatch set (without closing
-it). If an event from this channel is currently being handled asynchronously,
-<code>drop()</code> will block until it finishes. Behaviour is undefined if <code>drop()</code> is
-called from inside that channel's callback.</p>
-<p>The <code>run_dispatch()</code> function runs until a channel is closed or a callback
-function throws an exception; it returns immediately if the dispatch set is
-empty. Asynchronous message handlers will continue to run in other threads
-regardless of whether the dispatch thread is currently calling
-<code>run_dispatch()</code>.</p>
-<p>The <code>dispatch_result</code> structure returned from <code>run_dispatch()</code> indicates why
-the dispatch loop was stopped:</p>
-<ul>
-<li><code>Channel::reason::</code><strong><code>closed</code></strong> - A channel was closed; <code>channel</code> points to the closed channel, <code>error</code> is null.</li>
-<li><code>Channel::reason::</code><strong><code>empty</code></strong> - The dispatch set was empty when <code>run_dispatch()</code> was called; <code>channel</code> and <code>error</code> are null.</li>
-<li><code>Channel::reason::</code><strong><code>error</code></strong> - A message handler callback threw an exception; <code>channel</code> indicates which channel, <code>error</code> holds the exception.</li>
-</ul>
-<p>The <code>empty_dispatch()</code> function returns true if the dispatch list is currently
-empty. The <code>stop_dispatch()</code> function closes all channels and waits for any
-currently running event handlers to finish.</p>
-</div>
 <h2 id="intermediate-base-classes">Intermediate base classes</h2>
 <h3 id="class-eventchannel">Class EventChannel</h3>
 <div class="defns">
 <ul>
 <li><code>class</code> <strong><code>EventChannel</code></strong><code>: public Channel</code><ul>
 <li><code>using EventChannel::</code><strong><code>callback</code></strong> <code>= std::function&lt;void()&gt;</code></li>
-<li><code>void EventChannel::</code><strong><code>dispatch</code></strong><code>(mode m, callback f)</code></li>
 <li><code>protected EventChannel::</code><strong><code>EventChannel</code></strong><code>()</code></li>
 </ul>
 </li>
@@ -192,7 +117,6 @@ beyond the fact that an event has happened).</p>
 <li><code>template &lt;typename T&gt; class</code> <strong><code>MessageChannel</code></strong><code>: public Channel</code><ul>
 <li><code>using MessageChannel::</code><strong><code>callback</code></strong> <code>= std::function&lt;void(const T&amp;)&gt;</code></li>
 <li><code>using MessageChannel::</code><strong><code>value_type</code></strong> <code>= T</code></li>
-<li><code>void MessageChannel::</code><strong><code>dispatch</code></strong><code>(mode m, callback f)</code></li>
 <li><code>virtual bool MessageChannel::</code><strong><code>read</code></strong><code>(T&amp; t) = 0</code></li>
 <li><code>Optional&lt;T&gt; MessageChannel::</code><strong><code>read_opt</code></strong><code>()</code></li>
 <li><code>protected MessageChannel::</code><strong><code>MessageChannel</code></strong><code>()</code></li>
@@ -221,7 +145,6 @@ or an empty value on failure.</p>
 <li><code>static constexpr size_t StreamChannel::</code><strong><code>default_buffer</code></strong> <code>= 16384</code></li>
 <li><code>virtual size_t StreamChannel::</code><strong><code>read</code></strong><code>(void* dst, size_t maxlen) = 0</code></li>
 <li><code>size_t StreamChannel::</code><strong><code>buffer</code></strong><code>() const noexcept</code></li>
-<li><code>void StreamChannel::</code><strong><code>dispatch</code></strong><code>(mode m, callback f)</code></li>
 <li><code>std::string StreamChannel::</code><strong><code>read_all</code></strong><code>()</code></li>
 <li><code>std::string StreamChannel::</code><strong><code>read_str</code></strong><code>()</code></li>
 <li><code>size_t StreamChannel::</code><strong><code>read_to</code></strong><code>(std::string&amp; dst)</code></li>
@@ -364,5 +287,104 @@ comparable.</p>
 </ul>
 <p>A byte stream buffer channel. Message boundaries are not preserved; calling
 <code>read()</code> will extract all pending data up to the length limit, regardless of
-whether it was written as a single block or multiple smaller blocks.</p></body>
+whether it was written as a single block or multiple smaller blocks.</p>
+</div>
+<h2 id="dispatch-controller-class">Dispatch controller class</h2>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>Dispatch</code></strong><ul>
+<li><code>enum class Dispatch::</code><strong><code>mode</code></strong><ul>
+<li><code>Dispatch::mode::</code><strong><code>async</code></strong></li>
+<li><code>Dispatch::mode::</code><strong><code>sync</code></strong></li>
+</ul>
+</li>
+<li><code>enum class Dispatch::</code><strong><code>reason</code></strong><ul>
+<li><code>Dispatch::reason::</code><strong><code>closed</code></strong></li>
+<li><code>Dispatch::reason::</code><strong><code>empty</code></strong></li>
+<li><code>Dispatch::reason::</code><strong><code>error</code></strong></li>
+</ul>
+</li>
+<li><code>struct Dispatch::</code><strong><code>result</code></strong><ul>
+<li><code>Channel* result::</code><strong><code>channel</code></strong></li>
+<li><code>std::exception_ptr result::</code><strong><code>error</code></strong></li>
+<li><code>Dispatch::reason result::</code><strong><code>why</code></strong></li>
+</ul>
+</li>
+<li><code>template &lt;typename F&gt; static void Dispatch::</code><strong><code>add</code></strong><code>(EventChannel&amp; c, mode m, F f)</code></li>
+<li><code>template &lt;typename T, typename F&gt; static void Dispatch::</code><strong><code>add</code></strong><code>(MessageChannel&lt;T&gt;&amp; c, mode m, F f)</code></li>
+<li><code>template &lt;typename F&gt; static void Dispatch::</code><strong><code>add</code></strong><code>(StreamChannel&amp; c, mode m, F f)</code></li>
+<li><code>static void Dispatch::</code><strong><code>close</code></strong><code>() noexcept</code></li>
+<li><code>static bool Dispatch::</code><strong><code>empty</code></strong><code>() noexcept</code></li>
+<li><code>static result Dispatch::</code><strong><code>run</code></strong><code>() noexcept</code></li>
+</ul>
+</li>
+</ul>
+<p>The <code>Dispatch</code> class is not instantiable; all of its member functions are
+static.</p>
+<p>The <code>add()</code> functions take a channel, a dispatch mode flag, and a callback
+function. The three intermediate channel base classes each define a <code>callback</code>
+member type that indicates what signature the callback is expected to have
+(the actual callback argument to <code>add()</code> does not have to be this exact type,
+as long as it can be used to construct a function object of the appropriate
+type). Add channels and their associated callback functions to the queue using
+<code>add()</code>, then call <code>run()</code> to start the dispatch loop. Behaviour is undefined
+if <code>run()</code> is called from multiple threads at the same time; normally it
+should only be called from the main thread.</p>
+<p>Dispatch functions must only be called synchronously (i.e. not from inside an
+asynchronous callback function). Channels can safely be destroyed while in a
+dispatch set (the dispatch queue will notice this and silently drop the
+channel), provided this is done synchronously.</p>
+<p>The <code>add()</code> functions start a synchronous or asynchronous task reading from
+the channel. Asynchronous handlers are started immediately in a separate
+thread; synchronous handlers will not be executed until <code>run()</code> is called. An
+<code>add()</code> function will throw <code>std::bad_function_call</code> if the callback function
+is null, or <code>std::invalid_argument</code> if any of these conditions is true:</p>
+<ul>
+<li>The mode flag is not one of the <code>Dispatch::mode</code> enumeration values.</li>
+<li>The channel is synchronous (<code>Channel::is_async()</code> is false), but the mode is <code>Dispatch::mode::async</code>.</li>
+<li>The same channel is added more than once, and the channel is not shareable (<code>Channel::is_shared()</code> is false).</li>
+</ul>
+<p>The <code>close()</code> function closes all channels and waits for any currently running
+event handlers to finish. This is called by the destructor if the dispatch
+queue is not empty.</p>
+<p>The <code>empty()</code> function returns true if the dispatch list is currently empty.</p>
+<p>The <code>run()</code> function runs until a channel is closed or a callback function
+throws an exception; it returns immediately if the dispatch set is empty.
+Asynchronous message handlers will continue to run in their own threads
+regardless of whether the dispatch thread is currently calling <code>run()</code>.</p>
+<p>The <code>result</code> structure returned from <code>run()</code> indicates why the
+dispatch loop was stopped:</p>
+<table>
+<thead>
+<tr>
+<th><code>result::why</code></th>
+<th>Description</th>
+<th><code>result::channel</code></th>
+<th><code>result::error</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>reason::</code><strong><code>closed</code></strong></td>
+<td>A channel was closed</td>
+<td>The closed channel</td>
+<td>Null</td>
+</tr>
+<tr>
+<td><code>reason::</code><strong><code>empty</code></strong></td>
+<td>The dispatch set was empty when <code>run()</code> was called</td>
+<td>Null</td>
+<td>Null</td>
+</tr>
+<tr>
+<td><code>reason::</code><strong><code>error</code></strong></td>
+<td>A message handler callback threw an exception</td>
+<td>The throwing channel</td>
+<td>The exception thrown</td>
+</tr>
+</tbody>
+</table>
+<p>Behaviour is undefined if <code>run()</code> is called in a thread other than the
+application's main thread when the dispatch thread contains any synchronous
+channels (<code>Channel::is_async()</code> is false).</p></body>
 </html>

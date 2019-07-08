@@ -1,139 +1,22 @@
 #include "rs-core/channel.hpp"
+#include <stdexcept>
 #include <thread>
 
 namespace RS {
 
     // Class Channel
 
-    Channel::dispatch_result Channel::run_dispatch() noexcept {
-        using namespace std::chrono;
-        using namespace std::literals;
-        static constexpr duration min_interval = 1us;
-        static constexpr duration max_interval = 1ms;
-        dispatch_result rc;
-        if (global_tasks().empty())
-            return rc;
-        auto guard = scope_exit([&] { if (rc.channel) rc.channel->drop(); });
-        int waits = 0;
-        auto interval = min_interval;
-        for (;;) {
-            int calls = 0;
-            for (auto& t: global_tasks()) {
-                rc.channel = t.first;
-                if (t.second.runmode == mode::sync) {
-                    try {
-                        if (t.first->poll()) {
-                            if (t.first->is_closed()) {
-                                rc.why = reason::closed;
-                                return rc;
-                            }
-                            t.second.call();
-                            ++calls;
-                        }
-                    }
-                    catch (...) {
-                        rc.error = std::current_exception();
-                        rc.why = reason::error;
-                        return rc;
-                    }
-                } else if (t.second.done) {
-                    rc.error = t.second.error;
-                    rc.why = rc.error ? reason::error : reason::closed;
-                    return rc;
-                }
-            }
-            if (calls == 0) {
-                if (++waits == 1)
-                    interval = min_interval;
-                else
-                    interval = std::min(2 * interval, max_interval);
-                std::this_thread::sleep_for(interval);
-            } else {
-                waits = 0;
-                std::this_thread::yield();
-            }
-        }
+    Channel::~Channel() noexcept {
+        Dispatch::do_drop(*this);
     }
 
-    void Channel::stop_dispatch() noexcept {
-        for (auto& t: global_tasks())
-            t.first->close();
-        while (! global_tasks().empty())
-            run_dispatch();
-    }
-
-    void Channel::global_dispatch(Channel& c, mode m, dispatch_callback f) {
-        using namespace std::chrono;
-        if (! c.is_shared() && global_tasks().count(&c))
-            throw std::invalid_argument("Channel is not shareable");
-        if (m != mode::sync && m != mode::async)
-            throw std::invalid_argument("Invalid dispatch mode");
-        if (m == mode::async && ! c.is_async())
-            throw std::invalid_argument("Invalid dispatch mode for channel");
-        auto& task = global_tasks()[&c];
-        task.runmode = m;
-        task.call = f;
-        if (task.runmode == mode::async) {
-            auto payload = [&] () noexcept {
-                try {
-                    for (;;) {
-                        if (! c.wait_for(seconds(1)))
-                            continue;
-                        if (c.is_closed())
-                            break;
-                        task.call();
-                    }
-                }
-                catch (...) {
-                    task.error = std::current_exception();
-                }
-                task.done = true;
-            };
-            task.thread = Thread(payload);
-        }
-    }
-
-    Channel::dispatch_map& Channel::global_tasks() noexcept {
-        static dispatch_map map;
-        return map;
-    }
-
-    std::string to_str(Channel::mode m) {
-        switch (m) {
-            case Channel::mode::sync:   return "sync";
-            case Channel::mode::async:  return "async";
-            default:                    return std::to_string(int(m));
-        }
-    }
-
-    std::string to_str(Channel::reason r) {
-        switch (r) {
-            case Channel::reason::empty:   return "empty";
-            case Channel::reason::closed:  return "closed";
-            case Channel::reason::error:   return "error";
-            default:                       return std::to_string(int(r));
-        }
-    }
-
-    // Class EventChannel
-
-    void EventChannel::dispatch(mode m, callback f) {
-        if (! f)
-            throw std::invalid_argument("Channel callback is null");
-        global_dispatch(*this, m, f);
+    Channel& Channel::operator=(Channel&& c) noexcept {
+        if (&c != this)
+            Dispatch::do_drop(*this);
+        return *this;
     }
 
     // Class StreamChannel
-
-    void StreamChannel::dispatch(mode m, callback f) {
-        if (! f)
-            throw std::invalid_argument("Channel callback is null");
-        auto call = [this,f,s=std::string()] () mutable {
-            if (read_to(s))
-                f(s);
-        };
-        global_dispatch(*this, m, call);
-    }
 
     std::string StreamChannel::read_all() {
         using namespace std::chrono;
@@ -304,6 +187,122 @@ namespace RS {
         if (open && ofs == buf.size() && t > duration())
             cv.wait_for(lock, t, [&] { return ! open || ofs < buf.size(); });
         return ! open || ofs < buf.size();
+    }
+
+    // Class Dispatch
+
+    Dispatch::result Dispatch::run() noexcept {
+        using namespace std::chrono;
+        using namespace std::literals;
+        static constexpr Channel::duration min_interval = 1us;
+        static constexpr Channel::duration max_interval = 1ms;
+        result rc;
+        if (tasks().empty())
+            return rc;
+        auto guard = scope_exit([&] { if (rc.channel) do_drop(*rc.channel); });
+        auto interval = min_interval;
+        int waits = 0;
+        for (;;) {
+            int calls = 0;
+            for (auto& t: tasks()) {
+                rc.channel = t.first;
+                if (t.second.kind == mode::sync) {
+                    try {
+                        if (t.first->poll()) {
+                            if (t.first->is_closed()) {
+                                rc.why = reason::closed;
+                                return rc;
+                            }
+                            t.second.call();
+                            ++calls;
+                        }
+                    }
+                    catch (...) {
+                        rc.error = std::current_exception();
+                        rc.why = reason::error;
+                        return rc;
+                    }
+                } else if (t.second.done) {
+                    rc.error = t.second.error;
+                    rc.why = rc.error ? reason::error : reason::closed;
+                    return rc;
+                }
+            }
+            if (calls == 0) {
+                if (++waits == 1)
+                    interval = min_interval;
+                else
+                    interval = std::min(2 * interval, max_interval);
+                std::this_thread::sleep_for(interval);
+            } else {
+                waits = 0;
+                std::this_thread::yield();
+            }
+        }
+    }
+
+    void Dispatch::stop() noexcept {
+        for (auto& t: tasks())
+            t.first->close();
+        while (! tasks().empty())
+            run();
+    }
+
+    void Dispatch::do_add(Channel& c, mode m, callback f) {
+        using namespace std::chrono;
+        if (! c.is_shared() && tasks().count(&c))
+            throw std::invalid_argument("Channel is not shareable");
+        if (m != mode::sync && m != mode::async)
+            throw std::invalid_argument("Invalid dispatch mode");
+        if (m == mode::async && ! c.is_async())
+            throw std::invalid_argument("Invalid dispatch mode for channel");
+        auto& task = tasks()[&c];
+        task.call = f;
+        task.kind = m;
+        if (task.kind == mode::async) {
+            auto payload = [&] () noexcept {
+                try {
+                    for (;;) {
+                        if (! c.wait_for(seconds(1)))
+                            continue;
+                        if (c.is_closed())
+                            break;
+                        task.call();
+                    }
+                }
+                catch (...) {
+                    task.error = std::current_exception();
+                }
+                task.done = true;
+            };
+            task.thread = Thread(payload);
+        }
+    }
+
+    void Dispatch::do_drop(Channel& c) noexcept {
+        tasks().erase(&c);
+    }
+
+    Dispatch::task_map& Dispatch::tasks() noexcept {
+        static task_map map;
+        return map;
+    }
+
+    std::string to_str(Dispatch::mode m) {
+        switch (m) {
+            case Dispatch::mode::sync:   return "sync";
+            case Dispatch::mode::async:  return "async";
+            default:                     return std::to_string(int(m));
+        }
+    }
+
+    std::string to_str(Dispatch::reason r) {
+        switch (r) {
+            case Dispatch::reason::empty:   return "empty";
+            case Dispatch::reason::closed:  return "closed";
+            case Dispatch::reason::error:   return "error";
+            default:                        return std::to_string(int(r));
+        }
     }
 
 }

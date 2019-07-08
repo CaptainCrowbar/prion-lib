@@ -13,7 +13,6 @@
 #include <map>
 #include <mutex>
 #include <ostream>
-#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -24,6 +23,7 @@ namespace RS {
 
     class BufferChannel;
     class Channel;
+    class Dispatch;
     class EventChannel;
     class FalseChannel;
     template <typename T> class GeneratorChannel;
@@ -40,45 +40,17 @@ namespace RS {
     class Channel:
     public Wait {
     public:
-        enum class mode { async, sync };
-        enum class reason { closed, empty, error };
-        struct dispatch_result {
-            Channel* channel = nullptr;
-            std::exception_ptr error;
-            reason why = reason::empty;
-        };
-        virtual ~Channel() noexcept { drop(); }
+        virtual ~Channel() noexcept;
         Channel(const Channel&) = delete;
         Channel(Channel&& c) = default;
         Channel& operator=(const Channel&) = delete;
-        Channel& operator=(Channel&& c) noexcept { if (&c != this) drop(); return *this; }
+        Channel& operator=(Channel&& c) noexcept;
         virtual void close() noexcept = 0;
         virtual bool is_closed() const noexcept = 0;
         virtual bool is_async() const noexcept { return true; }
-        void drop() noexcept { global_tasks().erase(this); }
-        static bool empty_dispatch() noexcept { return global_tasks().empty(); }
-        static dispatch_result run_dispatch() noexcept;
-        static void stop_dispatch() noexcept;
     protected:
-        using dispatch_callback = std::function<void()>;
         Channel() = default;
-        static void global_dispatch(Channel& c, mode m, dispatch_callback f);
-    private:
-        struct dispatch_task {
-            mode runmode;
-            dispatch_callback call;
-            Thread thread;
-            std::atomic<bool> done;
-            std::exception_ptr error;
-        };
-        using dispatch_map = std::map<Channel*, dispatch_task>;
-        static dispatch_map& global_tasks() noexcept;
     };
-
-    std::string to_str(Channel::mode m);
-    std::string to_str(Channel::reason r);
-    inline std::ostream& operator<<(std::ostream& out, Channel::mode m) { return out << to_str(m); }
-    inline std::ostream& operator<<(std::ostream& out, Channel::reason r) { return out << to_str(r); }
 
     // Intermediate base classes
 
@@ -86,7 +58,6 @@ namespace RS {
     public Channel {
     public:
         using callback = std::function<void()>;
-        void dispatch(mode m, callback f);
     protected:
         EventChannel() = default;
     };
@@ -98,22 +69,10 @@ namespace RS {
         using callback = std::function<void(const T&)>;
         using value_type = T;
         virtual bool read(T& t) = 0;
-        void dispatch(mode m, callback f);
         Optional<T> read_opt();
     protected:
         MessageChannel() = default;
     };
-
-        template <typename T>
-        void MessageChannel<T>::dispatch(mode m, callback f) {
-            if (! f)
-                throw std::invalid_argument("Channel callback is null");
-            auto call = [this,f,t=T()] () mutable {
-                if (read(t))
-                    f(t);
-            };
-            global_dispatch(*this, m, call);
-        }
 
         template <typename T>
         Optional<T> MessageChannel<T>::read_opt() {
@@ -131,7 +90,6 @@ namespace RS {
         static constexpr size_t default_buffer = 16384;
         virtual size_t read(void* dst, size_t maxlen) = 0;
         size_t buffer() const noexcept { return bytes; }
-        void dispatch(mode m, callback f);
         std::string read_all();
         std::string read_str();
         size_t read_to(std::string& dst);
@@ -431,5 +389,76 @@ namespace RS {
         size_t ofs = 0;
         bool open = true;
     };
+
+    // Dispatch controller class
+
+    class Dispatch {
+    public:
+        enum class mode { async, sync };
+        enum class reason { closed, empty, error };
+        struct result {
+            Channel* channel = nullptr;
+            std::exception_ptr error;
+            reason why = reason::empty;
+        };
+        template <typename F> static void add(EventChannel& c, mode m, F f);
+        template <typename T, typename F> static void add(MessageChannel<T>& c, mode m, F f);
+        template <typename F> static void add(StreamChannel& c, mode m, F f);
+        static bool empty() noexcept { return tasks().empty(); }
+        static result run() noexcept;
+        static void stop() noexcept;
+    private:
+        RS_NO_INSTANCE(Dispatch);
+        friend class Channel;
+        using callback = std::function<void()>;
+        struct task_info {
+            Thread thread;
+            callback call;
+            mode kind;
+            std::atomic<bool> done;
+            std::exception_ptr error;
+        };
+        using task_map = std::map<Channel*, task_info>;
+        static void do_add(Channel& c, mode m, callback f);
+        static void do_drop(Channel& c) noexcept;
+        static task_map& tasks() noexcept;
+    };
+
+        template <typename F>
+        void Dispatch::add(EventChannel& c, mode m, F f) {
+            callback call(f);
+            if (! call)
+                throw std::bad_function_call();
+            do_add(c, m, call);
+        }
+
+        template <typename T, typename F>
+        void Dispatch::add(MessageChannel<T>& c, mode m, F f) {
+            typename MessageChannel<T>::callback chan_call(f);
+            if (! chan_call)
+                throw std::bad_function_call();
+            auto disp_call = [&c,chan_call,t=T()] () mutable {
+                if (c.read(t))
+                    chan_call(t);
+            };
+            do_add(c, m, disp_call);
+        }
+
+        template <typename F>
+        void Dispatch::add(StreamChannel& c, mode m, F f) {
+            StreamChannel::callback chan_call(f);
+            if (! chan_call)
+                throw std::bad_function_call();
+            auto disp_call = [&c,chan_call,s=std::string()] () mutable {
+                if (c.read_to(s))
+                    chan_call(s);
+            };
+            do_add(c, m, disp_call);
+        }
+
+    std::string to_str(Dispatch::mode m);
+    std::string to_str(Dispatch::reason r);
+    inline std::ostream& operator<<(std::ostream& out, Dispatch::mode m) { return out << to_str(m); }
+    inline std::ostream& operator<<(std::ostream& out, Dispatch::reason r) { return out << to_str(r); }
 
 }

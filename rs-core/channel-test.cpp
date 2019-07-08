@@ -3,10 +3,7 @@
 #include "rs-core/string.hpp"
 #include "rs-core/time.hpp"
 #include "rs-core/unit-test.hpp"
-#include <atomic>
 #include <chrono>
-#include <deque>
-#include <mutex>
 #include <stdexcept>
 #include <string>
 #include <thread>
@@ -238,12 +235,12 @@ namespace {
 void test_core_channel_dispatch_empty() {
 
     // Stopwatch w("Run with no channels");
-    Channel::dispatch_result rc;
-    TRY(rc = Channel::run_dispatch());
-    TEST_EQUAL(rc.why, Channel::reason::empty);
+    Dispatch::result rc;
+    TRY(rc = Dispatch::run());
+    TEST_EQUAL(rc.why, Dispatch::reason::empty);
     TEST_EQUAL(rc.channel, nullptr);
     TEST(! rc.error);
-    TRY(Channel::stop_dispatch());
+    TRY(Dispatch::stop());
 
 }
 
@@ -251,17 +248,17 @@ void test_core_channel_dispatch_sync_close() {
 
     // Stopwatch w("Terminate by closing from callback (sync)");
     TimerChannel chan(time_interval);
-    Channel::dispatch_result rc;
+    Dispatch::result rc;
     int n = 0;
-    TRY(chan.dispatch(Channel::mode::sync, [&] { ++n; if (n == cycles) chan.close(); }));
-    TRY(rc = Channel::run_dispatch());
-    TEST_EQUAL(rc.why, Channel::reason::closed);
+    TRY(Dispatch::add(chan, Dispatch::mode::sync, [&] { ++n; if (n == cycles) chan.close(); }));
+    TRY(rc = Dispatch::run());
+    TEST_EQUAL(rc.why, Dispatch::reason::closed);
     TEST_EQUAL(rc.channel, &chan);
     TEST(! rc.error);
     TEST(chan.wait_for(1ms));
     TEST(chan.is_closed());
     TEST_EQUAL(n, cycles);
-    TRY(Channel::stop_dispatch());
+    TRY(Dispatch::stop());
 
 }
 
@@ -269,17 +266,17 @@ void test_core_channel_dispatch_async_close() {
 
     // Stopwatch w("Terminate by closing from callback (async)");
     TimerChannel chan(time_interval);
-    Channel::dispatch_result rc;
+    Dispatch::result rc;
     int n = 0;
-    TRY(chan.dispatch(Channel::mode::async, [&] { ++n; if (n == cycles) chan.close(); }));
-    TRY(rc = Channel::run_dispatch());
-    TEST_EQUAL(rc.why, Channel::reason::closed);
+    TRY(Dispatch::add(chan, Dispatch::mode::async, [&] { ++n; if (n == cycles) chan.close(); }));
+    TRY(rc = Dispatch::run());
+    TEST_EQUAL(rc.why, Dispatch::reason::closed);
     TEST_EQUAL(rc.channel, &chan);
     TEST(! rc.error);
     TEST(chan.wait_for(1ms));
     TEST(chan.is_closed());
     TEST_EQUAL(n, cycles);
-    TRY(Channel::stop_dispatch());
+    TRY(Dispatch::stop());
 
 }
 
@@ -287,16 +284,16 @@ void test_core_channel_dispatch_sync_exception() {
 
     // Stopwatch w("Terminate by exception (sync)");
     TimerChannel chan(time_interval);
-    Channel::dispatch_result rc;
+    Dispatch::result rc;
     int n = 0;
-    TRY(chan.dispatch(Channel::mode::sync, [&] { ++n; if (n == cycles) throw TestException(); }));
-    TRY(rc = Channel::run_dispatch());
-    TEST_EQUAL(rc.why, Channel::reason::error);
+    TRY(Dispatch::add(chan, Dispatch::mode::sync, [&] { ++n; if (n == cycles) throw TestException(); }));
+    TRY(rc = Dispatch::run());
+    TEST_EQUAL(rc.why, Dispatch::reason::error);
     TEST_EQUAL(rc.channel, &chan);
     TEST_THROW(rethrow(rc.error), TestException);
     TRY(chan.wait_for(1ms));
     TEST_EQUAL(n, cycles);
-    TRY(Channel::stop_dispatch());
+    TRY(Dispatch::stop());
 
 }
 
@@ -304,16 +301,16 @@ void test_core_channel_dispatch_async_exception() {
 
     // Stopwatch w("Terminate by exception (async)");
     TimerChannel chan(time_interval);
-    Channel::dispatch_result rc;
+    Dispatch::result rc;
     int n = 0;
-    TRY(chan.dispatch(Channel::mode::async, [&] { ++n; if (n == cycles) throw TestException(); }));
-    TRY(rc = Channel::run_dispatch());
-    TEST_EQUAL(rc.why, Channel::reason::error);
+    TRY(Dispatch::add(chan, Dispatch::mode::async, [&] { ++n; if (n == cycles) throw TestException(); }));
+    TRY(rc = Dispatch::run());
+    TEST_EQUAL(rc.why, Dispatch::reason::error);
     TEST_EQUAL(rc.channel, &chan);
     TEST_THROW(rethrow(rc.error), TestException);
     TRY(chan.wait_for(1ms));
     TEST_EQUAL(n, cycles);
-    TRY(Channel::stop_dispatch());
+    TRY(Dispatch::stop());
 
 }
 
@@ -322,18 +319,18 @@ void test_core_channel_dispatch_multiple_sync_exception() {
     // Stopwatch w("Two sync channels, terminate one by exception");
     TimerChannel chan1(time_interval);
     TimerChannel chan2(time_interval);
-    Channel::dispatch_result rc;
+    Dispatch::result rc;
     int n1 = 0, n2 = 0;
     {
-        TRY(chan1.dispatch(Channel::mode::sync, [&] { ++n1; if (n1 == cycles) throw TestException(); }));
-        TRY(chan2.dispatch(Channel::mode::sync, [&] { ++n2; }));
-        TRY(rc = Channel::run_dispatch());
-        TEST_EQUAL(rc.why, Channel::reason::error);
+        TRY(Dispatch::add(chan1, Dispatch::mode::sync, [&] { ++n1; if (n1 == cycles) throw TestException(); }));
+        TRY(Dispatch::add(chan2, Dispatch::mode::sync, [&] { ++n2; }));
+        TRY(rc = Dispatch::run());
+        TEST_EQUAL(rc.why, Dispatch::reason::error);
         TEST_EQUAL(rc.channel, &chan1);
         TEST_THROW(rethrow(rc.error), TestException);
         TEST(chan1.wait_for(1ms));
         TEST_EQUAL(n1, cycles);
-        TRY(Channel::stop_dispatch());
+        TRY(Dispatch::stop());
     }
     TEST(chan2.wait_for(1ms));
     TEST(chan2.is_closed());
@@ -345,18 +342,18 @@ void test_core_channel_dispatch_multiple_async_exception() {
     // Stopwatch w("Two async channels, terminate one by exception");
     TimerChannel chan1(time_interval);
     TimerChannel chan2(time_interval);
-    Channel::dispatch_result rc;
+    Dispatch::result rc;
     int n1 = 0, n2 = 0;
     {
-        TRY(chan1.dispatch(Channel::mode::async, [&] { ++n1; if (n1 == cycles) throw TestException(); }));
-        TRY(chan2.dispatch(Channel::mode::async, [&] { ++n2; }));
-        TRY(rc = Channel::run_dispatch());
-        TEST_EQUAL(rc.why, Channel::reason::error);
+        TRY(Dispatch::add(chan1, Dispatch::mode::async, [&] { ++n1; if (n1 == cycles) throw TestException(); }));
+        TRY(Dispatch::add(chan2, Dispatch::mode::async, [&] { ++n2; }));
+        TRY(rc = Dispatch::run());
+        TEST_EQUAL(rc.why, Dispatch::reason::error);
         TEST_EQUAL(rc.channel, &chan1);
         TEST_THROW(rethrow(rc.error), TestException);
         TEST(chan1.wait_for(1ms));
         TEST_EQUAL(n1, cycles);
-        TRY(Channel::stop_dispatch());
+        TRY(Dispatch::stop());
     }
     TEST(chan2.wait_for(1ms));
     TEST(chan2.is_closed());
@@ -368,18 +365,18 @@ void test_core_channel_dispatch_heterogeneous_sync_exception() {
     // Stopwatch w("Two different channels, terminate sync by exception");
     TimerChannel chan1(time_interval);
     TimerChannel chan2(time_interval);
-    Channel::dispatch_result rc;
+    Dispatch::result rc;
     int n1 = 0, n2 = 0;
     {
-        TRY(chan1.dispatch(Channel::mode::sync, [&] { ++n1; if (n1 == cycles) throw TestException(); }));
-        TRY(chan2.dispatch(Channel::mode::async, [&] { ++n2; }));
-        TRY(rc = Channel::run_dispatch());
-        TEST_EQUAL(rc.why, Channel::reason::error);
+        TRY(Dispatch::add(chan1, Dispatch::mode::sync, [&] { ++n1; if (n1 == cycles) throw TestException(); }));
+        TRY(Dispatch::add(chan2, Dispatch::mode::async, [&] { ++n2; }));
+        TRY(rc = Dispatch::run());
+        TEST_EQUAL(rc.why, Dispatch::reason::error);
         TEST_EQUAL(rc.channel, &chan1);
         TEST_THROW(rethrow(rc.error), TestException);
         TEST(chan1.wait_for(1ms));
         TEST_EQUAL(n1, cycles);
-        TRY(Channel::stop_dispatch());
+        TRY(Dispatch::stop());
     }
     TEST(chan2.wait_for(1ms));
     TEST(chan2.is_closed());
@@ -391,18 +388,18 @@ void test_core_channel_dispatch_heterogeneous_async_exception() {
     // Stopwatch w("Two different channels, terminate async by exception");
     TimerChannel chan1(time_interval);
     TimerChannel chan2(time_interval);
-    Channel::dispatch_result rc;
+    Dispatch::result rc;
     int n1 = 0, n2 = 0;
     {
-        TRY(chan1.dispatch(Channel::mode::sync, [&] { ++n1; }));
-        TRY(chan2.dispatch(Channel::mode::async, [&] { ++n2; if (n2 == cycles) throw TestException(); }));
-        TRY(rc = Channel::run_dispatch());
-        TEST_EQUAL(rc.why, Channel::reason::error);
+        TRY(Dispatch::add(chan1, Dispatch::mode::sync, [&] { ++n1; }));
+        TRY(Dispatch::add(chan2, Dispatch::mode::async, [&] { ++n2; if (n2 == cycles) throw TestException(); }));
+        TRY(rc = Dispatch::run());
+        TEST_EQUAL(rc.why, Dispatch::reason::error);
         TEST_EQUAL(rc.channel, &chan2);
         TEST_THROW(rethrow(rc.error), TestException);
         TRY(chan2.wait_for(1ms));
         TEST_EQUAL(n2, cycles);
-        TRY(Channel::stop_dispatch());
+        TRY(Dispatch::stop());
     }
     TEST(chan1.wait_for(1ms));
     TEST(chan1.is_closed());
@@ -413,25 +410,25 @@ void test_core_channel_dispatch_sync_message_channel() {
 
     // Stopwatch w("Test with message channel (sync)");
     QueueChannel<int> chan;
-    Channel::dispatch_result rc;
+    Dispatch::result rc;
     Ustring s;
     std::vector<int> v;
     for (int i = 1; i <= 10; ++i)
         TRY(chan.write(i));
-    TRY(chan.dispatch(Channel::mode::sync, [&] (int i) {
+    TRY(Dispatch::add(chan, Dispatch::mode::sync, [&] (int i) {
         v.push_back(i);
         if (i >= 5)
             chan.close();
     }));
-    TRY(rc = Channel::run_dispatch());
-    TEST_EQUAL(rc.why, Channel::reason::closed);
+    TRY(rc = Dispatch::run());
+    TEST_EQUAL(rc.why, Dispatch::reason::closed);
     TEST_EQUAL(rc.channel, &chan);
     TEST(! rc.error);
     TEST(chan.wait_for(1ms));
     TEST(chan.is_closed());
     s = to_str(v);
     TEST_EQUAL(s, "[1,2,3,4,5]");
-    TRY(Channel::stop_dispatch());
+    TRY(Dispatch::stop());
 
 }
 
@@ -439,25 +436,25 @@ void test_core_channel_dispatch_async_message_channel() {
 
     // Stopwatch w("Test with message channel (async)");
     QueueChannel<int> chan;
-    Channel::dispatch_result rc;
+    Dispatch::result rc;
     Ustring s;
     std::vector<int> v;
     for (int i = 1; i <= 10; ++i)
         TRY(chan.write(i));
-    TRY(chan.dispatch(Channel::mode::async, [&] (int i) {
+    TRY(Dispatch::add(chan, Dispatch::mode::async, [&] (int i) {
         v.push_back(i);
         if (i >= 5)
             chan.close();
     }));
-    TRY(rc = Channel::run_dispatch());
-    TEST_EQUAL(rc.why, Channel::reason::closed);
+    TRY(rc = Dispatch::run());
+    TEST_EQUAL(rc.why, Dispatch::reason::closed);
     TEST_EQUAL(rc.channel, &chan);
     TEST(! rc.error);
     TEST(chan.wait_for(1ms));
     TEST(chan.is_closed());
     s = to_str(v);
     TEST_EQUAL(s, "[1,2,3,4,5]");
-    TRY(Channel::stop_dispatch());
+    TRY(Dispatch::stop());
 
 }
 
@@ -465,24 +462,24 @@ void test_core_channel_dispatch_sync_stream_channel() {
 
     // Stopwatch w("Test with stream channel (sync)");
     BufferChannel chan;
-    Channel::dispatch_result rc;
+    Dispatch::result rc;
     Ustring s;
     TRY(chan.write("Hello world\n"));
     TRY(chan.set_buffer(5));
-    TRY(chan.dispatch(Channel::mode::sync, [&] (std::string& t) {
+    TRY(Dispatch::add(chan, Dispatch::mode::sync, [&] (std::string& t) {
         s += t;
         t.clear();
         if (s.find('\n') != npos)
             chan.close();
     }));
-    TRY(rc = Channel::run_dispatch());
-    TEST_EQUAL(rc.why, Channel::reason::closed);
+    TRY(rc = Dispatch::run());
+    TEST_EQUAL(rc.why, Dispatch::reason::closed);
     TEST_EQUAL(rc.channel, &chan);
     TEST(! rc.error);
     TEST(chan.wait_for(1ms));
     TEST(chan.is_closed());
     TEST_EQUAL(s, "Hello world\n");
-    TRY(Channel::stop_dispatch());
+    TRY(Dispatch::stop());
 
 }
 
@@ -490,23 +487,23 @@ void test_core_channel_dispatch_async_stream_channel() {
 
     // Stopwatch w("Test with stream channel (async)");
     BufferChannel chan;
-    Channel::dispatch_result rc;
+    Dispatch::result rc;
     Ustring s;
     TRY(chan.write("Hello world\n"));
     TRY(chan.set_buffer(5));
-    TRY(chan.dispatch(Channel::mode::async, [&] (std::string& t) {
+    TRY(Dispatch::add(chan, Dispatch::mode::async, [&] (std::string& t) {
         s += t;
         t.clear();
         if (s.find('\n') != npos)
             chan.close();
     }));
-    TRY(rc = Channel::run_dispatch());
-    TEST_EQUAL(rc.why, Channel::reason::closed);
+    TRY(rc = Dispatch::run());
+    TEST_EQUAL(rc.why, Dispatch::reason::closed);
     TEST_EQUAL(rc.channel, &chan);
     TEST(! rc.error);
     TEST(chan.wait_for(1ms));
     TEST(chan.is_closed());
     TEST_EQUAL(s, "Hello world\n");
-    TRY(Channel::stop_dispatch());
+    TRY(Dispatch::stop());
 
 }

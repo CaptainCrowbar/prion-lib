@@ -182,6 +182,11 @@ reflex forms.</p>
 </tr>
 <tr>
 <td></td>
+<td><code>R &gt;&gt;</code> <strong><code>collect_as</code></strong><code>&lt;C&gt;() -&gt; C</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
 <td><code>R &gt;&gt;</code> <strong><code>each</code></strong><code>(UF) -&gt; R</code></td>
 <td><code>R&amp; &lt;&lt;</code> <strong><code>each</code></strong><code>(UF)</code></td>
 </tr>
@@ -732,6 +737,12 @@ first.</p>
 <p>Copy a virtual range into a concrete one. This is mainly useful for turning a
 lower category into a random access range needed by the next stage in the
 chain. Behaviour is undefined if the input range is infinite.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>Range r &gt;&gt;</code> <strong><code>collect_as</code></strong><code>&lt;Container&gt;() -&gt; Container</code></li>
+</ul>
+<p>Copy a virtual range into a concrete one of a specific type.</p>
 </div>
 <div class="defns">
 <ul>

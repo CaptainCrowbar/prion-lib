@@ -133,6 +133,7 @@ reflex forms.
 | -------         | -----------------                                          | ----------------                                    |
 | Core            | `R >>` **`append`**`(C&) -> R`                             |                                                     |
 |                 | `R >>` **`collect`** `-> TRR`                              |                                                     |
+|                 | `R >>` **`collect_as`**`<C>() -> C`                        |                                                     |
 |                 | `R >>` **`each`**`(UF) -> R`                               | `R& <<` **`each`**`(UF)`                            |
 |                 | `PR >>` **`each_pair`**`(BF) -> R`                         | `PR& <<` **`each_pair`**`(BF)`                      |
 |                 | `R >>` **`output`**`(OI) -> OI`                            |                                                     |
@@ -259,6 +260,10 @@ first.
 Copy a virtual range into a concrete one. This is mainly useful for turning a
 lower category into a random access range needed by the next stage in the
 chain. Behaviour is undefined if the input range is infinite.
+
+* `Range r >>` **`collect_as`**`<Container>() -> Container`
+
+Copy a virtual range into a concrete one of a specific type.
 
 * `Range r >>` **`each`**`(UnaryFunction f) -> Range2`
 * `PairRange r >>` **`each_pair`**`(BinaryFunction f) -> Range2`

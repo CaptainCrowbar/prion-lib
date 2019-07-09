@@ -49,6 +49,12 @@ void test_core_range_core_collect() {
     TRY(r2 >> passthrough >> overwrite(s));
     TEST_EQUAL(s, "olleH");
 
+    TRY(s = fl >> collect_as<std::string>());
+    TEST_EQUAL(s, "Hello");
+
+    TRY(s = fl >> passthrough >> collect_as<std::string>());
+    TEST_EQUAL(s, "Hello");
+
 }
 
 void test_core_range_core_each() {

@@ -162,6 +162,22 @@ namespace RS::Range {
 
     constexpr CollectObject collect = {};
 
+    template <typename Container>
+    struct CollectAsObject:
+    AlgorithmBase<CollectAsObject<Container>> {};
+
+    template <typename Range, typename Container>
+    auto operator>>(const Range& lhs, CollectAsObject<Container> /*rhs*/) {
+        using std::begin;
+        using std::end;
+        return Container(begin(lhs), end(lhs));
+    }
+
+    template <typename Container>
+    inline CollectAsObject<Container> collect_as() {
+        return {};
+    }
+
     // Simple iteration
 
     template <typename UnaryFunction>

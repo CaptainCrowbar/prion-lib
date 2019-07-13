@@ -23,10 +23,10 @@ namespace RS::Range {
     template <typename Range, typename BinaryFunction>
     class AdjacentDifferenceIterator:
     public ForwardIterator<AdjacentDifferenceIterator<Range, BinaryFunction>,
-        const InvokeResult<BinaryFunction, Meta::RangeValue<Range>, Meta::RangeValue<Range>>> {
+        const std::invoke_result_t<BinaryFunction, Meta::RangeValue<Range>, Meta::RangeValue<Range>>> {
     public:
         using underlying_iterator = Meta::RangeIterator<const Range>;
-        using value_type = InvokeResult<BinaryFunction, Meta::RangeValue<Range>, Meta::RangeValue<Range>>;
+        using value_type = std::invoke_result_t<BinaryFunction, Meta::RangeValue<Range>, Meta::RangeValue<Range>>;
         using function_type = std::function<value_type(const Meta::RangeValue<Range>&, const Meta::RangeValue<Range>&)>;
         AdjacentDifferenceIterator() = default;
         AdjacentDifferenceIterator(underlying_iterator b, underlying_iterator e, BinaryFunction f):
@@ -266,7 +266,7 @@ namespace RS::Range {
     public:
         using underlying_iterator = Meta::RangeIterator<const Range>;
         using value_type = Irange<underlying_iterator>;
-        using function_result = InvokeResult<UnaryFunction, Meta::RangeValue<Range>>;
+        using function_result = std::invoke_result_t<UnaryFunction, Meta::RangeValue<Range>>;
         using function_type = std::function<function_result(const Meta::RangeValue<Range>&)>;
         GroupByIterator() = default;
         GroupByIterator(underlying_iterator b, underlying_iterator e, UnaryFunction f):
@@ -367,10 +367,10 @@ namespace RS::Range {
     template <typename Range, typename BinaryFunction>
     class PartialSumIterator:
     public ForwardIterator<PartialSumIterator<Range, BinaryFunction>,
-        const InvokeResult<BinaryFunction, Meta::RangeValue<Range>, Meta::RangeValue<Range>>> {
+        const std::invoke_result_t<BinaryFunction, Meta::RangeValue<Range>, Meta::RangeValue<Range>>> {
     public:
         using underlying_iterator = Meta::RangeIterator<const Range>;
-        using value_type = InvokeResult<BinaryFunction, Meta::RangeValue<Range>, Meta::RangeValue<Range>>;
+        using value_type = std::invoke_result_t<BinaryFunction, Meta::RangeValue<Range>, Meta::RangeValue<Range>>;
         using function_type = std::function<value_type(const Meta::RangeValue<Range>&, const Meta::RangeValue<Range>&)>;
         PartialSumIterator() = default;
         PartialSumIterator(underlying_iterator b, underlying_iterator e, BinaryFunction f):

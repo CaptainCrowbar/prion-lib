@@ -29,15 +29,8 @@ namespace RS::Range {
     template <typename T2> constexpr GenericDynamicCast<T2> generic_dynamic_cast = {};
     template <typename T2> constexpr GenericStaticCast<T2> generic_static_cast = {};
 
-    template <typename F, typename... Args> using InvokeResult =
-        #ifdef __APPLE__ // Xcode brain damage
-            std::result_of_t<F(Args...)>;
-        #else
-            std::invoke_result_t<F, Args...>;
-        #endif
-
     template <typename Range1, typename Range2, typename BinaryFunction> struct PairResultType
-        { using type = InvokeResult<BinaryFunction, Meta::RangeValue<Range1>, Meta::RangeValue<Range2>>; };
+        { using type = std::invoke_result_t<BinaryFunction, Meta::RangeValue<Range1>, Meta::RangeValue<Range2>>; };
     template <typename Range1, typename Range2> struct PairResultType<Range1, Range2, void> { using type = std::pair<Meta::RangeValue<Range1>, Meta::RangeValue<Range2>>; };
     template <typename Range1, typename Range2, typename BinaryFunction> using PairResult = typename PairResultType<Range1, Range2, BinaryFunction>::type;
 

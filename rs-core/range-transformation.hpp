@@ -503,11 +503,11 @@ namespace RS::Range {
 
     template <typename Range, typename UnaryFunction>
     class MapIterator:
-    public FlexibleRandomAccessIterator<MapIterator<Range, UnaryFunction>, const InvokeResult<UnaryFunction, Meta::RangeValue<Range>>> {
+    public FlexibleRandomAccessIterator<MapIterator<Range, UnaryFunction>, const std::invoke_result_t<UnaryFunction, Meta::RangeValue<Range>>> {
     public:
         using underlying_iterator = Meta::RangeIterator<const Range>;
         using iterator_category = typename std::iterator_traits<underlying_iterator>::iterator_category;
-        using value_type = InvokeResult<UnaryFunction, Meta::RangeValue<Range>>;
+        using value_type = std::invoke_result_t<UnaryFunction, Meta::RangeValue<Range>>;
         using function_type = std::function<value_type(const Meta::RangeValue<Range>&)>;
         MapIterator() = default;
         MapIterator(underlying_iterator i, UnaryFunction f): iter(i), fun(f), value(), ok(false) {}
@@ -527,13 +527,13 @@ namespace RS::Range {
     template <typename Range, typename BinaryFunction>
     class MapPairsIterator:
     public FlexibleRandomAccessIterator<MapPairsIterator<Range, BinaryFunction>,
-        const InvokeResult<BinaryFunction, typename Meta::RangeValue<Range>::first_type, typename Meta::RangeValue<Range>::second_type>> {
+        const std::invoke_result_t<BinaryFunction, typename Meta::RangeValue<Range>::first_type, typename Meta::RangeValue<Range>::second_type>> {
     public:
         using underlying_iterator = Meta::RangeIterator<const Range>;
         using first_type = typename Meta::RangeValue<Range>::first_type;
         using second_type = typename Meta::RangeValue<Range>::second_type;
         using iterator_category = typename std::iterator_traits<underlying_iterator>::iterator_category;
-        using value_type = InvokeResult<BinaryFunction, first_type, second_type>;
+        using value_type = std::invoke_result_t<BinaryFunction, first_type, second_type>;
         using function_type = std::function<value_type(const first_type&, const second_type&)>;
         MapPairsIterator() = default;
         MapPairsIterator(underlying_iterator i, BinaryFunction f): iter(i), fun(f), value(), ok(false) {}
@@ -595,11 +595,11 @@ namespace RS::Range {
     template <typename Range, typename UnaryFunction1, typename UnaryFunction2>
     class MapHeadTailIterator:
     public FlexibleRandomAccessIterator<MapHeadTailIterator<Range, UnaryFunction1, UnaryFunction2>,
-        std::common_type_t<InvokeResult<UnaryFunction1, Meta::RangeValue<Range>>, InvokeResult<UnaryFunction2, Meta::RangeValue<Range>>>> {
+        std::common_type_t<std::invoke_result_t<UnaryFunction1, Meta::RangeValue<Range>>, std::invoke_result_t<UnaryFunction2, Meta::RangeValue<Range>>>> {
     public:
         using underlying_iterator = Meta::RangeIterator<const Range>;
         using iterator_category = typename std::iterator_traits<underlying_iterator>::iterator_category;
-        using value_type = std::common_type_t<InvokeResult<UnaryFunction1, Meta::RangeValue<Range>>, InvokeResult<UnaryFunction2, Meta::RangeValue<Range>>>;
+        using value_type = std::common_type_t<std::invoke_result_t<UnaryFunction1, Meta::RangeValue<Range>>, std::invoke_result_t<UnaryFunction2, Meta::RangeValue<Range>>>;
         using predicate_type = std::function<bool(const value_type&)>;
         using function_type = std::function<value_type(const Meta::RangeValue<Range>&)>;
         MapHeadTailIterator() = default;

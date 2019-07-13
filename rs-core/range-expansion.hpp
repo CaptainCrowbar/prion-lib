@@ -83,11 +83,11 @@ namespace RS::Range {
 
     template <typename Range, typename UnaryFunction>
     class FlatMapIterator:
-    public ForwardIterator<FlatMapIterator<Range, UnaryFunction>, const Meta::RangeValue<InvokeResult<UnaryFunction, Meta::RangeValue<Range>>>> {
+    public ForwardIterator<FlatMapIterator<Range, UnaryFunction>, const Meta::RangeValue<std::invoke_result_t<UnaryFunction, Meta::RangeValue<Range>>>> {
     public:
         using iterator_category = Meta::MinCategory<Range, std::forward_iterator_tag>;
         using level_1_iterator = Meta::RangeIterator<const Range>;
-        using level_2_range = InvokeResult<UnaryFunction, Meta::RangeValue<Range>>;
+        using level_2_range = std::invoke_result_t<UnaryFunction, Meta::RangeValue<Range>>;
         using level_2_iterator = Meta::RangeIterator<level_2_range>;
         using function_type = std::function<level_2_range(const Meta::RangeValue<Range>&)>;
         FlatMapIterator() = default;

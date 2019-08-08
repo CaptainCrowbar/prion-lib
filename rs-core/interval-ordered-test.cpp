@@ -15,7 +15,7 @@ using IC = IntervalCategory;
 using IM = IntervalMatch;
 using IO = IntervalOrder;
 
-void test_source_interval_ordered_basic_properties() {
+void test_core_interval_ordered_basic_properties() {
 
     Itype in;
 
@@ -31,7 +31,7 @@ void test_source_interval_ordered_basic_properties() {
 
 }
 
-void test_source_interval_ordered_string_parsing() {
+void test_core_interval_ordered_string_parsing() {
 
     Itype in;
 
@@ -64,7 +64,7 @@ void test_source_interval_ordered_string_parsing() {
 
 }
 
-void test_source_interval_ordered_inverse() {
+void test_core_interval_ordered_inverse() {
 
     Itype in;
     Iset set;
@@ -84,7 +84,7 @@ void test_source_interval_ordered_inverse() {
 
 }
 
-void test_source_interval_ordered_binary_operations() {
+void test_core_interval_ordered_binary_operations() {
 
     struct test_info {
         int line;
@@ -403,7 +403,7 @@ void test_source_interval_ordered_binary_operations() {
 
 }
 
-void test_source_interval_ordered_set_construct_insert_erase() {
+void test_core_interval_ordered_set_construct_insert_erase() {
 
     Iset set, inv;
     Iset::iterator it;
@@ -477,7 +477,7 @@ void test_source_interval_ordered_set_construct_insert_erase() {
 
 }
 
-void test_source_interval_ordered_set_operations() {
+void test_core_interval_ordered_set_operations() {
 
     Iset set[2], i_set, u_set, d_set, sd_set;
     std::vector<Itype> vec[2];
@@ -546,7 +546,7 @@ void test_source_interval_ordered_set_operations() {
 
 }
 
-void test_source_interval_ordered_map() {
+void test_core_interval_ordered_map() {
 
     Imap map;
     Imap::iterator it;

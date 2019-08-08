@@ -13,7 +13,7 @@
 using namespace RS;
 using namespace std::literals;
 
-void test_source_marked_value_access() {
+void test_core_marked_value_access() {
 
     class Foo { RS_NO_INSTANCE(Foo); };
 
@@ -41,7 +41,7 @@ void test_source_marked_value_access() {
 
 }
 
-void test_source_marked_conversion_operators() {
+void test_core_marked_conversion_operators() {
 
     class Foo {};
     class Bar {};
@@ -70,7 +70,7 @@ void test_source_marked_conversion_operators() {
 
 }
 
-void test_source_marked_copying_and_moving() {
+void test_core_marked_copying_and_moving() {
 
     class Foo {};
     class Bar {};
@@ -94,7 +94,7 @@ void test_source_marked_copying_and_moving() {
 
 }
 
-void test_source_marked_string_conversion() {
+void test_core_marked_string_conversion() {
 
     class Foo {};
     class Bar {};
@@ -114,7 +114,7 @@ void test_source_marked_string_conversion() {
 
 }
 
-void test_source_marked_json_conversion() {
+void test_core_marked_json_conversion() {
 
     class Foo {};
     class Bar {};
@@ -135,7 +135,7 @@ void test_source_marked_json_conversion() {
 
 }
 
-void test_source_marked_boolean_conversion() {
+void test_core_marked_boolean_conversion() {
 
     class Foo {};
     class Bar {};
@@ -164,7 +164,7 @@ void test_source_marked_boolean_conversion() {
 
 }
 
-void test_source_marked_comparison_operators() {
+void test_core_marked_comparison_operators() {
 
     class Foo {};
     class Bar {};
@@ -198,7 +198,7 @@ void test_source_marked_comparison_operators() {
 
 }
 
-void test_source_marked_arithmetic_operators() {
+void test_core_marked_arithmetic_operators() {
 
     class Foo {};
     class Bar {};
@@ -272,7 +272,7 @@ void test_source_marked_arithmetic_operators() {
 
 }
 
-void test_source_marked_function_call_operators() {
+void test_core_marked_function_call_operators() {
 
     struct ConstFunction {
         int value = 0;
@@ -301,7 +301,7 @@ void test_source_marked_function_call_operators() {
 
 }
 
-void test_source_marked_subscript_operators() {
+void test_core_marked_subscript_operators() {
 
     class Foo {};
     class Bar {};
@@ -324,7 +324,7 @@ void test_source_marked_subscript_operators() {
 
 }
 
-void test_source_marked_hash_functions() {
+void test_core_marked_hash_functions() {
 
     class Foo {};
 
@@ -341,7 +341,7 @@ void test_source_marked_hash_functions() {
 
 }
 
-void test_source_marked_checked_values() {
+void test_core_marked_checked_values() {
 
     struct to_lower {
         std::string operator()(const std::string& s) const {

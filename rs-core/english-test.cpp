@@ -9,7 +9,7 @@ namespace {
 
 }
 
-void test_source_english_case_conversion() {
+void test_core_english_case_conversion() {
 
     TEST_EQUAL(extended_titlecase(""), "");
     TEST_EQUAL(extended_titlecase("hello world"), "Hello World");
@@ -30,7 +30,7 @@ void test_source_english_case_conversion() {
 
 }
 
-void test_source_english_list_formatting() {
+void test_core_english_list_formatting() {
 
     Strings list;
 
@@ -42,7 +42,7 @@ void test_source_english_list_formatting() {
 
 }
 
-void test_source_english_number_formatting() {
+void test_core_english_number_formatting() {
 
     TEST_EQUAL(cardinal(0), "zero");
     TEST_EQUAL(cardinal(1), "one");
@@ -240,7 +240,7 @@ void test_source_english_number_formatting() {
 
 }
 
-void test_source_english_pluralization() {
+void test_core_english_pluralization() {
 
     TEST_EQUAL(plural("abscissa"), "abscissae");
     TEST_EQUAL(plural("acropolis"), "acropolises");

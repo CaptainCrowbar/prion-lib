@@ -104,10 +104,10 @@ extern void test_core_encoding_base32();
 extern void test_core_encoding_base64();
 extern void test_core_encoding_ascii85();
 extern void test_core_encoding_z85();
-extern void test_source_english_case_conversion();
-extern void test_source_english_list_formatting();
-extern void test_source_english_number_formatting();
-extern void test_source_english_pluralization();
+extern void test_core_english_case_conversion();
+extern void test_core_english_list_formatting();
+extern void test_core_english_number_formatting();
+extern void test_core_english_pluralization();
 extern void test_core_file_system_standard_directories();
 extern void test_core_file_system_search_path();
 extern void test_core_fixed_binary_implementation_selection();
@@ -139,29 +139,29 @@ extern void test_core_int128_uint128_conversion();
 extern void test_core_int128_uint128_representation();
 extern void test_core_int128_uint128_literals();
 extern void test_core_int128_uint128_numeric_limits();
-extern void test_source_interval_basic_type_traits();
-extern void test_source_interval_continuous_basic_properties();
-extern void test_source_interval_continuous_string_parsing();
-extern void test_source_interval_continuous_inverse();
-extern void test_source_interval_continuous_binary_operations();
-extern void test_source_interval_continuous_set_construct_insert_erase();
-extern void test_source_interval_continuous_set_operations();
-extern void test_source_interval_continuous_map();
-extern void test_source_interval_integral_basic_properties();
-extern void test_source_interval_integral_string_parsing();
-extern void test_source_interval_integral_iterators();
-extern void test_source_interval_integral_inverse();
-extern void test_source_interval_integral_binary_operations();
-extern void test_source_interval_integral_set_construct_insert_erase();
-extern void test_source_interval_integral_set_operations();
-extern void test_source_interval_integral_map();
-extern void test_source_interval_ordered_basic_properties();
-extern void test_source_interval_ordered_string_parsing();
-extern void test_source_interval_ordered_inverse();
-extern void test_source_interval_ordered_binary_operations();
-extern void test_source_interval_ordered_set_construct_insert_erase();
-extern void test_source_interval_ordered_set_operations();
-extern void test_source_interval_ordered_map();
+extern void test_core_interval_basic_type_traits();
+extern void test_core_interval_continuous_basic_properties();
+extern void test_core_interval_continuous_string_parsing();
+extern void test_core_interval_continuous_inverse();
+extern void test_core_interval_continuous_binary_operations();
+extern void test_core_interval_continuous_set_construct_insert_erase();
+extern void test_core_interval_continuous_set_operations();
+extern void test_core_interval_continuous_map();
+extern void test_core_interval_integral_basic_properties();
+extern void test_core_interval_integral_string_parsing();
+extern void test_core_interval_integral_iterators();
+extern void test_core_interval_integral_inverse();
+extern void test_core_interval_integral_binary_operations();
+extern void test_core_interval_integral_set_construct_insert_erase();
+extern void test_core_interval_integral_set_operations();
+extern void test_core_interval_integral_map();
+extern void test_core_interval_ordered_basic_properties();
+extern void test_core_interval_ordered_string_parsing();
+extern void test_core_interval_ordered_inverse();
+extern void test_core_interval_ordered_binary_operations();
+extern void test_core_interval_ordered_set_construct_insert_erase();
+extern void test_core_interval_ordered_set_operations();
+extern void test_core_interval_ordered_map();
 extern void test_core_io_cstdio();
 extern void test_core_io_fdio();
 extern void test_core_io_pipe();
@@ -173,18 +173,18 @@ extern void test_core_io_print_formatting();
 extern void test_core_io_anonymous_temporary_file();
 extern void test_core_io_named_temporary_file();
 extern void test_core_ipc_named_mutex();
-extern void test_source_marked_value_access();
-extern void test_source_marked_conversion_operators();
-extern void test_source_marked_copying_and_moving();
-extern void test_source_marked_string_conversion();
-extern void test_source_marked_json_conversion();
-extern void test_source_marked_boolean_conversion();
-extern void test_source_marked_comparison_operators();
-extern void test_source_marked_arithmetic_operators();
-extern void test_source_marked_function_call_operators();
-extern void test_source_marked_subscript_operators();
-extern void test_source_marked_hash_functions();
-extern void test_source_marked_checked_values();
+extern void test_core_marked_value_access();
+extern void test_core_marked_conversion_operators();
+extern void test_core_marked_copying_and_moving();
+extern void test_core_marked_string_conversion();
+extern void test_core_marked_json_conversion();
+extern void test_core_marked_boolean_conversion();
+extern void test_core_marked_comparison_operators();
+extern void test_core_marked_arithmetic_operators();
+extern void test_core_marked_function_call_operators();
+extern void test_core_marked_subscript_operators();
+extern void test_core_marked_hash_functions();
+extern void test_core_marked_checked_values();
 extern void test_core_meta_logic();
 extern void test_core_meta_append();
 extern void test_core_meta_concat();
@@ -597,10 +597,10 @@ int main() {
         { "core/encoding/base64", test_core_encoding_base64 },
         { "core/encoding/ascii85", test_core_encoding_ascii85 },
         { "core/encoding/z85", test_core_encoding_z85 },
-        { "source/english/case-conversion", test_source_english_case_conversion },
-        { "source/english/list-formatting", test_source_english_list_formatting },
-        { "source/english/number-formatting", test_source_english_number_formatting },
-        { "source/english/pluralization", test_source_english_pluralization },
+        { "core/english/case-conversion", test_core_english_case_conversion },
+        { "core/english/list-formatting", test_core_english_list_formatting },
+        { "core/english/number-formatting", test_core_english_number_formatting },
+        { "core/english/pluralization", test_core_english_pluralization },
         { "core/file-system/standard-directories", test_core_file_system_standard_directories },
         { "core/file-system/search-path", test_core_file_system_search_path },
         { "core/fixed-binary/implementation-selection", test_core_fixed_binary_implementation_selection },
@@ -632,29 +632,29 @@ int main() {
         { "core/int128/uint128-representation", test_core_int128_uint128_representation },
         { "core/int128/uint128-literals", test_core_int128_uint128_literals },
         { "core/int128/uint128-numeric-limits", test_core_int128_uint128_numeric_limits },
-        { "source/interval-basic/type-traits", test_source_interval_basic_type_traits },
-        { "source/interval-continuous/basic-properties", test_source_interval_continuous_basic_properties },
-        { "source/interval-continuous/string-parsing", test_source_interval_continuous_string_parsing },
-        { "source/interval-continuous/inverse", test_source_interval_continuous_inverse },
-        { "source/interval-continuous/binary-operations", test_source_interval_continuous_binary_operations },
-        { "source/interval-continuous/set-construct-insert-erase", test_source_interval_continuous_set_construct_insert_erase },
-        { "source/interval-continuous/set-operations", test_source_interval_continuous_set_operations },
-        { "source/interval-continuous/map", test_source_interval_continuous_map },
-        { "source/interval-integral/basic-properties", test_source_interval_integral_basic_properties },
-        { "source/interval-integral/string-parsing", test_source_interval_integral_string_parsing },
-        { "source/interval-integral/iterators", test_source_interval_integral_iterators },
-        { "source/interval-integral/inverse", test_source_interval_integral_inverse },
-        { "source/interval-integral/binary-operations", test_source_interval_integral_binary_operations },
-        { "source/interval-integral/set-construct-insert-erase", test_source_interval_integral_set_construct_insert_erase },
-        { "source/interval-integral/set-operations", test_source_interval_integral_set_operations },
-        { "source/interval-integral/map", test_source_interval_integral_map },
-        { "source/interval-ordered/basic-properties", test_source_interval_ordered_basic_properties },
-        { "source/interval-ordered/string-parsing", test_source_interval_ordered_string_parsing },
-        { "source/interval-ordered/inverse", test_source_interval_ordered_inverse },
-        { "source/interval-ordered/binary-operations", test_source_interval_ordered_binary_operations },
-        { "source/interval-ordered/set-construct-insert-erase", test_source_interval_ordered_set_construct_insert_erase },
-        { "source/interval-ordered/set-operations", test_source_interval_ordered_set_operations },
-        { "source/interval-ordered/map", test_source_interval_ordered_map },
+        { "core/interval-basic/type-traits", test_core_interval_basic_type_traits },
+        { "core/interval-continuous/basic-properties", test_core_interval_continuous_basic_properties },
+        { "core/interval-continuous/string-parsing", test_core_interval_continuous_string_parsing },
+        { "core/interval-continuous/inverse", test_core_interval_continuous_inverse },
+        { "core/interval-continuous/binary-operations", test_core_interval_continuous_binary_operations },
+        { "core/interval-continuous/set-construct-insert-erase", test_core_interval_continuous_set_construct_insert_erase },
+        { "core/interval-continuous/set-operations", test_core_interval_continuous_set_operations },
+        { "core/interval-continuous/map", test_core_interval_continuous_map },
+        { "core/interval-integral/basic-properties", test_core_interval_integral_basic_properties },
+        { "core/interval-integral/string-parsing", test_core_interval_integral_string_parsing },
+        { "core/interval-integral/iterators", test_core_interval_integral_iterators },
+        { "core/interval-integral/inverse", test_core_interval_integral_inverse },
+        { "core/interval-integral/binary-operations", test_core_interval_integral_binary_operations },
+        { "core/interval-integral/set-construct-insert-erase", test_core_interval_integral_set_construct_insert_erase },
+        { "core/interval-integral/set-operations", test_core_interval_integral_set_operations },
+        { "core/interval-integral/map", test_core_interval_integral_map },
+        { "core/interval-ordered/basic-properties", test_core_interval_ordered_basic_properties },
+        { "core/interval-ordered/string-parsing", test_core_interval_ordered_string_parsing },
+        { "core/interval-ordered/inverse", test_core_interval_ordered_inverse },
+        { "core/interval-ordered/binary-operations", test_core_interval_ordered_binary_operations },
+        { "core/interval-ordered/set-construct-insert-erase", test_core_interval_ordered_set_construct_insert_erase },
+        { "core/interval-ordered/set-operations", test_core_interval_ordered_set_operations },
+        { "core/interval-ordered/map", test_core_interval_ordered_map },
         { "core/io/cstdio", test_core_io_cstdio },
         { "core/io/fdio", test_core_io_fdio },
         { "core/io/pipe", test_core_io_pipe },
@@ -666,18 +666,18 @@ int main() {
         { "core/io/anonymous-temporary-file", test_core_io_anonymous_temporary_file },
         { "core/io/named-temporary-file", test_core_io_named_temporary_file },
         { "core/ipc/named-mutex", test_core_ipc_named_mutex },
-        { "source/marked/value-access", test_source_marked_value_access },
-        { "source/marked/conversion-operators", test_source_marked_conversion_operators },
-        { "source/marked/copying-and-moving", test_source_marked_copying_and_moving },
-        { "source/marked/string-conversion", test_source_marked_string_conversion },
-        { "source/marked/json-conversion", test_source_marked_json_conversion },
-        { "source/marked/boolean-conversion", test_source_marked_boolean_conversion },
-        { "source/marked/comparison-operators", test_source_marked_comparison_operators },
-        { "source/marked/arithmetic-operators", test_source_marked_arithmetic_operators },
-        { "source/marked/function-call-operators", test_source_marked_function_call_operators },
-        { "source/marked/subscript-operators", test_source_marked_subscript_operators },
-        { "source/marked/hash-functions", test_source_marked_hash_functions },
-        { "source/marked/checked-values", test_source_marked_checked_values },
+        { "core/marked/value-access", test_core_marked_value_access },
+        { "core/marked/conversion-operators", test_core_marked_conversion_operators },
+        { "core/marked/copying-and-moving", test_core_marked_copying_and_moving },
+        { "core/marked/string-conversion", test_core_marked_string_conversion },
+        { "core/marked/json-conversion", test_core_marked_json_conversion },
+        { "core/marked/boolean-conversion", test_core_marked_boolean_conversion },
+        { "core/marked/comparison-operators", test_core_marked_comparison_operators },
+        { "core/marked/arithmetic-operators", test_core_marked_arithmetic_operators },
+        { "core/marked/function-call-operators", test_core_marked_function_call_operators },
+        { "core/marked/subscript-operators", test_core_marked_subscript_operators },
+        { "core/marked/hash-functions", test_core_marked_hash_functions },
+        { "core/marked/checked-values", test_core_marked_checked_values },
         { "core/meta/logic", test_core_meta_logic },
         { "core/meta/append", test_core_meta_append },
         { "core/meta/concat", test_core_meta_concat },

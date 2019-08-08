@@ -16,7 +16,7 @@ using namespace std::chrono;
 
 using IC = IntervalCategory;
 
-void test_source_interval_basic_type_traits() {
+void test_core_interval_basic_type_traits() {
 
     TEST_EQUAL(interval_category<std::complex<float>>, IC::none);
 

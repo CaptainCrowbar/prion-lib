@@ -28,7 +28,7 @@ void test_core_dso_dynamic_library() {
     #elif defined(_XOPEN_SOURCE)
         #error Not implemented for generic Unix
     #else
-        dir = "C:/Users/ross/Documents/Source/vcpkg/installed/x64-windows/bin";
+        dir = "C:/cygwin64/home/rsmith/Source/vcpkg/installed/x64-windows/bin";
         file = "libcurl.dll";
     #endif
 

@@ -275,13 +275,13 @@ namespace RS {
     template <typename T, typename S> RpgDice<T, S> operator/(const RpgDice<T, S>& lhs, T rhs) { auto d = lhs; d /= rhs; return d; }
     template <typename T, typename S> std::ostream& operator<<(std::ostream& out, const RpgDice<T, S>& d) { return out << d.str(); }
 
-    inline IntDice operator""_d4(unsigned long long n) { return IntDice(n, 4); }
-    inline IntDice operator""_d6(unsigned long long n) { return IntDice(n, 6); }
-    inline IntDice operator""_d8(unsigned long long n) { return IntDice(n, 8); }
-    inline IntDice operator""_d10(unsigned long long n) { return IntDice(n, 10); }
-    inline IntDice operator""_d12(unsigned long long n) { return IntDice(n, 12); }
-    inline IntDice operator""_d20(unsigned long long n) { return IntDice(n, 20); }
-    inline IntDice operator""_d100(unsigned long long n) { return IntDice(n, 100); }
+    inline IntDice operator""_d4(unsigned long long n) { return IntDice(int(n), 4); }
+    inline IntDice operator""_d6(unsigned long long n) { return IntDice(int(n), 6); }
+    inline IntDice operator""_d8(unsigned long long n) { return IntDice(int(n), 8); }
+    inline IntDice operator""_d10(unsigned long long n) { return IntDice(int(n), 10); }
+    inline IntDice operator""_d12(unsigned long long n) { return IntDice(int(n), 12); }
+    inline IntDice operator""_d20(unsigned long long n) { return IntDice(int(n), 20); }
+    inline IntDice operator""_d100(unsigned long long n) { return IntDice(int(n), 100); }
     inline IntDice operator""_dice(const char* p, size_t n) { return IntDice(Uview(p, n)); }
 
 }

@@ -94,10 +94,10 @@ could be.
 An arbitrary precision unsigned integer (natural number). Most of its methods
 are conventional arithmetic operations with their natural behaviour.
 
-The constructor from a string accepts base 0, 2, 10, or 16; it will throw
+The constructor from a string accepts base of 0 or 2-36; it will throw
 `std::invalid_argument` if the base is not one of these. Base 0 will check for
-a `"0b"` or `"0x"` prefix, assuming decimal otherwise. Apostrophe delimiters
-are allowed.
+a `"0b"` or `"0x"` prefix, assuming decimal otherwise. Input is case
+insensitive; apostrophe delimiters are allowed.
 
 The explicit cast template returns the value converted to `T`, if possible.
 `T` must be a primitive integer or floating point arithmetic type. Results are

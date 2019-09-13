@@ -70,10 +70,6 @@ namespace RS {
         std::vector<uint32_t> rep; // Least significant word first
         void init(Uview s, int base);
         void trim() noexcept;
-        static constexpr int digit_2(char c) noexcept { return c == '0' ? 0 : c == '1' ? 1 : -1; }
-        static constexpr int digit_10(char c) noexcept { return c >= '0' && c <= '9' ? int(c - '0') : -1; }
-        static constexpr int digit_16(char c) noexcept
-            { return c >= '0' && c <= '9' ? int(c - '0') : c >= 'A' && c <= 'F' ? int(c - 'A') + 10 : c >= 'a' && c <= 'f' ? int(c - 'a') + 10 : -1; }
         static void do_divide(const Mpuint& x, const Mpuint& y, Mpuint& q, Mpuint& r);
         static void do_multiply(const Mpuint& x, const Mpuint& y, Mpuint& z);
     };

@@ -286,4 +286,26 @@ namespace RS {
             *out = f(*i, *j);
     }
 
+    // Tuple algorithms
+
+    namespace RS_Detail {
+
+        template <size_t Index, typename UnaryFunction, typename... TS>
+        void tuple_for_each_helper(std::tuple<TS...>& tuple, UnaryFunction f) {
+            if constexpr (Index < sizeof...(TS)) {
+                f(std::get<Index>(tuple));
+                tuple_for_each_helper<Index + 1>(tuple, f);
+            }
+            // Compiler brain damage
+            (void)tuple;
+            (void)f;
+        }
+
+    }
+
+    template <typename UnaryFunction, typename... TS>
+    void tuple_for_each(std::tuple<TS...>& tuple, UnaryFunction f) {
+        RS_Detail::tuple_for_each_helper<0>(tuple, f);
+    }
+
 }

@@ -29,6 +29,10 @@
 <li><a href="#paired-transform">Paired transform</a></li>
 </ul>
 </li>
+<li><a href="#tuple-algorithms">Tuple algorithms</a><ul>
+<li><a href="#for-each-in-tuple">For each in tuple</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -128,5 +132,16 @@ default), also reordering <code>range2</code> in the same way (that is, each ele
 <li><code>template &lt;typename InputRange1, typename InputRange2, typename OutputIterator, typename BinaryFunction&gt; void</code> <strong><code>paired_transform</code></strong><code>(const InputRange1&amp; range1, const InputRange2&amp; range2, OutputIterator out, BinaryFunction f)</code></li>
 </ul>
 <p>For each pair of corresponding elements in the two ranges, this calls <code>f(x,y)</code>
-and appends the result to the output range.</p></body>
+and appends the result to the output range.</p>
+</div>
+<h2 id="tuple-algorithms">Tuple algorithms</h2>
+<h3 id="for-each-in-tuple">For each in tuple</h3>
+<div class="defns">
+<ul>
+<li><code>template &lt;typename UnaryFunction, typename... TS&gt; void</code> <strong><code>tuple_for_each</code></strong><code>(std::tuple&lt;TS...&gt;&amp; tuple, UnaryFunction f)</code></li>
+</ul>
+<p>Calls <code>f(t)</code> for each <code>t</code> in <code>tuple</code>. The function must either take an
+argument type to which all types in the tuple can be converted, or be a
+function object that has overloaded function call operators that can take all
+of the types in the tuple.</p></body>
 </html>

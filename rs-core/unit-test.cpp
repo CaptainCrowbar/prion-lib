@@ -30,6 +30,7 @@ extern void test_core_algorithm_order_by_index();
 extern void test_core_algorithm_paired_for_each();
 extern void test_core_algorithm_paired_sort();
 extern void test_core_algorithm_paired_transform();
+extern void test_core_algorithm_tuple_for_each();
 extern void test_core_array_map_array_map();
 extern void test_core_array_map_array_set();
 extern void test_core_array_map_general_associative_containers();
@@ -523,6 +524,7 @@ int main() {
         { "core/algorithm/paired-for-each", test_core_algorithm_paired_for_each },
         { "core/algorithm/paired-sort", test_core_algorithm_paired_sort },
         { "core/algorithm/paired-transform", test_core_algorithm_paired_transform },
+        { "core/algorithm/tuple-for-each", test_core_algorithm_tuple_for_each },
         { "core/array-map/array-map", test_core_array_map_array_map },
         { "core/array-map/array-set", test_core_array_map_array_set },
         { "core/array-map/general-associative-containers", test_core_array_map_general_associative_containers },

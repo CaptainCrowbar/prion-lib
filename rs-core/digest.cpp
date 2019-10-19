@@ -2,6 +2,7 @@
 #include <algorithm>
 
 #if defined(__APPLE__)
+    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     #include <CommonCrypto/CommonDigest.h>
 #elif defined(_XOPEN_SOURCE)
     #include <openssl/md5.h>

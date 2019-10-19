@@ -342,7 +342,7 @@ namespace RS {
     }
 
     void Mpuint::init(Uview s, int base) {
-        if (base != 0 && base != 2 && base != 10 && base != 16)
+        if (base < 0 || base == 1 || base > 36)
             throw std::invalid_argument("Invalid base: " + RS::dec(base));
         if (s.empty())
             return;
@@ -361,13 +361,18 @@ namespace RS {
         }
         Mpuint nbase = base;
         int digit = 0;
-        auto digit_f = base == 2 ? digit_2 : base == 16 ? digit_16 : digit_10;
+        int (*get_digit)(char c);
+        if (base <= 10)
+            get_digit = [] (char c) noexcept { return c >= '0' && c <= '9' ? int(c - '0') : 64; };
+        else
+            get_digit = [] (char c) noexcept { return c >= '0' && c <= '9' ? int(c - '0') :
+                c >= 'A' && c <= 'Z' ? int(c - 'A') + 10 : c >= 'a' && c <= 'z' ? int(c - 'a') + 10 : 64; };
         for (; ptr != end; ++ptr) {
             if (*ptr == '\'')
                 continue;
-            digit = digit_f(*ptr);
-            if (digit == -1)
-                break;
+            digit = get_digit(*ptr);
+            if (digit >= base)
+                throw std::invalid_argument(fmt("Invalid base $1 integer: $2", base, quote(s)));
             *this *= nbase;
             *this += digit;
         }
@@ -441,7 +446,7 @@ namespace RS {
     }
 
     void Mpint::init(Uview s, int base) {
-        if (base != 0 && base != 2 && base != 10 && base != 16)
+        if (base < 0 || base == 1 || base > 36)
             throw std::invalid_argument("Invalid base: " + RS::dec(base));
         if (s.empty())
             return;

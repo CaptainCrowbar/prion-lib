@@ -101,3 +101,14 @@ default), also reordering `range2` in the same way (that is, each element in
 
 For each pair of corresponding elements in the two ranges, this calls `f(x,y)`
 and appends the result to the output range.
+
+## Tuple algorithms ##
+
+### For each in tuple ###
+
+* `template <typename UnaryFunction, typename... TS> void` **`tuple_for_each`**`(std::tuple<TS...>& tuple, UnaryFunction f)`
+
+Calls `f(t)` for each `t` in `tuple`. The function must either take an
+argument type to which all types in the tuple can be converted, or be a
+function object that has overloaded function call operators that can take all
+of the types in the tuple.

@@ -3,6 +3,8 @@
 #include "rs-core/unit-test.hpp"
 #include <functional>
 #include <iterator>
+#include <sstream>
+#include <tuple>
 #include <vector>
 
 using namespace RS;
@@ -246,5 +248,26 @@ void test_core_algorithm_paired_transform() {
     sv1 = {"abc", "def", "ghi", "jkl"};
     TRY(paired_transform(iv, sv1, overwrite(sv2), f));
     TEST_EQUAL(to_str(sv2), "[abc,defdef,ghighighi,jkljkljkljkl]");
+
+}
+
+void test_core_algorithm_tuple_for_each() {
+
+    auto tuple = std::make_tuple(
+        42,
+        "hello",
+        std::string("world"),
+        123.456
+    );
+
+    std::ostringstream out;
+    TRY(tuple_for_each(tuple, [&] (auto& t) { out << t << "\n"; }));
+    auto s = out.str();
+    TEST_EQUAL(s,
+        "42\n"
+        "hello\n"
+        "world\n"
+        "123.456\n"
+    );
 
 }

@@ -114,10 +114,10 @@ could be.</p>
 </ul>
 <p>An arbitrary precision unsigned integer (natural number). Most of its methods
 are conventional arithmetic operations with their natural behaviour.</p>
-<p>The constructor from a string accepts base 0, 2, 10, or 16; it will throw
+<p>The constructor from a string accepts base of 0 or 2-36; it will throw
 <code>std::invalid_argument</code> if the base is not one of these. Base 0 will check for
-a <code>"0b"</code> or <code>"0x"</code> prefix, assuming decimal otherwise. Apostrophe delimiters
-are allowed.</p>
+a <code>"0b"</code> or <code>"0x"</code> prefix, assuming decimal otherwise. Input is case
+insensitive; apostrophe delimiters are allowed.</p>
 <p>The explicit cast template returns the value converted to <code>T</code>, if possible.
 <code>T</code> must be a primitive integer or floating point arithmetic type. Results are
 unspecified if the value is outside the return type's representable range.</p>

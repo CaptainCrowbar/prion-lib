@@ -24,7 +24,8 @@ void test_core_dso_dynamic_library() {
         dir = "/usr/bin";
         file = "cygcurl-4.dll";
     #elif defined(__linux__)
-        #error Not implemented for Linux
+        dir = "/usr/lib/x86_64-linux-gnu";
+        file = "libcurl.so";
     #elif defined(_XOPEN_SOURCE)
         #error Not implemented for generic Unix
     #else

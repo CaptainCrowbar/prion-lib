@@ -59,7 +59,9 @@ void test_core_zlib_io() {
 
         Path log = "__gzio_log__";
         Ustring cmd = fmt("file $1 >$2", file, log);
-        TRY(std::system(cmd.data()));
+        int rc = 0;
+        TRY(rc = std::system(cmd.data()));
+        TEST_EQUAL(rc, 0);
         TRY(log.load(text));
         TEST_MATCH(text, "gzip compressed data");
         TRY(log.remove());

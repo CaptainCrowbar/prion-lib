@@ -26,6 +26,8 @@
 
 #endif
 
+RS_LDLIB(linux: dl);
+
 namespace RS {
 
     class Dso {

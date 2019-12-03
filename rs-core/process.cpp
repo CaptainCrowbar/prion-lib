@@ -76,7 +76,7 @@ namespace RS {
             FD_SET(fd, &fds);
             auto tv = duration_to_timeval(t);
             errno = 0;
-            int rc = ::select(fd + 1, &fds, nullptr, &fds, &tv);
+            int rc = ::select(fd + 1, &fds, nullptr, nullptr, &tv);
             int err = errno;
             if (rc == -1 && err == EBADF)
                 return true;

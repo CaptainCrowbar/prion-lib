@@ -191,7 +191,7 @@ ifeq ($(LIBTAG),cygwin)
     LDLIBS += -lcrypto
 endif
 ifeq ($(LIBTAG),linux)
-    LDLIBS += -lcrypto
+    LDLIBS += -lcrypto -ldl
 endif
 ifeq ($(LIBTAG),msvc)
     LDLIBS += advapi32.lib ole32.lib shell32.lib ws2_32.lib zlib.lib

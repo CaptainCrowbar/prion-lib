@@ -491,19 +491,22 @@ namespace RS {
 
     std::pair<Fdio, Fdio> Fdio::pipe(size_t winmem) {
         int fds[2];
+        int rc = 0;
         errno = 0;
         #ifdef _XOPEN_SOURCE
             (void)winmem;
-            ::pipe(fds);
+            rc = ::pipe(fds);
         #else
-            _pipe(fds, iosize(winmem), O_BINARY);
+            rc = _pipe(fds, iosize(winmem), O_BINARY);
         #endif
         int err = errno;
         std::pair<Fdio, Fdio> pair;
         pair.first = Fdio(fds[0], false);
         pair.second = Fdio(fds[1], false);
-        pair.first.set_error(err);
-        pair.second.set_error(err);
+        if (rc) {
+            pair.first.set_error(err);
+            pair.second.set_error(err);
+        }
         return pair;
     }
 

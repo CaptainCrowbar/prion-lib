@@ -313,7 +313,13 @@ void test_core_float_precision_sum() {
 
     precision_sum_test<float>(1000, 100, 1e20f, rng);
     precision_sum_test<double>(1000, 100, 1e100, rng);
-    precision_sum_test<long double>(1000, 100, 1e100l, rng);
+
+    // GCC doesn't provide strict IEEE mode for long double
+    // (not even with -ffloat-store)
+
+    #if ! defined(__GNUC__) || defined(__clang__)
+        precision_sum_test<long double>(1000, 100, 1e100l, rng);
+    #endif
 
 }
 

@@ -115,6 +115,7 @@ well defined front and back sets, will not be detected here).</p>
 <div class="defns">
 <ul>
 <li><code>template &lt;typename... Args&gt; void TopologicalOrder::</code><strong><code>insert</code></strong><code>(const T&amp; t, const Args&amp;... args)</code></li>
+<li><code>template &lt;typename R&gt; void TopologicalOrder::</code><strong><code>insert_n</code></strong><code>(const R&amp; r)</code></li>
 </ul>
 <p>Insert one or more elements. If only one element is inserted, it has no
 implied ordering relations with any other elements. If multiple elements are

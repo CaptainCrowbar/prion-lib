@@ -161,6 +161,21 @@ void test_core_topological_order_algorithm() {
     );
 
     TRY(graph.clear());
+    v = {1, 2, 3};  TRY(graph.insert_n(v));
+    v = {1, 4, 5};  TRY(graph.insert_n(v));
+    v = {2, 3, 6};  TRY(graph.insert_n(v));
+    v = {4, 5, 6};  TRY(graph.insert_n(v));
+    TEST_EQUAL(graph.size(), 6);
+
+    TRY(s = graph.format_by_set());
+    TEST_EQUAL(s,
+        "[1]\n"
+        "[2,4]\n"
+        "[3,5]\n"
+        "[6]\n"
+    );
+
+    TRY(graph.clear());
     TRY(v = graph.front_set());  TEST_EQUAL(to_str(v), "[]");
     TRY(v = graph.back_set());   TEST_EQUAL(to_str(v), "[]");
     TEST_THROW(graph.front(), TopologicalOrderEmpty);
@@ -170,19 +185,19 @@ void test_core_topological_order_algorithm() {
     TRY(graph.insert(2, 3));
     TRY(v = graph.front_set());  TEST_EQUAL(to_str(v), "[1,2]");
     TRY(v = graph.back_set());   TEST_EQUAL(to_str(v), "[1,3]");
-    TRY(n = graph.front());        TEST_EQUAL(n, 1);
-    TRY(n = graph.back());         TEST_EQUAL(n, 1);
+    TRY(n = graph.front());      TEST_EQUAL(n, 1);
+    TRY(n = graph.back());       TEST_EQUAL(n, 1);
     TEST(! graph.erase(0));
     TEST(graph.erase(1));
     TRY(v = graph.front_set());  TEST_EQUAL(to_str(v), "[2]");
     TRY(v = graph.back_set());   TEST_EQUAL(to_str(v), "[3]");
-    TRY(n = graph.front());        TEST_EQUAL(n, 2);
-    TRY(n = graph.back());         TEST_EQUAL(n, 3);
+    TRY(n = graph.front());      TEST_EQUAL(n, 2);
+    TRY(n = graph.back());       TEST_EQUAL(n, 3);
     TEST(graph.erase(2));
     TRY(v = graph.front_set());  TEST_EQUAL(to_str(v), "[3]");
     TRY(v = graph.back_set());   TEST_EQUAL(to_str(v), "[3]");
-    TRY(n = graph.front());        TEST_EQUAL(n, 3);
-    TRY(n = graph.back());         TEST_EQUAL(n, 3);
+    TRY(n = graph.front());      TEST_EQUAL(n, 3);
+    TRY(n = graph.back());       TEST_EQUAL(n, 3);
     TEST(graph.erase(3));
     TEST(graph.empty());
 

@@ -36,6 +36,7 @@ namespace RS {
         bool has(const T& t) const { return graph.count(t); }
         void insert(const T& t) { ensure_key(t); }
         template <typename... Args> void insert(const T& t1, const T& t2, const Args&... args);
+        template <typename R> void insert_n(const R& r);
         template <typename R> void insert_1n(const T& t1, const R& r2) { insert_ranges(array_range(&t1, 1), r2); }
         void insert_1n(const T& t1, std::initializer_list<T> r2) { insert_ranges(array_range(&t1, 1), r2); }
         template <typename R> void insert_n1(const R& r1, const T& t2) { insert_ranges(r1, array_range(&t2, 1)); }
@@ -59,6 +60,7 @@ namespace RS {
         map_type graph;
         map_iterator ensure_key(const T& t);
         template <typename R1, typename R2> void insert_ranges(const R1& r1, const R2& r2);
+        void insert_vector(const std::vector<T>& v);
         link_sets make_link_sets() const { return {set_type(graph.key_comp()), set_type(graph.key_comp())}; }
     };
 
@@ -124,19 +126,17 @@ namespace RS {
     template <typename T, typename Compare>
     template <typename... Args>
     void TopologicalOrder<T, Compare>::insert(const T& t1, const T& t2, const Args&... args) {
-        size_t n = sizeof...(args) + 2;
         std::vector<T> v{t1, t2, args...};
-        std::vector<map_iterator> its(n);
-        for (size_t i = 0; i < n; ++i)
-            its[i] = ensure_key(v[i]);
-        for (size_t i = 0; i < n - 1; ++i) {
-            for (size_t j = i + 1; j < n; ++j) {
-                if (its[i] != its[j]) {
-                    its[i]->second.right.insert(v[j]);
-                    its[j]->second.left.insert(v[i]);
-                }
-            }
-        }
+        insert_vector(v);
+    }
+
+    template <typename T, typename Compare>
+    template <typename R>
+    void TopologicalOrder<T, Compare>::insert_n(const R& r) {
+        using std::begin;
+        using std::end;
+        std::vector<T> v(begin(r), end(r));
+        insert_vector(v);
     }
 
     template <typename T, typename Compare>
@@ -276,6 +276,23 @@ namespace RS {
             auto j = ensure_key(t2);
             std::copy(begin(r1), end(r1), append(j->second.left));
             j->second.left.erase(t2);
+        }
+    }
+
+    template <typename T, typename Compare>
+    void TopologicalOrder<T, Compare>::insert_vector(const std::vector<T>& v) {
+        if (v.empty())
+            return;
+        std::vector<map_iterator> its(v.size());
+        for (size_t i = 0; i < v.size(); ++i)
+            its[i] = ensure_key(v[i]);
+        for (size_t i = 0; i < v.size() - 1; ++i) {
+            for (size_t j = i + 1; j < v.size(); ++j) {
+                if (its[i] != its[j]) {
+                    its[i]->second.right.insert(v[j]);
+                    its[j]->second.left.insert(v[i]);
+                }
+            }
         }
     }
 

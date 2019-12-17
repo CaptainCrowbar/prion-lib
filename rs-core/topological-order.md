@@ -79,6 +79,7 @@ well defined front and back sets, will not be detected here).
 True if the element is in the container.
 
 * `template <typename... Args> void TopologicalOrder::`**`insert`**`(const T& t, const Args&... args)`
+* `template <typename R> void TopologicalOrder::`**`insert_n`**`(const R& r)`
 
 Insert one or more elements. If only one element is inserted, it has no
 implied ordering relations with any other elements. If multiple elements are

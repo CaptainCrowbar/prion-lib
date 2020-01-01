@@ -66,7 +66,14 @@ can be loaded at run time.</p>
 </li>
 </ul>
 <p>Flags passed to the constructor and related functions, controlling the way the
-library is loaded. Flags not relevant to the target system are set to zero.</p>
+library is loaded. Flags not relevant to the target system are equal to zero
+and have no effect.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>static constexpr flag_type Dso::</code><strong><code>default_flags</code></strong> <code>= now | global</code></li>
+</ul>
+<p>The default flags.</p>
 </div>
 <div class="defns">
 <ul>

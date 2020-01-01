@@ -42,7 +42,12 @@ Member types.
     * `static constexpr flag_type Dso::`**`altered_search`**      `= LOAD_WITH_ALTERED_SEARCH_PATH`        _(Use alternative standard search path)_
 
 Flags passed to the constructor and related functions, controlling the way the
-library is loaded. Flags not relevant to the target system are set to zero.
+library is loaded. Flags not relevant to the target system are equal to zero
+and have no effect.
+
+* `static constexpr flag_type Dso::`**`default_flags`** `= now | global`
+
+The default flags.
 
 * `Dso::`**`Dso`**`() noexcept`
 * `explicit Dso::`**`Dso`**`(const Unicorn::Path& file, flag_type flags = 0)`

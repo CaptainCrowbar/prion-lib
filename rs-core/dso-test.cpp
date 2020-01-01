@@ -12,8 +12,8 @@ void test_core_dso_dynamic_library() {
 
     Dso lib1, lib2, lib3, lib4;
 
-    TEST_THROW(Dso("no-such-thing"), std::system_error);
     TRY(lib1 = Dso::self());
+    TEST_THROW(Dso("no-such-thing"), std::system_error);
 
     Path dir, file;
 

@@ -57,17 +57,18 @@ namespace RS {
         static constexpr flag_type search_system32     = RS_DSO_WIN32_FLAG(LOAD_LIBRARY_SEARCH_SYSTEM32);         // Search system directory only
         static constexpr flag_type search_user         = RS_DSO_WIN32_FLAG(LOAD_LIBRARY_SEARCH_USER_DIRS);        // Search user-added directories only
         static constexpr flag_type altered_search      = RS_DSO_WIN32_FLAG(LOAD_WITH_ALTERED_SEARCH_PATH);        // Use alternative standard search path
+        static constexpr flag_type default_flags = now | global;
         Dso() = default;
-        explicit Dso(const Unicorn::Path& file, flag_type flags = 0) { load_library(file, flags, true); }
+        explicit Dso(const Unicorn::Path& file, flag_type flags = default_flags) { load_library(file, flags, true); }
         ~Dso() = default;
         explicit operator bool() const noexcept { return bool(handle); }
         handle_type get() const noexcept { return handle.get(); }
         Unicorn::Path file() const { return libfile.value; }
         template <typename Sym> Sym symbol(const Ustring& name) { using SP = typename sym_type<Sym>::ptr; return Sym(SP(load_symbol(name, true))); }
         template <typename Sym> bool symbol(const Ustring& name, Sym& sym) noexcept;
-        static Dso search(const Strings& names, flag_type flags = 0) { return do_search(names, flags); }
+        static Dso search(const Strings& names, flag_type flags = default_flags) { return do_search(names, flags); }
         template <typename... Args> static Dso search(Args... args) { Strings names; return do_search(names, args...); }
-        static Dso self(flag_type flags = 0) { return Dso(Unicorn::Path(), flags); }
+        static Dso self(flag_type flags = default_flags) { return Dso(Unicorn::Path(), flags); }
     private:
         #ifdef _XOPEN_SOURCE
             using symbol_type = void*;
@@ -82,7 +83,7 @@ namespace RS {
         AutoMove<Unicorn::Path> libfile;
         bool load_library(Unicorn::Path file, flag_type flags, bool check);
         symbol_type load_symbol(const Ustring& name, bool check);
-        static Dso do_search(const Strings& names, flag_type flags = 0);
+        static Dso do_search(const Strings& names, flag_type flags = default_flags);
         template <typename... Args> static Dso do_search(Strings& names, Uview next, Args... args) { names.emplace_back(next); return do_search(names, args...); }
     };
 

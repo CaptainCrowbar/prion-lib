@@ -1123,6 +1123,46 @@ void test_core_meta_typelist_function_call() {
 
 void test_core_meta_operator_detection() {
 
+    TEST((! has_pre_increment_operator<bool>));     // ++x
+    TEST((! has_pre_decrement_operator<bool>));     // --x
+    TEST((! has_post_increment_operator<bool>));    // x++
+    TEST((! has_post_decrement_operator<bool>));    // x--
+    TEST((has_unary_plus_operator<bool>));          // +x
+    TEST((has_unary_minus_operator<bool>));         // -x
+    TEST((! has_dereference_operator<bool>));       // *x
+    TEST((has_logical_not_operator<bool>));         // !x
+    TEST((has_bitwise_not_operator<bool>));         // ~x
+    TEST((has_plus_operator<bool>));                // x+y
+    TEST((has_minus_operator<bool>));               // x-y
+    TEST((has_multiply_operator<bool>));            // x*y
+    TEST((has_divide_operator<bool>));              // x/y
+    TEST((has_remainder_operator<bool>));           // x%y
+    TEST((has_bitwise_and_operator<bool>));         // x&y
+    TEST((has_bitwise_xor_operator<bool>));         // x^y
+    TEST((has_bitwise_or_operator<bool>));          // x|y
+    TEST((has_left_shift_operator<bool>));          // x<<y
+    TEST((has_right_shift_operator<bool>));         // x>>y
+    TEST((has_equal_operator<bool>));               // x==y
+    TEST((has_not_equal_operator<bool>));           // x!=y
+    TEST((has_less_than_operator<bool>));           // x<y
+    TEST((has_greater_than_operator<bool>));        // x>y
+    TEST((has_less_or_equal_operator<bool>));       // x<=y
+    TEST((has_greater_or_equal_operator<bool>));    // x>=y
+    TEST((has_logical_and_operator<bool>));         // x&&y
+    TEST((has_logical_or_operator<bool>));          // x||y
+    TEST((has_assign_operator<bool>));              // x=y
+    TEST((has_plus_assign_operator<bool>));         // x+=y
+    TEST((has_minus_assign_operator<bool>));        // x-=y
+    TEST((has_multiply_assign_operator<bool>));     // x*=y
+    TEST((has_divide_assign_operator<bool>));       // x/=y
+    TEST((has_remainder_assign_operator<bool>));    // x%=y
+    TEST((has_bitwise_and_assign_operator<bool>));  // x&=y
+    TEST((has_bitwise_xor_assign_operator<bool>));  // x^=y
+    TEST((has_bitwise_or_assign_operator<bool>));   // x|=y
+    TEST((has_right_shift_assign_operator<bool>));  // x>>=y
+    TEST((has_left_shift_assign_operator<bool>));   // x<<=y
+    TEST((! has_index_operator<bool, int>));        // x[y]
+
     TEST((has_pre_increment_operator<int>));       // ++x
     TEST((has_pre_decrement_operator<int>));       // --x
     TEST((has_post_increment_operator<int>));      // x++

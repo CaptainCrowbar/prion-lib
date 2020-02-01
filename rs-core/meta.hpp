@@ -607,6 +607,20 @@ namespace RS::Meta {
     RS_DETECT_BINARY_OPERATOR_REF   (<<=,  LeftShiftAssign,   left_shift_assign);
     RS_DETECT_BINARY_OPERATOR_REF   (>>=,  RightShiftAssign,  right_shift_assign);
 
+    namespace MetaDetail {
+
+        struct FailDetector {
+            using value_t = std::false_type;
+            using type = CompleteType;
+        };
+
+    }
+
+    template <> struct Detector<CompleteType, void, HasPreIncrementOperatorArchetype, bool>: MetaDetail::FailDetector {};
+    template <> struct Detector<CompleteType, void, HasPreDecrementOperatorArchetype, bool>: MetaDetail::FailDetector {};
+    template <> struct Detector<CompleteType, void, HasPostIncrementOperatorArchetype, bool>: MetaDetail::FailDetector {};
+    template <> struct Detector<CompleteType, void, HasPostDecrementOperatorArchetype, bool>: MetaDetail::FailDetector {};
+
     // We need special cases for some of the operators on void pointers
 
     namespace MetaDetail {

@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <initializer_list>
 #include <iterator>
+#include <limits>
 #include <map>
 #include <ostream>
 #include <set>
@@ -44,32 +45,34 @@ namespace RS {
         b_only,             // -7  bbb        A is empty, B is not
         a_below_b,          // -6  aaa...bbb  A's upper bound is less than B's lower bound, with a gap
         a_touches_b,        // -5  aaabbb     A's upper bound is less than B's lower bound, with no gap
-        a_overlaps_b,       // -4  aaa***bbb  A's upper bound overlaps B's lower bound
-        a_extends_below_b,  // -3  aaa***     B is a subset of A, with the same upper bound
-        a_encloses_b,       // -2  aaa***aaa  B is a subset of A, matching neither bound
-        b_extends_above_a,  // -1  ***bbb     A is a subset of B, with the same lower bound
-        equal,              // 0   ***        A and B are the same (this includes the case where both are empty)
-        a_extends_above_b,  // 1   ***aaa     B is a subset of A, with the same lower bound
-        b_encloses_a,       // 2   bbb***bbb  A is a subset of B, matching neither bound
-        b_extends_below_a,  // 3   bbb***     A is a subset of B, with the same upper bound
-        b_overlaps_a,       // 4   bbb***aaa  B's upper bound overlaps A's lower bound
+        a_overlaps_b,       // -4  aaa###bbb  A's upper bound overlaps B's lower bound
+        a_extends_below_b,  // -3  aaa###     B is a subset of A, with the same upper bound
+        a_encloses_b,       // -2  aaa###aaa  B is a subset of A, matching neither bound
+        b_extends_above_a,  // -1  ###bbb     A is a subset of B, with the same lower bound
+        equal,              // 0   ###        A and B are the same (this includes the case where both are empty)
+        a_extends_above_b,  // 1   ###aaa     B is a subset of A, with the same lower bound
+        b_encloses_a,       // 2   bbb###bbb  A is a subset of B, matching neither bound
+        b_extends_below_a,  // 3   bbb###     A is a subset of B, with the same upper bound
+        b_overlaps_a,       // 4   bbb###aaa  B's upper bound overlaps A's lower bound
         b_touches_a,        // 5   bbbaaa     B's upper bound is less than A's lower bound, with no gap
         b_below_a,          // 6   bbb...aaa  B's upper bound is less than A's lower bound, with a gap
         a_only);            // 7   aaa        B is empty, A is not
 
     template <typename T>
     struct IntervalTraits {
+        using base_type = std::remove_cv_t<T>;
         static constexpr IntervalCategory category =
-            ! std::is_default_constructible_v<T> ? IntervalCategory::none :
-            ! std::is_copy_constructible_v<T> ? IntervalCategory::none :
-            ! std::is_copy_assignable_v<T> ? IntervalCategory::none :
-            ! Meta::has_comparison_operators<T> ? IntervalCategory::none :
-            std::is_same_v<T, bool> ? IntervalCategory::none :
-            std::is_integral_v<T> ? IntervalCategory::integral :
-            std::is_floating_point_v<T> ? IntervalCategory::continuous :
-            Meta::has_plus_operator<T> && Meta::has_minus_operator<T> && Meta::has_multiply_operator<T> && Meta::has_divide_operator<T>
-                && ! Meta::has_remainder_operator<T> ? IntervalCategory::continuous :
-            Meta::has_step_operators<T> ? IntervalCategory::integral :
+            std::is_same_v<base_type, bool> ? IntervalCategory::none :
+            ! std::is_default_constructible_v<base_type> ? IntervalCategory::none :
+            ! std::is_copy_constructible_v<base_type> ? IntervalCategory::none :
+            ! std::is_copy_assignable_v<base_type> ? IntervalCategory::none :
+            ! Meta::has_comparison_operators<base_type> ? IntervalCategory::none :
+            std::numeric_limits<base_type>::is_specialized ?
+                (std::numeric_limits<base_type>::is_integer ? IntervalCategory::integral : IntervalCategory::continuous) :
+            Meta::has_plus_operator<base_type> && Meta::has_minus_operator<base_type>
+                && Meta::has_multiply_operator<base_type> && Meta::has_divide_operator<base_type>
+                && ! Meta::has_remainder_operator<base_type> ? IntervalCategory::continuous :
+            Meta::has_step_operators<base_type> ? IntervalCategory::integral :
             IntervalCategory::ordered;
     };
 

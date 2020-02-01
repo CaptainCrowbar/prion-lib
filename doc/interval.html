@@ -57,22 +57,26 @@ one bound is <code>empty</code>, the other must also be <code>empty</code>.</p>
 <p>Indicates the behaviour of a particular underlying type with respect to
 intervals. To be usable as the template parameter to <code>Interval</code> and related
 types, a type must at the very least be default constructible, copyable, and
-equality and less-than comparable. Additional type properties enable
-additional interval properties.</p>
+totally ordered (defining all six comparison operators). Additional type
+properties enable additional interval properties.</p>
 <p>The <code>IntervalTraits</code> or <code>interval_category</code> templates determine the category
 of a given type, according to the following algorithm:</p>
 <!-- TEXT -->
 
 <ul>
-<li><em>if <code>T</code> is not default constructible, copy constructible, equality comparable, and less-than comparable</em><ul>
+<li><em>if <code>T</code> is <code>bool</code></em><ul>
 <li><em>category is <code>none</code></em></li>
 </ul>
 </li>
-<li><em>else if <code>T</code> is a primitive integer type other than <code>bool</code></em><ul>
+<li><em>else if <code>T</code> is not default constructible, copy constructible, and totally ordered</em><ul>
+<li><em>category is <code>none</code></em></li>
+</ul>
+</li>
+<li><em>else if <code>numeric_limits&lt;T&gt;</code> is defined and <code>is_integer</code> is true</em><ul>
 <li><em>category is <code>integral</code></em></li>
 </ul>
 </li>
-<li><em>else if <code>T</code> is a primitive floating point type</em><ul>
+<li><em>else if <code>numeric_limits&lt;T&gt;</code> is defined and <code>is_integer</code> is false</em><ul>
 <li><em>category is <code>continuous</code></em></li>
 </ul>
 </li>
@@ -152,55 +156,55 @@ compare greater than <code>B</code>.</p>
 <tr>
 <td><code>IntervalOrder::</code><strong><code>a_overlaps_b</code></strong></td>
 <td>-4</td>
-<td><img alt="aaa***bbb" src="../graphics/interval-4.png" /></td>
+<td><img alt="aaa###bbb" src="../graphics/interval-4.png" /></td>
 <td>A's upper bound overlaps B's lower bound</td>
 </tr>
 <tr>
 <td><code>IntervalOrder::</code><strong><code>a_extends_below_b</code></strong></td>
 <td>-3</td>
-<td><img alt="aaa***" src="../graphics/interval-3.png" /></td>
+<td><img alt="aaa###" src="../graphics/interval-3.png" /></td>
 <td>B is a subset of A, with the same upper bound</td>
 </tr>
 <tr>
 <td><code>IntervalOrder::</code><strong><code>a_encloses_b</code></strong></td>
 <td>-2</td>
-<td><img alt="aaa***aaa" src="../graphics/interval-2.png" /></td>
+<td><img alt="aaa###aaa" src="../graphics/interval-2.png" /></td>
 <td>B is a subset of A, matching neither bound</td>
 </tr>
 <tr>
 <td><code>IntervalOrder::</code><strong><code>b_extends_above_a</code></strong></td>
 <td>-1</td>
-<td><img alt="***bbb" src="../graphics/interval-1.png" /></td>
+<td><img alt="###bbb" src="../graphics/interval-1.png" /></td>
 <td>A is a subset of B, with the same lower bound</td>
 </tr>
 <tr>
 <td><code>IntervalOrder::</code><strong><code>equal</code></strong></td>
 <td>0</td>
-<td><img alt="***" src="../graphics/interval+0.png" /></td>
+<td><img alt="###" src="../graphics/interval+0.png" /></td>
 <td>A and B are the same (this includes the case where both are empty)</td>
 </tr>
 <tr>
 <td><code>IntervalOrder::</code><strong><code>a_extends_above_b</code></strong></td>
 <td>1</td>
-<td><img alt="***aaa" src="../graphics/interval+1.png" /></td>
+<td><img alt="###aaa" src="../graphics/interval+1.png" /></td>
 <td>B is a subset of A, with the same lower bound</td>
 </tr>
 <tr>
 <td><code>IntervalOrder::</code><strong><code>b_encloses_a</code></strong></td>
 <td>2</td>
-<td><img alt="bbb***bbb" src="../graphics/interval+2.png" /></td>
+<td><img alt="bbb###bbb" src="../graphics/interval+2.png" /></td>
 <td>A is a subset of B, matching neither bound</td>
 </tr>
 <tr>
 <td><code>IntervalOrder::</code><strong><code>b_extends_below_a</code></strong></td>
 <td>3</td>
-<td><img alt="bbb***" src="../graphics/interval+3.png" /></td>
+<td><img alt="bbb###" src="../graphics/interval+3.png" /></td>
 <td>A is a subset of B, with the same upper bound</td>
 </tr>
 <tr>
 <td><code>IntervalOrder::</code><strong><code>b_overlaps_a</code></strong></td>
 <td>4</td>
-<td><img alt="bbb***aaa" src="../graphics/interval+4.png" /></td>
+<td><img alt="bbb###aaa" src="../graphics/interval+4.png" /></td>
 <td>B's upper bound overlaps A's lower bound</td>
 </tr>
 <tr>

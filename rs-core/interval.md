@@ -32,18 +32,20 @@ one bound is `empty`, the other must also be `empty`.
 Indicates the behaviour of a particular underlying type with respect to
 intervals. To be usable as the template parameter to `Interval` and related
 types, a type must at the very least be default constructible, copyable, and
-equality and less-than comparable. Additional type properties enable
-additional interval properties.
+totally ordered (defining all six comparison operators). Additional type
+properties enable additional interval properties.
 
 The `IntervalTraits` or `interval_category` templates determine the category
 of a given type, according to the following algorithm:
 
 <!-- TEXT -->
-* _if `T` is not default constructible, copy constructible, equality comparable, and less-than comparable_
+* _if `T` is `bool`_
     * _category is `none`_
-* _else if `T` is a primitive integer type other than `bool`_
+* _else if `T` is not default constructible, copy constructible, and totally ordered_
+    * _category is `none`_
+* _else if `numeric_limits<T>` is defined and `is_integer` is true_
     * _category is `integral`_
-* _else if `T` is a primitive floating point type_
+* _else if `numeric_limits<T>` is defined and `is_integer` is false_
     * _category is `continuous`_
 * _else if `T` has binary `+ - * /` operators but not `%`_
     * _category is `continuous`_
@@ -82,15 +84,15 @@ Name                                      | Value  | Picture                    
 `IntervalOrder::`**`b_only`**             | -7     | ![bbb](../graphics/interval-7.png)        | A is empty, B is not
 `IntervalOrder::`**`a_below_b`**          | -6     | ![aaa...bbb](../graphics/interval-6.png)  | A's upper bound is less than B's lower bound, with a gap
 `IntervalOrder::`**`a_touches_b`**        | -5     | ![aaabbb](../graphics/interval-5.png)     | A's upper bound is less than B's lower bound, with no gap
-`IntervalOrder::`**`a_overlaps_b`**       | -4     | ![aaa***bbb](../graphics/interval-4.png)  | A's upper bound overlaps B's lower bound
-`IntervalOrder::`**`a_extends_below_b`**  | -3     | ![aaa***](../graphics/interval-3.png)     | B is a subset of A, with the same upper bound
-`IntervalOrder::`**`a_encloses_b`**       | -2     | ![aaa***aaa](../graphics/interval-2.png)  | B is a subset of A, matching neither bound
-`IntervalOrder::`**`b_extends_above_a`**  | -1     | ![***bbb](../graphics/interval-1.png)     | A is a subset of B, with the same lower bound
-`IntervalOrder::`**`equal`**              | 0      | ![***](../graphics/interval+0.png)        | A and B are the same (this includes the case where both are empty)
-`IntervalOrder::`**`a_extends_above_b`**  | 1      | ![***aaa](../graphics/interval+1.png)     | B is a subset of A, with the same lower bound
-`IntervalOrder::`**`b_encloses_a`**       | 2      | ![bbb***bbb](../graphics/interval+2.png)  | A is a subset of B, matching neither bound
-`IntervalOrder::`**`b_extends_below_a`**  | 3      | ![bbb***](../graphics/interval+3.png)     | A is a subset of B, with the same upper bound
-`IntervalOrder::`**`b_overlaps_a`**       | 4      | ![bbb***aaa](../graphics/interval+4.png)  | B's upper bound overlaps A's lower bound
+`IntervalOrder::`**`a_overlaps_b`**       | -4     | ![aaa###bbb](../graphics/interval-4.png)  | A's upper bound overlaps B's lower bound
+`IntervalOrder::`**`a_extends_below_b`**  | -3     | ![aaa###](../graphics/interval-3.png)     | B is a subset of A, with the same upper bound
+`IntervalOrder::`**`a_encloses_b`**       | -2     | ![aaa###aaa](../graphics/interval-2.png)  | B is a subset of A, matching neither bound
+`IntervalOrder::`**`b_extends_above_a`**  | -1     | ![###bbb](../graphics/interval-1.png)     | A is a subset of B, with the same lower bound
+`IntervalOrder::`**`equal`**              | 0      | ![###](../graphics/interval+0.png)        | A and B are the same (this includes the case where both are empty)
+`IntervalOrder::`**`a_extends_above_b`**  | 1      | ![###aaa](../graphics/interval+1.png)     | B is a subset of A, with the same lower bound
+`IntervalOrder::`**`b_encloses_a`**       | 2      | ![bbb###bbb](../graphics/interval+2.png)  | A is a subset of B, matching neither bound
+`IntervalOrder::`**`b_extends_below_a`**  | 3      | ![bbb###](../graphics/interval+3.png)     | A is a subset of B, with the same upper bound
+`IntervalOrder::`**`b_overlaps_a`**       | 4      | ![bbb###aaa](../graphics/interval+4.png)  | B's upper bound overlaps A's lower bound
 `IntervalOrder::`**`b_touches_a`**        | 5      | ![bbbaaa](../graphics/interval+5.png)     | B's upper bound is less than A's lower bound, with no gap
 `IntervalOrder::`**`b_below_a`**          | 6      | ![bbb...aaa](../graphics/interval+6.png)  | B's upper bound is less than A's lower bound, with a gap
 `IntervalOrder::`**`a_only`**             | 7      | ![aaa](../graphics/interval+7.png)        | B is empty, A is not

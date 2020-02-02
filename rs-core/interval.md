@@ -324,11 +324,11 @@ Format   | Alternate            | Description
 * `void` **`from_json`**`(const json& j, Interval& in)`
 * `void` **`to_json`**`(json& j, const Interval& in)`
 
-Conversions between `Interval<T>` and `nlohmann::json`. These are only defined
-if the corresponding functions are defined for `T`.
+Conversions between `Interval` and `nlohmann::json`. These are only defined if
+the corresponding functions are defined for `T`.
 
 * `size_t Interval::`**`hash`**`() const noexcept`
-* `class` **`std::hash<Interval<T>>`**
+* `class` **`std::hash<Interval>`**
 
 Hash function for an interval.
 
@@ -384,8 +384,8 @@ The underlying value type's interval category.
 
 * `IntervalSet::`**`IntervalSet`**`()`
 * `IntervalSet::`**`IntervalSet`**`(const T& t)`
-* `IntervalSet::`**`IntervalSet`**`(const Interval<T>& in)`
-* `IntervalSet::`**`IntervalSet`**`(std::initializer_list<Interval<T>> list)`
+* `IntervalSet::`**`IntervalSet`**`(const Interval& in)`
+* `IntervalSet::`**`IntervalSet`**`(std::initializer_list<Interval> list)`
 * `IntervalSet::`**`IntervalSet`**`(const IntervalSet& set)`
 * `IntervalSet::`**`IntervalSet`**`(IntervalSet&& set) noexcept`
 * `IntervalSet::`**`~IntervalSet`**`() noexcept`
@@ -418,12 +418,12 @@ True if the value is an element of any of the intervals in the set.
 
 Clears all intervals from the set, leaving it empty.
 
-* `void IntervalSet::`**`insert`**`(const Interval<T>& in)`
+* `void IntervalSet::`**`insert`**`(const Interval& in)`
 
 Adds a new interval to the set. Adjacent intervals are merged when they touch
 or overlap.
 
-* `void IntervalSet::`**`erase`**`(const Interval<T>& in)`
+* `void IntervalSet::`**`erase`**`(const Interval& in)`
 
 Removes an interval from the set. Intervals in the set that overlap this
 interval will be modified or removed as necessary. This will have no effect if
@@ -435,18 +435,38 @@ this interval does not overlap any existing interval in the set.
 Returns the complement of the set, i.e. a new set whose member intervals
 contain every value of `T` that is not in this set.
 
-* `IntervalSet IntervalSet::`**`set_intersection`**`(const IntervalSet& b) const`
-* `IntervalSet IntervalSet::`**`set_union`**`(const IntervalSet& b) const`
-* `IntervalSet IntervalSet::`**`set_difference`**`(const IntervalSet& b) const`
-* `IntervalSet IntervalSet::`**`set_symmetric_difference`**`(const IntervalSet& b) const`
-* `IntervalSet& IntervalSet::`**`operator&=`**`(const IntervalSet& b)` _[set intersection]_
-* `IntervalSet& IntervalSet::`**`operator|=`**`(const IntervalSet& b)` _[set union]_
-* `IntervalSet& IntervalSet::`**`operator-=`**`(const IntervalSet& b)` _[set difference]_
-* `IntervalSet& IntervalSet::`**`operator^=`**`(const IntervalSet& b)` _[set symmetric difference]_
-* `IntervalSet` **`operator&`**`(const IntervalSet& a, const IntervalSet& b)` _[set intersection]_
-* `IntervalSet` **`operator|`**`(const IntervalSet& a, const IntervalSet& b)` _[set union]_
-* `IntervalSet` **`operator-`**`(const IntervalSet& a, const IntervalSet& b)` _[set difference]_
-* `IntervalSet` **`operator^`**`(const IntervalSet& a, const IntervalSet& b)` _[set symmetric difference]_
+* _Set intersection_
+    * `IntervalSet IntervalSet::`**`set_intersection`**`(const IntervalSet& b) const`
+    * `IntervalSet& IntervalSet::`**`operator&=`**`(const IntervalSet& b)`
+    * `IntervalSet` **`operator&`**`(const IntervalSet& a, const IntervalSet& b)`
+    * `IntervalSet` **`operator&`**`(const IntervalSet& a, const Interval& b)`
+    * `IntervalSet` **`operator&`**`(const Interval& a, const IntervalSet& b)`
+    * `IntervalSet` **`operator&`**`(const IntervalSet& a, const T& b)`
+    * `IntervalSet` **`operator&`**`(const T& a, const IntervalSet& b)`
+* _Set union_
+    * `IntervalSet IntervalSet::`**`set_union`**`(const IntervalSet& b) const`
+    * `IntervalSet& IntervalSet::`**`operator|=`**`(const IntervalSet& b)`
+    * `IntervalSet` **`operator|`**`(const IntervalSet& a, const IntervalSet& b)`
+    * `IntervalSet` **`operator|`**`(const IntervalSet& a, const Interval& b)`
+    * `IntervalSet` **`operator|`**`(const Interval& a, const IntervalSet& b)`
+    * `IntervalSet` **`operator|`**`(const IntervalSet& a, const T& b)`
+    * `IntervalSet` **`operator|`**`(const T& a, const IntervalSet& b)`
+* _Set difference_
+    * `IntervalSet IntervalSet::`**`set_difference`**`(const IntervalSet& b) const`
+    * `IntervalSet& IntervalSet::`**`operator-=`**`(const IntervalSet& b)`
+    * `IntervalSet` **`operator-`**`(const IntervalSet& a, const IntervalSet& b)`
+    * `IntervalSet` **`operator-`**`(const IntervalSet& a, const Interval& b)`
+    * `IntervalSet` **`operator-`**`(const Interval& a, const IntervalSet& b)`
+    * `IntervalSet` **`operator-`**`(const IntervalSet& a, const T& b)`
+    * `IntervalSet` **`operator-`**`(const T& a, const IntervalSet& b)`
+* _Set symmetric difference_
+    * `IntervalSet IntervalSet::`**`set_symmetric_difference`**`(const IntervalSet& b) const`
+    * `IntervalSet& IntervalSet::`**`operator^=`**`(const IntervalSet& b)`
+    * `IntervalSet` **`operator^`**`(const IntervalSet& a, const IntervalSet& b)`
+    * `IntervalSet` **`operator^`**`(const IntervalSet& a, const Interval& b)`
+    * `IntervalSet` **`operator^`**`(const Interval& a, const IntervalSet& b)`
+    * `IntervalSet` **`operator^`**`(const IntervalSet& a, const T& b)`
+    * `IntervalSet` **`operator^`**`(const T& a, const IntervalSet& b)`
 
 Set operations.
 
@@ -458,9 +478,9 @@ Set operations.
 
 Interval set parsing and formatting functions. An interval set is expected to
 be in the format `"{A,B,C,...}"`, where `A`, `B`, `C`, etc are intervals or
-values of `T`. A single value of `T` or `Interval<T>` will also be recognized,
-as will an empty set represented by an empty string or `"{}"`. These call the
-corresponding functions on `Interval<T>`, which in turn call the corresponding
+values of `T`. A single value of `T` or `Interval` will also be recognized, as
+will an empty set represented by an empty string or `"{}"`. These call the
+corresponding functions on `Interval`, which in turn call the corresponding
 functions on `T`, and will propagate any exceptions (or false return values)
 from those. As with the string functions for `Interval`, results may be
 inconsistent, or not round-trippable, if the format of a serialized `T`

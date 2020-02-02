@@ -587,13 +587,13 @@ on <code>T</code>.</p>
 <li><code>void</code> <strong><code>from_json</code></strong><code>(const json&amp; j, Interval&amp; in)</code></li>
 <li><code>void</code> <strong><code>to_json</code></strong><code>(json&amp; j, const Interval&amp; in)</code></li>
 </ul>
-<p>Conversions between <code>Interval&lt;T&gt;</code> and <code>nlohmann::json</code>. These are only defined
-if the corresponding functions are defined for <code>T</code>.</p>
+<p>Conversions between <code>Interval</code> and <code>nlohmann::json</code>. These are only defined if
+the corresponding functions are defined for <code>T</code>.</p>
 </div>
 <div class="defns">
 <ul>
 <li><code>size_t Interval::</code><strong><code>hash</code></strong><code>() const noexcept</code></li>
-<li><code>class</code> <strong><code>std::hash&lt;Interval&lt;T&gt;&gt;</code></strong></li>
+<li><code>class</code> <strong><code>std::hash&lt;Interval&gt;</code></strong></li>
 </ul>
 <p>Hash function for an interval.</p>
 </div>
@@ -664,8 +664,8 @@ operators.</p>
 <ul>
 <li><code>IntervalSet::</code><strong><code>IntervalSet</code></strong><code>()</code></li>
 <li><code>IntervalSet::</code><strong><code>IntervalSet</code></strong><code>(const T&amp; t)</code></li>
-<li><code>IntervalSet::</code><strong><code>IntervalSet</code></strong><code>(const Interval&lt;T&gt;&amp; in)</code></li>
-<li><code>IntervalSet::</code><strong><code>IntervalSet</code></strong><code>(std::initializer_list&lt;Interval&lt;T&gt;&gt; list)</code></li>
+<li><code>IntervalSet::</code><strong><code>IntervalSet</code></strong><code>(const Interval&amp; in)</code></li>
+<li><code>IntervalSet::</code><strong><code>IntervalSet</code></strong><code>(std::initializer_list&lt;Interval&gt; list)</code></li>
 <li><code>IntervalSet::</code><strong><code>IntervalSet</code></strong><code>(const IntervalSet&amp; set)</code></li>
 <li><code>IntervalSet::</code><strong><code>IntervalSet</code></strong><code>(IntervalSet&amp;&amp; set) noexcept</code></li>
 <li><code>IntervalSet::</code><strong><code>~IntervalSet</code></strong><code>() noexcept</code></li>
@@ -710,14 +710,14 @@ are merged when they touch or overlap.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>void IntervalSet::</code><strong><code>insert</code></strong><code>(const Interval&lt;T&gt;&amp; in)</code></li>
+<li><code>void IntervalSet::</code><strong><code>insert</code></strong><code>(const Interval&amp; in)</code></li>
 </ul>
 <p>Adds a new interval to the set. Adjacent intervals are merged when they touch
 or overlap.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>void IntervalSet::</code><strong><code>erase</code></strong><code>(const Interval&lt;T&gt;&amp; in)</code></li>
+<li><code>void IntervalSet::</code><strong><code>erase</code></strong><code>(const Interval&amp; in)</code></li>
 </ul>
 <p>Removes an interval from the set. Intervals in the set that overlap this
 interval will be modified or removed as necessary. This will have no effect if
@@ -733,18 +733,46 @@ contain every value of <code>T</code> that is not in this set.</p>
 </div>
 <div class="defns">
 <ul>
+<li><em>Set intersection</em><ul>
 <li><code>IntervalSet IntervalSet::</code><strong><code>set_intersection</code></strong><code>(const IntervalSet&amp; b) const</code></li>
+<li><code>IntervalSet&amp; IntervalSet::</code><strong><code>operator&amp;=</code></strong><code>(const IntervalSet&amp; b)</code></li>
+<li><code>IntervalSet</code> <strong><code>operator&amp;</code></strong><code>(const IntervalSet&amp; a, const IntervalSet&amp; b)</code></li>
+<li><code>IntervalSet</code> <strong><code>operator&amp;</code></strong><code>(const IntervalSet&amp; a, const Interval&amp; b)</code></li>
+<li><code>IntervalSet</code> <strong><code>operator&amp;</code></strong><code>(const Interval&amp; a, const IntervalSet&amp; b)</code></li>
+<li><code>IntervalSet</code> <strong><code>operator&amp;</code></strong><code>(const IntervalSet&amp; a, const T&amp; b)</code></li>
+<li><code>IntervalSet</code> <strong><code>operator&amp;</code></strong><code>(const T&amp; a, const IntervalSet&amp; b)</code></li>
+</ul>
+</li>
+<li><em>Set union</em><ul>
 <li><code>IntervalSet IntervalSet::</code><strong><code>set_union</code></strong><code>(const IntervalSet&amp; b) const</code></li>
+<li><code>IntervalSet&amp; IntervalSet::</code><strong><code>operator|=</code></strong><code>(const IntervalSet&amp; b)</code></li>
+<li><code>IntervalSet</code> <strong><code>operator|</code></strong><code>(const IntervalSet&amp; a, const IntervalSet&amp; b)</code></li>
+<li><code>IntervalSet</code> <strong><code>operator|</code></strong><code>(const IntervalSet&amp; a, const Interval&amp; b)</code></li>
+<li><code>IntervalSet</code> <strong><code>operator|</code></strong><code>(const Interval&amp; a, const IntervalSet&amp; b)</code></li>
+<li><code>IntervalSet</code> <strong><code>operator|</code></strong><code>(const IntervalSet&amp; a, const T&amp; b)</code></li>
+<li><code>IntervalSet</code> <strong><code>operator|</code></strong><code>(const T&amp; a, const IntervalSet&amp; b)</code></li>
+</ul>
+</li>
+<li><em>Set difference</em><ul>
 <li><code>IntervalSet IntervalSet::</code><strong><code>set_difference</code></strong><code>(const IntervalSet&amp; b) const</code></li>
+<li><code>IntervalSet&amp; IntervalSet::</code><strong><code>operator-=</code></strong><code>(const IntervalSet&amp; b)</code></li>
+<li><code>IntervalSet</code> <strong><code>operator-</code></strong><code>(const IntervalSet&amp; a, const IntervalSet&amp; b)</code></li>
+<li><code>IntervalSet</code> <strong><code>operator-</code></strong><code>(const IntervalSet&amp; a, const Interval&amp; b)</code></li>
+<li><code>IntervalSet</code> <strong><code>operator-</code></strong><code>(const Interval&amp; a, const IntervalSet&amp; b)</code></li>
+<li><code>IntervalSet</code> <strong><code>operator-</code></strong><code>(const IntervalSet&amp; a, const T&amp; b)</code></li>
+<li><code>IntervalSet</code> <strong><code>operator-</code></strong><code>(const T&amp; a, const IntervalSet&amp; b)</code></li>
+</ul>
+</li>
+<li><em>Set symmetric difference</em><ul>
 <li><code>IntervalSet IntervalSet::</code><strong><code>set_symmetric_difference</code></strong><code>(const IntervalSet&amp; b) const</code></li>
-<li><code>IntervalSet&amp; IntervalSet::</code><strong><code>operator&amp;=</code></strong><code>(const IntervalSet&amp; b)</code> <em>[set intersection]</em></li>
-<li><code>IntervalSet&amp; IntervalSet::</code><strong><code>operator|=</code></strong><code>(const IntervalSet&amp; b)</code> <em>[set union]</em></li>
-<li><code>IntervalSet&amp; IntervalSet::</code><strong><code>operator-=</code></strong><code>(const IntervalSet&amp; b)</code> <em>[set difference]</em></li>
-<li><code>IntervalSet&amp; IntervalSet::</code><strong><code>operator^=</code></strong><code>(const IntervalSet&amp; b)</code> <em>[set symmetric difference]</em></li>
-<li><code>IntervalSet</code> <strong><code>operator&amp;</code></strong><code>(const IntervalSet&amp; a, const IntervalSet&amp; b)</code> <em>[set intersection]</em></li>
-<li><code>IntervalSet</code> <strong><code>operator|</code></strong><code>(const IntervalSet&amp; a, const IntervalSet&amp; b)</code> <em>[set union]</em></li>
-<li><code>IntervalSet</code> <strong><code>operator-</code></strong><code>(const IntervalSet&amp; a, const IntervalSet&amp; b)</code> <em>[set difference]</em></li>
-<li><code>IntervalSet</code> <strong><code>operator^</code></strong><code>(const IntervalSet&amp; a, const IntervalSet&amp; b)</code> <em>[set symmetric difference]</em></li>
+<li><code>IntervalSet&amp; IntervalSet::</code><strong><code>operator^=</code></strong><code>(const IntervalSet&amp; b)</code></li>
+<li><code>IntervalSet</code> <strong><code>operator^</code></strong><code>(const IntervalSet&amp; a, const IntervalSet&amp; b)</code></li>
+<li><code>IntervalSet</code> <strong><code>operator^</code></strong><code>(const IntervalSet&amp; a, const Interval&amp; b)</code></li>
+<li><code>IntervalSet</code> <strong><code>operator^</code></strong><code>(const Interval&amp; a, const IntervalSet&amp; b)</code></li>
+<li><code>IntervalSet</code> <strong><code>operator^</code></strong><code>(const IntervalSet&amp; a, const T&amp; b)</code></li>
+<li><code>IntervalSet</code> <strong><code>operator^</code></strong><code>(const T&amp; a, const IntervalSet&amp; b)</code></li>
+</ul>
+</li>
 </ul>
 <p>Set operations.</p>
 </div>
@@ -758,9 +786,9 @@ contain every value of <code>T</code> that is not in this set.</p>
 </ul>
 <p>Interval set parsing and formatting functions. An interval set is expected to
 be in the format <code>"{A,B,C,...}"</code>, where <code>A</code>, <code>B</code>, <code>C</code>, etc are intervals or
-values of <code>T</code>. A single value of <code>T</code> or <code>Interval&lt;T&gt;</code> will also be recognized,
-as will an empty set represented by an empty string or <code>"{}"</code>. These call the
-corresponding functions on <code>Interval&lt;T&gt;</code>, which in turn call the corresponding
+values of <code>T</code>. A single value of <code>T</code> or <code>Interval</code> will also be recognized, as
+will an empty set represented by an empty string or <code>"{}"</code>. These call the
+corresponding functions on <code>Interval</code>, which in turn call the corresponding
 functions on <code>T</code>, and will propagate any exceptions (or false return values)
 from those. As with the string functions for <code>Interval</code>, results may be
 inconsistent, or not round-trippable, if the format of a serialized <code>T</code>

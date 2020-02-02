@@ -366,15 +366,15 @@ void test_core_interval_integral_binary_operations() {
         TRY(in1 = from_str<Itype>(t.lhs));
         TRY(in2 = from_str<Itype>(t.rhs));
 
-        TRY(cmp = in1.compare(in2));           TEST_EQUAL(cmp, t.compare);                   errors += int(cmp != t.compare);
-        TRY(flag = in1.includes(in2));         TEST_EQUAL(flag, t.includes);                 errors += int(flag != t.includes);
-        TRY(flag = in1.overlaps(in2));         TEST_EQUAL(flag, t.overlaps);                 errors += int(flag != t.overlaps);
-        TRY(flag = in1.touches(in2));          TEST_EQUAL(flag, t.touches);                  errors += int(flag != t.touches);
-        TRY(str = to_str(in1.envelope(in2)));  TEST_EQUAL(str, t.envelope);                  errors += int(str != t.envelope);
-        TRY(str = to_str(in1 & in2));          TEST_EQUAL(str, t.set_intersection);          errors += int(str != t.set_intersection);
-        TRY(str = to_str(in1 | in2));          TEST_EQUAL(str, t.set_union);                 errors += int(str != t.set_union);
-        TRY(str = to_str(in1 - in2));          TEST_EQUAL(str, t.set_difference);            errors += int(str != t.set_difference);
-        TRY(str = to_str(in1 ^ in2));          TEST_EQUAL(str, t.set_symmetric_difference);  errors += int(str != t.set_symmetric_difference);
+        TRY(cmp = in1.compare(in2));                           TEST_EQUAL(cmp, t.compare);                   errors += int(cmp != t.compare);
+        TRY(flag = in1.includes(in2));                         TEST_EQUAL(flag, t.includes);                 errors += int(flag != t.includes);
+        TRY(flag = in1.overlaps(in2));                         TEST_EQUAL(flag, t.overlaps);                 errors += int(flag != t.overlaps);
+        TRY(flag = in1.touches(in2));                          TEST_EQUAL(flag, t.touches);                  errors += int(flag != t.touches);
+        TRY(str = to_str(in1.envelope(in2)));                  TEST_EQUAL(str, t.envelope);                  errors += int(str != t.envelope);
+        TRY(str = to_str(in1.set_intersection(in2)));          TEST_EQUAL(str, t.set_intersection);          errors += int(str != t.set_intersection);
+        TRY(str = to_str(in1.set_union(in2)));                 TEST_EQUAL(str, t.set_union);                 errors += int(str != t.set_union);
+        TRY(str = to_str(in1.set_difference(in2)));            TEST_EQUAL(str, t.set_difference);            errors += int(str != t.set_difference);
+        TRY(str = to_str(in1.set_symmetric_difference(in2)));  TEST_EQUAL(str, t.set_symmetric_difference);  errors += int(str != t.set_symmetric_difference);
 
         if (errors)
             std::cout << "... [" << t.line << "] " << t.lhs << " " << t.rhs << "\n";

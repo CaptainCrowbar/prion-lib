@@ -654,14 +654,14 @@ namespace RS {
             return s;
         }
 
-    template <typename T> Interval<T> operator&(const Interval<T>& a, const Interval<T>& b) { return a.set_intersection(b); }
-    template <typename T> IntervalSet<T> operator|(const Interval<T>& a, const Interval<T>& b) { return a.set_union(b); }
-    template <typename T> IntervalSet<T> operator-(const Interval<T>& a, const Interval<T>& b) { return a.set_difference(b); }
-    template <typename T> IntervalSet<T> operator^(const Interval<T>& a, const Interval<T>& b) { return a.set_symmetric_difference(b); }
     template <typename T> bool operator==(const Interval<T>& a, const Interval<T>& b) noexcept { return a.compare(b) == 0; }
     template <typename T> bool operator<(const Interval<T>& a, const Interval<T>& b) noexcept { return a.compare(b) < 0; }
     template <typename T> std::ostream& operator<<(std::ostream& out, const Interval<T>& in) { return out << in.str(); }
-
+    template <typename T> void from_json(const json& j, Interval<T>& in) { in.convert_from_json(j); }
+    template <typename T> void to_json(json& j, const Interval<T>& in) { j = in.convert_to_json(); }
+    template <typename T> bool from_str(Uview view, Interval<T>& in) { return in.parse(view); }
+    template <typename T> Ustring to_str(const Interval<T>& in) { return in.str(); }
+    template <typename T> void swap(Interval<T>& a, Interval<T>& b) { a.swap(b); }
     template <typename T> Interval<T> make_interval(const T& t) { return Interval<T>(t); }
     template <typename T> Interval<T> make_interval(const T& t, IntervalBound l, IntervalBound r) { return Interval<T>(t, l, r); }
     template <typename T> Interval<T> make_interval(const T& min, const T& max, IntervalBound lr = IntervalBound::closed) { return Interval<T>(min, max, lr); }
@@ -683,12 +683,6 @@ namespace RS {
         }
         return Interval<T>(a, b, l, r);
     }
-
-    template <typename T> void from_json(const json& j, Interval<T>& in) { in.convert_from_json(j); }
-    template <typename T> void to_json(json& j, const Interval<T>& in) { j = in.convert_to_json(); }
-    template <typename T> bool from_str(Uview view, Interval<T>& in) { return in.parse(view); }
-    template <typename T> Ustring to_str(const Interval<T>& in) { return in.str(); }
-    template <typename T> void swap(Interval<T>& a, Interval<T>& b) { a.swap(b); }
 
     // Common base class for associative containers
 
@@ -800,7 +794,7 @@ namespace RS {
                     break;
                 auto j = i++;
                 if (ord <= IO::b_overlaps_a) {
-                    temp = *j - in;
+                    temp = j->set_difference(in);
                     std::copy(temp.begin(), temp.end(), append(vec));
                     con_.erase(j);
                 }
@@ -871,9 +865,25 @@ namespace RS {
         }
 
     template <typename T> IntervalSet<T> operator&(const IntervalSet<T>& a, const IntervalSet<T>& b) { return a.set_intersection(b); }
+    template <typename T> IntervalSet<T> operator&(const IntervalSet<T>& a, const Interval<T>& b) { return a.set_intersection(b); }
+    template <typename T> IntervalSet<T> operator&(const Interval<T>& a, const IntervalSet<T>& b) { return a.set_intersection(b); }
+    template <typename T> IntervalSet<T> operator&(const IntervalSet<T>& a, const T& b) { return IntervalSet<T>(a).set_intersection(b); }
+    template <typename T> IntervalSet<T> operator&(const T& a, const IntervalSet<T>& b) { return IntervalSet<T>(a).set_intersection(b); }
     template <typename T> IntervalSet<T> operator|(const IntervalSet<T>& a, const IntervalSet<T>& b) { return a.set_union(b); }
+    template <typename T> IntervalSet<T> operator|(const IntervalSet<T>& a, const Interval<T>& b) { return a.set_union(b); }
+    template <typename T> IntervalSet<T> operator|(const Interval<T>& a, const IntervalSet<T>& b) { return a.set_union(b); }
+    template <typename T> IntervalSet<T> operator|(const IntervalSet<T>& a, const T& b) { return IntervalSet<T>(a).set_union(b); }
+    template <typename T> IntervalSet<T> operator|(const T& a, const IntervalSet<T>& b) { return IntervalSet<T>(a).set_union(b); }
     template <typename T> IntervalSet<T> operator-(const IntervalSet<T>& a, const IntervalSet<T>& b) { return a.set_difference(b); }
+    template <typename T> IntervalSet<T> operator-(const IntervalSet<T>& a, const Interval<T>& b) { return a.set_difference(b); }
+    template <typename T> IntervalSet<T> operator-(const Interval<T>& a, const IntervalSet<T>& b) { return a.set_difference(b); }
+    template <typename T> IntervalSet<T> operator-(const IntervalSet<T>& a, const T& b) { return IntervalSet<T>(a).set_difference(b); }
+    template <typename T> IntervalSet<T> operator-(const T& a, const IntervalSet<T>& b) { return IntervalSet<T>(a).set_difference(b); }
     template <typename T> IntervalSet<T> operator^(const IntervalSet<T>& a, const IntervalSet<T>& b) { return a.set_symmetric_difference(b); }
+    template <typename T> IntervalSet<T> operator^(const IntervalSet<T>& a, const Interval<T>& b) { return a.set_symmetric_difference(b); }
+    template <typename T> IntervalSet<T> operator^(const Interval<T>& a, const IntervalSet<T>& b) { return a.set_symmetric_difference(b); }
+    template <typename T> IntervalSet<T> operator^(const IntervalSet<T>& a, const T& b) { return IntervalSet<T>(a).set_symmetric_difference(b); }
+    template <typename T> IntervalSet<T> operator^(const T& a, const IntervalSet<T>& b) { return IntervalSet<T>(a).set_symmetric_difference(b); }
     template <typename T> bool operator==(const IntervalSet<T>& a, const IntervalSet<T>& b) noexcept
         { return std::equal(a.begin(), a.end(), b.begin(), b.end()); }
     template <typename T> bool operator<(const IntervalSet<T>& a, const IntervalSet<T>& b) noexcept
@@ -970,7 +980,7 @@ namespace RS {
                 } else if (ord == IO::b_touches_a) {
                     break;
                 } else if (ord <= IO::b_overlaps_a) {
-                    auto diff = i->first - in;
+                    auto diff = i->first.set_difference(in);
                     for (auto& d: diff)
                         add.push_back({d, i->second});
                     del.push_back(i);
@@ -997,7 +1007,7 @@ namespace RS {
                     break;
                 auto j = i++;
                 if (ord <= IO::b_overlaps_a) {
-                    auto temp = j->first - in;
+                    auto temp = j->first.set_difference(in);
                     for (auto& t: temp)
                         vec.push_back({t, j->second});
                     con_.erase(j);

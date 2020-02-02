@@ -193,7 +193,7 @@ These return the boundary values and boundary types. If either end of the
 interval is unbounded (boundary type `empty` or `unbound`), the value of the
 corresponding `min()` or `max()` function is unspecified.
 
-* `bool Interval::`**`is_empty`**`() const noexcept` _[true if the interval is empty]_
+* `bool Interval::`**`empty`**`() const noexcept` _[true if the interval is empty]_
 * `bool Interval::`**`is_single`**`() const noexcept` _[true if the interval contains exactly one value ]_
 * `bool Interval::`**`is_finite`**`() const noexcept` _[true if the interval is non-empty and bounded on both sides]_
 * `bool Interval::`**`is_infinite`**`() const noexcept` _[true if the interval is non-empty and unbound on at least one side]_

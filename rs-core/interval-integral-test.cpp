@@ -21,7 +21,7 @@ void test_core_interval_integral_basic_properties() {
 
     TEST_TYPE(Itype::value_type, int);
     TEST_EQUAL(Itype::category, IC::integral);
-    TEST(in.is_empty());
+    TEST(in.empty());
     TEST_EQUAL(in.size(), 0);
     TEST(! in);
     TEST_EQUAL(to_str(in), "{}");

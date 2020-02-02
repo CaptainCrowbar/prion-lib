@@ -121,7 +121,7 @@ namespace RS {
         const T& max() const noexcept { return max_; }
         IB left() const noexcept { return left_; }
         IB right() const noexcept { return right_; }
-        bool is_empty() const noexcept { return left_ == IB::empty; }
+        bool empty() const noexcept { return left_ == IB::empty; }
         bool is_single() const noexcept { return left_ == IB::closed && right_ == IB::closed && min_ == max_; }
         bool is_finite() const noexcept { return is_left_bounded() && is_right_bounded(); }
         bool is_infinite() const noexcept { return left_ == IB::unbound || right_ == IB::unbound; }
@@ -183,7 +183,7 @@ namespace RS {
 
         template <typename T>
         IntervalMatch IntervalTypeBase<T>::match(const T& t) const {
-            if (is_empty())                             return IM::empty;
+            if (empty())                             return IM::empty;
             else if (is_universal())                    return IM::ok;
             else if (left_ == IB::closed && t < min_)   return IM::low;
             else if (left_ == IB::open && t <= min_)    return IM::low;
@@ -282,8 +282,8 @@ namespace RS {
         private:
             T value_;
         };
-        iterator begin() const { return this->is_empty() ? iterator() : iterator(this->min_); }
-        iterator end() const { return this->is_empty() ? iterator() : std::next(iterator(this->max_)); }
+        iterator begin() const { return this->empty() ? iterator() : iterator(this->min_); }
+        iterator end() const { return this->empty() ? iterator() : std::next(iterator(this->max_)); }
         size_t size() const;
         IntervalType operator+() const { auto& a = static_cast<const IntervalType&>(*this); return a; }
         IntervalType operator-() const { auto& a = static_cast<const IntervalType&>(*this); return negative(a); }
@@ -307,7 +307,7 @@ namespace RS {
 
         template <typename IntervalType, typename T>
         size_t IntervalCategoryBase<IntervalType, T, IntervalCategory::integral>::size() const {
-            if (this->is_empty())
+            if (this->empty())
                 return 0;
             if (this->is_infinite())
                 return npos;
@@ -452,7 +452,7 @@ namespace RS {
         Interval(const T& min, const T& max, IB lr = IB::closed): Interval(min, max, lr, lr) {}
         Interval(const T& min, const T& max, IB l, IB r);
         Interval(const T& min, const T& max, Uview mode);
-        explicit operator bool() const noexcept { return ! this->is_empty(); }
+        explicit operator bool() const noexcept { return ! this->empty(); }
         bool operator()(const T& t) const { return contains(t); }
         IntervalSet<T> operator~() const { return inverse(); }
         Interval& operator&=(const Interval<T>& b) { *this = set_intersection(b); return *this; }
@@ -493,7 +493,7 @@ namespace RS {
 
         template <typename T>
         IntervalSet<T> Interval<T>::inverse() const {
-            if (this->is_empty())
+            if (this->empty())
                 return all();
             if (this->is_universal())
                 return {};
@@ -508,9 +508,9 @@ namespace RS {
         template <typename T>
         IntervalOrder Interval<T>::order(const Interval& b) const {
             auto& a = *this;
-            if (a.is_empty() && b.is_empty())  return IO::equal;
-            if (a.is_empty())                  return IO::b_only;
-            if (b.is_empty())                  return IO::a_only;
+            if (a.empty() && b.empty())  return IO::equal;
+            if (a.empty())                  return IO::b_only;
+            if (b.empty())                  return IO::a_only;
             auto [al, ar] = a.find_interval_bounds();
             auto [bl, br] = b.find_interval_bounds();
             if (ar < bl) {
@@ -537,8 +537,8 @@ namespace RS {
         template <typename T>
         int Interval<T>::compare(const Interval& b) const noexcept {
             auto& a = *this;
-            if (a.is_empty() || b.is_empty())
-                return int(b.is_empty()) - int(a.is_empty());
+            if (a.empty() || b.empty())
+                return int(b.empty()) - int(a.empty());
             if (a.is_left_bounded() && b.is_left_bounded()) {
                 if (a.min() > b.min())
                     return 1;
@@ -566,7 +566,7 @@ namespace RS {
         bool Interval<T>::includes(const Interval& b) const {
             IO ord = order(b);
             if (ord == IO::equal)
-                return ! this->is_empty();
+                return ! this->empty();
             else
                 return ord == IO::a_extends_above_b || ord == IO::a_extends_below_b || ord == IO::a_encloses_b;
         }
@@ -575,7 +575,7 @@ namespace RS {
         bool Interval<T>::overlaps(const Interval& b) const {
             IO ord = order(b);
             if (ord == IO::equal)
-                return ! this->is_empty();
+                return ! this->empty();
             else if (ord == IO::a_only || ord == IO::b_only
                     || ord == IO::a_below_b || ord == IO::b_below_a
                     || ord == IO::a_touches_b || ord == IO::b_touches_a)
@@ -588,7 +588,7 @@ namespace RS {
         bool Interval<T>::touches(const Interval& b) const {
             IO ord = order(b);
             if (ord == IO::equal)
-                return ! this->is_empty();
+                return ! this->empty();
             else if (ord == IO::a_only || ord == IO::b_only || ord == IO::a_below_b || ord == IO::b_below_a)
                 return false;
             else
@@ -642,7 +642,7 @@ namespace RS {
         template <typename T>
         IntervalSet<T> Interval<T>::set_union(const Interval& b) const {
             auto& a = *this;
-            if (a.is_empty() && b.is_empty())
+            if (a.empty() && b.empty())
                 return {};
             switch (order(b)) {
                 case IO::a_below_b:
@@ -734,7 +734,7 @@ namespace RS {
         template <typename T>
         Ustring Interval<T>::str() const {
             Ustring s;
-            if (this->is_empty()) {
+            if (this->empty()) {
                 s = "{}";
             } else if (this->is_universal()) {
                 s = "*";
@@ -866,7 +866,7 @@ namespace RS {
 
         template <typename T>
         void IntervalSet<T>::insert(const interval_type& in) {
-            if (in.is_empty())
+            if (in.empty())
                 return;
             auto i = con_.lower_bound(in);
             if (i != con_.begin())
@@ -887,7 +887,7 @@ namespace RS {
 
         template <typename T>
         void IntervalSet<T>::erase(const interval_type& in) {
-            if (empty() || in.is_empty())
+            if (empty() || in.empty())
                 return;
             auto i = con_.lower_bound(in);
             if (i != con_.begin())
@@ -1068,7 +1068,7 @@ namespace RS {
 
         template <typename K, typename T>
         void IntervalMap<K, T>::insert(const interval_type& in, const T& t) {
-            if (in.is_empty())
+            if (in.empty())
                 return;
             auto key = in;
             auto i = con_.upper_bound(key);
@@ -1101,7 +1101,7 @@ namespace RS {
 
         template <typename K, typename T>
         void IntervalMap<K, T>::erase(const interval_type& in) {
-            if (empty() || in.is_empty())
+            if (empty() || in.empty())
                 return;
             auto i = con_.lower_bound(in);
             if (i != con_.begin())

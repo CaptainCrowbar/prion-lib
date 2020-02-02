@@ -20,7 +20,7 @@ void test_core_interval_continuous_basic_properties() {
 
     TEST_TYPE(Itype::value_type, double);
     TEST_EQUAL(Itype::category, IC::continuous);
-    TEST(in.is_empty());
+    TEST(in.empty());
     TEST_EQUAL(in.size(), 0);
     TEST(! in);
     TEST_EQUAL(to_str(in), "{}");

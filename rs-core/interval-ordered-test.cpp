@@ -21,7 +21,7 @@ void test_core_interval_ordered_basic_properties() {
 
     TEST_TYPE(Itype::value_type, Ustring);
     TEST_EQUAL(Itype::category, IC::ordered);
-    TEST(in.is_empty());
+    TEST(in.empty());
     TEST(! in);
     TEST_EQUAL(to_str(in), "{}");
     TEST_EQUAL(in.match(""), IM::empty);

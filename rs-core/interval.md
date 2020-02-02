@@ -342,6 +342,20 @@ Swap two intervals.
 Constructs a universal interval, i.e. an unbounded interval containing all
 possible values of `T`.
 
+* `template <typename T> Interval<T>` **`make_interval`**`(const T& t)`
+* `template <typename T> Interval<T>` **`make_interval`**`(const T& t, IntervalBound l, IntervalBound r)`
+* `template <typename T> Interval<T>` **`make_interval`**`(const T& min, const T& max, IntervalBound lr = IntervalBound::closed)`
+* `template <typename T> Interval<T>` **`make_interval`**`(const T& min, const T& max, IntervalBound l, IntervalBound r)`
+* `template <typename T> Interval<T>` **`make_interval`**`(const T& min, const T& max, Uview mode)`
+* `template <typename T> Interval<T>` **`ordered_interval`**`(T a, T b, IntervalBound lr = IntervalBound::closed)`
+* `template <typename T> Interval<T>` **`ordered_interval`**`(T a, T b, IntervalBound l, IntervalBound r)`
+
+Interval construction functions. These have the same behaviour as the
+corresponding constructors. The `ordered_interval()` functions do the same
+thing as the corresponding `make_interval()` functions, except that, if the
+bounds are in the wrong order, they will be swapped (along with the
+corresponding bound flags).
+
 * `bool` **`operator==`**`(const Interval& a, const Interval& b) noexcept`
 * `bool` **`operator!=`**`(const Interval& a, const Interval& b) noexcept`
 * `bool` **`operator<`**`(const Interval& a, const Interval& b) noexcept`

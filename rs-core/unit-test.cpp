@@ -142,6 +142,7 @@ extern void test_core_int128_uint128_literals();
 extern void test_core_int128_uint128_numeric_limits();
 extern void test_core_interval_basic_type_traits();
 extern void test_core_interval_continuous_basic_properties();
+extern void test_core_interval_continuous_construction();
 extern void test_core_interval_continuous_string_parsing();
 extern void test_core_interval_continuous_inverse();
 extern void test_core_interval_continuous_binary_operations();
@@ -149,6 +150,7 @@ extern void test_core_interval_continuous_set_construct_insert_erase();
 extern void test_core_interval_continuous_set_operations();
 extern void test_core_interval_continuous_map();
 extern void test_core_interval_integral_basic_properties();
+extern void test_core_interval_integral_construction();
 extern void test_core_interval_integral_string_parsing();
 extern void test_core_interval_integral_iterators();
 extern void test_core_interval_integral_inverse();
@@ -157,6 +159,7 @@ extern void test_core_interval_integral_set_construct_insert_erase();
 extern void test_core_interval_integral_set_operations();
 extern void test_core_interval_integral_map();
 extern void test_core_interval_ordered_basic_properties();
+extern void test_core_interval_ordered_construction();
 extern void test_core_interval_ordered_string_parsing();
 extern void test_core_interval_ordered_inverse();
 extern void test_core_interval_ordered_binary_operations();
@@ -636,6 +639,7 @@ int main() {
         { "core/int128/uint128-numeric-limits", test_core_int128_uint128_numeric_limits },
         { "core/interval-basic/type-traits", test_core_interval_basic_type_traits },
         { "core/interval-continuous/basic-properties", test_core_interval_continuous_basic_properties },
+        { "core/interval-continuous/construction", test_core_interval_continuous_construction },
         { "core/interval-continuous/string-parsing", test_core_interval_continuous_string_parsing },
         { "core/interval-continuous/inverse", test_core_interval_continuous_inverse },
         { "core/interval-continuous/binary-operations", test_core_interval_continuous_binary_operations },
@@ -643,6 +647,7 @@ int main() {
         { "core/interval-continuous/set-operations", test_core_interval_continuous_set_operations },
         { "core/interval-continuous/map", test_core_interval_continuous_map },
         { "core/interval-integral/basic-properties", test_core_interval_integral_basic_properties },
+        { "core/interval-integral/construction", test_core_interval_integral_construction },
         { "core/interval-integral/string-parsing", test_core_interval_integral_string_parsing },
         { "core/interval-integral/iterators", test_core_interval_integral_iterators },
         { "core/interval-integral/inverse", test_core_interval_integral_inverse },
@@ -651,6 +656,7 @@ int main() {
         { "core/interval-integral/set-operations", test_core_interval_integral_set_operations },
         { "core/interval-integral/map", test_core_interval_integral_map },
         { "core/interval-ordered/basic-properties", test_core_interval_ordered_basic_properties },
+        { "core/interval-ordered/construction", test_core_interval_ordered_construction },
         { "core/interval-ordered/string-parsing", test_core_interval_ordered_string_parsing },
         { "core/interval-ordered/inverse", test_core_interval_ordered_inverse },
         { "core/interval-ordered/binary-operations", test_core_interval_ordered_binary_operations },

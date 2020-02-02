@@ -613,6 +613,22 @@ possible values of <code>T</code>.</p>
 </div>
 <div class="defns">
 <ul>
+<li><code>template &lt;typename T&gt; Interval&lt;T&gt;</code> <strong><code>make_interval</code></strong><code>(const T&amp; t)</code></li>
+<li><code>template &lt;typename T&gt; Interval&lt;T&gt;</code> <strong><code>make_interval</code></strong><code>(const T&amp; t, IntervalBound l, IntervalBound r)</code></li>
+<li><code>template &lt;typename T&gt; Interval&lt;T&gt;</code> <strong><code>make_interval</code></strong><code>(const T&amp; min, const T&amp; max, IntervalBound lr = IntervalBound::closed)</code></li>
+<li><code>template &lt;typename T&gt; Interval&lt;T&gt;</code> <strong><code>make_interval</code></strong><code>(const T&amp; min, const T&amp; max, IntervalBound l, IntervalBound r)</code></li>
+<li><code>template &lt;typename T&gt; Interval&lt;T&gt;</code> <strong><code>make_interval</code></strong><code>(const T&amp; min, const T&amp; max, Uview mode)</code></li>
+<li><code>template &lt;typename T&gt; Interval&lt;T&gt;</code> <strong><code>ordered_interval</code></strong><code>(T a, T b, IntervalBound lr = IntervalBound::closed)</code></li>
+<li><code>template &lt;typename T&gt; Interval&lt;T&gt;</code> <strong><code>ordered_interval</code></strong><code>(T a, T b, IntervalBound l, IntervalBound r)</code></li>
+</ul>
+<p>Interval construction functions. These have the same behaviour as the
+corresponding constructors. The <code>ordered_interval()</code> functions do the same
+thing as the corresponding <code>make_interval()</code> functions, except that, if the
+bounds are in the wrong order, they will be swapped (along with the
+corresponding bound flags).</p>
+</div>
+<div class="defns">
+<ul>
 <li><code>bool</code> <strong><code>operator==</code></strong><code>(const Interval&amp; a, const Interval&amp; b) noexcept</code></li>
 <li><code>bool</code> <strong><code>operator!=</code></strong><code>(const Interval&amp; a, const Interval&amp; b) noexcept</code></li>
 <li><code>bool</code> <strong><code>operator&lt;</code></strong><code>(const Interval&amp; a, const Interval&amp; b) noexcept</code></li>

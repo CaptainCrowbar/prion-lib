@@ -31,6 +31,68 @@ void test_core_interval_continuous_basic_properties() {
 
 }
 
+void test_core_interval_continuous_construction() {
+
+    Itype in;
+    Ustring str;
+
+    TRY(in = Itype());                                TRY(str = to_str(in));  TEST_EQUAL(str, "{}");
+    TRY(in = Itype(1.0));                             TRY(str = to_str(in));  TEST_EQUAL(str, "1");
+    TRY(in = Itype(1.0, IB::closed, IB::closed));     TRY(str = to_str(in));  TEST_EQUAL(str, "1");
+    TRY(in = Itype(1.0, IB::closed, IB::open));       TRY(str = to_str(in));  TEST_EQUAL(str, "{}");
+    TRY(in = Itype(1.0, IB::open, IB::closed));       TRY(str = to_str(in));  TEST_EQUAL(str, "{}");
+    TRY(in = Itype(1.0, IB::closed, IB::unbound));    TRY(str = to_str(in));  TEST_EQUAL(str, ">=1");
+    TRY(in = Itype(1.0, IB::unbound, IB::closed));    TRY(str = to_str(in));  TEST_EQUAL(str, "<=1");
+    TRY(in = Itype(1.0, IB::open, IB::unbound));      TRY(str = to_str(in));  TEST_EQUAL(str, ">1");
+    TRY(in = Itype(1.0, IB::unbound, IB::open));      TRY(str = to_str(in));  TEST_EQUAL(str, "<1");
+    TRY(in = Itype(1.0, IB::unbound, IB::unbound));   TRY(str = to_str(in));  TEST_EQUAL(str, "*");
+    TRY(in = Itype(1.0, 2.0));                        TRY(str = to_str(in));  TEST_EQUAL(str, "[1,2]");
+    TRY(in = Itype(1.0, 2.0, IB::closed));            TRY(str = to_str(in));  TEST_EQUAL(str, "[1,2]");
+    TRY(in = Itype(1.0, 2.0, IB::open));              TRY(str = to_str(in));  TEST_EQUAL(str, "(1,2)");
+    TRY(in = Itype(1.0, 2.0, IB::closed, IB::open));  TRY(str = to_str(in));  TEST_EQUAL(str, "[1,2)");
+    TRY(in = Itype(1.0, 2.0, IB::open, IB::closed));  TRY(str = to_str(in));  TEST_EQUAL(str, "(1,2]");
+    TRY(in = Itype(1.0, 2.0, "[]"));                  TRY(str = to_str(in));  TEST_EQUAL(str, "[1,2]");
+    TRY(in = Itype(1.0, 2.0, "()"));                  TRY(str = to_str(in));  TEST_EQUAL(str, "(1,2)");
+    TRY(in = Itype(1.0, 2.0, "[)"));                  TRY(str = to_str(in));  TEST_EQUAL(str, "[1,2)");
+    TRY(in = Itype(1.0, 2.0, "(]"));                  TRY(str = to_str(in));  TEST_EQUAL(str, "(1,2]");
+    TRY(in = Itype(1.0, 2.0, "<"));                   TRY(str = to_str(in));  TEST_EQUAL(str, "<2");
+    TRY(in = Itype(1.0, 2.0, "<="));                  TRY(str = to_str(in));  TEST_EQUAL(str, "<=2");
+    TRY(in = Itype(1.0, 2.0, ">"));                   TRY(str = to_str(in));  TEST_EQUAL(str, ">1");
+    TRY(in = Itype(1.0, 2.0, ">="));                  TRY(str = to_str(in));  TEST_EQUAL(str, ">=1");
+    TRY(in = Itype(2.0, 1.0));                        TRY(str = to_str(in));  TEST_EQUAL(str, "{}");
+
+    TRY(in = make_interval(1.0));                             TRY(str = to_str(in));  TEST_EQUAL(str, "1");
+    TRY(in = make_interval(1.0, IB::closed, IB::closed));     TRY(str = to_str(in));  TEST_EQUAL(str, "1");
+    TRY(in = make_interval(1.0, IB::closed, IB::open));       TRY(str = to_str(in));  TEST_EQUAL(str, "{}");
+    TRY(in = make_interval(1.0, IB::open, IB::closed));       TRY(str = to_str(in));  TEST_EQUAL(str, "{}");
+    TRY(in = make_interval(1.0, IB::closed, IB::unbound));    TRY(str = to_str(in));  TEST_EQUAL(str, ">=1");
+    TRY(in = make_interval(1.0, IB::unbound, IB::closed));    TRY(str = to_str(in));  TEST_EQUAL(str, "<=1");
+    TRY(in = make_interval(1.0, IB::open, IB::unbound));      TRY(str = to_str(in));  TEST_EQUAL(str, ">1");
+    TRY(in = make_interval(1.0, IB::unbound, IB::open));      TRY(str = to_str(in));  TEST_EQUAL(str, "<1");
+    TRY(in = make_interval(1.0, IB::unbound, IB::unbound));   TRY(str = to_str(in));  TEST_EQUAL(str, "*");
+    TRY(in = make_interval(1.0, 2.0));                        TRY(str = to_str(in));  TEST_EQUAL(str, "[1,2]");
+    TRY(in = make_interval(1.0, 2.0, IB::closed));            TRY(str = to_str(in));  TEST_EQUAL(str, "[1,2]");
+    TRY(in = make_interval(1.0, 2.0, IB::open));              TRY(str = to_str(in));  TEST_EQUAL(str, "(1,2)");
+    TRY(in = make_interval(1.0, 2.0, IB::closed, IB::open));  TRY(str = to_str(in));  TEST_EQUAL(str, "[1,2)");
+    TRY(in = make_interval(1.0, 2.0, IB::open, IB::closed));  TRY(str = to_str(in));  TEST_EQUAL(str, "(1,2]");
+    TRY(in = make_interval(1.0, 2.0, "[]"));                  TRY(str = to_str(in));  TEST_EQUAL(str, "[1,2]");
+    TRY(in = make_interval(1.0, 2.0, "()"));                  TRY(str = to_str(in));  TEST_EQUAL(str, "(1,2)");
+    TRY(in = make_interval(1.0, 2.0, "[)"));                  TRY(str = to_str(in));  TEST_EQUAL(str, "[1,2)");
+    TRY(in = make_interval(1.0, 2.0, "(]"));                  TRY(str = to_str(in));  TEST_EQUAL(str, "(1,2]");
+    TRY(in = make_interval(1.0, 2.0, "<"));                   TRY(str = to_str(in));  TEST_EQUAL(str, "<2");
+    TRY(in = make_interval(1.0, 2.0, "<="));                  TRY(str = to_str(in));  TEST_EQUAL(str, "<=2");
+    TRY(in = make_interval(1.0, 2.0, ">"));                   TRY(str = to_str(in));  TEST_EQUAL(str, ">1");
+    TRY(in = make_interval(1.0, 2.0, ">="));                  TRY(str = to_str(in));  TEST_EQUAL(str, ">=1");
+    TRY(in = make_interval(2.0, 1.0));                        TRY(str = to_str(in));  TEST_EQUAL(str, "{}");
+
+    TRY(in = ordered_interval(2.0, 1.0));                        TRY(str = to_str(in));  TEST_EQUAL(str, "[1,2]");
+    TRY(in = ordered_interval(2.0, 1.0, IB::closed));            TRY(str = to_str(in));  TEST_EQUAL(str, "[1,2]");
+    TRY(in = ordered_interval(2.0, 1.0, IB::open));              TRY(str = to_str(in));  TEST_EQUAL(str, "(1,2)");
+    TRY(in = ordered_interval(2.0, 1.0, IB::closed, IB::open));  TRY(str = to_str(in));  TEST_EQUAL(str, "(1,2]");
+    TRY(in = ordered_interval(2.0, 1.0, IB::open, IB::closed));  TRY(str = to_str(in));  TEST_EQUAL(str, "[1,2)");
+
+}
+
 void test_core_interval_continuous_string_parsing() {
 
     Itype in;

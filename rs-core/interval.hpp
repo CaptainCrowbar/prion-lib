@@ -661,6 +661,29 @@ namespace RS {
     template <typename T> bool operator==(const Interval<T>& a, const Interval<T>& b) noexcept { return a.compare(b) == 0; }
     template <typename T> bool operator<(const Interval<T>& a, const Interval<T>& b) noexcept { return a.compare(b) < 0; }
     template <typename T> std::ostream& operator<<(std::ostream& out, const Interval<T>& in) { return out << in.str(); }
+
+    template <typename T> Interval<T> make_interval(const T& t) { return Interval<T>(t); }
+    template <typename T> Interval<T> make_interval(const T& t, IntervalBound l, IntervalBound r) { return Interval<T>(t, l, r); }
+    template <typename T> Interval<T> make_interval(const T& min, const T& max, IntervalBound lr = IntervalBound::closed) { return Interval<T>(min, max, lr); }
+    template <typename T> Interval<T> make_interval(const T& min, const T& max, IntervalBound l, IntervalBound r) { return Interval<T>(min, max, l, r); }
+    template <typename T> Interval<T> make_interval(const T& min, const T& max, Uview mode) { return Interval<T>(min, max, mode); }
+
+    template <typename T> Interval<T>
+    ordered_interval(T a, T b, IntervalBound lr = IntervalBound::closed) {
+        if (b < a)
+            std::swap(a, b);
+        return Interval<T>(a, b, lr);
+    }
+
+    template <typename T> Interval<T>
+    ordered_interval(T a, T b, IntervalBound l, IntervalBound r) {
+        if (b < a) {
+            std::swap(a, b);
+            std::swap(l, r);
+        }
+        return Interval<T>(a, b, l, r);
+    }
+
     template <typename T> void from_json(const json& j, Interval<T>& in) { in.convert_from_json(j); }
     template <typename T> void to_json(json& j, const Interval<T>& in) { j = in.convert_to_json(); }
     template <typename T> bool from_str(Uview view, Interval<T>& in) { return in.parse(view); }

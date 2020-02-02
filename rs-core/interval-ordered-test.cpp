@@ -31,6 +31,67 @@ void test_core_interval_ordered_basic_properties() {
 
 }
 
+void test_core_interval_ordered_construction() {
+
+    Itype in;
+    Ustring str;
+
+    TRY(in = Itype());                                TRY(str = to_str(in));  TEST_EQUAL(str, "{}");
+    TRY(in = Itype("a"));                             TRY(str = to_str(in));  TEST_EQUAL(str, "a");
+    TRY(in = Itype("a", IB::closed, IB::closed));     TRY(str = to_str(in));  TEST_EQUAL(str, "a");
+    TRY(in = Itype("a", IB::closed, IB::open));       TRY(str = to_str(in));  TEST_EQUAL(str, "{}");
+    TRY(in = Itype("a", IB::open, IB::closed));       TRY(str = to_str(in));  TEST_EQUAL(str, "{}");
+    TRY(in = Itype("a", IB::closed, IB::unbound));    TRY(str = to_str(in));  TEST_EQUAL(str, ">=a");
+    TRY(in = Itype("a", IB::unbound, IB::closed));    TRY(str = to_str(in));  TEST_EQUAL(str, "<=a");
+    TRY(in = Itype("a", IB::open, IB::unbound));      TRY(str = to_str(in));  TEST_EQUAL(str, ">a");
+    TRY(in = Itype("a", IB::unbound, IB::open));      TRY(str = to_str(in));  TEST_EQUAL(str, "<a");
+    TRY(in = Itype("a", IB::unbound, IB::unbound));   TRY(str = to_str(in));  TEST_EQUAL(str, "*");
+    TRY(in = Itype("a", "z"));                        TRY(str = to_str(in));  TEST_EQUAL(str, "[a,z]");
+    TRY(in = Itype("a", "z", IB::closed));            TRY(str = to_str(in));  TEST_EQUAL(str, "[a,z]");
+    TRY(in = Itype("a", "z", IB::open));              TRY(str = to_str(in));  TEST_EQUAL(str, "(a,z)");
+    TRY(in = Itype("a", "z", IB::closed, IB::open));  TRY(str = to_str(in));  TEST_EQUAL(str, "[a,z)");
+    TRY(in = Itype("a", "z", IB::open, IB::closed));  TRY(str = to_str(in));  TEST_EQUAL(str, "(a,z]");
+    TRY(in = Itype("a", "z", "[]"));                  TRY(str = to_str(in));  TEST_EQUAL(str, "[a,z]");
+    TRY(in = Itype("a", "z", "()"));                  TRY(str = to_str(in));  TEST_EQUAL(str, "(a,z)");
+    TRY(in = Itype("a", "z", "[)"));                  TRY(str = to_str(in));  TEST_EQUAL(str, "[a,z)");
+    TRY(in = Itype("a", "z", "(]"));                  TRY(str = to_str(in));  TEST_EQUAL(str, "(a,z]");
+    TRY(in = Itype("a", "z", "<"));                   TRY(str = to_str(in));  TEST_EQUAL(str, "<z");
+    TRY(in = Itype("a", "z", "<="));                  TRY(str = to_str(in));  TEST_EQUAL(str, "<=z");
+    TRY(in = Itype("a", "z", ">"));                   TRY(str = to_str(in));  TEST_EQUAL(str, ">a");
+    TRY(in = Itype("a", "z", ">="));                  TRY(str = to_str(in));  TEST_EQUAL(str, ">=a");
+    TRY(in = Itype("z", "a"));                        TRY(str = to_str(in));  TEST_EQUAL(str, "{}");
+
+    TRY(in = make_interval("a"s));                              TRY(str = to_str(in));  TEST_EQUAL(str, "a");
+    TRY(in = make_interval("a"s, IB::closed, IB::closed));      TRY(str = to_str(in));  TEST_EQUAL(str, "a");
+    TRY(in = make_interval("a"s, IB::closed, IB::open));        TRY(str = to_str(in));  TEST_EQUAL(str, "{}");
+    TRY(in = make_interval("a"s, IB::open, IB::closed));        TRY(str = to_str(in));  TEST_EQUAL(str, "{}");
+    TRY(in = make_interval("a"s, IB::closed, IB::unbound));     TRY(str = to_str(in));  TEST_EQUAL(str, ">=a");
+    TRY(in = make_interval("a"s, IB::unbound, IB::closed));     TRY(str = to_str(in));  TEST_EQUAL(str, "<=a");
+    TRY(in = make_interval("a"s, IB::open, IB::unbound));       TRY(str = to_str(in));  TEST_EQUAL(str, ">a");
+    TRY(in = make_interval("a"s, IB::unbound, IB::open));       TRY(str = to_str(in));  TEST_EQUAL(str, "<a");
+    TRY(in = make_interval("a"s, IB::unbound, IB::unbound));    TRY(str = to_str(in));  TEST_EQUAL(str, "*");
+    TRY(in = make_interval("a"s, "z"s));                        TRY(str = to_str(in));  TEST_EQUAL(str, "[a,z]");
+    TRY(in = make_interval("a"s, "z"s, IB::closed));            TRY(str = to_str(in));  TEST_EQUAL(str, "[a,z]");
+    TRY(in = make_interval("a"s, "z"s, IB::open));              TRY(str = to_str(in));  TEST_EQUAL(str, "(a,z)");
+    TRY(in = make_interval("a"s, "z"s, IB::closed, IB::open));  TRY(str = to_str(in));  TEST_EQUAL(str, "[a,z)");
+    TRY(in = make_interval("a"s, "z"s, IB::open, IB::closed));  TRY(str = to_str(in));  TEST_EQUAL(str, "(a,z]");
+    TRY(in = make_interval("a"s, "z"s, "[]"));                  TRY(str = to_str(in));  TEST_EQUAL(str, "[a,z]");
+    TRY(in = make_interval("a"s, "z"s, "()"));                  TRY(str = to_str(in));  TEST_EQUAL(str, "(a,z)");
+    TRY(in = make_interval("a"s, "z"s, "[)"));                  TRY(str = to_str(in));  TEST_EQUAL(str, "[a,z)");
+    TRY(in = make_interval("a"s, "z"s, "(]"));                  TRY(str = to_str(in));  TEST_EQUAL(str, "(a,z]");
+    TRY(in = make_interval("a"s, "z"s, "<"));                   TRY(str = to_str(in));  TEST_EQUAL(str, "<z");
+    TRY(in = make_interval("a"s, "z"s, "<="));                  TRY(str = to_str(in));  TEST_EQUAL(str, "<=z");
+    TRY(in = make_interval("a"s, "z"s, ">"));                   TRY(str = to_str(in));  TEST_EQUAL(str, ">a");
+    TRY(in = make_interval("a"s, "z"s, ">="));                  TRY(str = to_str(in));  TEST_EQUAL(str, ">=a");
+    TRY(in = make_interval("z"s, "a"s));                        TRY(str = to_str(in));  TEST_EQUAL(str, "{}");
+
+    TRY(in = ordered_interval("z"s, "a"s, IB::closed));            TRY(str = to_str(in));  TEST_EQUAL(str, "[a,z]");
+    TRY(in = ordered_interval("z"s, "a"s, IB::open));              TRY(str = to_str(in));  TEST_EQUAL(str, "(a,z)");
+    TRY(in = ordered_interval("z"s, "a"s, IB::closed, IB::open));  TRY(str = to_str(in));  TEST_EQUAL(str, "(a,z]");
+    TRY(in = ordered_interval("z"s, "a"s, IB::open, IB::closed));  TRY(str = to_str(in));  TEST_EQUAL(str, "[a,z)");
+
+}
+
 void test_core_interval_ordered_string_parsing() {
 
     Itype in;

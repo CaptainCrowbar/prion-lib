@@ -146,6 +146,7 @@ extern void test_core_interval_continuous_construction();
 extern void test_core_interval_continuous_string_parsing();
 extern void test_core_interval_continuous_inverse();
 extern void test_core_interval_continuous_binary_operations();
+extern void test_core_interval_continuous_arithmetic();
 extern void test_core_interval_continuous_set_construct_insert_erase();
 extern void test_core_interval_continuous_set_operations();
 extern void test_core_interval_continuous_map();
@@ -155,6 +156,7 @@ extern void test_core_interval_integral_string_parsing();
 extern void test_core_interval_integral_iterators();
 extern void test_core_interval_integral_inverse();
 extern void test_core_interval_integral_binary_operations();
+extern void test_core_interval_integral_arithmetic();
 extern void test_core_interval_integral_set_construct_insert_erase();
 extern void test_core_interval_integral_set_operations();
 extern void test_core_interval_integral_map();
@@ -643,6 +645,7 @@ int main() {
         { "core/interval-continuous/string-parsing", test_core_interval_continuous_string_parsing },
         { "core/interval-continuous/inverse", test_core_interval_continuous_inverse },
         { "core/interval-continuous/binary-operations", test_core_interval_continuous_binary_operations },
+        { "core/interval-continuous/arithmetic", test_core_interval_continuous_arithmetic },
         { "core/interval-continuous/set-construct-insert-erase", test_core_interval_continuous_set_construct_insert_erase },
         { "core/interval-continuous/set-operations", test_core_interval_continuous_set_operations },
         { "core/interval-continuous/map", test_core_interval_continuous_map },
@@ -652,6 +655,7 @@ int main() {
         { "core/interval-integral/iterators", test_core_interval_integral_iterators },
         { "core/interval-integral/inverse", test_core_interval_integral_inverse },
         { "core/interval-integral/binary-operations", test_core_interval_integral_binary_operations },
+        { "core/interval-integral/arithmetic", test_core_interval_integral_arithmetic },
         { "core/interval-integral/set-construct-insert-erase", test_core_interval_integral_set_construct_insert_erase },
         { "core/interval-integral/set-operations", test_core_interval_integral_set_operations },
         { "core/interval-integral/map", test_core_interval_integral_map },

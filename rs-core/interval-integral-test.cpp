@@ -383,6 +383,38 @@ void test_core_interval_integral_binary_operations() {
 
 }
 
+void test_core_interval_integral_arithmetic() {
+
+    Itype in;
+    std::string str;
+
+    TRY(in = + Itype());            TRY(str = to_str(in));  TEST_EQUAL(str, "{}");
+    TRY(in = + Itype::all());       TRY(str = to_str(in));  TEST_EQUAL(str, "*");
+    TRY(in = + Itype(1));           TRY(str = to_str(in));  TEST_EQUAL(str, "1");
+    TRY(in = - Itype());            TRY(str = to_str(in));  TEST_EQUAL(str, "{}");
+    TRY(in = - Itype::all());       TRY(str = to_str(in));  TEST_EQUAL(str, "*");
+    TRY(in = - Itype(1));           TRY(str = to_str(in));  TEST_EQUAL(str, "-1");
+    TRY(in = - Itype(1, 5, "[]"));  TRY(str = to_str(in));  TEST_EQUAL(str, "[-5,-1]");
+    TRY(in = - Itype(1, 5, "()"));  TRY(str = to_str(in));  TEST_EQUAL(str, "[-4,-2]");
+    TRY(in = - Itype(1, 5, "[)"));  TRY(str = to_str(in));  TEST_EQUAL(str, "[-4,-1]");
+    TRY(in = - Itype(1, 5, "(]"));  TRY(str = to_str(in));  TEST_EQUAL(str, "[-5,-2]");
+    TRY(in = - Itype(0, 5, "<"));   TRY(str = to_str(in));  TEST_EQUAL(str, ">=-4");
+    TRY(in = - Itype(0, 5, "<="));  TRY(str = to_str(in));  TEST_EQUAL(str, ">=-5");
+    TRY(in = - Itype(5, 0, ">"));   TRY(str = to_str(in));  TEST_EQUAL(str, "<=-6");
+    TRY(in = - Itype(5, 0, ">="));  TRY(str = to_str(in));  TEST_EQUAL(str, "<=-5");
+
+    TRY(in = Itype() + Itype());  TRY(str = to_str(in));  //TEST_EQUAL(str, "");
+    TRY(in = Itype() - Itype());  TRY(str = to_str(in));  //TEST_EQUAL(str, "");
+    TRY(in = Itype() * Itype());  TRY(str = to_str(in));  //TEST_EQUAL(str, "");
+    TRY(in = Itype() / Itype());  TRY(str = to_str(in));  //TEST_EQUAL(str, "");
+
+    TRY(in = Itype());  TRY(in += Itype());  TRY(str = to_str(in));  //TEST_EQUAL(str, "");
+    TRY(in = Itype());  TRY(in -= Itype());  TRY(str = to_str(in));  //TEST_EQUAL(str, "");
+    TRY(in = Itype());  TRY(in *= Itype());  TRY(str = to_str(in));  //TEST_EQUAL(str, "");
+    TRY(in = Itype());  TRY(in /= Itype());  TRY(str = to_str(in));  //TEST_EQUAL(str, "");
+
+}
+
 void test_core_interval_integral_set_construct_insert_erase() {
 
     Iset set, inv;

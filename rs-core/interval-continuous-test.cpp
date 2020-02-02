@@ -465,6 +465,30 @@ void test_core_interval_continuous_binary_operations() {
 
 }
 
+void test_core_interval_continuous_arithmetic() {
+
+    Itype in;
+    std::string str;
+
+    TRY(in = + Itype());            TRY(str = to_str(in));  TEST_EQUAL(str, "{}");
+    TRY(in = + Itype::all());       TRY(str = to_str(in));  TEST_EQUAL(str, "*");
+    TRY(in = + Itype(1));           TRY(str = to_str(in));  TEST_EQUAL(str, "1");
+    TRY(in = - Itype());            TRY(str = to_str(in));  TEST_EQUAL(str, "{}");
+    TRY(in = - Itype::all());       TRY(str = to_str(in));  TEST_EQUAL(str, "*");
+    TRY(in = - Itype(1));           TRY(str = to_str(in));  TEST_EQUAL(str, "-1");
+    TRY(in = - Itype(1, 5, "[]"));  TRY(str = to_str(in));  TEST_EQUAL(str, "[-5,-1]");
+    TRY(in = - Itype(1, 5, "()"));  TRY(str = to_str(in));  TEST_EQUAL(str, "(-5,-1)");
+    TRY(in = - Itype(1, 5, "[)"));  TRY(str = to_str(in));  TEST_EQUAL(str, "(-5,-1]");
+    TRY(in = - Itype(1, 5, "(]"));  TRY(str = to_str(in));  TEST_EQUAL(str, "[-5,-1)");
+    TRY(in = - Itype(0, 5, "<"));   TRY(str = to_str(in));  TEST_EQUAL(str, ">-5");
+    TRY(in = - Itype(0, 5, "<="));  TRY(str = to_str(in));  TEST_EQUAL(str, ">=-5");
+    TRY(in = - Itype(5, 0, ">"));   TRY(str = to_str(in));  TEST_EQUAL(str, "<-5");
+    TRY(in = - Itype(5, 0, ">="));  TRY(str = to_str(in));  TEST_EQUAL(str, "<=-5");
+
+    // TODO
+
+}
+
 void test_core_interval_continuous_set_construct_insert_erase() {
 
     Iset set, inv;

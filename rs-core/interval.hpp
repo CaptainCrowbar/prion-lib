@@ -250,15 +250,15 @@ namespace RS {
 
     // Base class for intervals in the same category
 
-    template <typename T, IntervalCategory Cat = interval_category<T>>
+    template <typename IntervalType, typename T, IntervalCategory Cat = interval_category<T>>
     class IntervalCategoryBase;
 
-    template <typename T>
-    class IntervalCategoryBase<T, IntervalCategory::ordered>:
+    template <typename IntervalType, typename T>
+    class IntervalCategoryBase<IntervalType, T, IntervalCategory::ordered>:
     public IntervalTypeBase<T> {};
 
-    template <typename T>
-    class IntervalCategoryBase<T, IntervalCategory::integral>:
+    template <typename IntervalType, typename T>
+    class IntervalCategoryBase<IntervalType, T, IntervalCategory::integral>:
     public IntervalTypeBase<T> {
     private:
         using IB = IntervalBound;
@@ -285,12 +285,28 @@ namespace RS {
         iterator begin() const { return this->is_empty() ? iterator() : iterator(this->min_); }
         iterator end() const { return this->is_empty() ? iterator() : std::next(iterator(this->max_)); }
         size_t size() const;
+        IntervalType operator+() const { auto& a = static_cast<const IntervalType&>(*this); return a; }
+        IntervalType operator-() const { auto& a = static_cast<const IntervalType&>(*this); return negative(a); }
+        IntervalType& operator+=(const IntervalType& b) { auto& a = static_cast<IntervalType&>(*this); a = add(a, b); return a; }
+        IntervalType& operator-=(const IntervalType& b) { auto& a = static_cast<IntervalType&>(*this); a = subtract(a, b); return a; }
+        IntervalType& operator*=(const IntervalType& b) { auto& a = static_cast<IntervalType&>(*this); a = multiply(a, b); return a; }
+        IntervalType& operator/=(const IntervalType& b) { auto& a = static_cast<IntervalType&>(*this); a = divide(a, b); return a; }
+        friend IntervalType operator+(const IntervalType& a, const IntervalType& b) { return add(a, b); }
+        friend IntervalType operator-(const IntervalType& a, const IntervalType& b) { return subtract(a, b); }
+        friend IntervalType operator*(const IntervalType& a, const IntervalType& b) { return multiply(a, b); }
+        friend IntervalType operator/(const IntervalType& a, const IntervalType& b) { return divide(a, b); }
     protected:
         void adjust_bounds();
+    private:
+        static IntervalType negative(const IntervalType& a);
+        static IntervalType add(const IntervalType& a, const IntervalType& b);
+        static IntervalType subtract(const IntervalType& a, const IntervalType& b);
+        static IntervalType multiply(const IntervalType& a, const IntervalType& b);
+        static IntervalType divide(const IntervalType& a, const IntervalType& b);
     };
 
-        template <typename T>
-        size_t IntervalCategoryBase<T, IntervalCategory::integral>::size() const {
+        template <typename IntervalType, typename T>
+        size_t IntervalCategoryBase<IntervalType, T, IntervalCategory::integral>::size() const {
             if (this->is_empty())
                 return 0;
             if (this->is_infinite())
@@ -304,8 +320,8 @@ namespace RS {
             }
         }
 
-        template <typename T>
-        void IntervalCategoryBase<T, IntervalCategory::integral>::adjust_bounds() {
+        template <typename IntervalType, typename T>
+        void IntervalCategoryBase<IntervalType, T, IntervalCategory::integral>::adjust_bounds() {
             if (this->left_ == IB::open) {
                 ++this->min_;
                 this->left_ = IB::closed;
@@ -317,12 +333,102 @@ namespace RS {
             IntervalTypeBase<T>::adjust_bounds();
         }
 
-    template <typename T>
-    class IntervalCategoryBase<T, IntervalCategory::continuous>:
+        template <typename IntervalType, typename T>
+        IntervalType IntervalCategoryBase<IntervalType, T, IntervalCategory::integral>::negative(const IntervalType& a) {
+            return IntervalType(- a.max(), - a.min(), a.right(), a.left());
+        }
+
+        template <typename IntervalType, typename T>
+        IntervalType IntervalCategoryBase<IntervalType, T, IntervalCategory::integral>::add(const IntervalType& a, const IntervalType& b) {
+            // TODO
+            (void)a;
+            (void)b;
+            return {};
+        }
+
+        template <typename IntervalType, typename T>
+        IntervalType IntervalCategoryBase<IntervalType, T, IntervalCategory::integral>::subtract(const IntervalType& a, const IntervalType& b) {
+            // TODO
+            (void)a;
+            (void)b;
+            return {};
+        }
+
+        template <typename IntervalType, typename T>
+        IntervalType IntervalCategoryBase<IntervalType, T, IntervalCategory::integral>::multiply(const IntervalType& a, const IntervalType& b) {
+            // TODO
+            (void)a;
+            (void)b;
+            return {};
+        }
+
+        template <typename IntervalType, typename T>
+        IntervalType IntervalCategoryBase<IntervalType, T, IntervalCategory::integral>::divide(const IntervalType& a, const IntervalType& b) {
+            // TODO
+            (void)a;
+            (void)b;
+            return {};
+        }
+
+    template <typename IntervalType, typename T>
+    class IntervalCategoryBase<IntervalType, T, IntervalCategory::continuous>:
     public IntervalTypeBase<T> {
     public:
         T size() const { return this->max_ - this->min_; }
+        IntervalType operator+() const { auto& a = static_cast<const IntervalType&>(*this); return a; }
+        IntervalType operator-() const { auto& a = static_cast<const IntervalType&>(*this); return negative(a); }
+        IntervalType& operator+=(const IntervalType& b) { auto& a = static_cast<IntervalType&>(*this); a = add(a, b); return a; }
+        IntervalType& operator-=(const IntervalType& b) { auto& a = static_cast<IntervalType&>(*this); a = subtract(a, b); return a; }
+        IntervalType& operator*=(const IntervalType& b) { auto& a = static_cast<IntervalType&>(*this); a = multiply(a, b); return a; }
+        IntervalType& operator/=(const IntervalType& b) { auto& a = static_cast<IntervalType&>(*this); a = divide(a, b); return a; }
+        friend IntervalType operator+(const IntervalType& a, const IntervalType& b) { return add(a, b); }
+        friend IntervalType operator-(const IntervalType& a, const IntervalType& b) { return subtract(a, b); }
+        friend IntervalType operator*(const IntervalType& a, const IntervalType& b) { return multiply(a, b); }
+        friend IntervalType operator/(const IntervalType& a, const IntervalType& b) { return divide(a, b); }
+    private:
+        static IntervalType negative(const IntervalType& a);
+        static IntervalType add(const IntervalType& a, const IntervalType& b);
+        static IntervalType subtract(const IntervalType& a, const IntervalType& b);
+        static IntervalType multiply(const IntervalType& a, const IntervalType& b);
+        static IntervalType divide(const IntervalType& a, const IntervalType& b);
     };
+
+        template <typename IntervalType, typename T>
+        IntervalType IntervalCategoryBase<IntervalType, T, IntervalCategory::continuous>::negative(const IntervalType& a) {
+            return IntervalType(- a.max(), - a.min(), a.right(), a.left());
+        }
+
+        template <typename IntervalType, typename T>
+        IntervalType IntervalCategoryBase<IntervalType, T, IntervalCategory::continuous>::add(const IntervalType& a, const IntervalType& b) {
+            // TODO
+            (void)a;
+            (void)b;
+            return {};
+        }
+
+        template <typename IntervalType, typename T>
+        IntervalType IntervalCategoryBase<IntervalType, T, IntervalCategory::continuous>::subtract(const IntervalType& a, const IntervalType& b) {
+            // TODO
+            (void)a;
+            (void)b;
+            return {};
+        }
+
+        template <typename IntervalType, typename T>
+        IntervalType IntervalCategoryBase<IntervalType, T, IntervalCategory::continuous>::multiply(const IntervalType& a, const IntervalType& b) {
+            // TODO
+            (void)a;
+            (void)b;
+            return {};
+        }
+
+        template <typename IntervalType, typename T>
+        IntervalType IntervalCategoryBase<IntervalType, T, IntervalCategory::continuous>::divide(const IntervalType& a, const IntervalType& b) {
+            // TODO
+            (void)a;
+            (void)b;
+            return {};
+        }
 
     // Interval class
 
@@ -330,7 +436,7 @@ namespace RS {
 
     template <typename T>
     class Interval:
-    public IntervalCategoryBase<T>,
+    public IntervalCategoryBase<Interval<T>, T>,
     public LessThanComparable<Interval<T>> {
     private:
         using IB = IntervalBound;

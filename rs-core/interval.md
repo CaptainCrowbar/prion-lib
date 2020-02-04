@@ -12,8 +12,8 @@ By Ross Smith
 
 * `enum class` **`IntervalBound`**
     * `IntervalBound::`**`empty`** `= 0`    _[the interval is empty]_
-    * `IntervalBound::`**`open`** `= 1`     _[the interval does not include the boundary value]_
     * `IntervalBound::`**`closed`** `= 2`   _[the interval includes the boundary value]_
+    * `IntervalBound::`**`open`** `= 1`     _[the interval does not include the boundary value]_
     * `IntervalBound::`**`unbound`** `= 3`  _[the interval is unbounded in this direction]_
 
 Indicates what kind of bound the interval has. An `Interval` object contains
@@ -64,20 +64,19 @@ not give the appropriate category.
     * `IntervalMatch::`**`ok`** `= 0`      _[the value is an element of the interval]_
     * `IntervalMatch::`**`high`** `= 1`    _[the value is greater than the interval's upper bound]_
 
-The result of the `Interval::match(t)` method, indicating the relationship of
-a specific value to the interval.
+The result of the `Interval::match()` method, indicating the relationship of a
+specific value to the interval.
 
 * `enum class` **`IntervalOrder`**
     * _[see below for the list of values]_
 
-The result of the `Interval::order(interval)` method, indicating the
-relationship of one interval to another. In the table below, the values in the
-first column are the possible results of calling `A.order(B)`, where `A` and
-`B` are intervals. In the relationship diagrams, `A` is the white interval,
-`B` is the black interval, with the underlying type running horizontally from
-left to right. A negative value indicates that `A` will compare
-lexicographically less than `B`; a positive value indicates that `A` will
-compare greater than `B`.
+The result of the `Interval::order()` method, indicating the relationship of
+one interval to another. In the table below, the values in the first column
+are the possible results of calling `A.order(B)`, where `A` and `B` are
+intervals. In the relationship diagrams, `A` is the white interval, `B` is the
+black interval, with the underlying type running horizontally from left to
+right. A negative value indicates that `A` will compare lexicographically less
+than `B`; a positive value indicates that `A` will compare greater than `B`.
 
 Name                                      | Value  | Picture                                   | Description
 ----                                      | -----  | -------                                   | -----------
@@ -239,11 +238,10 @@ whether the value is an element of the interval. The function call operator is
 equivalent to `contains()`.
 
 * `IntervalSet<T> Interval::`**`inverse`**`() const`
-* `IntervalSet<T> Interval::`**`operator~`**`() const`
 
-These return the inverse interval (the set of all values that are not in the
+Returns the inverse interval (the set of all values that are not in the
 interval). The inverse may in general consist of more than one interval, so
-the return type is `IntervalSet` (described below), not `Interval`.
+the return type is `IntervalSet`, not `Interval`.
 
 * `IntervalOrder Interval::`**`order`**`(const Interval& b) const`
 
@@ -274,11 +272,6 @@ them.
 * `IntervalSet<T> Interval::`**`set_union`**`(const Interval& b) const`
 * `IntervalSet<T> Interval::`**`set_difference`**`(const Interval& b) const`
 * `IntervalSet<T> Interval::`**`set_symmetric_difference`**`(const Interval& b) const`
-* `Interval& Interval::`**`operator&=`**`(const Interval& b)` _[set intersection]_
-* `Interval` **`operator&`**`(const Interval& a, const Interval& b)` _[set intersection]_
-* `IntervalSet<T>` **`operator|`**`(const Interval& a, const Interval& b)` _[set union]_
-* `IntervalSet<T>` **`operator-`**`(const Interval& a, const Interval& b)` _[set difference]_
-* `IntervalSet<T>` **`operator^`**`(const Interval& a, const Interval& b)` _[set symmetric difference]_
 
 Set operations on two intervals. In general the result of a set operation may
 consist of more than one interval, so most of these return an `IntervalSet`
@@ -364,7 +357,7 @@ corresponding bound flags).
 * `bool` **`operator>=`**`(const Interval& a, const Interval& b) noexcept`
 
 Lexicographical comparison operators. These call `T`'s equality and less-than
-operators.
+operators. An empty interval compares less than any non-empty interval.
 
 ## Interval set ##
 

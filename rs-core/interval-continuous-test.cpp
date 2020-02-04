@@ -485,7 +485,70 @@ void test_core_interval_continuous_arithmetic() {
     TRY(in = - Itype(5, 0, ">"));   TRY(str = to_str(in));  TEST_EQUAL(str, "<-5");
     TRY(in = - Itype(5, 0, ">="));  TRY(str = to_str(in));  TEST_EQUAL(str, "<=-5");
 
-    // TODO
+    TRY(in = Itype() + 42);             TRY(str = to_str(in));  TEST_EQUAL(str, "{}");
+    TRY(in = Itype::all() + 42);        TRY(str = to_str(in));  TEST_EQUAL(str, "*");
+    TRY(in = Itype(5) + 42);            TRY(str = to_str(in));  TEST_EQUAL(str, "47");
+    TRY(in = Itype(5, 10, "[]") + 42);  TRY(str = to_str(in));  TEST_EQUAL(str, "[47,52]");
+    TRY(in = Itype(5, 10, "()") + 42);  TRY(str = to_str(in));  TEST_EQUAL(str, "(47,52)");
+    TRY(in = Itype(5, 10, "[)") + 42);  TRY(str = to_str(in));  TEST_EQUAL(str, "[47,52)");
+    TRY(in = Itype(5, 10, "(]") + 42);  TRY(str = to_str(in));  TEST_EQUAL(str, "(47,52]");
+    TRY(in = Itype(5, 10, "<") + 42);   TRY(str = to_str(in));  TEST_EQUAL(str, "<52");
+    TRY(in = Itype(5, 10, "<=") + 42);  TRY(str = to_str(in));  TEST_EQUAL(str, "<=52");
+    TRY(in = Itype(5, 10, ">") + 42);   TRY(str = to_str(in));  TEST_EQUAL(str, ">47");
+    TRY(in = Itype(5, 10, ">=") + 42);  TRY(str = to_str(in));  TEST_EQUAL(str, ">=47");
+
+    struct test_info {
+        int line;
+        Ustring lhs;
+        Ustring rhs;
+        Ustring add;
+        Ustring sub;
+        Ustring mul;
+        Ustring div;
+    };
+
+    static const std::vector<test_info> tests = {
+
+        // line      lhs         rhs    add         sub           mul    div    --
+        { __LINE__,  "{}",       "{}",  "{}",       "{}",         "{}",  "{}",  },
+        { __LINE__,  "{}",       "42",  "{}",       "{}",         "{}",  "{}",  },
+        { __LINE__,  "*",        "42",  "*",        "*",          "{}",  "{}",  },
+        { __LINE__,  "10",       "42",  "52",       "-32",        "{}",  "{}",  },
+        { __LINE__,  "[10,20]",  "42",  "[52,62]",  "[-32,-22]",  "{}",  "{}",  },
+        { __LINE__,  "[10,20)",  "42",  "[52,62)",  "[-32,-22)",  "{}",  "{}",  },
+        { __LINE__,  "(10,20]",  "42",  "(52,62]",  "(-32,-22]",  "{}",  "{}",  },
+        { __LINE__,  "(10,20)",  "42",  "(52,62)",  "(-32,-22)",  "{}",  "{}",  },
+        { __LINE__,  "<10",      "42",  "<52",      "<-32",       "{}",  "{}",  },
+        { __LINE__,  "<=10",     "42",  "<=52",     "<=-32",      "{}",  "{}",  },
+        { __LINE__,  ">10",      "42",  ">52",      ">-32",       "{}",  "{}",  },
+        { __LINE__,  ">=10",     "42",  ">=52",     ">=-32",      "{}",  "{}",  },
+
+        // TODO
+
+    };
+
+    Itype a, b, c;
+
+    for (auto& t: tests) {
+
+        int errors = 0;
+
+        TRY(a = from_str<Itype>(t.lhs));
+        TRY(b = from_str<Itype>(t.rhs));
+
+        TRY(c = a + b);           TRY(str = to_str(c));  TEST_EQUAL(str, t.add);  errors += int(str != t.add);
+        TRY(c = a - b);           TRY(str = to_str(c));  TEST_EQUAL(str, t.sub);  errors += int(str != t.sub);
+        TRY(c = a * b);           TRY(str = to_str(c));  TEST_EQUAL(str, t.mul);  errors += int(str != t.mul);
+        TRY(c = a / b);           TRY(str = to_str(c));  TEST_EQUAL(str, t.div);  errors += int(str != t.div);
+        TRY(c = a); TRY(c += b);  TRY(str = to_str(c));  TEST_EQUAL(str, t.add);  errors += int(str != t.add);
+        TRY(c = a); TRY(c -= b);  TRY(str = to_str(c));  TEST_EQUAL(str, t.sub);  errors += int(str != t.sub);
+        TRY(c = a); TRY(c *= b);  TRY(str = to_str(c));  TEST_EQUAL(str, t.mul);  errors += int(str != t.mul);
+        TRY(c = a); TRY(c /= b);  TRY(str = to_str(c));  TEST_EQUAL(str, t.div);  errors += int(str != t.div);
+
+        if (errors)
+            std::cout << "... [" << t.line << "] " << t.lhs << " " << t.rhs << "\n";
+
+    }
 
 }
 

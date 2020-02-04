@@ -22,8 +22,8 @@ namespace RS {
 
     RS_ENUM_CLASS(IntervalBound, int, 0,
         empty,     // The interval is empty
-        open,      // The interval does not include the boundary value
         closed,    // The interval includes the boundary value
+        open,      // The interval does not include the boundary value
         unbound);  // The interval is unbounded in this direction
 
     constexpr IntervalBound operator~(IntervalBound b) noexcept { return IntervalBound(3 - int(b)); }
@@ -348,17 +348,12 @@ namespace RS {
         friend IntervalType operator/(const IntervalType& a, const T& b) { return divide(a, b); }
         friend IntervalType operator/(const T& a, const IntervalType& b) { return divide(a, b); }
     private:
+        using IB = IntervalBound;
         static IntervalType negative(const IntervalType& a);
         static IntervalType add(const IntervalType& a, const IntervalType& b);
-        static IntervalType add(const IntervalType& a, const T& b);
         static IntervalType subtract(const IntervalType& a, const IntervalType& b);
-        static IntervalType subtract(const IntervalType& a, const T& b);
-        static IntervalType subtract(const T& a, const IntervalType& b);
         static IntervalType multiply(const IntervalType& a, const IntervalType& b);
-        static IntervalType multiply(const IntervalType& a, const T& b);
         static IntervalType divide(const IntervalType& a, const IntervalType& b);
-        static IntervalType divide(const IntervalType& a, const T& b);
-        static IntervalType divide(const T& a, const IntervalType& b);
     };
 
         template <typename IntervalType, typename T, IntervalCategory Cat>
@@ -368,42 +363,28 @@ namespace RS {
 
         template <typename IntervalType, typename T, IntervalCategory Cat>
         IntervalType IntervalArithmeticBase<IntervalType, T, Cat>::add(const IntervalType& a, const IntervalType& b) {
-            // TODO
-            (void)a;
-            (void)b;
-            return {};
-        }
-
-        template <typename IntervalType, typename T, IntervalCategory Cat>
-        IntervalType IntervalArithmeticBase<IntervalType, T, Cat>::add(const IntervalType& a, const T& b) {
-            // TODO
-            (void)a;
-            (void)b;
-            return {};
+            if (a.empty() || b.empty())
+                return {};
+            if (a.is_universal() || b.is_universal())
+                return IntervalType::all();
+            IB l = std::max(a.left(), b.left());
+            IB r = std::max(a.right(), b.right());
+            T t = l == IB::unbound ? T() : a.min() + b.min();
+            T u = r == IB::unbound ? T() : a.max() + b.max();
+            return IntervalType(t, u, l, r);
         }
 
         template <typename IntervalType, typename T, IntervalCategory Cat>
         IntervalType IntervalArithmeticBase<IntervalType, T, Cat>::subtract(const IntervalType& a, const IntervalType& b) {
-            // TODO
-            (void)a;
-            (void)b;
-            return {};
-        }
-
-        template <typename IntervalType, typename T, IntervalCategory Cat>
-        IntervalType IntervalArithmeticBase<IntervalType, T, Cat>::subtract(const IntervalType& a, const T& b) {
-            // TODO
-            (void)a;
-            (void)b;
-            return {};
-        }
-
-        template <typename IntervalType, typename T, IntervalCategory Cat>
-        IntervalType IntervalArithmeticBase<IntervalType, T, Cat>::subtract(const T& a, const IntervalType& b) {
-            // TODO
-            (void)a;
-            (void)b;
-            return {};
+            if (a.empty() || b.empty())
+                return {};
+            if (a.is_universal() || b.is_universal())
+                return IntervalType::all();
+            IB l = std::max(a.left(), b.right());
+            IB r = std::max(a.right(), b.left());
+            T t = l == IB::unbound ? T() : a.min() - b.max();
+            T u = r == IB::unbound ? T() : a.max() - b.min();
+            return IntervalType(t, u, l, r);
         }
 
         template <typename IntervalType, typename T, IntervalCategory Cat>
@@ -415,31 +396,7 @@ namespace RS {
         }
 
         template <typename IntervalType, typename T, IntervalCategory Cat>
-        IntervalType IntervalArithmeticBase<IntervalType, T, Cat>::multiply(const IntervalType& a, const T& b) {
-            // TODO
-            (void)a;
-            (void)b;
-            return {};
-        }
-
-        template <typename IntervalType, typename T, IntervalCategory Cat>
         IntervalType IntervalArithmeticBase<IntervalType, T, Cat>::divide(const IntervalType& a, const IntervalType& b) {
-            // TODO
-            (void)a;
-            (void)b;
-            return {};
-        }
-
-        template <typename IntervalType, typename T, IntervalCategory Cat>
-        IntervalType IntervalArithmeticBase<IntervalType, T, Cat>::divide(const IntervalType& a, const T& b) {
-            // TODO
-            (void)a;
-            (void)b;
-            return {};
-        }
-
-        template <typename IntervalType, typename T, IntervalCategory Cat>
-        IntervalType IntervalArithmeticBase<IntervalType, T, Cat>::divide(const T& a, const IntervalType& b) {
             // TODO
             (void)a;
             (void)b;
@@ -474,8 +431,6 @@ namespace RS {
         Interval(const T& min, const T& max, Uview mode);
         explicit operator bool() const noexcept { return ! this->empty(); }
         bool operator()(const T& t) const { return contains(t); }
-        IntervalSet<T> operator~() const { return inverse(); }
-        Interval& operator&=(const Interval<T>& b) { *this = set_intersection(b); return *this; }
         bool contains(const T& t) const { return this->match(t) == IM::ok; }
         IntervalSet<T> inverse() const;
         IO order(const Interval& b) const;

@@ -403,15 +403,7 @@ void test_core_interval_integral_arithmetic() {
     TRY(in = - Itype(5, 0, ">"));   TRY(str = to_str(in));  TEST_EQUAL(str, "<=-6");
     TRY(in = - Itype(5, 0, ">="));  TRY(str = to_str(in));  TEST_EQUAL(str, "<=-5");
 
-    TRY(in = Itype() + Itype());  TRY(str = to_str(in));  //TEST_EQUAL(str, "");
-    TRY(in = Itype() - Itype());  TRY(str = to_str(in));  //TEST_EQUAL(str, "");
-    TRY(in = Itype() * Itype());  TRY(str = to_str(in));  //TEST_EQUAL(str, "");
-    TRY(in = Itype() / Itype());  TRY(str = to_str(in));  //TEST_EQUAL(str, "");
-
-    TRY(in = Itype());  TRY(in += Itype());  TRY(str = to_str(in));  //TEST_EQUAL(str, "");
-    TRY(in = Itype());  TRY(in -= Itype());  TRY(str = to_str(in));  //TEST_EQUAL(str, "");
-    TRY(in = Itype());  TRY(in *= Itype());  TRY(str = to_str(in));  //TEST_EQUAL(str, "");
-    TRY(in = Itype());  TRY(in /= Itype());  TRY(str = to_str(in));  //TEST_EQUAL(str, "");
+    // TODO
 
 }
 

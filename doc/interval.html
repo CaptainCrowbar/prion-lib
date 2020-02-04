@@ -29,8 +29,8 @@
 <ul>
 <li><code>enum class</code> <strong><code>IntervalBound</code></strong><ul>
 <li><code>IntervalBound::</code><strong><code>empty</code></strong> <code>= 0</code>    <em>[the interval is empty]</em></li>
-<li><code>IntervalBound::</code><strong><code>open</code></strong> <code>= 1</code>     <em>[the interval does not include the boundary value]</em></li>
 <li><code>IntervalBound::</code><strong><code>closed</code></strong> <code>= 2</code>   <em>[the interval includes the boundary value]</em></li>
+<li><code>IntervalBound::</code><strong><code>open</code></strong> <code>= 1</code>     <em>[the interval does not include the boundary value]</em></li>
 <li><code>IntervalBound::</code><strong><code>unbound</code></strong> <code>= 3</code>  <em>[the interval is unbounded in this direction]</em></li>
 </ul>
 </li>
@@ -107,8 +107,8 @@ not give the appropriate category.</p>
 </ul>
 </li>
 </ul>
-<p>The result of the <code>Interval::match(t)</code> method, indicating the relationship of
-a specific value to the interval.</p>
+<p>The result of the <code>Interval::match()</code> method, indicating the relationship of a
+specific value to the interval.</p>
 </div>
 <div class="defns">
 <ul>
@@ -117,14 +117,13 @@ a specific value to the interval.</p>
 </ul>
 </li>
 </ul>
-<p>The result of the <code>Interval::order(interval)</code> method, indicating the
-relationship of one interval to another. In the table below, the values in the
-first column are the possible results of calling <code>A.order(B)</code>, where <code>A</code> and
-<code>B</code> are intervals. In the relationship diagrams, <code>A</code> is the white interval,
-<code>B</code> is the black interval, with the underlying type running horizontally from
-left to right. A negative value indicates that <code>A</code> will compare
-lexicographically less than <code>B</code>; a positive value indicates that <code>A</code> will
-compare greater than <code>B</code>.</p>
+<p>The result of the <code>Interval::order()</code> method, indicating the relationship of
+one interval to another. In the table below, the values in the first column
+are the possible results of calling <code>A.order(B)</code>, where <code>A</code> and <code>B</code> are
+intervals. In the relationship diagrams, <code>A</code> is the white interval, <code>B</code> is the
+black interval, with the underlying type running horizontally from left to
+right. A negative value indicates that <code>A</code> will compare lexicographically less
+than <code>B</code>; a positive value indicates that <code>A</code> will compare greater than <code>B</code>.</p>
 <table>
 <thead>
 <tr>
@@ -437,11 +436,10 @@ equivalent to <code>contains()</code>.</p>
 <div class="defns">
 <ul>
 <li><code>IntervalSet&lt;T&gt; Interval::</code><strong><code>inverse</code></strong><code>() const</code></li>
-<li><code>IntervalSet&lt;T&gt; Interval::</code><strong><code>operator~</code></strong><code>() const</code></li>
 </ul>
-<p>These return the inverse interval (the set of all values that are not in the
+<p>Returns the inverse interval (the set of all values that are not in the
 interval). The inverse may in general consist of more than one interval, so
-the return type is <code>IntervalSet</code> (described below), not <code>Interval</code>.</p>
+the return type is <code>IntervalSet</code>, not <code>Interval</code>.</p>
 </div>
 <div class="defns">
 <ul>
@@ -482,11 +480,6 @@ them.</p>
 <li><code>IntervalSet&lt;T&gt; Interval::</code><strong><code>set_union</code></strong><code>(const Interval&amp; b) const</code></li>
 <li><code>IntervalSet&lt;T&gt; Interval::</code><strong><code>set_difference</code></strong><code>(const Interval&amp; b) const</code></li>
 <li><code>IntervalSet&lt;T&gt; Interval::</code><strong><code>set_symmetric_difference</code></strong><code>(const Interval&amp; b) const</code></li>
-<li><code>Interval&amp; Interval::</code><strong><code>operator&amp;=</code></strong><code>(const Interval&amp; b)</code> <em>[set intersection]</em></li>
-<li><code>Interval</code> <strong><code>operator&amp;</code></strong><code>(const Interval&amp; a, const Interval&amp; b)</code> <em>[set intersection]</em></li>
-<li><code>IntervalSet&lt;T&gt;</code> <strong><code>operator|</code></strong><code>(const Interval&amp; a, const Interval&amp; b)</code> <em>[set union]</em></li>
-<li><code>IntervalSet&lt;T&gt;</code> <strong><code>operator-</code></strong><code>(const Interval&amp; a, const Interval&amp; b)</code> <em>[set difference]</em></li>
-<li><code>IntervalSet&lt;T&gt;</code> <strong><code>operator^</code></strong><code>(const Interval&amp; a, const Interval&amp; b)</code> <em>[set symmetric difference]</em></li>
 </ul>
 <p>Set operations on two intervals. In general the result of a set operation may
 consist of more than one interval, so most of these return an <code>IntervalSet</code>
@@ -637,7 +630,7 @@ corresponding bound flags).</p>
 <li><code>bool</code> <strong><code>operator&gt;=</code></strong><code>(const Interval&amp; a, const Interval&amp; b) noexcept</code></li>
 </ul>
 <p>Lexicographical comparison operators. These call <code>T</code>'s equality and less-than
-operators.</p>
+operators. An empty interval compares less than any non-empty interval.</p>
 </div>
 <h2 id="interval-set">Interval set</h2>
 <div class="defns">

@@ -365,7 +365,7 @@ namespace RS {
         IntervalType IntervalArithmeticBase<IntervalType, T, Cat>::add(const IntervalType& a, const IntervalType& b) {
             if (a.empty() || b.empty())
                 return {};
-            if (a.is_universal() || b.is_universal())
+            else if (a.is_universal() || b.is_universal())
                 return IntervalType::all();
             IB l = std::max(a.left(), b.left());
             IB r = std::max(a.right(), b.right());
@@ -378,7 +378,7 @@ namespace RS {
         IntervalType IntervalArithmeticBase<IntervalType, T, Cat>::subtract(const IntervalType& a, const IntervalType& b) {
             if (a.empty() || b.empty())
                 return {};
-            if (a.is_universal() || b.is_universal())
+            else if (a.is_universal() || b.is_universal())
                 return IntervalType::all();
             IB l = std::max(a.left(), b.right());
             IB r = std::max(a.right(), b.left());
@@ -389,6 +389,12 @@ namespace RS {
 
         template <typename IntervalType, typename T, IntervalCategory Cat>
         IntervalType IntervalArithmeticBase<IntervalType, T, Cat>::multiply(const IntervalType& a, const IntervalType& b) {
+            // if (a.empty() || b.empty())
+            //     return {};
+            // else if ((a.is_single() && a.min() == T()) || (b.is_single() && b.min() == T()))
+            //     return T();
+            // else if (a.is_universal() || b.is_universal())
+            //     return IntervalType::all();
             // TODO
             (void)a;
             (void)b;

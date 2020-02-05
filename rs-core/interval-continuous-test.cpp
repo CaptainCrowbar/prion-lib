@@ -579,8 +579,6 @@ void test_core_interval_continuous_arithmetic() {
         { __LINE__,  ">=10",     ">42",       ">52",        "*",          "*",          "{}",  "{}",  "{}",  },
         { __LINE__,  ">=10",     ">=42",      ">=52",       "*",          "*",          "{}",  "{}",  "{}",  },
 
-        // TODO
-
     };
 
     Itype a, b, c;

@@ -3,6 +3,10 @@
 #include <iterator>
 #include <string>
 
+#ifdef __clang__
+    #pragma GCC diagnostic warning "-Wc++14-compat"
+#endif
+
 using namespace RS;
 using namespace std::literals;
 

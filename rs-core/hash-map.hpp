@@ -7,6 +7,11 @@
 #include <utility>
 #include <vector>
 
+#ifdef __clang__
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic warning "-Wc++14-compat"
+#endif
+
 namespace RS {
 
     class HashMapCommonBase {
@@ -401,3 +406,7 @@ namespace RS {
     }
 
 }
+
+#ifdef __clang__
+    #pragma GCC diagnostic pop
+#endif

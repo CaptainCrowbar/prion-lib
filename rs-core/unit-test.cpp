@@ -132,6 +132,8 @@ extern void test_core_float_false_position();
 extern void test_core_float_newton_raphson();
 extern void test_core_float_pseudo_newton_raphson();
 extern void test_core_grid_class();
+extern void test_core_hash_map_map_insert();
+extern void test_core_hash_map_set_insert();
 extern void test_core_index_table_classes();
 extern void test_core_int128_uint128_basics();
 extern void test_core_int128_uint128_arithmetic();
@@ -631,6 +633,8 @@ int main() {
         { "core/float/newton-raphson", test_core_float_newton_raphson },
         { "core/float/pseudo-newton-raphson", test_core_float_pseudo_newton_raphson },
         { "core/grid/class", test_core_grid_class },
+        { "core/hash-map/map-insert", test_core_hash_map_map_insert },
+        { "core/hash-map/set-insert", test_core_hash_map_set_insert },
         { "core/index-table/classes", test_core_index_table_classes },
         { "core/int128/uint128-basics", test_core_int128_uint128_basics },
         { "core/int128/uint128-arithmetic", test_core_int128_uint128_arithmetic },

@@ -1,16 +1,15 @@
 #pragma once
 
 #include "rs-core/common.hpp"
-#include <algorithm>
 #include <array>
 #include <atomic>
 #include <chrono>
 #include <cmath>
 #include <cstddef>
 #include <exception>
+#include <functional>
 #include <iostream>
 #include <iterator>
-#include <map>
 #include <memory>
 #include <mutex>
 #include <new>
@@ -611,6 +610,24 @@ namespace RS {
             return test_failures() > 0;
         }
 
+    };
+
+}
+
+namespace std {
+
+    template <typename T, bool Copy>
+    struct hash<RS::Accountable<T, Copy>> {
+        size_t operator()(const RS::Accountable<T, Copy>& a) const noexcept {
+            return std::hash<T>()(a.get());
+        }
+    };
+
+    template <bool Copy>
+    struct hash<RS::Accountable<void, Copy>> {
+        size_t operator()(const RS::Accountable<void, Copy>&) const noexcept {
+            return 1;
+        }
     };
 
 }

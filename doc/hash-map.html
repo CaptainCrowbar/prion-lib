@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Hash Map and Set</title>
+<link type="text/css" rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<h1 id="hash-map-and-set">Hash Map and Set</h1>
+<p>By Ross Smith</p>
+<ul>
+<li><code>#include "rs-core/hash-map.hpp"</code></li>
+</ul>
+<h2 id="contents">Contents</h2>
+<div class="toc">
+<ul>
+<li><a href="#hash-map-and-set">Hash Map and Set</a><ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#hashmap-and-hashset-classes">HashMap and HashSet classes</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="hashmap-and-hashset-classes">HashMap and HashSet classes</h2>
+<div class="defns">
+<!-- DEFN -->
+
+<p>In the table below, <code>Hash*</code> is used to indicate members that are present in
+both <code>HashMap</code> and <code>HashSet</code>. Where an entry refers explicitly to one of the
+two class templates, it applies only to that one.</p>
+<!-- TEXT -->
+
+<ul>
+<li><code>template &lt;typename K, typename T, typename Hash = std::hash&lt;K&gt;, typename Equal = std::equal_to&lt;K&gt;&gt; class</code> <strong><code>HashMap</code></strong></li>
+<li><code>template &lt;typename K, typename Hash = std::hash&lt;K&gt;, typename Equal = std::equal_to&lt;K&gt;&gt; using</code> <strong><code>HashSet</code></strong> <code>= HashMap&lt;K, void, Hash, Equal&gt;</code><ul>
+<li><code>class Hash*::</code><strong><code>iterator</code></strong></li>
+<li><code>class Hash*::</code><strong><code>const_iterator</code></strong></li>
+<li><code>using Hash*::</code><strong><code>key_type</code></strong> <code>= K</code></li>
+<li><code>using Hash*::</code><strong><code>mapped_type</code></strong> <code>= T</code></li>
+<li><code>using HashMap::</code><strong><code>value_type</code></strong> <code>= std::pair&lt;const K, T&gt;</code></li>
+<li><code>using HashSet::</code><strong><code>value_type</code></strong> <code>= K</code></li>
+<li><code>using Hash*::</code><strong><code>hasher</code></strong> <code>= Hash</code></li>
+<li><code>using Hash*::</code><strong><code>key_equal</code></strong> <code>= Equal</code></li>
+<li><code>Hash*::</code><strong><code>Hash*</code></strong><code>() noexcept</code></li>
+<li><code>explicit Hash*::</code><strong><code>Hash*</code></strong><code>(Hash h, Equal e = {})</code></li>
+<li><code>Hash*::</code><strong><code>Hash*</code></strong><code>(const Hash*&amp; map)</code></li>
+<li><code>Hash*::</code><strong><code>Hash*</code></strong><code>(Hash*&amp;&amp; map) noexcept</code></li>
+<li><code>Hash*::</code><strong><code>~Hash*</code></strong><code>() noexcept</code></li>
+<li><code>Hash*&amp; Hash*::</code><strong><code>operator=</code></strong><code>(const Hash*&amp; map)</code></li>
+<li><code>Hash*&amp; Hash*::</code><strong><code>operator=</code></strong><code>(Hash*&amp;&amp; map) noexcept</code></li>
+<li><code>T&amp; HashMap::</code><strong><code>operator[]</code></strong><code>(K key) noexcept</code></li>
+<li><code>Hash*::iterator Hash*::</code><strong><code>begin</code></strong><code>() noexcept</code></li>
+<li><code>Hash*::const_iterator Hash*::</code><strong><code>begin</code></strong><code>() const noexcept</code></li>
+<li><code>Hash*::const_iterator Hash*::</code><strong><code>cbegin</code></strong><code>() const noexcept</code></li>
+<li><code>Hash*::iterator Hash*::</code><strong><code>end</code></strong><code>() noexcept</code></li>
+<li><code>Hash*::const_iterator Hash*::</code><strong><code>end</code></strong><code>() const noexcept</code></li>
+<li><code>Hash*::const_iterator Hash*::</code><strong><code>cend</code></strong><code>() const noexcept</code></li>
+<li><code>bool Hash*::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
+<li><code>bool Hash*::</code><strong><code>contains</code></strong><code>(K key) const noexcept</code></li>
+<li><code>size_t Hash*::</code><strong><code>count</code></strong><code>(K key) const noexcept</code></li>
+<li><code>Hash*::iterator Hash*::</code><strong><code>find</code></strong><code>(K key) noexcept</code></li>
+<li><code>Hash*::const_iterator Hash*::</code><strong><code>find</code></strong><code>(K key) const noexcept</code></li>
+<li><code>Hash Hash*::</code><strong><code>hash_function</code></strong><code>() const</code></li>
+<li><code>Equal Hash*::</code><strong><code>key_eq</code></strong><code>() const</code></li>
+<li><code>size_t Hash*::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
+<li><code>size_t Hash*::</code><strong><code>table_size</code></strong><code>() const noexcept</code></li>
+<li><code>void Hash*::</code><strong><code>clear</code></strong><code>() noexcept</code></li>
+<li><code>Hash*::iterator Hash*::</code><strong><code>erase</code></strong><code>(const_iterator i) noexcept</code></li>
+<li><code>size_t Hash*::</code><strong><code>erase</code></strong><code>(K key) noexcept</code></li>
+<li><code>std::pair&lt;Hash*::iterator, bool&gt; Hash*::</code><strong><code>insert</code></strong><code>(const value_type&amp; value)</code></li>
+<li><code>std::pair&lt;Hash*::iterator, bool&gt; Hash*::</code><strong><code>insert</code></strong><code>(value_type&amp;&amp; value)</code></li>
+<li><code>void Hash*::</code><strong><code>rehash</code></strong><code>()</code></li>
+<li><code>void Hash*::</code><strong><code>reserve</code></strong><code>(size_t n)</code></li>
+<li><code>void Hash*::</code><strong><code>swap</code></strong><code>(Hash*&amp; map) noexcept</code></li>
+<li><code>void</code> <strong><code>swap</code></strong><code>(Hash*&amp; a, Hash*&amp; b) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator==</code></strong><code>(const Hash*&amp; lhs, const Hash*&amp; rhs) noexcept</code></li>
+<li><code>bool</code> <strong><code>operator!=</code></strong><code>(const Hash*&amp; lhs, const Hash*&amp; rhs) noexcept</code></li>
+</ul>
+</li>
+</ul>
+<p>This is an open-addressed hash table, which is usually more time-efficient and
+cache-friendly, but less space-efficient, than the chained hash tables in the
+standard library. Most of its member functions have their usual semantics for
+a standard-conforming container.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>size_t Hash*::</code><strong><code>table_size</code></strong><code>() const noexcept</code></li>
+</ul>
+<p>Returns the current total size of the internal array. An automatic rehash will
+happen when the number of occupied entries (including tombstones) reaches 3/4
+of this.</p>
+</div>
+<div class="defns">
+<ul>
+<li><code>void Hash*::</code><strong><code>reserve</code></strong><code>(size_t n)</code></li>
+</ul>
+<p>Enlarges (if necessary) and rehashes the table to ensure that at least <code>n</code>
+entries (the current <code>size()</code> plus future insertions) can be reached without
+forcing a rehash.</p></body>
+</html>

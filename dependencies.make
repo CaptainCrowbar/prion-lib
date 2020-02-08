@@ -50,6 +50,8 @@ $(BUILD)/float-test.o: rs-core/float-test.cpp rs-core/common.hpp rs-core/float.h
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/segment.hpp /usr/local/include/unicorn/string.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/grid-test.o: rs-core/grid-test.cpp rs-core/common.hpp rs-core/grid.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/unit-test.hpp rs-core/vector.hpp \
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/segment.hpp /usr/local/include/unicorn/string.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
+$(BUILD)/hash-map-test.o: rs-core/hash-map-test.cpp rs-core/common.hpp rs-core/hash-map.hpp rs-core/unit-test.hpp \
+    /usr/local/include/unicorn/utility.hpp
 $(BUILD)/index-table-test.o: rs-core/index-table-test.cpp rs-core/common.hpp rs-core/index-table.hpp rs-core/meta.hpp rs-core/string.hpp rs-core/unit-test.hpp \
     /usr/local/include/unicorn/character.hpp /usr/local/include/unicorn/property-values.hpp /usr/local/include/unicorn/segment.hpp /usr/local/include/unicorn/string.hpp /usr/local/include/unicorn/utf.hpp /usr/local/include/unicorn/utility.hpp
 $(BUILD)/int128-test.o: rs-core/int128-test.cpp rs-core/common.hpp rs-core/int128.hpp rs-core/unit-test.hpp \

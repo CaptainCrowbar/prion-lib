@@ -18,6 +18,7 @@
 #include "rs-core/fixed-binary.hpp"
 #include "rs-core/float.hpp"
 #include "rs-core/grid.hpp"
+#include "rs-core/hash-map.hpp"
 #include "rs-core/index-table.hpp"
 #include "rs-core/int128.hpp"
 #include "rs-core/interval.hpp"

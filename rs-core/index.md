@@ -23,6 +23,7 @@
     * [`"rs-core/bounded-array.hpp"`](bounded-array.html) - Stack-based array with bounded size
     * [`"rs-core/compact-array.hpp"`](compact-array.html) - Array optimized for small sizes
     * [`"rs-core/grid.hpp"`](grid.html) - Multidimensional array
+    * [`"rs-core/hash-map.hpp"`](hash-map.html) - Hash map and set
     * [`"rs-core/index-table.hpp"`](index-table.html) - Multi-index map
     * [`"rs-core/interval.hpp"`](interval.html) - Intervals and interval-based containers
     * [`"rs-core/mirror-map.hpp"`](mirror-map.html) - Map with two-way lookup

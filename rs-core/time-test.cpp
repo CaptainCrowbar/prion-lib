@@ -229,7 +229,29 @@ void test_core_time_system_specific_conversions() {
 
 void test_core_time_date_format() {
 
-    // TODO
+    system_clock::time_point d;
+    std::string s;
+
+    TRY(d = make_date(2020, 2, 3, 4, 5, 6.7899));
+
+    TRY(s = date_format(d, "d/m/yyyy"));                   TEST_EQUAL(s, "3/2/2020");
+    TRY(s = date_format(d, "yyyy-mm-dd HH:MM:SS"));        TEST_EQUAL(s, "2020-02-03 04:05:06");
+    TRY(s = date_format(d, "www d mmm yy"));               TEST_EQUAL(s, "mon 3 feb 20");
+    TRY(s = date_format(d, "Www d Mmm yy"));               TEST_EQUAL(s, "Mon 3 Feb 20");
+    TRY(s = date_format(d, "WWW d MMM yy"));               TEST_EQUAL(s, "MON 3 FEB 20");
+    TRY(s = date_format(d, "H:MM:SS"));                    TEST_EQUAL(s, "4:05:06");
+    TRY(s = date_format(d, "H:MM:SS.s"));                  TEST_EQUAL(s, "4:05:06.7");
+    TRY(s = date_format(d, "H:MM:SS.ss"));                 TEST_EQUAL(s, "4:05:06.78");
+    TRY(s = date_format(d, "H:MM:SS.sss"));                TEST_EQUAL(s, "4:05:06.789");
+    TRY(s = date_format(d, "H:MM:SS.ssss"));               TEST_EQUAL(s, "4:05:06.7899");
+    TRY(s = date_format(d, "H:MM:SS.sssss"));              TEST_EQUAL(s, "4:05:06.78990");
+    TRY(s = date_format(d, "H:MM:SS.ssssss"));             TEST_EQUAL(s, "4:05:06.789900");
+    TRY(s = date_format(d, "yyyy-mm-dd HH:MM:SS +ZZZZ"));  TEST_EQUAL(s, "2020-02-03 04:05:06 +0000");
+
+    TRY(d = make_date(2020, 2, 3, 4, 5, 6.7899, local_zone));
+
+    TRY(s = date_format(d, "yyyy-mm-dd HH:MM:SS.sss", local_zone));    TEST_EQUAL(s, "2020-02-03 04:05:06.789");
+    TRY(s = date_format(d, "yyyy-mm-dd HH:MM:SS +ZZZZ", local_zone));  TEST_MATCH(s, "^2020-02-03 04:05:06 [+-]\\d{4}$");
 
 }
 

@@ -63,27 +63,34 @@ namespace RS {
                 while (j < n && ascii_toupper(format[j]) == uc)
                     ++j;
                 Uview code = format.substr(i, j - i);
-                if (code == "MMM"sv || code == "Mmm"sv || code == "mmm"sv) {
-                    expanded_ += 'm';
-                    expanded_ += code == "MMM"sv ? '3' : code == "Mmm"sv ? '4' : '5';
-                } else if (code == "WWW"sv || code == "Www"sv || code == "www"sv) {
-                    expanded_ += 'w';
-                    expanded_ += code == "WWW"sv ? '3' : code == "Www"sv ? '4' : '5';
-                } else if (code == "yy"sv || code == "yyyy"sv
+                if (code == "MMM"sv)
+                    expanded_ += "m3";
+                else if (code == "Mmm"sv)
+                    expanded_ += "m4";
+                else if (code == "mmm"sv)
+                    expanded_ += "m5";
+                else if (code == "WWW"sv)
+                    expanded_ += "w3";
+                else if (code == "Www"sv)
+                    expanded_ += "w4";
+                else if (code == "www"sv)
+                    expanded_ += "w5";
+                else if (code == "yy"sv || code == "yyyy"sv
                         || code == "m"sv || code == "mm"sv
                         || code == "d"sv || code == "dd"sv
                         || code == "H"sv || code == "HH"sv
                         || code == "M"sv || code == "MM"sv
                         || code == "S"sv || code == "SS"sv
-                        || code == "ZZZZ"sv || code[0] == 's') {
-                    expanded_ += format[i];
-                    expanded_ += char('0' + j - i);
-                } else {
+                        || code[0] == 's')
+                    expanded_ += std::string{format[i], char('0' + j - i)};
+                else
                     throw std::invalid_argument("Invalid date format: " + quote(format));
-                }
                 i = j;
+            } else if (format[i] == '+' && n - i >= 5 && Uview(format.data() + i, 5) == "+ZZZZ"sv) {
+                expanded_ += "Z5";
+                i += 5;
             } else {
-                expanded_ += format[i];
+                expanded_ += format[i++];
                 expanded_ += '=';
             }
         }
@@ -97,6 +104,17 @@ namespace RS {
         };
         static constexpr Uview weekday_name[] = {
             "sun", "mon", "tue", "wed", "thu", "fri", "sat",
+        };
+        static const auto fraction_str = [] (double f, char c) {
+            int d = c - '0';
+            double x = std::floor(f * std::pow(10.0, double(d)));
+            return dec(int(x), d);
+        };
+        static const auto zone_offset = [] (std::tm& tm) {
+            std::string buf(10, '\0');
+            size_t n = std::strftime(buf.data(), buf.size(), "%z", &tm);
+            buf.resize(n);
+            return buf;
         };
         if (flags == 0)
             flags = flags_;
@@ -115,7 +133,7 @@ namespace RS {
         std::string result;
         for (size_t i = 0, n = expanded_.size(); i < n; i += 2) {
             Uview code(expanded_.data() + i, 2);
-            if (code[1] == 0)
+            if (code[1] == '=')
                 result += code[0];
             else if (code == "y2"sv)
                 result += dec(rem(tm.tm_year, 100), 2);
@@ -135,11 +153,11 @@ namespace RS {
                 result += dec(tm.tm_mday);
             else if (code == "d2"sv)
                 result += dec(tm.tm_mday, 2);
-            else if (code == "w1"sv)
-                result += ascii_uppercase(weekday_name[tm.tm_wday]);
-            else if (code == "w2"sv)
-                result += ascii_titlecase(weekday_name[tm.tm_wday]);
             else if (code == "w3"sv)
+                result += ascii_uppercase(weekday_name[tm.tm_wday]);
+            else if (code == "w4"sv)
+                result += ascii_titlecase(weekday_name[tm.tm_wday]);
+            else if (code == "w5"sv)
                 result += weekday_name[tm.tm_wday];
             else if (code == "H1"sv)
                 result += dec(tm.tm_hour);
@@ -154,9 +172,9 @@ namespace RS {
             else if (code == "S2"sv)
                 result += dec(tm.tm_sec, 2);
             else if (code[0] == 's')
-                result += std::to_string(fraction).substr(2, code[1] - '0');
-            else if (code == "Z4"sv)
-                result += ""; // TODO
+                result += fraction_str(fraction, code[1]);
+            else if (code == "Z5"sv)
+                result += zone_offset(tm);
         }
         return result;
     }

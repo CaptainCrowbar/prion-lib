@@ -111,7 +111,7 @@ Code    | Description                           | Code      | Description
 `mmm`   | Month abbreviation (not localised)    | `S`       | 1-2 digit second number (`0-59`)
 `d`     | 1-2 digit day of month (`1-31`)       | `SS`      | 2 digit second number (`00-59`)
 `dd`    | 2 digit day of month (`01-31`)        | `sss...`  | Fraction of a second
-`www`   | Weekday abbreviation (not localised)  | `ZZZZ`    | Time zone offset
+`www`   | Weekday abbreviation (not localised)  | `+ZZZZ`   | Time zone offset
 
 The `"mmm"` and `"www"` codes can be written in lower case, title case, or
 upper case, determining the case of the output. Alphanumeric characters that

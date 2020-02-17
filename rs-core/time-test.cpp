@@ -227,6 +227,12 @@ void test_core_time_system_specific_conversions() {
 
 }
 
+void test_core_time_date_format() {
+
+    // TODO
+
+}
+
 void test_core_time_parse_date() {
 
     system_clock::time_point date = {};

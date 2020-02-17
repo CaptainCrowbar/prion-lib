@@ -52,6 +52,115 @@ namespace RS {
 
     #endif
 
+    // Time and date formatting
+
+    DateFormat::DateFormat(Uview format, uint32_t flags) {
+        size_t i = 0, n = format.size();
+        while (i < n) {
+            if (ascii_isalnum(format[i])) {
+                char uc = ascii_toupper(format[i]);
+                size_t j = i + 1;
+                while (j < n && ascii_toupper(format[j]) == uc)
+                    ++j;
+                Uview code = format.substr(i, j - i);
+                if (code == "MMM"sv || code == "Mmm"sv || code == "mmm"sv) {
+                    expanded_ += 'm';
+                    expanded_ += code == "MMM"sv ? '3' : code == "Mmm"sv ? '4' : '5';
+                } else if (code == "WWW"sv || code == "Www"sv || code == "www"sv) {
+                    expanded_ += 'w';
+                    expanded_ += code == "WWW"sv ? '3' : code == "Www"sv ? '4' : '5';
+                } else if (code == "yy"sv || code == "yyyy"sv
+                        || code == "m"sv || code == "mm"sv
+                        || code == "d"sv || code == "dd"sv
+                        || code == "H"sv || code == "HH"sv
+                        || code == "M"sv || code == "MM"sv
+                        || code == "S"sv || code == "SS"sv
+                        || code == "ZZZZ"sv || code[0] == 's') {
+                    expanded_ += format[i];
+                    expanded_ += char('0' + j - i);
+                } else {
+                    throw std::invalid_argument("Invalid date format: " + quote(format));
+                }
+                i = j;
+            } else {
+                expanded_ += format[i];
+                expanded_ += '=';
+            }
+        }
+        flags_ = flags;
+    }
+
+    Ustring DateFormat::operator()(system_clock::time_point tp, uint32_t flags) const {
+        static constexpr Uview month_name[] = {
+            "jan", "feb", "mar", "apr", "may", "jun",
+            "jul", "aug", "sep", "oct", "nov", "dec",
+        };
+        static constexpr Uview weekday_name[] = {
+            "sun", "mon", "tue", "wed", "thu", "fri", "sat",
+        };
+        if (flags == 0)
+            flags = flags_;
+        std::time_t tt = system_clock::to_time_t(tp);
+        auto diff = tp - system_clock::from_time_t(tt);
+        if (diff.count() < 0) {
+            --tt;
+            diff += 1s;
+        }
+        double fraction = duration_cast<Dseconds>(diff).count();
+        std::tm tm;
+        if (flags & local_zone)
+            tm = *std::localtime(&tt);
+        else
+            tm = *std::gmtime(&tt);
+        std::string result;
+        for (size_t i = 0, n = expanded_.size(); i < n; i += 2) {
+            Uview code(expanded_.data() + i, 2);
+            if (code[1] == 0)
+                result += code[0];
+            else if (code == "y2"sv)
+                result += dec(rem(tm.tm_year, 100), 2);
+            else if (code == "y4"sv)
+                result += dec(tm.tm_year + 1900);
+            else if (code == "m1"sv)
+                result += dec(tm.tm_mon + 1);
+            else if (code == "m2"sv)
+                result += dec(tm.tm_mon + 1, 2);
+            else if (code == "m3"sv)
+                result += ascii_uppercase(month_name[tm.tm_mon]);
+            else if (code == "m4"sv)
+                result += ascii_titlecase(month_name[tm.tm_mon]);
+            else if (code == "m5"sv)
+                result += month_name[tm.tm_mon];
+            else if (code == "d1"sv)
+                result += dec(tm.tm_mday);
+            else if (code == "d2"sv)
+                result += dec(tm.tm_mday, 2);
+            else if (code == "w1"sv)
+                result += ascii_uppercase(weekday_name[tm.tm_wday]);
+            else if (code == "w2"sv)
+                result += ascii_titlecase(weekday_name[tm.tm_wday]);
+            else if (code == "w3"sv)
+                result += weekday_name[tm.tm_wday];
+            else if (code == "H1"sv)
+                result += dec(tm.tm_hour);
+            else if (code == "H2"sv)
+                result += dec(tm.tm_hour, 2);
+            else if (code == "M1"sv)
+                result += dec(tm.tm_min);
+            else if (code == "M2"sv)
+                result += dec(tm.tm_min, 2);
+            else if (code == "S1"sv)
+                result += dec(tm.tm_sec);
+            else if (code == "S2"sv)
+                result += dec(tm.tm_sec, 2);
+            else if (code[0] == 's')
+                result += std::to_string(fraction).substr(2, code[1] - '0');
+            else if (code == "Z4"sv)
+                result += ""; // TODO
+        }
+        return result;
+    }
+
     // Time and date parsing
 
     namespace {

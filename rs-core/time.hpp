@@ -17,7 +17,8 @@ namespace RS {
     using Dseconds = std::chrono::duration<double>;
     using Ddays = std::chrono::duration<double, std::ratio<86400>>;
     using Dyears = std::chrono::duration<double, std::ratio<31557600>>;
-    using ReliableClock = std::conditional_t<std::chrono::high_resolution_clock::is_steady, std::chrono::high_resolution_clock, std::chrono::steady_clock>;
+    using ReliableClock = std::conditional_t<std::chrono::high_resolution_clock::is_steady,
+        std::chrono::high_resolution_clock, std::chrono::steady_clock>;
 
     // Constants
 
@@ -111,6 +112,22 @@ namespace RS {
         FILETIME timepoint_to_filetime(const std::chrono::system_clock::time_point& tp) noexcept;
 
     #endif
+
+    // Time and date formatting
+
+    class DateFormat {
+    public:
+        DateFormat() = default;
+        explicit DateFormat(Uview format, uint32_t flags = utc_zone);
+        Ustring operator()(std::chrono::system_clock::time_point tp, uint32_t flags = 0) const;
+    private:
+        std::string expanded_;
+        uint32_t flags_ = utc_zone;
+    };
+
+    inline Ustring date_format(std::chrono::system_clock::time_point tp, Uview format, uint32_t flags = utc_zone) {
+        return DateFormat(format, flags)(tp);
+    }
 
     // Time and date parsing
 

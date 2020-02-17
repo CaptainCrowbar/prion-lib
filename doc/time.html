@@ -25,6 +25,7 @@ values that do not represent a valid date.</p>
 <li><a href="#constants">Constants</a></li>
 <li><a href="#general-time-and-date-operations">General time and date operations</a></li>
 <li><a href="#system-specific-time-and-date-conversions">System specific time and date conversions</a></li>
+<li><a href="#time-and-date-formatting">Time and date formatting</a></li>
 <li><a href="#time-and-date-parsing">Time and date parsing</a></li>
 <li><a href="#timing-base-classes">Timing base classes</a></li>
 <li><a href="#timing-utilities">Timing utilities</a></li>
@@ -131,6 +132,87 @@ API).</p>
 </ul>
 </li>
 </ul>
+</div>
+<h2 id="time-and-date-formatting">Time and date formatting</h2>
+<div class="defns">
+<ul>
+<li><code>class</code> <strong><code>DateFormat</code></strong><ul>
+<li><code>DateFormat::</code><strong><code>DateFormat</code></strong><code>()</code></li>
+<li><code>explicit DateFormat::</code><strong><code>DateFormat</code></strong><code>(Uview format, uint32_t flags = utc_zone)</code></li>
+<li><code>Ustring DateFormat::</code><strong><code>operator()</code></strong><code>(system_clock::time_point tp, uint32_t flags = 0) const</code></li>
+</ul>
+</li>
+<li><code>Ustring</code> <strong><code>date_format</code></strong><code>(system_clock::time_point tp, Uview format, uint32_t flags = utc_zone)</code></li>
+</ul>
+<p>Alternative date formatting function (see also <code>format_date()</code> in
+<code>[core/common]()</code>, which uses a <code>strftime()</code> based format). If a zone flag is
+supplied to the function call operator, it overrides the one originally
+supplied to the constructor.</p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>yy</code></td>
+<td>Last 2 digits of the year</td>
+<td><code>H</code></td>
+<td>1-2 digit hour number (<code>0-23</code>)</td>
+</tr>
+<tr>
+<td><code>yyyy</code></td>
+<td>Full year</td>
+<td><code>HH</code></td>
+<td>2 digit hour number (<code>00-23</code>)</td>
+</tr>
+<tr>
+<td><code>m</code></td>
+<td>1-2 digit month number (<code>1-12</code>)</td>
+<td><code>M</code></td>
+<td>1-2 digit minute number (<code>0-59</code>)</td>
+</tr>
+<tr>
+<td><code>mm</code></td>
+<td>2 digit month number (<code>01-12</code>)</td>
+<td><code>MM</code></td>
+<td>2 digit minute number (<code>00-59</code>)</td>
+</tr>
+<tr>
+<td><code>mmm</code></td>
+<td>Month abbreviation (not localised)</td>
+<td><code>S</code></td>
+<td>1-2 digit second number (<code>0-59</code>)</td>
+</tr>
+<tr>
+<td><code>d</code></td>
+<td>1-2 digit day of month (<code>1-31</code>)</td>
+<td><code>SS</code></td>
+<td>2 digit second number (<code>00-59</code>)</td>
+</tr>
+<tr>
+<td><code>dd</code></td>
+<td>2 digit day of month (<code>01-31</code>)</td>
+<td><code>sss...</code></td>
+<td>Fraction of a second</td>
+</tr>
+<tr>
+<td><code>www</code></td>
+<td>Weekday abbreviation (not localised)</td>
+<td><code>ZZZZ</code></td>
+<td>Time zone offset</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>"mmm"</code> and <code>"www"</code> codes can be written in lower case, title case, or
+upper case, determining the case of the output. Alphanumeric characters that
+are not part of a placeholder code are not allowed. The constructor of
+<code>DateFormat</code>, and the <code>date_format()</code> function, will throw
+<code>std::invalid_argument</code> if the format string is invalid.</p>
 </div>
 <h2 id="time-and-date-parsing">Time and date parsing</h2>
 <div class="defns">

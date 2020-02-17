@@ -465,6 +465,7 @@ extern void test_core_time_date_types();
 extern void test_core_time_convert_time_point();
 extern void test_core_time_general_operations();
 extern void test_core_time_system_specific_conversions();
+extern void test_core_time_date_format();
 extern void test_core_time_parse_date();
 extern void test_core_time_parse_time();
 extern void test_core_time_wait_base();
@@ -966,6 +967,7 @@ int main() {
         { "core/time/convert-time-point", test_core_time_convert_time_point },
         { "core/time/general-operations", test_core_time_general_operations },
         { "core/time/system-specific-conversions", test_core_time_system_specific_conversions },
+        { "core/time/date-format", test_core_time_date_format },
         { "core/time/parse-date", test_core_time_parse_date },
         { "core/time/parse-time", test_core_time_parse_time },
         { "core/time/wait-base", test_core_time_wait_base },

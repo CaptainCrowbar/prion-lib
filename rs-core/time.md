@@ -89,6 +89,36 @@ For reference, the system time types are:
             * `DWORD FILETIME::`**`dwLowDateTime`** `// low 32 bits`
             * `DWORD FILETIME::`**`dwHighDateTime`** `// high 32 bits`
 
+## Time and date formatting ##
+
+* `class` **`DateFormat`**
+    * `DateFormat::`**`DateFormat`**`()`
+    * `explicit DateFormat::`**`DateFormat`**`(Uview format, uint32_t flags = utc_zone)`
+    * `Ustring DateFormat::`**`operator()`**`(system_clock::time_point tp, uint32_t flags = 0) const`
+* `Ustring` **`date_format`**`(system_clock::time_point tp, Uview format, uint32_t flags = utc_zone)`
+
+Alternative date formatting function (see also `format_date()` in
+`[core/common]()`, which uses a `strftime()` based format). If a zone flag is
+supplied to the function call operator, it overrides the one originally
+supplied to the constructor.
+
+Code    | Description                           | Code      | Description
+----    | -----------                           | ----      | -----------
+`yy`    | Last 2 digits of the year             | `H`       | 1-2 digit hour number (`0-23`)
+`yyyy`  | Full year                             | `HH`      | 2 digit hour number (`00-23`)
+`m`     | 1-2 digit month number (`1-12`)       | `M`       | 1-2 digit minute number (`0-59`)
+`mm`    | 2 digit month number (`01-12`)        | `MM`      | 2 digit minute number (`00-59`)
+`mmm`   | Month abbreviation (not localised)    | `S`       | 1-2 digit second number (`0-59`)
+`d`     | 1-2 digit day of month (`1-31`)       | `SS`      | 2 digit second number (`00-59`)
+`dd`    | 2 digit day of month (`01-31`)        | `sss...`  | Fraction of a second
+`www`   | Weekday abbreviation (not localised)  | `ZZZZ`    | Time zone offset
+
+The `"mmm"` and `"www"` codes can be written in lower case, title case, or
+upper case, determining the case of the output. Alphanumeric characters that
+are not part of a placeholder code are not allowed. The constructor of
+`DateFormat`, and the `date_format()` function, will throw
+`std::invalid_argument` if the format string is invalid.
+
 ## Time and date parsing ##
 
 * `system_clock::time_point` **`parse_date`**`(Uview str, uint32_t flags = utc_zone | ymd_order)`

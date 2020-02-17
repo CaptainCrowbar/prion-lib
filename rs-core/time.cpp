@@ -1,5 +1,7 @@
 #include "rs-core/time.hpp"
+#include <cmath>
 #include <cstdlib>
+#include <ctime>
 #include <stdexcept>
 #include <thread>
 

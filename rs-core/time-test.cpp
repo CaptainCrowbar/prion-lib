@@ -1,9 +1,9 @@
 #include "rs-core/time.hpp"
 #include "rs-core/unit-test.hpp"
 #include <chrono>
-#include <cmath>
 #include <ratio>
 #include <stdexcept>
+#include <string>
 #include <thread>
 
 #ifdef _XOPEN_SOURCE

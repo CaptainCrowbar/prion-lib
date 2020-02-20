@@ -510,12 +510,8 @@ constructed distribution return a value in the unit range.</p>
 </ul>
 <p>Normal (Gaussian) distribution, with the given mean and standard deviation.
 The absolute value of the standard deviation is used. The default constructor
-sets <code>mean=0</code> and <code>sd=1</code>. The quantile functions use the Beasley-Springer
-approximation: for <code>|z|&lt;3.75</code>, absolute error is less than <code>1e-6</code>, relative
-error is less than <code>2.5e-7</code>; for <code>|z|&lt;7.5</code>, absolute error is less than
-<code>5e-4</code>, relative error is less than <code>5e-5</code>. Behaviour is undefined if the
-distribution property functions are called when the standard deviation is
-zero.</p>
+sets <code>mean=0</code> and <code>sd=1</code>. Behaviour is undefined if the distribution property
+functions are called when the standard deviation is zero.</p>
 </div>
 <div class="defns">
 <ul>

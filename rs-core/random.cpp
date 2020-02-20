@@ -20,7 +20,8 @@ namespace RS {
             a[7] ^= a[0] >> 9;   a[2] += a[7];  a[0] += a[1];
         }
 
-        void step32(const uint32_t* mem, uint32_t*& m1, uint32_t*& m2, uint32_t*& r, uint32_t& a, uint32_t& b, uint32_t& x, uint32_t& y, uint32_t mix) noexcept {
+        void step32(const uint32_t* mem, uint32_t*& m1, uint32_t*& m2, uint32_t*& r,
+                uint32_t& a, uint32_t& b, uint32_t& x, uint32_t& y, uint32_t mix) noexcept {
             x = *m1;
             a = (a ^ mix) + *m2++;
             *m1++ = y = mem[(x >> 2) & 255] + a + b;
@@ -107,7 +108,8 @@ namespace RS {
             a[7] -= a[3];  a[4] ^= a[6] << 14;  a[6] += a[7];
         }
 
-        void step64(const uint64_t* mem, uint64_t*& m1, uint64_t*& m2, uint64_t*& r, uint64_t& a, uint64_t& b, uint64_t& x, uint64_t& y, uint64_t mix) noexcept {
+        void step64(const uint64_t* mem, uint64_t*& m1, uint64_t*& m2, uint64_t*& r,
+                uint64_t& a, uint64_t& b, uint64_t& x, uint64_t& y, uint64_t mix) noexcept {
             x = *m1;
             a = mix + *m2++;
             *m1++ = y = mem[(x >> 3) & 255] + a + b;

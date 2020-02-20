@@ -1231,8 +1231,8 @@ void test_core_random_normal_distribution_properties() {
         TRY(y = norm.pdf(sample.z));          TEST_NEAR(y, sample.pdf);
         TRY(p = norm.cdf(sample.z));          TEST_NEAR(p, sample.cdf);
         TRY(q = norm.ccdf(sample.z));         TEST_NEAR(q, 1 - sample.cdf);
-        TRY(z = norm.quantile(sample.cdf));   TEST_NEAR_EPSILON(z, sample.z, 3e-5);
-        TRY(z = norm.cquantile(sample.cdf));  TEST_NEAR_EPSILON(z, - sample.z, 3e-5);
+        TRY(z = norm.quantile(sample.cdf));   TEST_NEAR(z, sample.z);
+        TRY(z = norm.cquantile(sample.cdf));  TEST_NEAR(z, - sample.z);
     }
 
 }

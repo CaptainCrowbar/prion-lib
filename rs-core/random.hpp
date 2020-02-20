@@ -791,77 +791,50 @@ namespace RS {
         using result_type = T;
         Normal() = default;
         Normal(T mean, T sd) noexcept: mean_(mean), sd_(std::abs(sd)) {}
-        template <typename RNG> T operator()(RNG& rng) const {
-            UniformReal<T> unit;
-            T u1 = unit(rng);
-            T u2 = unit(rng);
-            T z = std::sqrt(-2 * std::log(u1)) * std::cos(2 * pi_c<T> * u2);
-            return mean_ + z * sd_;
-        }
+        template <typename RNG> T operator()(RNG& rng) const;
         T mean() const noexcept { return mean_; }
         T sd() const noexcept { return sd_; }
         T variance() const noexcept { return sd_ * sd_; }
         T pdf(T x) const noexcept { return pdf_z((x - mean_) / sd_); }
         T cdf(T x) const noexcept { return cdf_z((x - mean_) / sd_); }
         T ccdf(T x) const noexcept { return cdf_z((mean_ - x) / sd_); }
-        T quantile(T p) const noexcept;
-        T cquantile(T q) const noexcept;
+        T quantile(T p) const noexcept { return mean_ + sd_ * q_z(p); }
+        T cquantile(T q) const noexcept { return mean_ - sd_ * q_z(q); }
     private:
         T mean_ = 0;
         T sd_ = 1;
         T pdf_z(T z) const noexcept { return inv_sqrt2_c<T> * inv_sqrtpi_c<T> * std::exp(- z * z / 2); }
-        T cdf_z(T z) const noexcept { return (std::erf(inv_sqrt2_c<T> * z) + 1) / 2; }
-        T cq_z(T q) const noexcept;
+        T cdf_z(T z) const noexcept { return std::erfc(- inv_sqrt2_c<T> * z) / 2; }
+        T q_z(T p) const noexcept { return - sqrt2_c<T> * inverse_erfc(2 * p); }
+        static T inverse_erfc(T y) noexcept;
     };
 
         template <typename T>
-        T Normal<T>::quantile(T p) const noexcept {
-            if (p < T(0.5))
-                return mean_ - sd_ * cq_z(p);
-            else if (p == T(0.5))
-                return mean_;
-            else
-                return mean_ + sd_ * cq_z(1 - p);
+        template <typename RNG>
+        T Normal<T>::operator()(RNG& rng) const {
+            UniformReal<T> unit;
+            T u1 = unit(rng);
+            T u2 = unit(rng);
+            T z = std::sqrt(-2 * std::log(u1)) * std::cos(2 * pi_c<T> * u2);
+            return mean_ + z * sd_;
         }
 
         template <typename T>
-        T Normal<T>::cquantile(T q) const noexcept {
-            if (q < T(0.5))
-                return mean_ + sd_ * cq_z(q);
-            else if (q == T(0.5))
-                return mean_;
-            else
-                return mean_ - sd_ * cq_z(1 - q);
-        }
-
-        template <typename T>
-        T Normal<T>::cq_z(T q) const noexcept {
-            // Beasley-Springer approximation
-            // For |z|<3.75, absolute error <1e-6, relative error <2.5e-7
-            // For |z|<7.5, absolute error <5e-4, relative error <5e-5
-            // This will always be called with 0<q<1/2
-            static constexpr T threshold = T(0.08);
-            static constexpr T a1 = T(2.321213);
-            static constexpr T a2 = T(4.850141);
-            static constexpr T a3 = T(-2.297965);
-            static constexpr T a4 = T(-2.787189);
-            static constexpr T b1 = T(1.637068);
-            static constexpr T b2 = T(3.543889);
-            static constexpr T c1 = T(-25.44106);
-            static constexpr T c2 = T(41.3912);
-            static constexpr T c3 = T(-18.615);
-            static constexpr T c4 = T(2.506628);
-            static constexpr T d1 = T(3.130829);
-            static constexpr T d2 = T(-21.06224);
-            static constexpr T d3 = T(23.08337);
-            static constexpr T d4 = T(-8.473511);
-            if (q < threshold) {
-                T r = sqrt(- log(q));
-                return (((a1 * r + a2) * r + a3) * r + a4) / ((b1 * r + b2) * r + 1);
-            } else {
-                T q1 = T(0.5) - q;
-                T r = q1 * q1;
-                return q1 * (((c1 * r + c2) * r + c3) * r + c4) / ((((d1 * r + d2) * r + d3) * r + d4) * r + 1);
+        T Normal<T>::inverse_erfc(T y) noexcept {
+            static const T epsilon = 2 * std::numeric_limits<T>::epsilon();
+            static const T sqrtpi_over_2 = 1 / two_over_sqrtpi_c<T>;
+            static const auto recip_deriv = [] (T x) { return - sqrtpi_over_2 * std::exp(x * x); };
+            if (y > 1)
+                return - inverse_erfc(2 - y);
+            T x = std::sqrt(- std::log(y));
+            for (;;) {
+                T f = std::erfc(x) - y;
+                if (f == 0)
+                    return x;
+                T delta = - f * recip_deriv(x);
+                if (std::abs(delta) < epsilon * std::abs(x))
+                    return x + delta / 2;
+                x += delta;
             }
         }
 

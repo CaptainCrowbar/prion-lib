@@ -357,12 +357,8 @@ constructed distribution return a value in the unit range.
 
 Normal (Gaussian) distribution, with the given mean and standard deviation.
 The absolute value of the standard deviation is used. The default constructor
-sets `mean=0` and `sd=1`. The quantile functions use the Beasley-Springer
-approximation: for `|z|<3.75`, absolute error is less than `1e-6`, relative
-error is less than `2.5e-7`; for `|z|<7.5`, absolute error is less than
-`5e-4`, relative error is less than `5e-5`. Behaviour is undefined if the
-distribution property functions are called when the standard deviation is
-zero.
+sets `mean=0` and `sd=1`. Behaviour is undefined if the distribution property
+functions are called when the standard deviation is zero.
 
 * `template <typename T> class` **`DiscreteNormal`**
     * `using DiscreteNormal::`**`result_type`** `= T`

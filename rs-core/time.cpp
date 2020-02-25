@@ -176,7 +176,7 @@ namespace RS {
             else if (code[0] == 's')
                 result += fraction_str(fraction, code[1]);
             else if (code == "Z5"sv)
-                result += zone_offset(tm);
+                result += flags & local_zone ? zone_offset(tm) : "+0000";
         }
         return result;
     }

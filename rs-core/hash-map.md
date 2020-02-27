@@ -20,12 +20,12 @@ two class templates, it applies only to that one.
 * `template <typename K, typename Hash = std::hash<K>, typename Equal = std::equal_to<K>> using` **`HashSet`** `= HashMap<K, void, Hash, Equal>`
     * `class Hash*::`**`iterator`**
     * `class Hash*::`**`const_iterator`**
+    * `using Hash*::`**`hasher`** `= Hash`
+    * `using Hash*::`**`key_equal`** `= Equal`
     * `using Hash*::`**`key_type`** `= K`
     * `using Hash*::`**`mapped_type`** `= T`
     * `using HashMap::`**`value_type`** `= std::pair<const K, T>`
     * `using HashSet::`**`value_type`** `= K`
-    * `using Hash*::`**`hasher`** `= Hash`
-    * `using Hash*::`**`key_equal`** `= Equal`
     * `Hash*::`**`Hash*`**`() noexcept`
     * `explicit Hash*::`**`Hash*`**`(Hash h, Equal e = {})`
     * `Hash*::`**`Hash*`**`(const Hash*& map)`
@@ -33,18 +33,23 @@ two class templates, it applies only to that one.
     * `Hash*::`**`~Hash*`**`() noexcept`
     * `Hash*& Hash*::`**`operator=`**`(const Hash*& map)`
     * `Hash*& Hash*::`**`operator=`**`(Hash*&& map) noexcept`
-    * `T& HashMap::`**`operator[]`**`(K key) noexcept`
+    * `T& HashMap::`**`operator[]`**`(K key)`
+    * `T& HashMap::`**`at`**`(K key)`
+    * `const T& HashMap::`**`at`**`(K key) const`
+    * `template <typename K1, typename... TS> std::pair<HashMap::iterator, bool> HashMap::`**`emplace`**`(K1&& k, TS&&... ts)`
+    * `template <typename... TS> std::pair<HashSet::iterator, bool> HashSet::`**`emplace`**`(TS&&... ts)`
     * `Hash*::iterator Hash*::`**`begin`**`() noexcept`
     * `Hash*::const_iterator Hash*::`**`begin`**`() const noexcept`
     * `Hash*::const_iterator Hash*::`**`cbegin`**`() const noexcept`
     * `Hash*::iterator Hash*::`**`end`**`() noexcept`
     * `Hash*::const_iterator Hash*::`**`end`**`() const noexcept`
     * `Hash*::const_iterator Hash*::`**`cend`**`() const noexcept`
-    * `bool Hash*::`**`empty`**`() const noexcept`
     * `bool Hash*::`**`contains`**`(K key) const noexcept`
     * `size_t Hash*::`**`count`**`(K key) const noexcept`
+    * `bool Hash*::`**`empty`**`() const noexcept`
     * `Hash*::iterator Hash*::`**`find`**`(K key) noexcept`
     * `Hash*::const_iterator Hash*::`**`find`**`(K key) const noexcept`
+    * `size_t Hash*::`**`free_space`**`() const noexcept`
     * `Hash Hash*::`**`hash_function`**`() const`
     * `Equal Hash*::`**`key_eq`**`() const`
     * `size_t Hash*::`**`size`**`() const noexcept`
@@ -66,14 +71,17 @@ cache-friendly, but less space-efficient, than the chained hash tables in the
 standard library. Most of its member functions have their usual semantics for
 a standard-conforming container.
 
-* `size_t Hash*::`**`table_size`**`() const noexcept`
+The `emplace()` function works differently for `HashMap` compared to standard
+containers. Because insertion requires the key to be known in advance, the
+first argument is used as the key, and the remaining arguments are used to
+construct the mapped value. This does not apply to `HashSet`, where
+`emplace()` works normally.
 
-Returns the current total size of the internal array. An automatic rehash will
-happen when the number of occupied entries (including tombstones) reaches 3/4
-of this.
+The `reserve()` function enlarges (if necessary) and rehashes the table to
+ensure that at least `n` entries (the current `size()` plus future insertions)
+can be reached without forcing a rehash. The `free_space()` function indicates
+how many insertions can be made before a rehash is forced.
 
-* `void Hash*::`**`reserve`**`(size_t n)`
-
-Enlarges (if necessary) and rehashes the table to ensure that at least `n`
-entries (the current `size()` plus future insertions) can be reached without
-forcing a rehash.
+The `table_size()` function returns the current total size of the internal
+array. An automatic rehash will happen when the number of occupied entries
+(including tombstones) reaches 3/4 of this.

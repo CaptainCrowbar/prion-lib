@@ -3,29 +3,34 @@
 #include "rs-core/common.hpp"
 #include <algorithm>
 #include <functional>
+#include <initializer_list>
 #include <iterator>
+#include <stdexcept>
+#include <tuple>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
-#ifdef __clang__
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic warning "-Wc++14-compat"
-#endif
-
 namespace RS {
 
-    class HashMapCommonBase {
-    protected:
-        static constexpr size_t lcg_hash(size_t n) noexcept {
+    template <typename K, typename T, typename Hash = std::hash<K>, typename Equal = std::equal_to<K>>
+        class HashMap;
+    template <typename K, typename Hash = std::hash<K>, typename Equal = std::equal_to<K>>
+        using HashSet = HashMap<K, void, Hash, Equal>;
+
+    namespace detail {
+
+        constexpr size_t lcg_hash_function(size_t n) noexcept {
             // Good LCG transformations for 32 and 64 bit integers
             // from Pierre L'Ecuyer (1999), "Tables of Linear Congruential Generators of Different Sizes and Good Lattice Structure"
             // http://www.ams.org/journals/mcom/1999-68-225/S0025-5718-99-00996-5/S0025-5718-99-00996-5.pdf
-            if (sizeof(size_t) <= 4)
+            if constexpr (sizeof(size_t) <= 4)
                 return size_t(32'310'901ul * n + 850'757'001ul);
             else
                 return size_t(3'935'559'000'370'003'845ull * n + 8'831'144'850'135'198'739ull);
         }
-        static size_t next_size(size_t n) noexcept {
+
+        inline size_t next_hash_table_size(size_t n) noexcept {
             // List of good hash table prime number sizes
             // https://planetmath.org/goodhashtableprimes
             static constexpr size_t primes[] = {
@@ -45,63 +50,92 @@ namespace RS {
             else
                 return *p;
         }
-    };
 
-    template <typename Map, typename K, typename T>
-    class HashMapTypeBase {
-    public:
-        T& operator[](K key);
-    protected:
-        using value_type = std::pair<const K, T>;
-        static K get_key(const value_type& value) { return value.first; }
-        static const T& get_mapped(const value_type& value) { return value.second; }
-    };
+        template <typename Map, typename K, typename T>
+        class HashMapBase {
+        public:
+            T& operator[](K key) {
+                auto& self = *static_cast<Map*>(this);
+                return self.emplace(key).first->second;
+            }
+            T& at(K key) {
+                auto& self = *static_cast<Map*>(this);
+                size_t index = self.find_known(key);
+                if (index == npos)
+                    throw std::out_of_range("Key not found in hash map");
+                return self.table_[index].value().second;
+            }
+            const T& at(K key) const {
+                auto& self = *static_cast<const Map*>(this);
+                size_t index = self.find_known(key);
+                if (index == npos)
+                    throw std::out_of_range("Key not found in hash map");
+                return self.table_[index].value().second;
+            }
+            template <typename K1, typename... TS> auto emplace(K1&& k, TS&&... ts) {
+                auto& self = *static_cast<Map*>(this);
+                K key{std::forward<K1>(k)};
+                auto pair = self.insert_helper(key);
+                if (pair.second)
+                    pair.first.ptr_->emplace(key, std::forward<TS>(ts)...);
+                return pair;
+            }
+        protected:
+            using value_type = std::pair<const K, T>;
+            static K get_key(const value_type& value) { return value.first; }
+            static const T& get_mapped(const value_type& value) { return value.second; }
+        };
 
-    template <typename Map, typename K, typename T>
-    T& HashMapTypeBase<Map, K, T>::operator[](K key) {
-        auto& self = *static_cast<Map>(this);
-        size_t index = self.find_index(key);
-        if (self.table_[index].state == Map::status::live)
-            return self.table_[index].value().second;
-        else
-            return self.insert({key, {}}).first->second;
+        template <typename Map, typename K>
+        class HashMapBase<Map, K, void> {
+        public:
+            // TODO
+            template <typename... TS> auto emplace(TS&&... ts) {
+                auto& self = *static_cast<Map*>(this);
+                K key(std::forward<TS>(ts)...);
+                return self.insert(key);
+            }
+        protected:
+            using value_type = K;
+            static K get_key(const value_type& value) { return value; }
+            static auto get_mapped(const value_type& /*value*/) { return nullptr; }
+        };
+
     }
 
-    template <typename Map, typename K>
-    class HashMapTypeBase<Map, K, void> {
-    protected:
-        using value_type = K;
-        static K get_key(const value_type& value) { return value; }
-        static constexpr auto get_mapped(const value_type& /*value*/) { return nullptr; }
-    };
-
-    template <typename K, typename T, typename Hash = std::hash<K>, typename Equal = std::equal_to<K>>
+    template <typename K, typename T, typename Hash, typename Equal>
     class HashMap:
-    public HashMapCommonBase,
-    public HashMapTypeBase<HashMap<K, T, Hash, Equal>, K, T> {
+    public detail::HashMapBase<HashMap<K, T, Hash, Equal>, K, T> {
 
     private:
 
-        using generic_map = HashMapTypeBase<HashMap<K, T, Hash, Equal>, K, T>;
-        friend generic_map;
+        using base = detail::HashMapBase<HashMap<K, T, Hash, Equal>, K, T>;
+        friend base;
 
     public:
 
         class iterator;
         class const_iterator;
-        using key_type = K;
-        using mapped_type = T;
-        using value_type = typename generic_map::value_type;
+
         using hasher = Hash;
         using key_equal = Equal;
+        using key_type = K;
+        using mapped_type = T;
+        using value_type = typename base::value_type;
 
         HashMap() noexcept {}
         explicit HashMap(Hash h, Equal e = {}): hash_(h), equal_(e) {}
+        template <typename Iterator> HashMap(Iterator i, Iterator j, Hash h = {}, Equal e = {});
+        HashMap(std::initializer_list<value_type> init);
         HashMap(const HashMap& map);
         HashMap(HashMap&& map) noexcept;
         ~HashMap() noexcept { clear(); }
         HashMap& operator=(const HashMap& map);
         HashMap& operator=(HashMap&& map) noexcept;
+        HashMap& operator=(std::initializer_list<value_type> init);
+
+        // HashMapBase supplies operator[], at(), and emplace()
+        // (because their implementation depends on whether this is a map or a set)
 
         iterator begin() noexcept;
         const_iterator begin() const noexcept { return cbegin(); }
@@ -109,21 +143,23 @@ namespace RS {
         iterator end() noexcept;
         const_iterator end() const noexcept { return cend(); }
         const_iterator cend() const noexcept;
-        bool empty() const noexcept { return size_ == 0; }
         bool contains(K key) const noexcept;
         size_t count(K key) const noexcept { return size_t(contains(key)); }
+        bool empty() const noexcept { return size_ == 0; }
         iterator find(K key) noexcept;
         const_iterator find(K key) const noexcept;
+        size_t free_space() const noexcept { return threshold_ - size_ - tombstones_; }
         Hash hash_function() const { return hash_; }
         Equal key_eq() const { return equal_; }
         size_t size() const noexcept { return size_; }
         size_t table_size() const noexcept { return table_.size(); }
 
         void clear() noexcept;
-        iterator erase(const_iterator i) noexcept;
+        void erase(const_iterator i) noexcept;
         size_t erase(K key) noexcept;
         std::pair<iterator, bool> insert(const value_type& value);
         std::pair<iterator, bool> insert(value_type&& value);
+        template <typename Iterator> void insert(Iterator i, Iterator j);
         void rehash() { do_rehash(table_.size()); }
         void reserve(size_t n) { do_rehash(n + (n - 1) / 3 + 1); }
         void swap(HashMap& map) noexcept;
@@ -134,13 +170,19 @@ namespace RS {
 
     private:
 
+        static constexpr bool is_set = std::is_same_v<T, void>;
+
         enum class status: uint8_t { empty, live, dead };
 
         struct node_type {
             alignas (value_type) char mem[sizeof(value_type)];
             status state = status::empty;
-            void construct(const value_type& value) { new (mem) value_type(value); state = status::live; }
-            void construct(value_type&& value) noexcept { new (mem) value_type(std::move(value)); state = status::live; }
+            void copy(const value_type& value) { new (mem) value_type(value); state = status::live; }
+            void move(value_type&& value) noexcept { new (mem) value_type(std::move(value)); state = status::live; }
+            template <typename... Args> void emplace(K key, Args&&... args) {
+                new (mem) value_type(std::piecewise_construct, std::forward_as_tuple(key), std::forward_as_tuple(args...));
+                state = status::live;
+            }
             void destroy() noexcept { value().~value_type(); state = status::dead; }
             value_type& value() noexcept { return *reinterpret_cast<value_type*>(mem); }
             const value_type& value() const noexcept { return *reinterpret_cast<const value_type*>(mem); }
@@ -156,13 +198,11 @@ namespace RS {
         void do_rehash(size_t min_size);
         size_t find_begin() const noexcept;
         size_t find_index(K key) const noexcept;
+        size_t find_known(K key) const noexcept;
         std::pair<iterator, bool> insert_helper(K key);
         bool is_equal(const HashMap& rhs) const noexcept;
 
     };
-
-    template <typename K, typename Hash = std::hash<K>, typename Equal = std::equal_to<K>>
-    using HashSet = HashMap<K, void, Hash, Equal>;
 
     template <typename K, typename T, typename Hash, typename Equal>
     class HashMap<K, T, Hash, Equal>::iterator:
@@ -173,6 +213,7 @@ namespace RS {
         bool operator==(const iterator& i) const noexcept { return ptr_ == i.ptr_; }
     private:
         friend class HashMap;
+        friend HashMap::base;
         node_type* ptr_ = nullptr;
         node_type* end_ = nullptr;
     };
@@ -188,31 +229,45 @@ namespace RS {
         bool operator==(const const_iterator& i) const noexcept { return ptr_ == i.ptr_; }
     private:
         friend class HashMap;
+        friend HashMap::base;
         const node_type* ptr_ = nullptr;
         const node_type* end_ = nullptr;
     };
 
     template <typename K, typename T, typename Hash, typename Equal>
+    template <typename Iterator>
+    HashMap<K, T, Hash, Equal>::HashMap(Iterator i, Iterator j, Hash h, Equal e):
+        HashMap(h, e) {
+        insert(i, j);
+    }
+
+    template <typename K, typename T, typename Hash, typename Equal>
+    HashMap<K, T, Hash, Equal>::HashMap(std::initializer_list<value_type> init) {
+        for (auto& v: init)
+            insert(v);
+    }
+
+    template <typename K, typename T, typename Hash, typename Equal>
     HashMap<K, T, Hash, Equal>::HashMap(const HashMap& map):
-    table_(map.table_.size()),
-    hash_(map.hash_),
-    equal_(map.equal_),
-    size_(map.size_),
-    tombstones_(map.tombstones_),
-    threshold_(map.threshold_) {
+        table_(map.table_.size()),
+        hash_(map.hash_),
+        equal_(map.equal_),
+        size_(map.size_),
+        tombstones_(map.tombstones_),
+        threshold_(map.threshold_) {
         for (size_t i = 0, n = map.table_.size(); i != n; ++i)
             if (map.table_[i].state == status::live)
-                table_[i].construct(map.table_[i].value());
+                table_[i].copy(map.table_[i].value());
     }
 
     template <typename K, typename T, typename Hash, typename Equal>
     HashMap<K, T, Hash, Equal>::HashMap(HashMap&& map) noexcept:
-    table_(std::move(map.table_)),
-    hash_(std::move(map.hash_)),
-    equal_(std::move(map.equal_)),
-    size_(std::exchange(map.size_, 0)),
-    tombstones_(std::exchange(map.tombstones_, 0)),
-    threshold_(std::exchange(map.threshold_, 0)) {}
+        table_(std::move(map.table_)),
+        hash_(std::move(map.hash_)),
+        equal_(std::move(map.equal_)),
+        size_(std::exchange(map.size_, 0)),
+        tombstones_(std::exchange(map.tombstones_, 0)),
+        threshold_(std::exchange(map.threshold_, 0)) {}
 
     template <typename K, typename T, typename Hash, typename Equal>
     HashMap<K, T, Hash, Equal>& HashMap<K, T, Hash, Equal>::operator=(const HashMap& map) {
@@ -224,6 +279,13 @@ namespace RS {
     template <typename K, typename T, typename Hash, typename Equal>
     HashMap<K, T, Hash, Equal>& HashMap<K, T, Hash, Equal>::operator=(HashMap&& map) noexcept {
         HashMap temp(std::move(map));
+        swap(temp);
+        return *this;
+    }
+
+    template <typename K, typename T, typename Hash, typename Equal>
+    HashMap<K, T, Hash, Equal>& HashMap<K, T, Hash, Equal>::operator=(std::initializer_list<value_type> init) {
+        HashMap temp{init};
         swap(temp);
         return *this;
     }
@@ -296,13 +358,12 @@ namespace RS {
     }
 
     template <typename K, typename T, typename Hash, typename Equal>
-    typename HashMap<K, T, Hash, Equal>::iterator HashMap<K, T, Hash, Equal>::erase(const_iterator i) noexcept {
+    void HashMap<K, T, Hash, Equal>::erase(const_iterator i) noexcept {
         iterator j = end();
         j.ptr_ = table_.data() + (i.ptr_ - table_.data());
         j.ptr_->destroy();
         --size_;
         ++tombstones_;
-        return ++j;
     }
 
     template <typename K, typename T, typename Hash, typename Equal>
@@ -316,18 +377,30 @@ namespace RS {
 
     template <typename K, typename T, typename Hash, typename Equal>
     std::pair<typename HashMap<K, T, Hash, Equal>::iterator, bool> HashMap<K, T, Hash, Equal>::insert(const value_type& value) {
-        auto pair = insert_helper(generic_map::get_key(value));
+        auto pair = insert_helper(base::get_key(value));
         if (pair.second)
-            pair.first.ptr_->construct(value);
+            pair.first.ptr_->copy(value);
         return pair;
     }
 
     template <typename K, typename T, typename Hash, typename Equal>
     std::pair<typename HashMap<K, T, Hash, Equal>::iterator, bool> HashMap<K, T, Hash, Equal>::insert(value_type&& value) {
-        auto pair = insert_helper(generic_map::get_key(value));
+        auto pair = insert_helper(base::get_key(value));
         if (pair.second)
-            pair.first.ptr_->construct(std::move(value));
+            pair.first.ptr_->move(std::move(value));
         return pair;
+    }
+
+    template <typename K, typename T, typename Hash, typename Equal>
+    template <typename Iterator>
+    void HashMap<K, T, Hash, Equal>::insert(Iterator i, Iterator j) {
+        if constexpr (! std::is_same_v<typename std::iterator_traits<Iterator>::iterator_category, std::input_iterator_tag>) {
+            size_t n = std::distance(i, j);
+            if (n > free_space())
+                rehash(size_ + n);
+        }
+        for (; i != j; ++i)
+            insert(*i);
     }
 
     template <typename K, typename T, typename Hash, typename Equal>
@@ -342,11 +415,11 @@ namespace RS {
 
     template <typename K, typename T, typename Hash, typename Equal>
     void HashMap<K, T, Hash, Equal>::do_rehash(size_t min_size) {
-        size_t new_size = std::max(table_.size(), next_size(min_size));
+        size_t new_size = std::max(table_.size(), detail::next_hash_table_size(min_size));
         std::vector<node_type> temp_table(new_size);
         table_.swap(temp_table);
         size_ = tombstones_ = 0;
-        threshold_ = new_size - new_size / 4;
+        threshold_ = new_size * 3 / 4;
         for (auto& node: temp_table) {
             if (node.state == status::live) {
                 insert(std::move(node.value()));
@@ -367,14 +440,37 @@ namespace RS {
     size_t HashMap<K, T, Hash, Equal>::find_index(K key) const noexcept {
         // Returns the position of the key, or the empty slot where it belongs
         // Scramble the hash a bit because std::hash is usually crap
-        size_t index = lcg_hash(hash_(key)) % table_.size();
-        while (table_[index].state == status::dead
-                || (table_[index].state == status::live && ! equal_(generic_map::get_key(table_[index].value()), key))) {
+        size_t index = detail::lcg_hash_function(hash_(key)) % table_.size();
+        for (;;) {
+            if (table_[index].state == status::empty)
+                return index;
+            if (table_[index].state == status::live)
+                if (equal_(base::get_key(table_[index].value()), key))
+                    return index;
             ++index;
-            if (index == table_.size())
+            if (RS_UNLIKELY(index == table_.size()))
                 index = 0;
         }
         return index;
+    }
+
+    template <typename K, typename T, typename Hash, typename Equal>
+    size_t HashMap<K, T, Hash, Equal>::find_known(K key) const noexcept {
+        // Returns the position of the key, or npos if it isn't there
+        size_t index = detail::lcg_hash_function(hash_(key)) % table_.size();
+        for (;;) {
+            if (table_[index].state == status::empty)
+                return npos;
+            if (table_[index].state == status::live) {
+                if (equal_(base::get_key(table_[index].value()), key))
+                    return index;
+                else
+                    return npos;
+            }
+            ++index;
+            if (RS_UNLIKELY(index == table_.size()))
+                index = 0;
+        }
     }
 
     template <typename K, typename T, typename Hash, typename Equal>
@@ -398,15 +494,11 @@ namespace RS {
         if (size_ != rhs.size_)
             return false;
         for (auto& value: *this) {
-            auto rc = rhs.find(generic_map::get_key(value));
-            if (! rc.second || generic_map::get_mapped(*rc.first) != generic_map::get_mapped(value))
+            auto it = rhs.find(base::get_key(value));
+            if (it == rhs.end() || base::get_mapped(*it) != base::get_mapped(value))
                 return false;
         }
         return true;
     }
 
 }
-
-#ifdef __clang__
-    #pragma GCC diagnostic pop
-#endif

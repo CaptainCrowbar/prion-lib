@@ -132,8 +132,23 @@ extern void test_core_float_false_position();
 extern void test_core_float_newton_raphson();
 extern void test_core_float_pseudo_newton_raphson();
 extern void test_core_grid_class();
-extern void test_core_hash_map_map_insert();
-extern void test_core_hash_map_set_insert();
+extern void test_core_hash_map_int_string_map_basic_insert_and_lookup();
+extern void test_core_hash_map_int_string_map_large_insertions();
+extern void test_core_hash_map_int_string_map_erasure();
+extern void test_core_hash_map_int_string_map_initializer_list();
+extern void test_core_hash_map_int_string_map_emplace();
+extern void test_core_hash_map_int_string_map_implicit_insert();
+extern void test_core_hash_map_string_int_map_basic_insert_and_lookup();
+extern void test_core_hash_map_string_int_map_large_insertions();
+extern void test_core_hash_map_string_int_map_erasure();
+extern void test_core_hash_map_string_int_map_initializer_list();
+extern void test_core_hash_map_string_int_map_emplace();
+extern void test_core_hash_map_string_int_map_implicit_insert();
+extern void test_core_hash_map_string_set_basic_insert_and_lookup();
+extern void test_core_hash_map_string_set_large_insertions();
+extern void test_core_hash_map_string_set_erasure();
+extern void test_core_hash_map_string_set_initializer_list();
+extern void test_core_hash_map_string_set_emplace();
 extern void test_core_index_table_classes();
 extern void test_core_int128_uint128_basics();
 extern void test_core_int128_uint128_arithmetic();
@@ -634,8 +649,23 @@ int main() {
         { "core/float/newton-raphson", test_core_float_newton_raphson },
         { "core/float/pseudo-newton-raphson", test_core_float_pseudo_newton_raphson },
         { "core/grid/class", test_core_grid_class },
-        { "core/hash-map/map-insert", test_core_hash_map_map_insert },
-        { "core/hash-map/set-insert", test_core_hash_map_set_insert },
+        { "core/hash-map/int-string-map-basic-insert-and-lookup", test_core_hash_map_int_string_map_basic_insert_and_lookup },
+        { "core/hash-map/int-string-map-large-insertions", test_core_hash_map_int_string_map_large_insertions },
+        { "core/hash-map/int-string-map-erasure", test_core_hash_map_int_string_map_erasure },
+        { "core/hash-map/int-string-map-initializer-list", test_core_hash_map_int_string_map_initializer_list },
+        { "core/hash-map/int-string-map-emplace", test_core_hash_map_int_string_map_emplace },
+        { "core/hash-map/int-string-map-implicit-insert", test_core_hash_map_int_string_map_implicit_insert },
+        { "core/hash-map/string-int-map-basic-insert-and-lookup", test_core_hash_map_string_int_map_basic_insert_and_lookup },
+        { "core/hash-map/string-int-map-large-insertions", test_core_hash_map_string_int_map_large_insertions },
+        { "core/hash-map/string-int-map-erasure", test_core_hash_map_string_int_map_erasure },
+        { "core/hash-map/string-int-map-initializer-list", test_core_hash_map_string_int_map_initializer_list },
+        { "core/hash-map/string-int-map-emplace", test_core_hash_map_string_int_map_emplace },
+        { "core/hash-map/string-int-map-implicit-insert", test_core_hash_map_string_int_map_implicit_insert },
+        { "core/hash-map/string-set-basic-insert-and-lookup", test_core_hash_map_string_set_basic_insert_and_lookup },
+        { "core/hash-map/string-set-large-insertions", test_core_hash_map_string_set_large_insertions },
+        { "core/hash-map/string-set-erasure", test_core_hash_map_string_set_erasure },
+        { "core/hash-map/string-set-initializer-list", test_core_hash_map_string_set_initializer_list },
+        { "core/hash-map/string-set-emplace", test_core_hash_map_string_set_emplace },
         { "core/index-table/classes", test_core_index_table_classes },
         { "core/int128/uint128-basics", test_core_int128_uint128_basics },
         { "core/int128/uint128-arithmetic", test_core_int128_uint128_arithmetic },

@@ -35,12 +35,12 @@ two class templates, it applies only to that one.</p>
 <li><code>template &lt;typename K, typename Hash = std::hash&lt;K&gt;, typename Equal = std::equal_to&lt;K&gt;&gt; using</code> <strong><code>HashSet</code></strong> <code>= HashMap&lt;K, void, Hash, Equal&gt;</code><ul>
 <li><code>class Hash*::</code><strong><code>iterator</code></strong></li>
 <li><code>class Hash*::</code><strong><code>const_iterator</code></strong></li>
+<li><code>using Hash*::</code><strong><code>hasher</code></strong> <code>= Hash</code></li>
+<li><code>using Hash*::</code><strong><code>key_equal</code></strong> <code>= Equal</code></li>
 <li><code>using Hash*::</code><strong><code>key_type</code></strong> <code>= K</code></li>
 <li><code>using Hash*::</code><strong><code>mapped_type</code></strong> <code>= T</code></li>
 <li><code>using HashMap::</code><strong><code>value_type</code></strong> <code>= std::pair&lt;const K, T&gt;</code></li>
 <li><code>using HashSet::</code><strong><code>value_type</code></strong> <code>= K</code></li>
-<li><code>using Hash*::</code><strong><code>hasher</code></strong> <code>= Hash</code></li>
-<li><code>using Hash*::</code><strong><code>key_equal</code></strong> <code>= Equal</code></li>
 <li><code>Hash*::</code><strong><code>Hash*</code></strong><code>() noexcept</code></li>
 <li><code>explicit Hash*::</code><strong><code>Hash*</code></strong><code>(Hash h, Equal e = {})</code></li>
 <li><code>Hash*::</code><strong><code>Hash*</code></strong><code>(const Hash*&amp; map)</code></li>
@@ -48,18 +48,23 @@ two class templates, it applies only to that one.</p>
 <li><code>Hash*::</code><strong><code>~Hash*</code></strong><code>() noexcept</code></li>
 <li><code>Hash*&amp; Hash*::</code><strong><code>operator=</code></strong><code>(const Hash*&amp; map)</code></li>
 <li><code>Hash*&amp; Hash*::</code><strong><code>operator=</code></strong><code>(Hash*&amp;&amp; map) noexcept</code></li>
-<li><code>T&amp; HashMap::</code><strong><code>operator[]</code></strong><code>(K key) noexcept</code></li>
+<li><code>T&amp; HashMap::</code><strong><code>operator[]</code></strong><code>(K key)</code></li>
+<li><code>T&amp; HashMap::</code><strong><code>at</code></strong><code>(K key)</code></li>
+<li><code>const T&amp; HashMap::</code><strong><code>at</code></strong><code>(K key) const</code></li>
+<li><code>template &lt;typename K1, typename... TS&gt; std::pair&lt;HashMap::iterator, bool&gt; HashMap::</code><strong><code>emplace</code></strong><code>(K1&amp;&amp; k, TS&amp;&amp;... ts)</code></li>
+<li><code>template &lt;typename... TS&gt; std::pair&lt;HashSet::iterator, bool&gt; HashSet::</code><strong><code>emplace</code></strong><code>(TS&amp;&amp;... ts)</code></li>
 <li><code>Hash*::iterator Hash*::</code><strong><code>begin</code></strong><code>() noexcept</code></li>
 <li><code>Hash*::const_iterator Hash*::</code><strong><code>begin</code></strong><code>() const noexcept</code></li>
 <li><code>Hash*::const_iterator Hash*::</code><strong><code>cbegin</code></strong><code>() const noexcept</code></li>
 <li><code>Hash*::iterator Hash*::</code><strong><code>end</code></strong><code>() noexcept</code></li>
 <li><code>Hash*::const_iterator Hash*::</code><strong><code>end</code></strong><code>() const noexcept</code></li>
 <li><code>Hash*::const_iterator Hash*::</code><strong><code>cend</code></strong><code>() const noexcept</code></li>
-<li><code>bool Hash*::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
 <li><code>bool Hash*::</code><strong><code>contains</code></strong><code>(K key) const noexcept</code></li>
 <li><code>size_t Hash*::</code><strong><code>count</code></strong><code>(K key) const noexcept</code></li>
+<li><code>bool Hash*::</code><strong><code>empty</code></strong><code>() const noexcept</code></li>
 <li><code>Hash*::iterator Hash*::</code><strong><code>find</code></strong><code>(K key) noexcept</code></li>
 <li><code>Hash*::const_iterator Hash*::</code><strong><code>find</code></strong><code>(K key) const noexcept</code></li>
+<li><code>size_t Hash*::</code><strong><code>free_space</code></strong><code>() const noexcept</code></li>
 <li><code>Hash Hash*::</code><strong><code>hash_function</code></strong><code>() const</code></li>
 <li><code>Equal Hash*::</code><strong><code>key_eq</code></strong><code>() const</code></li>
 <li><code>size_t Hash*::</code><strong><code>size</code></strong><code>() const noexcept</code></li>
@@ -82,20 +87,16 @@ two class templates, it applies only to that one.</p>
 cache-friendly, but less space-efficient, than the chained hash tables in the
 standard library. Most of its member functions have their usual semantics for
 a standard-conforming container.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>size_t Hash*::</code><strong><code>table_size</code></strong><code>() const noexcept</code></li>
-</ul>
-<p>Returns the current total size of the internal array. An automatic rehash will
-happen when the number of occupied entries (including tombstones) reaches 3/4
-of this.</p>
-</div>
-<div class="defns">
-<ul>
-<li><code>void Hash*::</code><strong><code>reserve</code></strong><code>(size_t n)</code></li>
-</ul>
-<p>Enlarges (if necessary) and rehashes the table to ensure that at least <code>n</code>
-entries (the current <code>size()</code> plus future insertions) can be reached without
-forcing a rehash.</p></body>
+<p>The <code>emplace()</code> function works differently for <code>HashMap</code> compared to standard
+containers. Because insertion requires the key to be known in advance, the
+first argument is used as the key, and the remaining arguments are used to
+construct the mapped value. This does not apply to <code>HashSet</code>, where
+<code>emplace()</code> works normally.</p>
+<p>The <code>reserve()</code> function enlarges (if necessary) and rehashes the table to
+ensure that at least <code>n</code> entries (the current <code>size()</code> plus future insertions)
+can be reached without forcing a rehash. The <code>free_space()</code> function indicates
+how many insertions can be made before a rehash is forced.</p>
+<p>The <code>table_size()</code> function returns the current total size of the internal
+array. An automatic rehash will happen when the number of occupied entries
+(including tombstones) reaches 3/4 of this.</p></body>
 </html>

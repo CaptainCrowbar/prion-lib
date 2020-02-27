@@ -49,6 +49,14 @@
 
 RS_LDLIB(rs-core);
 
+#ifdef __GNUC__
+    #define RS_LIKELY(x) __builtin_expect(!!(x), 1)
+    #define RS_UNLIKELY(x) __builtin_expect(!!(x), 0)
+#else
+    #define RS_LIKELY(x) x
+    #define RS_UNLIKELY(x) x
+#endif
+
 // GNU brain damage
 
 #ifdef major

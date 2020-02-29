@@ -27,7 +27,7 @@ void test_core_hash_map_int_string_map_basic_insert_and_lookup() {
     map.insert({10, "alpha"s});
     TEST(! map.empty());
     TEST_EQUAL(map.size(), 1u);
-    TEST_EQUAL(map.table_size(), 23u);
+    TEST_EQUAL(map.table_size(), 16u);
     TEST_EQUAL(std::distance(map.begin(), map.end()), 1);
 
     TEST(map.contains(10));
@@ -37,7 +37,7 @@ void test_core_hash_map_int_string_map_basic_insert_and_lookup() {
     map.insert({20, "bravo"s});
     TEST(! map.empty());
     TEST_EQUAL(map.size(), 2u);
-    TEST_EQUAL(map.table_size(), 23u);
+    TEST_EQUAL(map.table_size(), 16u);
     TEST_EQUAL(std::distance(map.begin(), map.end()), 2);
 
     TEST(map.contains(10));
@@ -49,7 +49,7 @@ void test_core_hash_map_int_string_map_basic_insert_and_lookup() {
     map.insert({30, "charlie"s});
     TEST(! map.empty());
     TEST_EQUAL(map.size(), 3u);
-    TEST_EQUAL(map.table_size(), 23u);
+    TEST_EQUAL(map.table_size(), 16u);
     TEST_EQUAL(std::distance(map.begin(), map.end()), 3);
 
     TEST(map.contains(10));
@@ -76,68 +76,68 @@ void test_core_hash_map_int_string_map_large_insertions() {
     std::string s, t;
     int i = 1;
 
-    for (; i <= 17; ++i)
+    for (; i <= 12; ++i)
     {
         char c = 'a' + i % 26;
         s += c;
         map.insert({i, s});
         TEST_EQUAL(map.size(), size_t(i));
-        TEST_EQUAL(map.table_size(), 23);
+        TEST_EQUAL(map.table_size(), 16u);
         t = map[i].get();
         TEST_EQUAL(t, s);
     }
 
-    for (; i <= 39; ++i)
+    for (; i <= 24; ++i)
     {
         char c = 'a' + i % 26;
         s += c;
         map.insert({i, s});
         TEST_EQUAL(map.size(), size_t(i));
-        TEST_EQUAL(map.table_size(), 53);
+        TEST_EQUAL(map.table_size(), 32u);
         t = map[i].get();
         TEST_EQUAL(t, s);
     }
 
-    for (; i <= 72; ++i)
+    for (; i <= 48; ++i)
     {
         char c = 'a' + i % 26;
         s += c;
         map.insert({i, s});
         TEST_EQUAL(map.size(), size_t(i));
-        TEST_EQUAL(map.table_size(), 97);
+        TEST_EQUAL(map.table_size(), 64u);
         t = map[i].get();
         TEST_EQUAL(t, s);
     }
 
-    for (; i <= 144; ++i)
+    for (; i <= 96; ++i)
     {
         char c = 'a' + i % 26;
         s += c;
         map.insert({i, s});
         TEST_EQUAL(map.size(), size_t(i));
-        TEST_EQUAL(map.table_size(), 193);
+        TEST_EQUAL(map.table_size(), 128u);
         t = map[i].get();
         TEST_EQUAL(t, s);
     }
 
-    for (; i <= 291; ++i)
+    for (; i <= 192; ++i)
     {
         char c = 'a' + i % 26;
         s += c;
         map.insert({i, s});
         TEST_EQUAL(map.size(), size_t(i));
-        TEST_EQUAL(map.table_size(), 389);
+        TEST_EQUAL(map.table_size(), 256u);
         t = map[i].get();
         TEST_EQUAL(t, s);
     }
 
-    for (; i <= 576; ++i)
+    for (; i <= 384; ++i)
     {
         char c = 'a' + i % 26;
         s += c;
         map.insert({i, s});
         TEST_EQUAL(map.size(), size_t(i));
-        TEST_EQUAL(map.table_size(), 769);
+        TEST_EQUAL(map.table_size(), 512u);
         t = map[i].get();
         TEST_EQUAL(t, s);
     }
@@ -304,7 +304,7 @@ void test_core_hash_map_string_int_map_basic_insert_and_lookup() {
     map.insert({"alpha"s, 10});
     TEST(! map.empty());
     TEST_EQUAL(map.size(), 1u);
-    TEST_EQUAL(map.table_size(), 23u);
+    TEST_EQUAL(map.table_size(), 16u);
     TEST_EQUAL(std::distance(map.begin(), map.end()), 1);
 
     TEST(map.contains("alpha"s));
@@ -314,7 +314,7 @@ void test_core_hash_map_string_int_map_basic_insert_and_lookup() {
     map.insert({"bravo"s, 20});
     TEST(! map.empty());
     TEST_EQUAL(map.size(), 2u);
-    TEST_EQUAL(map.table_size(), 23u);
+    TEST_EQUAL(map.table_size(), 16u);
     TEST_EQUAL(std::distance(map.begin(), map.end()), 2);
 
     TEST(map.contains("alpha"s));
@@ -326,7 +326,7 @@ void test_core_hash_map_string_int_map_basic_insert_and_lookup() {
     map.insert({"charlie"s, 30});
     TEST(! map.empty());
     TEST_EQUAL(map.size(), 3u);
-    TEST_EQUAL(map.table_size(), 23u);
+    TEST_EQUAL(map.table_size(), 16u);
     TEST_EQUAL(std::distance(map.begin(), map.end()), 3);
 
     TEST(map.contains("alpha"s));
@@ -353,68 +353,68 @@ void test_core_hash_map_string_int_map_large_insertions() {
     std::string s;
     int i = 1, j = 0;
 
-    for (; i <= 17; ++i)
+    for (; i <= 12; ++i)
     {
         char c = 'a' + i % 26;
         s += c;
         map.insert({s, i});
         TEST_EQUAL(map.size(), size_t(i));
-        TEST_EQUAL(map.table_size(), 23);
+        TEST_EQUAL(map.table_size(), 16u);
         j = map[s].get();
         TEST_EQUAL(j, i);
     }
 
-    for (; i <= 39; ++i)
+    for (; i <= 24; ++i)
     {
         char c = 'a' + i % 26;
         s += c;
         map.insert({s, i});
         TEST_EQUAL(map.size(), size_t(i));
-        TEST_EQUAL(map.table_size(), 53);
+        TEST_EQUAL(map.table_size(), 32u);
         j = map[s].get();
         TEST_EQUAL(j, i);
     }
 
-    for (; i <= 72; ++i)
+    for (; i <= 48; ++i)
     {
         char c = 'a' + i % 26;
         s += c;
         map.insert({s, i});
         TEST_EQUAL(map.size(), size_t(i));
-        TEST_EQUAL(map.table_size(), 97);
+        TEST_EQUAL(map.table_size(), 64u);
         j = map[s].get();
         TEST_EQUAL(j, i);
     }
 
-    for (; i <= 144; ++i)
+    for (; i <= 96; ++i)
     {
         char c = 'a' + i % 26;
         s += c;
         map.insert({s, i});
         TEST_EQUAL(map.size(), size_t(i));
-        TEST_EQUAL(map.table_size(), 193);
+        TEST_EQUAL(map.table_size(), 128u);
         j = map[s].get();
         TEST_EQUAL(j, i);
     }
 
-    for (; i <= 291; ++i)
+    for (; i <= 192; ++i)
     {
         char c = 'a' + i % 26;
         s += c;
         map.insert({s, i});
         TEST_EQUAL(map.size(), size_t(i));
-        TEST_EQUAL(map.table_size(), 389);
+        TEST_EQUAL(map.table_size(), 256u);
         j = map[s].get();
         TEST_EQUAL(j, i);
     }
 
-    for (; i <= 576; ++i)
+    for (; i <= 384; ++i)
     {
         char c = 'a' + i % 26;
         s += c;
         map.insert({s, i});
         TEST_EQUAL(map.size(), size_t(i));
-        TEST_EQUAL(map.table_size(), 769);
+        TEST_EQUAL(map.table_size(), 512u);
         j = map[s].get();
         TEST_EQUAL(j, i);
     }
@@ -580,7 +580,7 @@ void test_core_hash_map_string_set_basic_insert_and_lookup() {
     set.insert("alpha"s);
     TEST(! set.empty());
     TEST_EQUAL(set.size(), 1u);
-    TEST_EQUAL(set.table_size(), 23u);
+    TEST_EQUAL(set.table_size(), 16u);
     TEST_EQUAL(std::distance(set.begin(), set.end()), 1);
 
     TEST(set.contains("alpha"s));
@@ -589,7 +589,7 @@ void test_core_hash_map_string_set_basic_insert_and_lookup() {
     set.insert("bravo"s);
     TEST(! set.empty());
     TEST_EQUAL(set.size(), 2u);
-    TEST_EQUAL(set.table_size(), 23u);
+    TEST_EQUAL(set.table_size(), 16u);
     TEST_EQUAL(std::distance(set.begin(), set.end()), 2);
 
     TEST(set.contains("alpha"s));
@@ -599,7 +599,7 @@ void test_core_hash_map_string_set_basic_insert_and_lookup() {
     set.insert("charlie"s);
     TEST(! set.empty());
     TEST_EQUAL(set.size(), 3u);
-    TEST_EQUAL(set.table_size(), 23u);
+    TEST_EQUAL(set.table_size(), 16u);
     TEST_EQUAL(std::distance(set.begin(), set.end()), 3);
 
     TEST(set.contains("alpha"s));
@@ -623,63 +623,63 @@ void test_core_hash_map_string_set_large_insertions() {
     std::string s;
     int i = 1;
 
-    for (; i <= 17; ++i)
+    for (; i <= 12; ++i)
     {
         char c = 'a' + i % 26;
         s += c;
         set.insert(s);
         TEST_EQUAL(set.size(), size_t(i));
-        TEST_EQUAL(set.table_size(), 23);
+        TEST_EQUAL(set.table_size(), 16u);
         TEST(set.contains(s));
     }
 
-    for (; i <= 39; ++i)
+    for (; i <= 24; ++i)
     {
         char c = 'a' + i % 26;
         s += c;
         set.insert(s);
         TEST_EQUAL(set.size(), size_t(i));
-        TEST_EQUAL(set.table_size(), 53);
+        TEST_EQUAL(set.table_size(), 32u);
         TEST(set.contains(s));
     }
 
-    for (; i <= 72; ++i)
+    for (; i <= 48; ++i)
     {
         char c = 'a' + i % 26;
         s += c;
         set.insert(s);
         TEST_EQUAL(set.size(), size_t(i));
-        TEST_EQUAL(set.table_size(), 97);
+        TEST_EQUAL(set.table_size(), 64u);
         TEST(set.contains(s));
     }
 
-    for (; i <= 144; ++i)
+    for (; i <= 96; ++i)
     {
         char c = 'a' + i % 26;
         s += c;
         set.insert(s);
         TEST_EQUAL(set.size(), size_t(i));
-        TEST_EQUAL(set.table_size(), 193);
+        TEST_EQUAL(set.table_size(), 128u);
         TEST(set.contains(s));
     }
 
-    for (; i <= 291; ++i)
+    for (; i <= 192; ++i)
     {
         char c = 'a' + i % 26;
         s += c;
         set.insert(s);
         TEST_EQUAL(set.size(), size_t(i));
-        TEST_EQUAL(set.table_size(), 389);
+        TEST_EQUAL(set.table_size(), 256u);
         TEST(set.contains(s));
     }
 
-    for (; i <= 576; ++i)
+    for (; i <= 384; ++i)
     {
         char c = 'a' + i % 26;
         s += c;
         set.insert(s);
         TEST_EQUAL(set.size(), size_t(i));
-        TEST_EQUAL(set.table_size(), 769);
+        TEST_EQUAL(set.table_size(), 512u);
         TEST(set.contains(s));
     }
 

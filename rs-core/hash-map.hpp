@@ -20,37 +20,6 @@ namespace RS {
 
     namespace detail {
 
-        constexpr size_t lcg_hash_function(size_t n) noexcept {
-            // Good LCG transformations for 32 and 64 bit integers
-            // from Pierre L'Ecuyer (1999), "Tables of Linear Congruential Generators of Different Sizes and Good Lattice Structure"
-            // http://www.ams.org/journals/mcom/1999-68-225/S0025-5718-99-00996-5/S0025-5718-99-00996-5.pdf
-            if constexpr (sizeof(size_t) <= 4)
-                return size_t(32'310'901ul * n + 850'757'001ul);
-            else
-                return size_t(3'935'559'000'370'003'845ull * n + 8'831'144'850'135'198'739ull);
-        }
-
-        inline size_t next_hash_table_size(size_t n) noexcept {
-            // List of good hash table prime number sizes
-            // https://planetmath.org/goodhashtableprimes
-            static constexpr size_t primes[] = {
-                23ull, 53ull, 97ull,
-                193ull, 389ull, 769ull,
-                1'543ull, 3'079ull, 6'151ull,
-                12'289ull, 24'593ull, 49'157ull, 98'317ull,
-                196'613ull, 393'241ull, 786'433ull,
-                1'572'869ull, 3'145'739ull, 6'291'469ull,
-                12'582'917ull, 25'165'843ull, 50'331'653ull,
-                100'663'319ull, 201'326'611ull, 402'653'189ull, 805'306'457ull,
-                1'610'612'741ull
-            };
-            auto p = std::upper_bound(std::begin(primes), std::end(primes), n);
-            if (p == std::end(primes))
-                return 2 * n - 1;
-            else
-                return *p;
-        }
-
         template <typename Map, typename K, typename T>
         class HashMapBase {
         public:
@@ -89,7 +58,6 @@ namespace RS {
         template <typename Map, typename K>
         class HashMapBase<Map, K, void> {
         public:
-            // TODO
             template <typename... TS> auto emplace(TS&&... ts) {
                 auto& self = *static_cast<Map*>(this);
                 K key(std::forward<TS>(ts)...);
@@ -194,6 +162,7 @@ namespace RS {
         size_t size_ = 0;               // Number of live elements
         size_t tombstones_ = 0;         // Number of tombstones
         size_t threshold_ = 0;          // Size threshold before we enlarge the table
+        size_t mask_ = 0;               // Bitmask for hash table size
 
         void do_rehash(size_t min_size);
         size_t find_begin() const noexcept;
@@ -254,7 +223,8 @@ namespace RS {
         equal_(map.equal_),
         size_(map.size_),
         tombstones_(map.tombstones_),
-        threshold_(map.threshold_) {
+        threshold_(map.threshold_),
+        mask_(map.mask_) {
         for (size_t i = 0, n = map.table_.size(); i != n; ++i)
             if (map.table_[i].state == status::live)
                 table_[i].copy(map.table_[i].value());
@@ -267,7 +237,8 @@ namespace RS {
         equal_(std::move(map.equal_)),
         size_(std::exchange(map.size_, 0)),
         tombstones_(std::exchange(map.tombstones_, 0)),
-        threshold_(std::exchange(map.threshold_, 0)) {}
+        threshold_(std::exchange(map.threshold_, 0)),
+        mask_(std::exchange(map.mask_, 0)) {}
 
     template <typename K, typename T, typename Hash, typename Equal>
     HashMap<K, T, Hash, Equal>& HashMap<K, T, Hash, Equal>::operator=(const HashMap& map) {
@@ -411,15 +382,18 @@ namespace RS {
         std::swap(size_, map.size_);
         std::swap(tombstones_, map.tombstones_);
         std::swap(threshold_, map.threshold_);
+        std::swap(mask_, map.mask_);
     }
 
     template <typename K, typename T, typename Hash, typename Equal>
     void HashMap<K, T, Hash, Equal>::do_rehash(size_t min_size) {
-        size_t new_size = std::max(table_.size(), detail::next_hash_table_size(min_size));
+        int bits = std::max(ilog2p1(std::max(min_size, table_.size())), 4);
+        size_t new_size = size_t(1) << bits;
         std::vector<node_type> temp_table(new_size);
         table_.swap(temp_table);
         size_ = tombstones_ = 0;
         threshold_ = new_size * 3 / 4;
+        mask_ = new_size - 1;
         for (auto& node: temp_table) {
             if (node.state == status::live) {
                 insert(std::move(node.value()));
@@ -439,26 +413,19 @@ namespace RS {
     template <typename K, typename T, typename Hash, typename Equal>
     size_t HashMap<K, T, Hash, Equal>::find_index(K key) const noexcept {
         // Returns the position of the key, or the empty slot where it belongs
-        // Scramble the hash a bit because std::hash is usually crap
-        size_t index = detail::lcg_hash_function(hash_(key)) % table_.size();
-        for (;;) {
-            if (table_[index].state == status::empty)
+        for (size_t index = hash_(key);; ++index) {
+            index &= mask_;
+            if (table_[index].state == status::empty
+                    || (table_[index].state == status::live && equal_(base::get_key(table_[index].value()), key)))
                 return index;
-            if (table_[index].state == status::live)
-                if (equal_(base::get_key(table_[index].value()), key))
-                    return index;
-            ++index;
-            if (RS_UNLIKELY(index == table_.size()))
-                index = 0;
         }
-        return index;
     }
 
     template <typename K, typename T, typename Hash, typename Equal>
     size_t HashMap<K, T, Hash, Equal>::find_known(K key) const noexcept {
         // Returns the position of the key, or npos if it isn't there
-        size_t index = detail::lcg_hash_function(hash_(key)) % table_.size();
-        for (;;) {
+        for (size_t index = hash_(key);; ++index) {
+            index &= mask_;
             if (table_[index].state == status::empty)
                 return npos;
             if (table_[index].state == status::live) {
@@ -467,9 +434,6 @@ namespace RS {
                 else
                     return npos;
             }
-            ++index;
-            if (RS_UNLIKELY(index == table_.size()))
-                index = 0;
         }
     }
 

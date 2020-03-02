@@ -198,7 +198,7 @@ namespace RS {
         }
         if (n <= N)
             return;
-        size_t new_cap = iceil2(n);
+        size_t new_cap = bit_ceil(n);
         if (new_cap <= capacity())
             return;
         auto new_ptr = new raw_memory[new_cap];

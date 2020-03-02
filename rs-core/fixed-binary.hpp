@@ -70,7 +70,7 @@ namespace RS {
         template <typename T> bool fits_in() const noexcept { return significant_bits() <= std::numeric_limits<T>::digits; }
         size_t hash() const noexcept { return std::hash<value_type>()(value); }
         size_t parse(const Ustring& str, int base = 10) noexcept { return RS_Detail::parse_binary(str, base, *this); }
-        size_t significant_bits() const noexcept { return ilog2p1(value); }
+        size_t significant_bits() const noexcept { return bit_width(value); }
         explicit operator bool() const noexcept { return value != 0; }
         template <typename T> explicit operator T() const noexcept { return static_cast<T>(value); }
         SmallBinary operator+() const noexcept { return *this; }
@@ -296,7 +296,7 @@ namespace RS {
             size_t i = units - 1;
             while (i != npos && store[i] == 0)
                 --i;
-            return i == npos ? 0 : unit_bits * i + ilog2p1(store[i]);
+            return i == npos ? 0 : unit_bits * i + bit_width(store[i]);
         }
 
         template <size_t N>

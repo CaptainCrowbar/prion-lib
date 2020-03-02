@@ -1488,7 +1488,7 @@ namespace RS {
         if (range_m1 == uint64_max)
             block = 8;
         else
-            block = (ilog2p1(range_m1) - 1) / 8;
+            block = (bit_width(range_m1) - 1) / 8;
         auto bp = static_cast<uint8_t*>(ptr);
         if (block) {
             while (n >= block) {

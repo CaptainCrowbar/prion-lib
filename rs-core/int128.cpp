@@ -43,12 +43,12 @@ namespace RS {
     Ustring Uint128::str(int base, int digits) const {
         if (base < 2 || base > 35)
             throw std::invalid_argument("Invalid base: " + std::to_string(base));
-        bool shortcut = ispow2(base);
+        bool shortcut = has_single_bit(base);
         size_t width = std::max(digits, 0);
         Uint128 scale = base, x = *this;
         Ustring s;
         if (shortcut) {
-            int bits = ilog2p1(base) - 1;
+            int bits = bit_width(base) - 1;
             Uint128 mask = scale - 1;
             while (x || s.size() < width) {
                 Uint128 r = x & mask;

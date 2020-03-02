@@ -127,7 +127,7 @@ namespace RS {
     size_t Mpuint::bits() const noexcept {
         size_t n = 32 * rep.size();
         if (! rep.empty())
-            n -= 32 - ilog2p1(rep.back());
+            n -= 32 - bit_width(rep.back());
         return n;
     }
 

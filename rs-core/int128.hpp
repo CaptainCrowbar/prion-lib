@@ -57,7 +57,7 @@ namespace RS {
         friend constexpr bool operator<=(Uint128 x, Uint128 y) noexcept { return ! (y < x); }
         friend constexpr bool operator>=(Uint128 x, Uint128 y) noexcept { return ! (x < y); }
         friend constexpr std::pair<Uint128, Uint128> divide(Uint128 x, Uint128 y) noexcept;
-        friend constexpr int ilog2p1(Uint128 x) noexcept { return x.high() ? ilog2p1(x.high()) + 64 : ilog2p1(x.low()); }
+        friend constexpr int bit_width(Uint128 x) noexcept { return x.high() ? bit_width(x.high()) + 64 : bit_width(x.low()); }
         friend constexpr int popcount(Uint128 x) noexcept { return popcount(x.first_) + popcount(x.second_); }
         friend constexpr Uint128 rotl(Uint128 x, int y) noexcept { return (x << y) | (x >> (128 - y)); }
         friend constexpr Uint128 rotr(Uint128 x, int y) noexcept { return (x >> y) | (x << (128 - y)); }
@@ -141,7 +141,7 @@ namespace RS {
         constexpr std::pair<Uint128, Uint128> divide(Uint128 x, Uint128 y) noexcept {
             if (x < y)
                 return {0, x};
-            int shift = ilog2p1(x) - ilog2p1(y);
+            int shift = bit_width(x) - bit_width(y);
             Uint128 a = y << shift, b = Uint128(1) << shift, q, r = x;
             for (; shift >= 0 && r; --shift, a >>= 1, b >>= 1) {
                 if (a <= r) {

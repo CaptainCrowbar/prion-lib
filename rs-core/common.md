@@ -764,9 +764,10 @@ Returns 1 if the argument is positive, 0 if zero, and -1 if negative.
 
 ### Integer arithmetic functions ###
 
-For the bit manipulation functions (`ifloor2()`, `iceil2()`, `ilog2p1()`,
-`ispow2()`, `rotl()`, `popcount()`, and `rotr()`), behaviour is undefined if
-`T` is not an integer, or if `T` is signed and the argument is negative.
+For the bit manipulation functions (`bit_floor()`, `bit_ceil()`,
+`bit_width()`, `has_singe_bit()`, `popcount()`, `rotl()`, and `rotr()`),
+behaviour is undefined if `T` is not an integer, or if `T` is signed and the
+argument is negative.
 
 * `template <typename T> constexpr std::make_signed_t<T>` **`as_signed`**`(T t) noexcept`
 * `template <typename T> constexpr std::make_unsigned_t<T>` **`as_unsigned`**`(T t) noexcept`
@@ -791,14 +792,14 @@ These give the same results as `std::gcd/lcm()`, but without checking that `T`
 is a primitive integral type, so these will work with user defined integer
 types.
 
-* `template <typename T> constexpr T` **`ifloor2`**`(T t) noexcept`
-* `template <typename T> constexpr T` **`iceil2`**`(T t) noexcept`
+* `template <typename T> constexpr T` **`bit_floor`**`(T t) noexcept`
+* `template <typename T> constexpr T` **`bit_ceil`**`(T t) noexcept`
 
 `[unicorn]` Return the argument rounded down or up to a power of 2. For
-`iceil2()`, behaviour is undefined if the argument is large enough that the
+`bit_ceil()`, behaviour is undefined if the argument is large enough that the
 correct answer is not representable.
 
-* `template <typename T> constexpr int` **`ilog2p1`**`(T t) noexcept`
+* `template <typename T> constexpr int` **`bit_width`**`(T t) noexcept`
 
 `[unicorn]` Returns `floor(log2(t))+1`, equal to the number of significant
 bits in `t`, or zero if `t` is zero.
@@ -815,7 +816,7 @@ is not an integer.
 Returns the integer square root of the argument (the true square root
 truncated to an integer). Behaviour is undefined if the argument is negative.
 
-* `template <typename T> constexpr bool` **`ispow2`**`(T t) noexcept`
+* `template <typename T> constexpr bool` **`has_singe_bit`**`(T t) noexcept`
 
 `[unicorn]` True if the argument is an exact power of 2.
 

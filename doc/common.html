@@ -1017,9 +1017,10 @@ out of <code>T</code>'s representable range.</p>
 <p>Returns 1 if the argument is positive, 0 if zero, and -1 if negative.</p>
 </div>
 <h3 id="integer-arithmetic-functions">Integer arithmetic functions</h3>
-<p>For the bit manipulation functions (<code>ifloor2()</code>, <code>iceil2()</code>, <code>ilog2p1()</code>,
-<code>ispow2()</code>, <code>rotl()</code>, <code>popcount()</code>, and <code>rotr()</code>), behaviour is undefined if
-<code>T</code> is not an integer, or if <code>T</code> is signed and the argument is negative.</p>
+<p>For the bit manipulation functions (<code>bit_floor()</code>, <code>bit_ceil()</code>,
+<code>bit_width()</code>, <code>has_singe_bit()</code>, <code>popcount()</code>, <code>rotl()</code>, and <code>rotr()</code>),
+behaviour is undefined if <code>T</code> is not an integer, or if <code>T</code> is signed and the
+argument is negative.</p>
 <div class="defns">
 <ul>
 <li><code>template &lt;typename T&gt; constexpr std::make_signed_t&lt;T&gt;</code> <strong><code>as_signed</code></strong><code>(T t) noexcept</code></li>
@@ -1051,16 +1052,16 @@ types.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; constexpr T</code> <strong><code>ifloor2</code></strong><code>(T t) noexcept</code></li>
-<li><code>template &lt;typename T&gt; constexpr T</code> <strong><code>iceil2</code></strong><code>(T t) noexcept</code></li>
+<li><code>template &lt;typename T&gt; constexpr T</code> <strong><code>bit_floor</code></strong><code>(T t) noexcept</code></li>
+<li><code>template &lt;typename T&gt; constexpr T</code> <strong><code>bit_ceil</code></strong><code>(T t) noexcept</code></li>
 </ul>
 <p><code><span class="unicorn">[unicorn]</span></code> Return the argument rounded down or up to a power of 2. For
-<code>iceil2()</code>, behaviour is undefined if the argument is large enough that the
+<code>bit_ceil()</code>, behaviour is undefined if the argument is large enough that the
 correct answer is not representable.</p>
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; constexpr int</code> <strong><code>ilog2p1</code></strong><code>(T t) noexcept</code></li>
+<li><code>template &lt;typename T&gt; constexpr int</code> <strong><code>bit_width</code></strong><code>(T t) noexcept</code></li>
 </ul>
 <p><code><span class="unicorn">[unicorn]</span></code> Returns <code>floor(log2(t))+1</code>, equal to the number of significant
 bits in <code>t</code>, or zero if <code>t</code> is zero.</p>
@@ -1083,7 +1084,7 @@ truncated to an integer). Behaviour is undefined if the argument is negative.</p
 </div>
 <div class="defns">
 <ul>
-<li><code>template &lt;typename T&gt; constexpr bool</code> <strong><code>ispow2</code></strong><code>(T t) noexcept</code></li>
+<li><code>template &lt;typename T&gt; constexpr bool</code> <strong><code>has_singe_bit</code></strong><code>(T t) noexcept</code></li>
 </ul>
 <p><code><span class="unicorn">[unicorn]</span></code> True if the argument is an exact power of 2.</p>
 </div>

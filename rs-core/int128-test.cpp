@@ -137,12 +137,12 @@ void test_core_int128_uint128_bitwise_properties() {
     Uint128 x;
     int n = 0;
 
-    TRY(x = {});                                                      TRY(n = ilog2p1(x));  TEST_EQUAL(n, 0);
-    TRY(x = 1);                                                       TRY(n = ilog2p1(x));  TEST_EQUAL(n, 1);
-    TRY(x = 0x1234);                                                  TRY(n = ilog2p1(x));  TEST_EQUAL(n, 13);
-    TRY(x = 0xffff'0000'0000'0001ull);                                TRY(n = ilog2p1(x));  TEST_EQUAL(n, 64);
-    TRY((x = {0x1234, 0xffff'0000'0000'0001ull}));                    TRY(n = ilog2p1(x));  TEST_EQUAL(n, 77);
-    TRY((x = {0xffff'0000'0000'0001ull, 0xffff'0000'0000'0001ull}));  TRY(n = ilog2p1(x));  TEST_EQUAL(n, 128);
+    TRY(x = {});                                                      TRY(n = bit_width(x));  TEST_EQUAL(n, 0);
+    TRY(x = 1);                                                       TRY(n = bit_width(x));  TEST_EQUAL(n, 1);
+    TRY(x = 0x1234);                                                  TRY(n = bit_width(x));  TEST_EQUAL(n, 13);
+    TRY(x = 0xffff'0000'0000'0001ull);                                TRY(n = bit_width(x));  TEST_EQUAL(n, 64);
+    TRY((x = {0x1234, 0xffff'0000'0000'0001ull}));                    TRY(n = bit_width(x));  TEST_EQUAL(n, 77);
+    TRY((x = {0xffff'0000'0000'0001ull, 0xffff'0000'0000'0001ull}));  TRY(n = bit_width(x));  TEST_EQUAL(n, 128);
 
     TRY(x = {});                                                      TRY(n = popcount(x));  TEST_EQUAL(n, 0);
     TRY(x = 1);                                                       TRY(n = popcount(x));  TEST_EQUAL(n, 1);

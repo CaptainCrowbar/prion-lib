@@ -387,7 +387,7 @@ namespace RS {
 
     template <typename K, typename T, typename Hash, typename Equal>
     void HashMap<K, T, Hash, Equal>::do_rehash(size_t min_size) {
-        int bits = std::max(ilog2p1(std::max(min_size, table_.size())), 4);
+        int bits = std::max(bit_width(std::max(min_size, table_.size())), 4);
         size_t new_size = size_t(1) << bits;
         std::vector<node_type> temp_table(new_size);
         table_.swap(temp_table);
